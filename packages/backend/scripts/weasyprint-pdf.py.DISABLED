@@ -1,0 +1,353 @@
+#  "weasyprint-pdf.py"
+#  metropolitan backend
+#  Created by Ahmet on 03.06.2025.
+
+#!/usr/bin/env python3
+"""
+WeasyPrint PDF Generation Service
+Bun/Elysia backend için HTML'den PDF üretir
+"""
+
+import sys
+import json
+from datetime import datetime
+from weasyprint import HTML, CSS
+from weasyprint.text.fonts import FontConfiguration
+
+def format_date(date_str):
+    """ISO date string'i Polish formata çevirir (dd.mm.yyyy)"""
+    try:
+        date_obj = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+        return date_obj.strftime('%d.%m.%Y')
+    except:
+        return date_str
+
+def format_currency(amount, currency='PLN'):
+    """Para formatı - Polonyalı format"""
+    if currency == 'PLN':
+        return f"{amount:,.2f} zł".replace(',', ' ')
+    elif currency == 'TRY':
+        return f"{amount:,.2f} TL".replace(',', '.')
+    else:
+        return f"{amount:,.2f} {currency}".replace(',', '.')
+
+def generate_invoice_html(data):
+    """Fatura HTML template'ini oluşturur"""
+
+    # Items listesi oluştur
+    items_html = ""
+    for i, item in enumerate(data.get('items', []), 1):
+        items_html += f"""
+        <tr>
+            <td class="center-cell">{i}</td>
+            <td>{item.get('productCode', '-')}</td>
+            <td>{item['description']}</td>
+            <td class="center-cell">{item['quantity']}</td>
+            <td class="number-cell">{format_currency(item['unitPrice'])}</td>
+            <td class="number-cell">{item['vatRate']}%</td>
+            <td class="number-cell">{format_currency(item['totalPrice'])}</td>
+        </tr>
+        """
+
+    return f"""
+    <!DOCTYPE html>
+    <html lang="tr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Fatura {data['invoiceNumber']}</title>
+        <style>
+            * {{
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }}
+
+            body {{
+                font-family: 'DejaVu Sans', Arial, sans-serif;
+                font-size: 12px;
+                line-height: 1.4;
+                color: #333;
+                background: white;
+            }}
+
+            .invoice-container {{
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 20px;
+            }}
+
+            .header {{
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-bottom: 30px;
+                border-bottom: 2px solid #0066cc;
+                padding-bottom: 20px;
+            }}
+
+            .logo-section h1 {{
+                color: #0066cc;
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 5px;
+            }}
+
+            .invoice-info {{
+                text-align: right;
+            }}
+
+            .invoice-info h2 {{
+                color: #0066cc;
+                font-size: 20px;
+                margin-bottom: 10px;
+            }}
+
+            .parties {{
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 30px;
+            }}
+
+            .party {{
+                width: 48%;
+            }}
+
+            .party h3 {{
+                background: #f5f5f5;
+                padding: 8px 12px;
+                margin-bottom: 10px;
+                font-size: 14px;
+                color: #0066cc;
+                border-left: 4px solid #0066cc;
+            }}
+
+            .party-details {{
+                padding: 0 12px;
+            }}
+
+            .party-details p {{
+                margin-bottom: 3px;
+            }}
+
+            .items-table {{
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+            }}
+
+            .items-table th,
+            .items-table td {{
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }}
+
+            .items-table th {{
+                background: #0066cc;
+                color: white;
+                font-weight: bold;
+                text-align: center;
+            }}
+
+            .items-table .number-cell {{
+                text-align: right;
+            }}
+
+            .items-table .center-cell {{
+                text-align: center;
+            }}
+
+            .totals {{
+                width: 300px;
+                margin-left: auto;
+                margin-bottom: 30px;
+            }}
+
+            .totals table {{
+                width: 100%;
+                border-collapse: collapse;
+            }}
+
+            .totals td {{
+                padding: 5px 10px;
+                border: 1px solid #ddd;
+            }}
+
+            .totals .label {{
+                background: #f5f5f5;
+                font-weight: bold;
+            }}
+
+            .totals .total-row {{
+                background: #0066cc;
+                color: white;
+                font-weight: bold;
+                font-size: 14px;
+            }}
+
+            .footer {{
+                margin-top: 40px;
+                padding-top: 20px;
+                border-top: 1px solid #ddd;
+                font-size: 11px;
+                color: #666;
+            }}
+
+            .notes {{
+                margin-top: 20px;
+                padding: 15px;
+                background: #f9f9f9;
+                border-left: 4px solid #0066cc;
+            }}
+
+            .notes h4 {{
+                margin-bottom: 10px;
+                color: #0066cc;
+            }}
+
+            @page {{
+                margin: 2cm;
+                size: A4;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="invoice-container">
+            <!-- Header -->
+            <div class="header">
+                <div class="logo-section">
+                    <h1>METROPOLITAN FOOD GROUP</h1>
+                    <p>Sp. z o.o.</p>
+                    <p style="font-size: 10px; color: #666;">KRS: 0000317933 | NIP: 7292645203</p>
+                </div>
+                <div class="invoice-info">
+                    <h2>FAKTURA</h2>
+                    <p><strong>Nr Faktury:</strong> {data['invoiceNumber']}</p>
+                    <p><strong>Nr Zamówienia:</strong> {data['orderNumber']}</p>
+                    <p><strong>Data wystawienia:</strong> {format_date(data['issueDate'])}</p>
+                    <p><strong>Termin płatności:</strong> {format_date(data['dueDate'])}</p>
+                </div>
+            </div>
+
+            <!-- Parties -->
+            <div class="parties">
+                                                <div class="party">
+                    <h3>SPRZEDAWCA</h3>
+                    <div class="party-details">
+                        <p><strong>{data['seller']['name']}</strong></p>
+                        <p>{data['seller']['address']}</p>
+                        <p>{data['seller']['postalCode']} {data['seller']['city']}</p>
+                        <p>{data['seller']['country']}</p>
+                        <p>NIP: {data['seller']['nip']}</p>
+                        <p>Tel: {data['seller']['phone']}</p>
+                        <p>E-mail: {data['seller']['email']}</p>
+                    </div>
+                </div>
+
+                <div class="party">
+                    <h3>NABYWCA</h3>
+                    <div class="party-details">
+                        <p><strong>{data['buyer']['name']}</strong></p>
+                        <p>{data['buyer']['address']}</p>
+                        <p>{data['buyer']['postalCode']} {data['buyer']['city']}</p>
+                        <p>{data['buyer']['country']}</p>
+                        {f"<p>NIP: {data['buyer']['nip']}</p>" if data['buyer'].get('nip') else ""}
+                        <p>Tel: {data['buyer']['phone']}</p>
+                        {f"<p>E-mail: {data['buyer']['email']}</p>" if data['buyer'].get('email') else ""}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items Table -->
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th width="5%">Lp.</th>
+                        <th width="15%">Kod produktu</th>
+                        <th width="30%">Nazwa towaru/usługi</th>
+                        <th width="10%">Ilość</th>
+                        <th width="15%">Cena jedn.</th>
+                        <th width="10%">VAT %</th>
+                        <th width="15%">Wartość</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {items_html}
+                </tbody>
+            </table>
+
+            <!-- Totals -->
+            <div class="totals">
+                <table>
+                    <tr>
+                        <td class="label">Wartość netto:</td>
+                        <td class="number-cell">{format_currency(data['netAmount'], data['currency'])}</td>
+                    </tr>
+                    <tr>
+                        <td class="label">Podatek VAT:</td>
+                        <td class="number-cell">{format_currency(data['vatAmount'], data['currency'])}</td>
+                    </tr>
+                    <tr class="total-row">
+                        <td>RAZEM DO ZAPŁATY:</td>
+                        <td class="number-cell">{format_currency(data['totalAmount'], data['currency'])}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Notes -->
+            {f'''
+            <div class="notes">
+                <h4>Uwagi:</h4>
+                <p>{data['notes']}</p>
+            </div>
+            ''' if data.get('notes') else ''}
+
+            <!-- Footer -->
+            <div class="footer">
+                <p>Faktura wystawiona zgodnie z obowiązującymi przepisami prawa.</p>
+                <p>Termin płatności: {data.get('paymentTerms', '14 dni od daty wystawienia')}</p>
+                <p style="margin-top: 10px; font-size: 10px;">
+                    METROPOLITAN FOOD GROUP Sp. z o.o. | ul. LEONIDASA 57/PAW.502, 02-239 WARSZAWA<br/>
+                    NIP: 7292645203 | KRS: 0000317933 | Kapitał zakładowy: 173 000,00 PLN
+                </p>
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+
+def main():
+    try:
+        # stdin'den JSON data oku
+        input_data = sys.stdin.read()
+        data = json.loads(input_data)
+
+        # HTML oluştur
+        html_content = generate_invoice_html(data)
+
+        # Font configuration
+        font_config = FontConfiguration()
+
+        # CSS string
+        css_content = CSS(string="""
+            @page {
+                margin: 2cm;
+                size: A4;
+            }
+        """, font_config=font_config)
+
+        # PDF oluştur
+        html_doc = HTML(string=html_content)
+        pdf_bytes = html_doc.write_pdf(stylesheets=[css_content], font_config=font_config)
+
+        # PDF'i stdout'a binary olarak yaz
+        sys.stdout.buffer.write(pdf_bytes)
+
+    except Exception as e:
+        # Hata durumunda stderr'e yaz
+        sys.stderr.write(f"PDF generation error: {str(e)}\n")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

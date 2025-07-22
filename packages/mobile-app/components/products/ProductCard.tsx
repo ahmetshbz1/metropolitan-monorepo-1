@@ -1,0 +1,109 @@
+//  "ProductCard.tsx"
+//  metropolitan app
+//  Created by Ahmet on 30.06.2025. Edited on 19.07.2025.
+
+import { Product } from "@/context/ProductContext";
+import { useProductCard } from "@/hooks/useProductCard";
+import { Ionicons } from "@expo/vector-icons";
+import { Link } from "expo-router";
+import React from "react";
+import { TouchableOpacity, View } from "react-native";
+import { HapticIconButton } from "../HapticButton";
+import { ProductCardContent } from "./ProductCardContent";
+import { ProductCardImage } from "./ProductCardImage";
+
+interface ProductCardProps {
+  product: Product;
+  variant?: 'grid' | 'horizontal';
+}
+
+export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
+  product,
+  variant = 'grid',
+}) {
+  const {
+    colors,
+    colorScheme,
+    isProductFavorite,
+    categoryName,
+    isLowStock,
+    isOutOfStock,
+    handleAddToCart,
+    handleToggleFavorite,
+  } = useProductCard(product);
+
+  const isHorizontal = variant === 'horizontal';
+  
+  return (
+    <View 
+      className={isHorizontal ? "mr-3" : "mx-1 mb-3"} 
+      style={isHorizontal ? { width: 180 } : { width: '48%' }}
+    >
+      <Link
+        href={{
+          pathname: "/product/[id]",
+          params: { id: product.id },
+        }}
+        asChild
+      >
+        <TouchableOpacity
+          activeOpacity={0.7}
+          className="bg-white rounded-xl overflow-hidden"
+          style={{
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+            elevation: 3,
+            opacity: isOutOfStock ? 0.7 : 1,
+            backgroundColor: colorScheme === 'dark' ? '#1a1a1a' : '#fff',
+            borderWidth: colorScheme === 'dark' ? 1 : 0,
+            borderColor: colorScheme === 'dark' ? '#333' : 'transparent',
+          }}
+        >
+          {/* Image Section */}
+          <ProductCardImage
+            product={product}
+            colorScheme={colorScheme}
+            isOutOfStock={isOutOfStock}
+            colors={colors}
+          />
+
+          {/* Content Section */}
+          <ProductCardContent
+            product={product}
+            categoryName={categoryName}
+            colorScheme={colorScheme}
+            colors={colors}
+            isOutOfStock={isOutOfStock}
+            isLowStock={isLowStock}
+            handleAddToCart={handleAddToCart}
+          />
+
+          {/* Favorite Button */}
+          <HapticIconButton
+            onPress={handleToggleFavorite}
+            className="absolute top-2 right-2 w-8 h-8 justify-center items-center z-10"
+            style={{
+              backgroundColor: "transparent",
+              borderRadius: 20,
+            }}
+            hapticType="light"
+          >
+            <Ionicons
+              name={isProductFavorite ? "heart" : "heart-outline"}
+              size={20}
+              color={
+                isProductFavorite
+                  ? colors.danger
+                  : colorScheme === "dark"
+                    ? "#888"
+                    : "#666"
+              }
+            />
+          </HapticIconButton>
+        </TouchableOpacity>
+      </Link>
+    </View>
+  );
+});

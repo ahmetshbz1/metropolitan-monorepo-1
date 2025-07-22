@@ -1,0 +1,811 @@
+{
+  "profile": {
+    "title": "Profile",
+    "account_section_title": "Account",
+    "edit_profile": "Edit Profile",
+    "payment_methods": "Payment Methods",
+    "addresses": "My Addresses",
+    "favorites": "My Favorites",
+    "notifications": "Notifications",
+    "app_settings_section_title": "App Settings",
+    "app_theme": "App Theme",
+    "app_language": "App Language",
+    "haptics": "Haptic Feedback",
+    "dark_mode": "Dark Mode",
+    "light_mode": "Light Mode",
+    "communication_preferences": "Communication Preferences",
+    "support_section_title": "Support",
+    "help_center": "Help Center",
+    "contact_us": "Contact Us",
+    "faq": {
+      "title": "FAQ",
+      "content": "Frequently asked questions and answers will be listed here. For example: How do I return my order?"
+    },
+    "logout": "Log Out",
+    "logout_confirm_title": "Log Out",
+    "logout_confirm_message": "Are you sure you want to log out?",
+    "logout_confirm_cancel": "Cancel",
+    "logout_confirm_confirm": "Log Out",
+    "security": "Security and Privacy",
+    "contact": {
+      "info_text": "If you need help with anything, you can contact us through the channels below.",
+      "address_title": "Head Office"
+    },
+    "help": {
+      "send_email": "Send Email",
+      "call_us": "Call Us",
+      "social_media_title": "Us on Social Media",
+      "content": "Help center content will be displayed here. You can use this section for detailed articles and videos."
+    },
+    "app_settings": {
+      "title": "App Settings"
+    },
+    "version": "Version {{version}}",
+    "logout_alert_title": "Log Out",
+    "logout_alert_message": "Are you sure you want to log out?",
+    "logout_alert_cancel": "Cancel",
+    "logout_alert_confirm": "Log Out",
+    "communication_preferences_description": "Manage your notification preferences",
+    "email_notifications": "Email Notifications",
+    "push_notifications": "Push Notifications",
+    "sms_notifications": "SMS Notifications",
+    "badge": {
+      "b2b": "Business",
+      "b2c": "Personal"
+    },
+    "header_edit": "Edit"
+  },
+  "languages": {
+    "tr": "Türkçe",
+    "pl": "Polski",
+    "en": "English"
+  },
+  "language_selection": {
+    "title": "App Language"
+  },
+  "not_found": {
+    "title": "Oops!",
+    "description": "This screen does not exist.",
+    "go_home": "Go to home screen!"
+  },
+  "addresses": {
+    "title": "My Addresses",
+    "office": {
+      "name": "Head Office",
+      "address": "Buyukdere St. No: 23, Sisli"
+    },
+    "warehouse": {
+      "name": "Gebze Warehouse",
+      "address": "Organized Ind. Zone, Ataturk Blvd. No: 15"
+    },
+    "empty": {
+      "title": "You don't have an address yet",
+      "subtitle": "Start shopping quickly by adding your first address.",
+      "add_button": "Add New Address"
+    },
+    "tax_id": "Tax ID: {{taxId}}",
+    "default_delivery": "Default Delivery",
+    "default_billing": "Default Billing",
+    "error_loading": "An error occurred while loading addresses.",
+    "delete": {
+      "confirm_title": "Delete Address",
+      "confirm_message": "Are you sure you want to delete this address?",
+      "error_title": "Error",
+      "error_message": "An error occurred while deleting the address."
+    },
+    "default_address": "Default Address",
+    "add_new_address": "Add New Address",
+    "set_default_title": "Set as Default",
+    "set_default_message": "Which type of default would you like to set for this address?",
+    "set_default_delivery": "Set as Default Delivery",
+    "set_default_billing": "Set as Default Billing"
+  },
+  "edit_profile": {
+    "title": "Edit Profile",
+    "change_photo": "Change",
+    "first_name": "First Name",
+    "first_name_placeholder": "Enter your first name",
+    "last_name": "Last Name",
+    "last_name_placeholder": "Enter your last name",
+    "email": "Email",
+    "email_placeholder": "Enter your email address",
+    "email_invalid": "Please enter a valid email address",
+    "phone_number": "Phone Number",
+    "no_phone_number": "Phone number not added",
+    "save_button": "Save",
+    "camera": "Camera",
+    "gallery": "Gallery",
+    "error_title": "Error",
+    "error_message": "An error occurred while updating profile",
+    "success_title": "Success", 
+    "success_message": "Profile updated successfully",
+    "photo_error_title": "Photo Error",
+    "photo_error_generic": "An error occurred while uploading the photo"
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "q1": {
+      "question": "How can I cancel my order?",
+      "answer": "You can cancel your order from the \"My Orders\" section before its status changes to \"Preparing\". If your order has been shipped, it cannot be canceled."
+    },
+    "q2": {
+      "question": "How does the product return process work?",
+      "answer": "You can return the products you have received within 14 days. After creating a return request from the My Account > My Orders section, you can send the product free of charge with the provided shipping code."
+    },
+    "q3": {
+      "question": "How much is the shipping fee?",
+      "answer": "Shipping is free for all your orders. There is no minimum limit."
+    },
+    "q4": {
+      "question": "Which payment methods can I use?",
+      "answer": "You can pay by credit card, debit card, and PayPal. We also have a cash on delivery option."
+    }
+  },
+  "favorites": {
+    "title": "My Favorites",
+    "empty": {
+      "title": "Your favorites list is empty",
+      "subtitle": "You can add products you like to your favorites by tapping the heart icon.",
+      "browse_button": "Browse Products"
+    }
+  },
+  "help_center": {
+    "title": "Help Center",
+    "header": "How can we help you?",
+    "search_placeholder": "Type to search...",
+    "categories": {
+      "orders": "Orders",
+      "returns": "Returns & Refunds",
+      "account": "Account Management",
+      "payment": "Payment Options",
+      "security": "Security & Privacy"
+    }
+  },
+  "payment_methods": {
+    "title": "Payment Methods",
+    "company_card": "Company Card",
+    "personal_card": "Personal Card",
+    "empty": {
+      "title": "You have no saved cards",
+      "subtitle": "Add a new card to speed up your payments.",
+      "add_button": "Add New Card"
+    },
+    "card_details": "{{details}} - Exp. {{expiry}}",
+    "default_method": "Default Payment Method",
+    "error_loading": "An error occurred while loading payment methods.",
+    "delete": {
+      "confirm_title": "Delete Card",
+      "confirm_message": "Are you sure you want to delete this card?",
+      "error_title": "Error",
+      "error_message": "An error occurred while deleting the card."
+    },
+    "add_new_method": "Add New Payment Method",
+    "card": {
+      "title": "Credit / Debit Card"
+    },
+    "bank_transfer": {
+      "title": "Bank Transfer"
+    }
+  },
+  "login": {
+    "welcome_title": "Welcome to Metropolitan",
+    "welcome_subtitle": "Quality products, delivered to your door.",
+    "checkout_title": "Complete Your Order",
+    "checkout_subtitle": "Log in to place your order. Your cart is safe!",
+    "phone_button": "Continue with Phone Number",
+    "social_separator": "or with social media",
+    "guest_button": "Continue as guest",
+    "b2b": "Business",
+    "b2c": "Personal",
+    "b2b_note": "Corporate customers can join with phone number only."
+  },
+  "phone_login": {
+    "title": "Phone Login",
+    "header_title": "Your Phone Number",
+    "header_subtitle": "We'll send you a verification code.",
+    "info_text": "Enter your phone number and we'll send you a verification code via SMS.",
+    "phone_number_label": "Phone Number",
+    "send_code_button": "Send Verification Code",
+    "phone_login_error_otp_send": "An error occurred while sending the OTP. Please try again.",
+    "error_title": "Error",
+    "error_message": "An error occurred while sending the code"
+  },
+  "otp": {
+    "title": "Verification",
+    "subtitle_part1": "Please enter the 6-digit code sent to",
+    "subtitle_part2": ".",
+    "verify_button": "Verify",
+    "resend_code": "Resend code",
+    "resend_code_in": "Resend code in"
+  },
+  "user_info": {
+    "title": "Account Information",
+    "header_title": "One Last Step",
+    "header_subtitle": "Enter your information to complete your account.",
+    "personal_info_section": "Personal Information",
+    "business_info_section": "Business Information",
+    "first_name_label": "First Name",
+    "first_name_placeholder": "Enter your first name",
+    "last_name_label": "Last Name",
+    "last_name_placeholder": "Enter your last name",
+    "email_label": "Email",
+    "email_placeholder": "Enter your email address",
+    "email_invalid": "Please enter a valid email address",
+    "save_button": "Save and Continue",
+    "nip_label": "NIP (Tax ID)",
+    "nip_placeholder": "Your 10-digit NIP",
+    "nip_check_button": "Check",
+    "company_name_label": "Company Name",
+    "registration_date_label": "Registration Date",
+    "company_address_label": "Company Address",
+    "nip_verified_success": "NIP successfully verified - You can register",
+    "nip_verified_warning": "Company verified - Not active for VAT",
+    "nip_inactive_company": "This company is not active for VAT. Only active companies can register.",
+    "nip_error_length": "NIP must be 10 digits.",
+    "nip_error_generic": "NIP verification failed. Please try again.",
+    "save_error_title": "Failed to Save Profile",
+    "accept_terms": "I have read, understood, and agree.",
+    "agree_to_the": "I have read and agree to the",
+    "terms_and_policy": "Terms of Service and Privacy Policy"
+  },
+  "terms": {
+    "title": "Terms and Conditions",
+    "header_title": "Almost Done",
+    "header_subtitle": "Please review and accept the agreements and policies before proceeding.",
+    "info_text": "We need your help to keep Metropolitan a safe and transparent platform. By using our services, you declare that you understand and accept the terms and policies specified in the documents below.",
+    "checkbox_label": "I have read and agree to the:",
+    "terms_title": "User Agreement",
+    "privacy_title": "Privacy Policy",
+    "complete_button": "Accept and Finish",
+    "dummy_terms": "This is a user agreement text. Lorem ipsum dolor sit amet, consectetur adipiscing elit. ... (a long text will come here)",
+    "dummy_privacy": "This is a privacy policy text. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. ... (a long text will come here)",
+    "modal_accept_button": "I Have Read, Understood, and Accept",
+    "modal_close_button": "Close",
+    "agree_button": "Agree",
+    "close_button": "Close"
+  },
+  "errors": {
+    "INSUFFICIENT_STOCK": "You can add a maximum of {{stock}} units of this product.",
+    "INSUFFICIENT_STOCK_ALREADY_IN_CART": "You have {{inCart}} units in your cart. You can add {{canAdd}} more.",
+    "PRODUCT_NOT_FOUND": "Product not found.",
+    "CART_ITEM_NOT_FOUND": "Cart item not found.",
+    "CART_ADD_ERROR": "An unexpected error occurred while adding the item to the cart. Please try again.",
+    "CART_UPDATE_ERROR": "An unexpected error occurred while updating the item. Please try again."
+  },
+  "tabs": {
+    "home": "Home",
+    "products": "Products",
+    "cart": {
+      "title": "My Cart",
+      "clear_alert_title": "Clear Cart",
+      "clear_alert_message": "All items in your cart will be deleted. Are you sure?",
+      "clear_alert_cancel": "Cancel",
+      "clear_alert_confirm": "Yes, Delete"
+    },
+    "orders": "My Orders",
+    "profile": "Profile",
+    "search_placeholder": "Search products..."
+  },
+  "home": {
+    "featured_products": "Featured Products",
+    "weekly_products": "Products of the Week",
+    "bestsellers": "Bestsellers of the Month",
+    "new_arrivals": "New Arrivals",
+    "see_all_products": "See All Products",
+    "checkout_button": "Complete Order",
+    "search_results": "Search Results",
+    "no_search_results": "No results found for \"{{query}}\""
+  },
+  "product": {
+    "stock": "Stock: {{count}}",
+    "out_of_stock": "Out of Stock",
+    "price": "{{price}}"
+  },
+  "order_detail": {
+    "title": "Order #{{id}}",
+    "not_found_title": "Order Not Found",
+    "not_found_body": "The requested order could not be found.",
+    "cancel_confirm_title": "Cancel Order",
+    "cancel_confirm_message": "Are you sure you want to cancel this order?",
+    "cancel_order": "Cancel Order",
+    "cancel_success_title": "Order Cancelled",
+    "cancel_error_title": "Cancellation Error",
+    "cancel_error_message": "An error occurred while cancelling the order.",
+    "load_error_message": "Failed to load order details. Please try again.",
+    "download_invoice": "Download Invoice",
+    "help": "Help",
+    "reorder": {
+      "success_title": "Reorder Successful",
+      "success_message": "All items from this order have been added to your cart.",
+      "partial_success_message": "Available items have been added to your cart.",
+      "error_message": "Could not add items to the cart. Please try again.",
+      "go_to_cart": "Go to Cart",
+      "button_text": "Reorder",
+      "stock_warning_title": "Stock Warning",
+      "out_of_stock_items": "{{count}} item(s) are out of stock.",
+      "insufficient_stock_items": "{{count}} item(s) have insufficient stock.",
+      "insufficient_stock_details": "{{count}} item(s) have insufficient stock:\n\n{{details}}",
+      "add_available_stock": "Add Available Stock"
+    },
+    "actions": {
+      "repeat_order": "Repeat Order",
+      "download_invoice": "Download Invoice",
+      "view_invoice": "View Invoice",
+      "downloading_invoice": "Downloading invoice: Order #{{id}}",
+      "invoice_downloaded": "Invoice downloaded successfully: {{fileName}}",
+      "invoice_not_found": "Invoice not found for this order.",
+      "invoice_download_error": "Failed to download invoice. Please try again.",
+      "request_help": "Request help with this order",
+      "help_alert_title": "Help Center",
+      "help_alert_message": "For any issues with your order, you can contact our support team.\n\nEmail: support@metropolitan.app\nPhone: +48 123 456 789",
+      "help_alert_ok": "OK"
+    },
+    "payment": {
+      "credit_card": "Credit Card",
+      "cash_on_delivery": "Cash on Delivery",
+      "no_card_info": "No card information"
+    },
+    "delivery_payment": {
+      "title": "Delivery & Payment",
+      "payment_method": "Payment Method",
+      "card_holder": "Card Holder",
+      "card_number": "Card Number",
+      "delivery_address": "Delivery Address",
+      "billing_address": "Billing Address"
+    },
+    "help_modal": {
+      "title": "Get Help With This Order",
+      "info_text": "If you have a problem with your order or need assistance, you can contact us through the channels below.",
+      "address_title": "Delivery Address"
+    },
+    "header": {
+      "title": "Order Details"
+    },
+    "tracking_modal": {
+      "title": "Track Shipment",
+      "history": {
+        "title": "Tracking History",
+        "delivered": "Delivered",
+        "out_for_delivery": "Out for delivery",
+        "arrived_at_hub": "Arrived at distribution center",
+        "picked_up": "Package picked up by courier",
+        "info_received": "Shipment information received"
+      }
+    },
+    "info": {
+      "order_no": "Order #{{id}}",
+      "order_no_label": "Order Number",
+      "order_date_label": "Order Date"
+    },
+    "products": {
+      "title": "Products",
+      "no_product_info": "No Product Information",
+      "quantity_one": "{{count}} piece",
+      "quantity_other": "{{count}} pieces",
+      "quantity": "{{count}} pieces",
+      "price": "{{price}}",
+      "total_items_one": "Total {{count}} item",
+      "total_items_other": "Total {{count}} items",
+      "total_items": "Total {{count}} items",
+      "products_title": "Products",
+      "reorder_button": "Reorder",
+      "review_button": "Rate the Products",
+      "section_title": "Order Contents"
+    },
+    "summary": {
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "free_shipping": "Free",
+      "total": "Total",
+      "section_title": "Order Summary"
+    },
+    "tracking": {
+      "title": "Delivery Status",
+      "status_pending": "Your order is awaiting confirmation.",
+      "status_confirmed": "Your order is being prepared.",
+      "status_preparing": "Your order is being packaged.",
+      "shipped_internal": "Shipped with our own vehicle.",
+      "shipped_external": "Track your shipment with {{company}}",
+      "delivered_internal": "Delivered by our team.",
+      "delivered_external": "View delivery details and history",
+      "status_delivered": "Delivered",
+      "status_cancelled": "Cancelled",
+      "tracking_number": "Tracking Number",
+      "shipping_company": "Shipping Company",
+      "no_tracking_info": "No tracking information available yet."
+    }
+  },
+  "orders": {
+    "order_no": "Order #{{id}}",
+    "price": "{{price}}",
+    "total": "Total",
+    "empty": {
+      "title": "You don't have any orders yet",
+      "button": "Start Shopping"
+    }
+  },
+  "order": {
+    "orderDetails": "Order Details",
+    "cancelOrder": "Cancel Order",
+    "cancelOrderConfirmation": "Are you sure you want to cancel this order?",
+    "cancelOrderError": "An error occurred while cancelling the order.",
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "preparing": "Preparing",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    }
+  },
+  "cart": {
+    "remove_item_alert_title": "Remove Item",
+    "remove_item_alert_message": "Are you sure you want to remove this item from cart?",
+    "remove_item_alert_cancel": "Cancel",
+    "remove_item_alert_confirm": "Remove",
+    "checkout_alert_title": "Confirm Order",
+    "checkout_alert_message": "The total amount for your order is {{total}}. Do you want to proceed?",
+    "checkout_alert_cancel": "Cancel",
+    "checkout_alert_confirm": "Proceed",
+    "empty": {
+      "title": "Your cart is empty",
+      "button": "Start Shopping"
+    },
+    "item": {
+      "price": "{{price}}"
+    },
+    "summary": {
+      "total_label": "Subtotal ({{count}} items)",
+      "total_value": "{{total}}",
+      "checkout_button": "Checkout"
+    },
+    "stock_limit_title": "Stock Limit",
+    "stock_limit_message": "You can add maximum {{stock}} of this product.",
+    "insufficient_stock": "There are {{availableStock}} items available in stock. You can purchase maximum {{availableStock}} items.",
+    "load_error": "An error occurred while loading the cart",
+    "add_error": "An error occurred while adding the product to cart",
+    "update_error": "An error occurred while updating the product quantity",
+    "remove_error": "An error occurred while removing the product from cart",
+    "clear_error": "An error occurred while clearing the cart",
+    "min_quantity_error": "Minimum quantity must be 1",
+    "success": "Success",
+    "error": "Error",
+    "item_added": "Product added to cart",
+    "item_removed": "Product removed from cart",
+    "cleared": "Cart cleared",
+    "checkout": "Place Order",
+    "checkout_title": "Order Summary",
+    "delivery_address_title": "Delivery Address",
+    "billing_address_title": "Billing Address",
+    "same_as_delivery": "Billing address same as delivery",
+    "address_title": "Delivery Address",
+    "payment_title": "Payment Method",
+    "complete_order": "Complete Order",
+    "selection_missing_title": "Missing Information",
+    "selection_missing_message": "Please select delivery address and payment method.",
+    "order_success_title": "Order Successful",
+    "order_success_message": "Your order has been successfully created!",
+    "order_error_title": "Order Error",
+    "order_error_message": "An error occurred while creating the order. Please try again.",
+    "add_new_address": "Add New Address",
+    "add_new_payment": "Add New Card"
+  },
+  "checkout": {
+    "title": "Order Summary",
+    "steps": {
+      "address": "Address",
+      "payment": "Payment",
+      "summary": "Summary"
+    },
+    "delivery_address": "Delivery Address",
+    "billing_address": "Billing Address",
+    "same_billing_address": "Billing address is the same as delivery address",
+    "add_new_address": "Add New Address",
+    "continue_to_payment": "Continue to Payment",
+    "payment_methods": "Payment Methods",
+    "payment_method": "Payment Method",
+    "payment_screen_title": "Payment Methods",
+    "secure_payment": "Secure Payment",
+    "secure_payment_desc": "All your payments are encrypted with SSL and processed on secure servers.",
+    "more_payment_methods_soon": "More payment options will be added soon",
+    "continue_to_summary": "Continue to Summary",
+    "order_summary": "Order Summary",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "free": "Free",
+    "total": "Total",
+    "items": "items",
+    "agree_terms": "I agree to the terms of use and privacy policy",
+    "complete_order": "Complete Order",
+    "missing_info": "Missing Information",
+    "missing_info_desc": "Please fill in all required information.",
+    "order_success": "Order Successful",
+    "order_success_desc": "Your order has been placed successfully!",
+    "order_error": "An error occurred while creating the order. Please try again.",
+    "bank_transfer_title": "Bank Transfer Information",
+    "confirm_and_proceed": "Confirm & Proceed",
+    "view_bank_details_prompt": "Tap to view bank details",
+    "no_payment_method_selected": "No payment method selected",
+    "order_notes": "Order Notes",
+    "order_notes_placeholder": "You can add your notes about the order here (e.g., don't ring the bell).",
+    "payment_methods": {
+      "card": {
+        "title": "Credit / Debit Card",
+        "subtitle": "Visa, Mastercard, Maestro"
+      },
+      "apple_pay": {
+        "title": "Apple Pay"
+      },
+      "blik": {
+        "title": "BLIK"
+      },
+      "bank_transfer": {
+        "title": "Bank Transfer / EFT",
+        "subtitle": "Pay manually to our bank account"
+      }
+    }
+  },
+  "categories": {
+    "1": "Dairy Products",
+    "2": "Legumes",
+    "3": "Snacks",
+    "4": "Beverages",
+    "5": "Desserts",
+    "6": "Staple Food",
+    "all": "All"
+  },
+  "status": {
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "preparing": "Preparing",
+    "shipped": "Shipped",
+    "delivered": "Delivered",
+    "unknown": "Unknown"
+  },
+  "product_detail": {
+    "not_found_title": "Product Not Found",
+    "not_found_body": "The requested product could not be found.",
+    "go_back": "Go Back",
+    "share_message": "{{name}} - {{price}} - Check it out on the Metropolitan app!",
+    "share": {
+      "check_out_this_product": "Check out this product!"
+    },
+    "low_stock_one": "Last {{count}} item",
+    "low_stock_other": "Last {{count}} items",
+    "category": "Category",
+    "stock": "Stock: {{count}}",
+    "in_stock": "In stock",
+    "out_of_stock": "Out of stock",
+    "low_stock": "Last {{count}} items",
+    "info": {
+      "price": "{{price}}",
+      "unit": "/ {{unit}}",
+      "in_stock": "In stock",
+      "stock_left_one": "{{count}} item left",
+      "stock_left_other": "{{count}} items left",
+      "description_title": "Product Description",
+      "no_description": "No detailed description is available for this product yet."
+    },
+    "purchase": {
+      "add_to_cart": "Add to Cart",
+      "added_to_cart": "Added to Cart",
+      "out_of_stock": "Out of Stock",
+      "stock_error_title": "Stock Limit Exceeded",
+      "stock_error_message": "You can add a maximum of {{count}} units of this product.",
+      "generic_error_title": "Error",
+      "generic_error_message": "An error occurred while adding to cart. Please try again."
+    },
+    "add_to_cart": "Add to Cart",
+    "stock_available": "Stock: {{count}} available",
+    "category": "Category: {{category}}",
+    "out_of_stock": "Out of stock"
+  },
+  "app_bar": {
+    "search_placeholder": "Search..."
+  },
+  "app_name": "Metropolitan",
+  "add_address": {
+    "title": "Add New Address",
+    "form": {
+      "address_title": "Address Title",
+      "address_title_placeholder": "E.g. Home, Work",
+      "street": "Street and House Number",
+      "street_placeholder": "Enter your address here",
+      "city": "City",
+      "city_placeholder": "E.g. Warsaw",
+      "postal_code": "Postal Code",
+      "postal_code_placeholder": "E.g. 00-001",
+      "country": "Country",
+      "save_button": "Save Address",
+      "error_title": "Missing Information",
+      "error_message": "Please fill in all fields.",
+      "submit_error_title": "Error",
+      "submit_error_message": "An error occurred while adding the address. Please try again.",
+      "success_message": "Address added successfully!"
+    }
+  },
+  "brands": {
+    "yayla": "Yayla"
+  },
+  "permissions": {
+    "camera_required_title": "Camera Permission Required",
+    "camera_required_message": "We need your permission to use the camera to take a profile photo.",
+    "gallery_required_title": "Gallery Permission Required",
+    "gallery_required_message": "We need your permission to access the gallery to select a photo."
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Info",
+    "change": "Change",
+    "clear": "Clear"
+  },
+  "general": {
+    "under_construction": "Under Construction",
+    "feature_soon": "This feature will be added soon",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "edit_address": {
+    "title": "Edit Address",
+    "form": {
+      "save_button": "Save Changes",
+      "error_title": "Form Incomplete",
+      "error_message": "Please fill in all fields.",
+      "submit_error_title": "Error",
+      "submit_error_message": "An error occurred while updating the address. Please try again.",
+      "update_success_message": "Address updated successfully!"
+    }
+  },
+  "add_payment_method": {
+    "title": "Add New Payment Method",
+    "form": {
+      "cardholder_name": "Cardholder Name",
+      "cardholder_name_placeholder": "Name on card",
+      "card_number_last4": "Card Number (Last 4 digits)",
+      "expiry_month": "Expiry Month",
+      "expiry_year": "Expiry Year",
+      "save_button": "Save Card",
+      "error_title": "Missing Information",
+      "error_message": "Please fill in all fields.",
+      "submit_error_title": "Error",
+      "submit_error_message": "An error occurred while adding the payment method. Please try again."
+    }
+  },
+  "auth": {
+    "required": "Login Required",
+    "login_to_continue": "Please log in to continue",
+    "login_required": "You need to log in to perform this action.",
+    "guest_data_migrated": "Your cart and favorites have been transferred to your account",
+    "migration_success_title": "Data Transferred"
+  },
+  "invoice_preview": {
+    "title": "Invoice Preview",
+    "loading": "Loading invoice...",
+    "error": "Failed to load invoice",
+    "load_error": "An error occurred while loading the invoice",
+    "pdf_error": "An error occurred while displaying the PDF",
+    "share_title": "Invoice - Order {{orderNumber}}"
+  },
+  "bank_transfer": {
+    "title": "Bank Transfer / EFT",
+    "subtitle": "Please complete your payment using the account details below.",
+    "account_details": "Account Details",
+    "recipient": "Recipient Name",
+    "bank_name": "Bank Name",
+    "description_label": "Description",
+    "description_value": "Don't forget to include your order number in the description.",
+    "info_text": "Your order will be processed after your payment is confirmed. This may take 1-2 business days.",
+    "confirm_button": "Got it, Go Back"
+  },
+  "order_confirmation": {
+    "title": "Your Order is Received!",
+    "subtitle": "Please use the bank details below to complete your payment.",
+    "payment_details_title": "Payment Instructions",
+    "info_text": "Your order will be shipped after payment is confirmed. You can track your order status from the 'My Orders' page.",
+    "button_text": "Go to My Orders"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "mark_all_read": "Mark All as Read",
+    "mark_as_read": "Mark as Read",
+    "delete_all": "Delete All",
+    "delete": "Delete",
+    "empty_title": "No notifications yet",
+    "empty_message": "Notifications about your orders and special offers will appear here.",
+    "time": {
+      "minutes_ago": "{{count}} minutes ago",
+      "hours_ago": "{{count}} hours ago",
+      "days_ago": "{{count}} days ago"
+    },
+    "types": {
+      "order": "Order",
+      "promotion": "Promotion",
+      "delivery": "Delivery",
+      "system": "System"
+    },
+    "delete_confirm_title": "Delete Notification",
+    "delete_confirm_message": "Are you sure you want to permanently delete this notification?",
+    "delete_all_confirm_title": "Delete All Notifications",
+    "delete_all_confirm_message": "Are you sure you want to permanently delete all notifications?"
+  },
+  "payment": {
+    "unknown_error": "An unknown error occurred",
+    "canceled": "Payment was canceled",
+    "authentication_failed": "Authentication failed",
+    "insufficient_funds": "Insufficient funds",
+    "card_declined": "Card was declined",
+    "processing_error": "Error occurred while processing payment",
+    "apple_pay_error": "Apple Pay payment failed",
+    "google_pay_error": "Google Pay payment failed",
+    "client_secret_missing": "Payment secret is missing"
+  },
+  "checkout": {
+    "steps": {
+      "address": "Address",
+      "payment": "Payment",
+      "summary": "Summary"
+    },
+    "bank_transfer_title": "Bank Transfer",
+    "delivery_address": "Delivery Address",
+    "add_new_address": "Add New Address",
+    "same_billing_address": "My billing address is the same as the delivery address",
+    "billing_address": "Billing Address",
+    "continue_to_payment": "Continue to Payment",
+    "payment_screen_title": "Select Payment Method",
+    "continue_to_summary": "Continue to Summary",
+    "secure_payment": "Secure Payment",
+    "secure_payment_desc": "All your payment transactions are protected by an SSL certificate.",
+    "more_payment_methods_soon": "More payment methods will be added soon.",
+    "bank_transfer_success": "Order Confirmed",
+    "bank_transfer_success_desc": "As a corporate customer, your order has been automatically confirmed. Invoice will be sent to your email address.",
+    "payment_method": "Payment Method",
+    "order_summary": "Order Summary", 
+    "order_notes": "Order Notes",
+    "order_notes_placeholder": "Add any special instructions for your order here...",
+    "agree_terms": "I agree to the terms of service and privacy policy",
+    "missing_fields": "Please fill in all required fields",
+    "payment_success": "Payment Successful",
+    "payment_success_desc": "Your payment has been processed successfully!",
+    "payment_failed": "Payment Failed",
+    "payment_error": "An error occurred during payment",
+    "order_creation_failed": "Failed to create order",
+    "view_bank_details_prompt": "Tap to view bank details",
+    "no_payment_method_selected": "No payment method selected",
+    "subtotal": "Subtotal",
+    "items": "items",
+    "shipping": "Shipping",
+    "free": "Free",
+    "total": "Total",
+    "complete_order": "Complete Order",
+    "confirm_and_proceed": "Confirm and Proceed",
+    "payment_methods": {
+      "card": {
+        "title": "Credit / Debit Card",
+        "subtitle": "Visa, Mastercard, Maestro"
+      },
+      "blik": {
+        "subtitle": "Mobile payment (6-digit code)"
+      },
+      "apple_pay": {
+        "subtitle": "Fast payment with Touch ID, Face ID"
+      },
+      "google_pay": {
+        "subtitle": "Secure mobile payment"
+      },
+      "bank_transfer": {
+        "title": "Bank Transfer",
+        "subtitle": "Wire transfer / EFT"
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "metropolitan-workspace",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:mobile": "cd packages/mobile-app && bun run start",
+    "dev:backend": "cd packages/backend && bun run dev",
+    "dev:admin": "cd packages/admin-panel && bun run dev",
+    "dev:website": "cd packages/website && bun run dev",
+    "dev:all": "concurrently \"bun run dev:mobile\" \"bun run dev:backend\"",
+    "build:backend": "cd packages/backend && bun run build",
+    "build:mobile": "cd packages/mobile-app && bun run build",
+    "install:all": "bun install && cd packages/mobile-app && bun install && cd ../backend && bun install",
+    "clean": "rm -rf packages/*/node_modules && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+} 

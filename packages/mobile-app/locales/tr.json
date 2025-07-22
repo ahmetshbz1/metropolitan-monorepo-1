@@ -1,0 +1,817 @@
+{
+  "profile": {
+    "title": "Profil",
+    "account_section_title": "Hesap",
+    "edit_profile": "Profili Düzenle",
+    "payment_methods": "Ödeme Yöntemleri",
+    "addresses": "Adreslerim",
+    "favorites": "Favorilerim",
+    "notifications": "Bildirimlerim",
+    "app_settings_section_title": "Uygulama Ayarları",
+    "app_theme": "Uygulama Teması",
+    "app_language": "Uygulama Dili",
+    "haptics": "Dokunsal Geribildirim",
+    "dark_mode": "Karanlık Mod",
+    "light_mode": "Aydınlık Mod",
+    "communication_preferences": "İletişim Tercihleri",
+    "support_section_title": "Destek",
+    "help_center": "Yardım Merkezi",
+    "contact_us": "Bize Ulaşın",
+    "faq": {
+      "title": "Sıkça Sorulan Sorular",
+      "content": "Sıkça sorulan sorular ve cevapları burada yer alacak. Örneğin: Siparişimi nasıl iade ederim?"
+    },
+    "logout": "Çıkış Yap",
+    "logout_confirm_title": "Çıkış Yap",
+    "logout_confirm_message": "Çıkış yapmak istediğinizden emin misiniz?",
+    "logout_confirm_cancel": "Vazgeç",
+    "logout_confirm_confirm": "Çıkış Yap",
+    "security": "Güvenlik ve Gizlilik",
+    "contact": {
+      "info_text": "Herhangi bir konuda yardıma ihtiyacınız varsa, aşağıdaki kanallardan bize ulaşabilirsiniz.",
+      "address_title": "Merkez Ofis"
+    },
+    "help": {
+      "send_email": "E-Posta Gönder",
+      "call_us": "Telefonla Ara",
+      "social_media_title": "Sosyal Medyada Biz",
+      "content": "Yardım merkezi içeriği burada gösterilecek. Detaylı makaleler ve videolar için bu bölümü kullanabilirsiniz."
+    },
+    "version": "Versiyon {{version}}",
+    "logout_alert_title": "Çıkış Yap",
+    "logout_alert_message": "Hesabınızdan çıkış yapmak istediğinize emin misiniz?",
+    "logout_alert_cancel": "İptal",
+    "logout_alert_confirm": "Çıkış Yap",
+    "language": "Dil",
+    "accept_terms": "Okudum, anladım ve kabul ediyorum.",
+    "agree_to_the": "Şunu okudum ve kabul ediyorum:",
+    "terms_and_policy": "Kullanım Koşulları ve Gizlilik Politikası",
+    "communication_preferences_description": "Bildirim tercihlerinizi yönetin",
+    "email_notifications": "E-posta Bildirimleri",
+    "push_notifications": "Push Bildirimleri",
+    "sms_notifications": "SMS Bildirimleri",
+    "badge": {
+      "b2b": "Kurumsal",
+      "b2c": "Bireysel"
+    },
+    "header_edit": "Düzenle"
+  },
+  "languages": {
+    "tr": "Türkçe",
+    "pl": "Polski",
+    "en": "English",
+    "title": "Dil Seçenekleri"
+  },
+  "language_selection": {
+    "title": "Uygulama Dili"
+  },
+  "not_found": {
+    "title": "Hay Aksi!",
+    "description": "Bu ekran mevcut değil.",
+    "go_home": "Ana ekrana git!"
+  },
+  "addresses": {
+    "title": "Adreslerim",
+    "error_loading": "Adresler yüklenirken bir hata oluştu.",
+    "office": {
+      "name": "Merkez Ofis",
+      "address": "Büyükdere Cad. No: 23, Şişli"
+    },
+    "warehouse": {
+      "name": "Gebze Depo",
+      "address": "Organize San. Bölgesi, Atatürk Blv. No: 15"
+    },
+    "empty": {
+      "title": "Henüz adresiniz yok",
+      "subtitle": "İlk adresinizi ekleyerek alışverişe hızlıca başlayın.",
+      "add_button": "Yeni Adres Ekle"
+    },
+    "tax_id": "Vergi No: {{taxId}}",
+    "default_delivery": "Varsayılan Teslimat",
+    "default_billing": "Varsayılan Fatura",
+    "delete": {
+      "confirm_title": "Adresi Sil",
+      "confirm_message": "Bu adresi silmek istediğinizden emin misiniz?",
+      "error_title": "Hata",
+      "error_message": "Adres silinirken bir hata oluştu."
+    },
+    "default_address": "Varsayılan Adres",
+    "add_new_address": "Yeni Adres Ekle",
+    "set_default_title": "Varsayılan Olarak Ayarla",
+    "set_default_message": "Bu adresi hangi tür için varsayılan yapmak istersiniz?",
+    "set_default_delivery": "Varsayılan Teslimat Adresi Yap",
+    "set_default_billing": "Varsayılan Fatura Adresi Yap",
+    "set_default_error": "Varsayılan adres ayarlanırken bir hata oluştu.",
+    "default_delivery": "Varsayılan Teslimat",
+    "default_billing": "Varsayılan Fatura"
+  },
+  "edit_profile": {
+    "title": "Profili Düzenle",
+    "change_photo": "Değiştir",
+    "first_name": "Ad",
+    "first_name_placeholder": "Adınızı girin",
+    "last_name": "Soyad",
+    "last_name_placeholder": "Soyadınızı girin",
+    "email": "E-posta",
+    "email_placeholder": "E-posta adresinizi girin",
+    "email_invalid": "Lütfen geçerli bir e-posta adresi girin",
+    "phone_number": "Telefon Numarası",
+    "no_phone_number": "Telefon numarası eklenmemiş",
+    "save_button": "Kaydet",
+    "camera": "Kamera",
+    "gallery": "Galeri",
+    "error_title": "Hata",
+    "error_message": "Profil güncellenirken bir hata oluştu",
+    "success_title": "Başarılı",
+    "success_message": "Profil başarıyla güncellendi",
+    "photo_error_title": "Fotoğraf Hatası",
+    "photo_error_generic": "Fotoğraf yüklenirken bir hata oluştu"
+  },
+  "payment_methods": {
+    "title": "Ödeme Yöntemleri",
+    "company_card": "Şirket Kartı",
+    "personal_card": "Kişisel Kart",
+    "empty": {
+      "title": "Kayıtlı kartınız yok",
+      "subtitle": "Ödemelerinizi hızlandırmak için yeni bir kart ekleyin.",
+      "add_button": "Yeni Kart Ekle"
+    },
+    "card_details": "{{details}} - Son Kul. Tar. {{expiry}}",
+    "default_method": "Varsayılan Ödeme Yöntemi",
+    "error_loading": "Ödeme yöntemleri yüklenirken bir hata oluştu.",
+    "delete": {
+      "confirm_title": "Ödeme Yöntemini Sil",
+      "confirm_message": "Bu ödeme yöntemini silmek istediğinizden emin misiniz?",
+      "error_title": "Hata",
+      "error_message": "Ödeme yöntemi silinirken bir hata oluştu."
+    },
+    "add_new_method": "Yeni Ödeme Yöntemi Ekle",
+    "card": {
+      "title": "Kredi / Banka Kartı"
+    },
+    "bank_transfer": {
+      "title": "Banka Havalesi / EFT"
+    }
+  },
+  "favorites": {
+    "title": "Favorilerim",
+    "empty": {
+      "title": "Favori listen boş",
+      "subtitle": "Beğendiğin ürünleri kalp ikonuna dokunarak favorilerine ekleyebilirsin.",
+      "browse_button": "Ürünlere Göz At"
+    }
+  },
+  "help_center": {
+    "title": "Yardım Merkezi",
+    "header": "Size nasıl yardımcı olabiliriz?",
+    "search_placeholder": "Aramak için yazın...",
+    "categories": {
+      "orders": "Siparişler",
+      "returns": "İadeler ve Geri Ödemeler",
+      "account": "Hesap Yönetimi",
+      "payment": "Ödeme Seçenekleri",
+      "security": "Güvenlik ve Gizlilik"
+    }
+  },
+  "login": {
+    "welcome_title": "Metropolitana Hoş Geldiniz",
+    "welcome_subtitle": "Kaliteli ürünler, kapınıza kadar gelsin.",
+    "checkout_title": "Siparişinizi Tamamlayın",
+    "checkout_subtitle": "Sipariş vermek için giriş yapın. Sepetiniz güvende!",
+    "phone_button": "Telefon Numarası ile Devam Et",
+    "social_separator": "veya sosyal medya ile",
+    "guest_button": "Misafir olarak devam et",
+    "b2b": "Kurumsal",
+    "b2c": "Bireysel",
+    "b2b_note": "Kurumsal müşteriler sadece telefon numarası ile katılabilir."
+  },
+  "phone_login": {
+    "title": "Telefonla Giriş",
+    "header_title": "Telefon Numaranız",
+    "header_subtitle": "Size bir doğrulama kodu göndereceğiz.",
+    "info_text": "Telefon numaranızı girin, size SMS ile doğrulama kodu gönderelim.",
+    "phone_number_label": "Telefon Numarası",
+    "send_code_button": "Doğrulama Kodu Gönder",
+    "phone_login_error_otp_send": "OTP gönderilirken bir hata oluştu. Lütfen tekrar deneyin.",
+    "error_title": "Hata",
+    "error_message": "Kod gönderilirken bir hata oluştu"
+  },
+  "otp": {
+    "title": "Doğrulama",
+    "subtitle_part1": "Lütfen",
+    "subtitle_part2": "numarasına gönderilen 6 haneli kodu girin.",
+    "verify_button": "Doğrula",
+    "resend_code": "Kodu yeniden gönder",
+    "resend_code_in": "Kodu yeniden gönder"
+  },
+  "user_info": {
+    "title": "Hesap Bilgileri",
+    "header_title": "Son Bir Adım Kaldı",
+    "header_subtitle": "Hesabınızı tamamlamak için bilgilerinizi girin.",
+    "personal_info_section": "Kişisel Bilgiler",
+    "business_info_section": "İş Bilgileri",
+    "first_name_label": "Ad",
+    "first_name_placeholder": "Adınızı girin",
+    "last_name_label": "Soyad",
+    "last_name_placeholder": "Soyadınızı girin",
+    "email_label": "E-posta",
+    "email_placeholder": "E-posta adresinizi girin",
+    "email_invalid": "Lütfen geçerli bir e-posta adresi girin",
+    "save_button": "Kaydet ve Devam Et",
+    "nip_label": "NIP (Vergi Numarası)",
+    "nip_placeholder": "10 haneli NIP numaranız",
+    "nip_check_button": "Kontrol Et",
+    "company_name_label": "Firma Adı",
+    "registration_date_label": "Kayıt Tarihi",
+    "company_address_label": "Şirket Adresi",
+    "nip_verified_success": "NIP başarıyla doğrulandı - Kayıt olabilirsiniz",
+    "nip_verified_warning": "Şirket doğrulandı - VAT açısından aktif değil",
+    "nip_inactive_company": "Bu şirket VAT açısından aktif değil. Sadece aktif şirketler kayıt olabilir.",
+    "nip_error_length": "NIP 10 haneli olmalıdır.",
+    "nip_error_generic": "NIP doğrulaması başarısız oldu. Lütfen tekrar deneyin.",
+    "save_error_title": "Profil Kaydedilemedi",
+    "agree_to_the": "Şunu okudum ve kabul ediyorum:",
+    "terms_and_policy": "Kullanım Koşulları ve Gizlilik Politikası"
+  },
+  "terms": {
+    "title": "Şartlar ve Koşullar",
+    "header_title": "Neredeyse Tamamlandı",
+    "header_subtitle": "Devam etmeden önce lütfen sözleşmeleri ve politikaları onaylayın.",
+    "info_text": "Metropolitan'ı güvenli ve şeffaf bir platform olarak tutmak için yardımınıza ihtiyacımız var. Hizmetlerimizi kullanarak, aşağıdaki belgelerde belirtilen şartları ve politikaları anladığınızı ve kabul ettiğinizi beyan edersiniz.",
+    "checkbox_label": "Okudum ve kabul ediyorum:",
+    "terms_title": "Kullanıcı Sözleşmesi",
+    "privacy_title": "Gizlilik Politikası",
+    "complete_button": "Kabul Et",
+    "dummy_terms": "Bu bir kullanıcı sözleşmesi metnidir. Lorem ipsum dolor sit amet, consectetur adipiscing elit. ... (buraya uzun bir metin gelecek)",
+    "dummy_privacy": "Bu bir gizlilik politikası metnidir. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. ... (buraya uzun bir metin gelecek)",
+    "modal_accept_button": "Okudum, Anladım ve Kabul Ediyorum",
+    "modal_close_button": "Kapat",
+    "agree_button": "Kabul Et",
+    "close_button": "Kapat"
+  },
+  "errors": {
+    "INSUFFICIENT_STOCK": "Bu üründen en fazla {{stock}} adet ekleyebilirsiniz.",
+    "INSUFFICIENT_STOCK_ALREADY_IN_CART": "Sepetinizde bu üründen {{inCart}} adet var. En fazla {{canAdd}} adet daha ekleyebilirsiniz.",
+    "PRODUCT_NOT_FOUND": "Ürün bulunamadı.",
+    "CART_ITEM_NOT_FOUND": "Sepet öğesi bulunamadı.",
+    "CART_ADD_ERROR": "Ürün sepete eklenirken beklenmedik bir hata oluştu. Lütfen tekrar deneyin.",
+    "CART_UPDATE_ERROR": "Ürün güncellenirken beklenmedik bir hata oluştu. Lütfen tekrar deneyin."
+  },
+  "tabs": {
+    "home": "Anasayfa",
+    "cart": {
+      "title": "Sepetim",
+      "clear_alert_message": "Sepetinizdeki tüm ürünler silinecek. Emin misiniz?",
+      "clear_alert_cancel": "Vazgeç",
+      "clear_alert_title": "Sepeti Temizle",
+      "clear_alert_confirm": "Evet, Sil"
+    },
+    "profile": "Profil",
+    "orders": "Siparişlerim",
+    "products": "Ürünler",
+    "search_placeholder": "Ürün ara..."
+  },
+  "home": {
+    "featured_products": "Öne Çıkan Ürünler",
+    "weekly_products": "Haftanın Ürünleri",
+    "bestsellers": "Ayın Çok Satanları",
+    "new_arrivals": "Yeni Gelenler",
+    "see_all_products": "Tüm Ürünleri Gör",
+    "checkout_button": "Siparişi Tamamla",
+    "search_results": "Arama Sonuçları",
+    "no_search_results": "\"{{query}}\" için sonuç bulunamadı"
+  },
+  "product": {
+    "stock": "Stok: {{count}}",
+    "out_of_stock": "Tükendi",
+    "price": "{{price}}"
+  },
+  "order_detail": {
+    "title": "Sipariş #{{id}}",
+    "not_found_title": "Sipariş Bulunamadı",
+    "not_found_body": "İstenen sipariş bulunamadı.",
+    "cancel_confirm_title": "Siparişi İptal Et",
+    "cancel_confirm_message": "Bu siparişi iptal etmek istediğinizden emin misiniz?",
+    "cancel_order": "Siparişi İptal Et",
+    "cancel_success_title": "Sipariş İptal Edildi",
+    "cancel_error_title": "İptal Hatası",
+    "cancel_error_message": "Sipariş iptal edilirken bir hata oluştu.",
+    "load_error_message": "Sipariş detayları yüklenirken bir hata oluştu. Lütfen tekrar deneyin.",
+    "download_invoice": "Fatura İndir",
+    "help": "Yardım",
+    "reorder": {
+      "success_title": "Sipariş Tekrarı Başarılı",
+      "success_message": "Bu siparişteki tüm ürünler sepetinize eklendi.",
+      "partial_success_message": "Stokta bulunan ürünler sepetinize eklendi.",
+      "error_message": "Ürünler sepete eklenemedi. Lütfen tekrar deneyin.",
+      "go_to_cart": "Sepete Git",
+      "button_text": "Tekrarla",
+      "stock_warning_title": "Stok Uyarısı",
+      "out_of_stock_items": "{{count}} ürün stokta yok.",
+      "insufficient_stock_items": "{{count}} ürün için yeterli stok yok.",
+      "insufficient_stock_details": "{{count}} ürün için yeterli stok yok:\n\n{{details}}",
+      "add_available_stock": "Mevcut Stokları Ekle"
+    },
+    "actions": {
+      "repeat_order": "Siparişi Tekrarla",
+      "download_invoice": "Faturayı İndir",
+      "view_invoice": "Faturayı Görüntüle",
+      "downloading_invoice": "Fatura indiriliyor: Sipariş #{{id}}",
+      "invoice_downloaded": "Fatura başarıyla indirildi: {{fileName}}",
+      "invoice_not_found": "Bu sipariş için fatura bulunamadı.",
+      "invoice_download_error": "Fatura indirilemedi. Lütfen tekrar deneyin.",
+      "request_help": "Bu siparişle ilgili yardım iste",
+      "help_alert_title": "Yardım Merkezi",
+      "help_alert_message": "Siparişinizle ilgili herhangi bir sorun için destek ekibimizle iletişime geçebilirsiniz.\n\nE-posta: destek@metropolitan.app\nTelefon: +48 123 456 789",
+      "help_alert_ok": "Tamam"
+    },
+    "payment": {
+      "credit_card": "Kredi Kartı",
+      "cash_on_delivery": "Kapıda Ödeme",
+      "no_card_info": "Kart bilgisi yok"
+    },
+    "delivery_payment": {
+      "title": "Teslimat & Ödeme",
+      "payment_method": "Ödeme Yöntemi",
+      "card_holder": "Kart Sahibi",
+      "card_number": "Kart Numarası",
+      "delivery_address": "Teslimat Adresi",
+      "billing_address": "Fatura Adresi",
+      "stripe_payment": "Güvenli ödeme",
+      "unknown_payment": "Bilinmeyen ödeme yöntemi"
+    },
+    "help_modal": {
+      "title": "Bu Siparişle İlgili Yardım Al",
+      "info_text": "Siparişinizle ilgili bir sorun yaşadıysanız veya yardıma ihtiyacınız varsa, aşağıdaki kanallardan bize ulaşabilirsiniz.",
+      "address_title": "Teslimat Adresi"
+    },
+    "header": {
+      "title": "Sipariş Detayları"
+    },
+    "tracking_modal": {
+      "title": "Kargo Takibi",
+      "history": {
+        "title": "Takip Geçmişi",
+        "delivered": "Teslim edildi",
+        "out_for_delivery": "Dağıtıma çıktı",
+        "arrived_at_hub": "Dağıtım merkezine ulaştı",
+        "picked_up": "Paket kurye tarafından alındı",
+        "info_received": "Gönderi bilgisi alındı"
+      }
+    },
+    "info": {
+      "order_no": "Sipariş #{{id}}",
+      "order_no_label": "Sipariş Numarası",
+      "order_date_label": "Sipariş Tarihi"
+    },
+    "products": {
+      "title": "Ürünler",
+      "no_product_info": "Ürün Bilgisi Yok",
+      "quantity_one": "{{count}} adet",
+      "quantity_other": "{{count}} adet",
+      "quantity": "{{count}} adet",
+      "price": "{{price}}",
+      "total_items_one": "Toplam {{count}} kalem ürün",
+      "total_items_other": "Toplam {{count}} kalem ürün",
+      "total_items": "Toplam {{count}} kalem ürün",
+      "section_title": "Sipariş İçeriği",
+      "no_items": "Bu siparişte ürün bulunmamaktadır."
+    },
+    "summary": {
+      "subtotal": "Ara Toplam",
+      "shipping": "Kargo",
+      "free_shipping": "Ücretsiz",
+      "total": "Toplam",
+      "section_title": "Sipariş Özeti"
+    },
+    "tracking": {
+      "title": "Teslimat Durumu",
+      "status_pending": "Siparişiniz onay bekliyor.",
+      "status_confirmed": "Siparişiniz hazırlanmaya başladı.",
+      "status_preparing": "Siparişiniz paketleniyor.",
+      "shipped_internal": "Kendi aracımızla yola çıktı.",
+      "shipped_external": "{{company}} ile gönderinizi takip edin",
+      "delivered_internal": "Kendi aracımızla teslim edildi.",
+      "delivered_external": "Teslimat detaylarını ve geçmişini görüntüle",
+      "status_delivered": "Teslim Edildi",
+      "status_cancelled": "İptal Edildi",
+      "tracking_number": "Takip Numarası",
+      "shipping_company": "Kargo Şirketi",
+      "no_tracking_info": "Henüz takip bilgisi bulunmuyor."
+    }
+  },
+  "orders": {
+    "order_no": "Sipariş #{{id}}",
+    "price": "{{price}}",
+    "total": "Toplam",
+    "empty": {
+      "title": "Henüz hiç siparişiniz yok",
+      "button": "Alışverişe Başla"
+    }
+  },
+  "order": {
+    "orderDetails": "Sipariş Detayları",
+    "cancelOrder": "Siparişi İptal Et",
+    "cancelOrderConfirmation": "Bu siparişi iptal etmek istediğinizden emin misiniz?",
+    "cancelOrderError": "Sipariş iptal edilirken bir hata oluştu.",
+    "status": {
+      "pending": "Beklemede",
+      "confirmed": "Onaylandı",
+      "preparing": "Hazırlanıyor",
+      "shipped": "Kargoya Verildi",
+      "delivered": "Teslim Edildi",
+      "cancelled": "İptal Edildi"
+    }
+  },
+  "cart": {
+    "title": "Sepetim",
+    "empty": {
+      "title": "Sepetiniz boş",
+      "subtitle": "Alışverişe başlamak için ürün ekleyin.",
+      "button": "Alışverişe Başla"
+    },
+    "stock_limit_title": "Stok Sınırı",
+    "stock_limit_message": "Bu üründen en fazla {{stock}} adet ekleyebilirsiniz.",
+    "insufficient_stock": "Bu üründen stokta {{availableStock}} adet bulunmaktadır. En fazla {{availableStock}} adet satın alabilirsiniz.",
+    "checkout_alert_cancel": "Vazgeç",
+    "remove_item_alert_cancel": "Vazgeç",
+    "remove_item_alert_confirm": "Kaldır",
+    "summary": {
+      "checkout_button": "Siparişi Tamamla",
+      "total_label": "Ara Toplam ({{count}} ürün)",
+      "total_value": "{{total}}"
+    },
+    "checkout_alert_confirm": "Devam Et",
+    "checkout_alert_title": "Siparişi Onayla",
+    "checkout_alert_message": "Siparişinizin toplam tutarı {{total}}. Devam etmek istiyor musunuz?",
+    "remove_item_alert_message": "Bu ürünü sepetten kaldırmak istediğinizden emin misiniz?",
+    "remove_item_alert_title": "Ürünü Kaldır",
+    "load_error": "Sepet yüklenirken bir hata oluştu",
+    "add_error": "Ürün sepete eklenirken bir hata oluştu",
+    "update_error": "Ürün miktarı güncellenirken bir hata oluştu",
+    "remove_error": "Ürün sepetten kaldırılırken bir hata oluştu",
+    "clear_error": "Sepet temizlenirken bir hata oluştu",
+    "min_quantity_error": "Minimum miktar 1 olmalıdır",
+    "success": "Başarılı",
+    "error": "Hata",
+    "item_added": "Ürün sepete eklendi",
+    "item_removed": "Ürün sepetten kaldırıldı",
+    "cleared": "Sepet temizlendi",
+    "checkout": "Sipariş Ver",
+    "checkout_title": "Sipariş Özeti",
+    "delivery_address_title": "Teslimat Adresi",
+    "billing_address_title": "Fatura Adresi",
+    "same_as_delivery": "Fatura adresi teslimat adresi ile aynı",
+    "address_title": "Teslimat Adresi",
+    "payment_title": "Ödeme Yöntemi",
+    "complete_order": "Siparişi Tamamla",
+    "selection_missing_title": "Eksik Bilgi",
+    "selection_missing_message": "Lütfen teslimat adresi ve ödeme yöntemi seçiniz.",
+    "order_success_title": "Sipariş Başarılı",
+    "order_success_message": "Siparişiniz başarıyla oluşturuldu!",
+    "order_error_title": "Sipariş Hatası",
+    "order_error_message": "Sipariş oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.",
+    "add_new_address": "Yeni Adres Ekle",
+    "add_new_payment": "Yeni Kart Ekle",
+    "remove_item_alert_title": "Ürünü Kaldır",
+    "remove_item_alert_message": "Bu ürünü sepetten kaldırmak istediğinizden emin misiniz?",
+    "remove_item_alert_cancel": "İptal",
+    "remove_item_alert_confirm": "Kaldır"
+  },
+  "checkout": {
+    "title": "Sipariş Özeti",
+    "steps": {
+      "address": "Adres",
+      "payment": "Ödeme",
+      "summary": "Özet"
+    },
+    "delivery_address": "Teslimat Adresi",
+    "billing_address": "Fatura Adresi",
+    "same_billing_address": "Fatura adresi teslimat adresi ile aynı",
+    "add_new_address": "Yeni Adres Ekle",
+    "continue_to_payment": "Ödemeye Devam Et",
+    "payment_method": "Ödeme Yöntemi",
+    "payment_screen_title": "Ödeme Yöntemleri",
+    "secure_payment": "Güvenli Ödeme",
+    "secure_payment_desc": "Tüm ödemeleriniz SSL ile şifrelenir ve güvenli sunucularda işlenir.",
+    "more_payment_methods_soon": "Daha fazla ödeme seçeneği yakında eklenecektir",
+    "continue_to_summary": "Özete Devam Et",
+    "order_summary": "Sipariş Özeti",
+    "subtotal": "Ara Toplam",
+    "shipping": "Kargo",
+    "free": "Ücretsiz",
+    "total": "Genel Toplam",
+    "items": "ürün",
+    "agree_terms": "Kullanım şartlarını ve gizlilik politikasını kabul ediyorum",
+    "complete_order": "Siparişi Tamamla",
+    "missing_info": "Eksik Bilgi",
+    "missing_info_desc": "Lütfen tüm gerekli bilgileri doldurun.",
+    "order_success": "Sipariş Başarılı",
+    "order_success_desc": "Siparişiniz başarıyla oluşturuldu!",
+    "order_error": "Sipariş oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.",
+    "bank_transfer_title": "Banka Havalesi Bilgileri",
+    "confirm_and_proceed": "Onayla ve Devam Et",
+    "view_bank_details_prompt": "Banka detaylarını görmek için dokunun",
+    "no_payment_method_selected": "Ödeme yöntemi seçilmedi",
+    "order_notes": "Sipariş Notu",
+    "order_notes_placeholder": "Siparişinizle ilgili notlarınızı buraya ekleyebilirsiniz (örn. zil çalmayın).",
+    "payment_methods": {
+      "card": {
+        "title": "Kredi / Banka Kartı",
+        "subtitle": "Visa, Mastercard, Maestro"
+      },
+      "apple_pay": {
+        "title": "Apple Pay"
+      },
+      "blik": {
+        "title": "BLIK"
+      },
+      "bank_transfer": {
+        "title": "Banka Havalesi / EFT",
+        "subtitle": "Banka hesabımıza manuel ödeme yapın"
+      }
+    }
+  },
+  "categories": {
+    "1": "Süt Ürünleri",
+    "2": "Bakliyat",
+    "3": "Atıştırmalık",
+    "4": "İçecekler",
+    "5": "Tatlılar",
+    "6": "Temel Gıda",
+    "all": "Tümü"
+  },
+  "status": {
+    "pending": "Beklemede",
+    "confirmed": "Onaylandı",
+    "preparing": "Hazırlanıyor",
+    "shipped": "Kargoya Verildi",
+    "delivered": "Teslim Edildi",
+    "unknown": "Bilinmiyor"
+  },
+  "app_bar": {
+    "search_placeholder": "Ara..."
+  },
+  "app_name": "Metropolitan",
+  "add_address": {
+    "title": "Yeni Adres Ekle",
+    "form": {
+      "address_title": "Adres Başlığı",
+      "address_title_placeholder": "Örn: Ev, İş",
+      "street": "Sokak, Cadde ve Kapı No",
+      "street_placeholder": "Adresinizi buraya yazın",
+      "city": "Şehir",
+      "city_placeholder": "Örn: Varşova",
+      "postal_code": "Posta Kodu",
+      "postal_code_placeholder": "Örn: 00-001",
+      "country": "Ülke",
+      "save_button": "Adresi Kaydet",
+      "error_title": "Eksik Bilgi",
+      "error_message": "Lütfen tüm alanları doldurun.",
+      "submit_error_title": "Hata",
+      "submit_error_message": "Adres eklenirken bir hata oluştu. Lütfen tekrar deneyin.",
+      "success_message": "Adres başarıyla eklendi!"
+    }
+  },
+  "app_settings": {
+    "title": "Uygulama Ayarları"
+  },
+  "brands": {
+    "yayla": "Yayla"
+  },
+  "permissions": {
+    "camera_required_title": "Kamera İzni Gerekli",
+    "camera_required_message": "Profil fotoğrafı çekmek için kamera izninize ihtiyacımız var.",
+    "gallery_required_title": "Galeri İzni Gerekli",
+    "gallery_required_message": "Galeriden fotoğraf seçmek için izninize ihtiyacımız var."
+  },
+  "add_payment_method": {
+    "title": "Ödeme Yöntemi Ekle",
+    "form": {
+      "cardholder_name": "Kart Sahibinin Adı",
+      "cardholder_name_placeholder": "Kart üzerindeki isim",
+      "card_number_last4": "Kart Numarası (Son 4 hane)",
+      "expiry_month": "Son Kullanma Ayı",
+      "expiry_year": "Son Kullanma Yılı",
+      "save_button": "Kartı Kaydet",
+      "error_title": "Eksik Bilgi",
+      "error_message": "Lütfen tüm alanları doldurun.",
+      "submit_error_title": "Hata",
+      "submit_error_message": "Kart eklenirken bir hata oluştu."
+    }
+  },
+  "edit_address": {
+    "title": "Adresi Düzenle",
+    "form": {
+      "save_button": "Değişiklikleri Kaydet",
+      "error_title": "Form Eksik",
+      "error_message": "Lütfen tüm alanları doldurun.",
+      "submit_error_title": "Hata",
+      "submit_error_message": "Adres güncellenirken bir hata oluştu.",
+      "update_success_message": "Adres başarıyla güncellendi!"
+    }
+  },
+  "product_detail": {
+    "not_found_title": "Ürün Bulunamadı",
+    "not_found_body": "İstenen ürün bulunamadı.",
+    "go_back": "Geri Dön",
+    "share_message": "{{name}} - {{price}} - Metropolitan uygulamasında inceleyin!",
+    "share": {
+      "check_out_this_product": "Bu ürüne göz atın!"
+    },
+    "low_stock": "Son {{count}} ürün",
+    "category": "Kategori",
+    "stock": "Stok: {{count}}",
+    "in_stock": "Stokta var",
+    "out_of_stock": "Stokta yok",
+    "info": {
+      "price": "{{price}}",
+      "unit": "/ {{unit}}",
+      "in_stock": "Stokta var",
+      "stock_left": "{{count}} adet kaldı",
+      "description_title": "Ürün Açıklaması",
+      "no_description": "Bu ürün için henüz detaylı açıklama bulunmamaktadır."
+    },
+    "purchase": {
+      "add_to_cart": "Sepete Ekle",
+      "added_to_cart": "Sepete Eklendi",
+      "out_of_stock": "Stok Tükendi",
+      "stock_error_title": "Stok Limiti Aşıldı",
+      "stock_error_message": "Bu üründen en fazla {{count}} adet alabilirsiniz.",
+      "generic_error_title": "Hata",
+      "generic_error_message": "Sepete eklenirken bir sorun oluştu. Lütfen tekrar deneyin."
+    },
+    "add_to_cart": "Sepete Ekle",
+    "stock_available": "{{count}}: Stokta var",
+    "category": "Kategori: {{category}}",
+    "out_of_stock": "Stokta yok"
+  },
+  "common": {
+    "ok": "Tamam",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "add": "Ekle",
+    "search": "Ara",
+    "loading": "Yükleniyor...",
+    "error": "Hata",
+    "success": "Başarılı",
+    "warning": "Uyarı",
+    "info": "Bilgi",
+    "change": "Değiştir",
+    "clear": "Temizle"
+  },
+  "general": {
+    "under_construction": "Yapım aşamasında",
+    "feature_soon": "Bu özellik yakında eklenecek",
+    "yes": "Evet",
+    "no": "Hayır"
+  },
+  "faq": {
+    "title": "Sıkça Sorulan Sorular",
+    "q1": {
+      "question": "Siparişimi nasıl iptal edebilirim?",
+      "answer": "Siparişinizi \"Siparişlerim\" bölümünden durumu \"Hazırlanıyor\"a geçmeden önce iptal edebilirsiniz. Siparişiniz kargoya verildiyse iptal edilemez."
+    },
+    "q2": {
+      "question": "Ürün iade süreci nasıl işliyor?",
+      "answer": "Aldığınız ürünleri 14 gün içinde iade edebilirsiniz. Hesabım > Siparişlerim bölümünden iade talebi oluşturduktan sonra, verilen kargo kodu ile ürünü ücretsiz gönderebilirsiniz."
+    },
+    "q3": {
+      "question": "Kargo ücreti ne kadar?",
+      "answer": "Tüm siparişlerinizde kargo ücretsizdir. Minimum limit yoktur."
+    },
+    "q4": {
+      "question": "Hangi ödeme yöntemlerini kullanabilirim?",
+      "answer": "Kredi kartı, banka kartı ve PayPal ile ödeme yapabilirsiniz. Ayrıca kapıda ödeme seçeneğimiz de bulunmaktadır."
+    }
+  },
+  "auth": {
+    "required": "Giriş Gerekli",
+    "login_to_continue": "Devam etmek için lütfen giriş yapın",
+    "login_required": "Bu işlem için giriş yapmanız gerekiyor.",
+    "guest_data_migrated": "Sepet ve favorileriniz hesabınıza aktarıldı",
+    "migration_success_title": "Veriler Aktarıldı"
+  },
+  "invoice_preview": {
+    "title": "Fatura Önizleme",
+    "loading": "Fatura yükleniyor...",
+    "error": "Fatura yüklenemedi",
+    "load_error": "Fatura yüklenirken bir hata oluştu",
+    "pdf_error": "PDF görüntülenirken bir hata oluştu",
+    "share_title": "Fatura - Sipariş {{orderNumber}}"
+  },
+  "bank_transfer": {
+    "title": "Banka Havalesi / EFT",
+    "subtitle": "Lütfen aşağıdaki hesap bilgilerini kullanarak ödemenizi tamamlayın.",
+    "account_details": "Hesap Bilgileri",
+    "recipient": "Alıcı Adı",
+    "bank_name": "Banka Adı",
+    "description_label": "Açıklama",
+    "description_value": "Sipariş numaranızı açıklama kısmına eklemeyi unutmayın.",
+    "info_text": "Ödemeniz onaylandıktan sonra siparişiniz işleme alınacaktır. Bu işlem 1-2 iş günü sürebilir.",
+    "confirm_button": "Anladım, Geri Dön"
+  },
+  "order_confirmation": {
+    "title": "Siparişiniz Alındı!",
+    "subtitle": "Ödemenizi tamamlamak için lütfen aşağıdaki banka bilgilerini kullanın.",
+    "payment_details_title": "Ödeme Talimatları",
+    "info_text": "Ödemeniz onaylandıktan sonra siparişiniz kargoya verilecektir. Sipariş durumunu 'Siparişlerim' sayfasından takip edebilirsiniz.",
+    "button_text": "Siparişlerime Git"
+  },
+  "notifications": {
+    "title": "Bildirimler",
+    "mark_all_read": "Hepsini Okundu Say",
+    "mark_as_read": "Okundu İşaretle",
+    "delete_all": "Hepsini Sil",
+    "delete": "Sil",
+    "empty_title": "Henüz bildirim yok",
+    "empty_message": "Siparişleriniz ve özel teklifler hakkında bildirimler burada görünecek.",
+    "time": {
+      "minutes_ago": "{{count}} dakika önce",
+      "hours_ago": "{{count}} saat önce",
+      "days_ago": "{{count}} gün önce"
+    },
+    "types": {
+      "order": "Sipariş",
+      "promotion": "Promosyon",
+      "delivery": "Teslimat",
+      "system": "Sistem"
+    },
+    "delete_confirm_title": "Bildirimi Sil",
+    "delete_confirm_message": "Bu bildirimi kalıcı olarak silmek istediğinizden emin misiniz?",
+    "delete_all_confirm_title": "Tüm Bildirimleri Sil",
+    "delete_all_confirm_message": "Tüm bildirimleri kalıcı olarak silmek istediğinizden emin misiniz?"
+  },
+  "payment": {
+    "unknown_error": "Bilinmeyen bir hata oluştu",
+    "canceled": "Ödeme iptal edildi",
+    "authentication_failed": "Kimlik doğrulama başarısız",
+    "insufficient_funds": "Yetersiz bakiye",
+    "card_declined": "Kart reddedildi",
+    "processing_error": "Ödeme işlenirken hata oluştu",
+    "apple_pay_error": "Apple Pay ile ödeme başarısız",
+    "google_pay_error": "Google Pay ile ödeme başarısız",
+    "client_secret_missing": "Ödeme anahtarı eksik"
+  },
+  "checkout": {
+    "steps": {
+      "address": "Adres",
+      "payment": "Ödeme",
+      "summary": "Özet"
+    },
+    "bank_transfer_title": "Banka Havalesi",
+    "delivery_address": "Teslimat Adresi",
+    "add_new_address": "Yeni Adres Ekle",
+    "same_billing_address": "Fatura adresim teslimat adresiyle aynı",
+    "billing_address": "Fatura Adresi",
+    "continue_to_payment": "Ödemeye Geç",
+    "payment_screen_title": "Ödeme Yöntemi Seç",
+    "continue_to_summary": "Özete Geç",
+    "secure_payment": "Güvenli Ödeme",
+    "secure_payment_desc": "Tüm ödeme işlemleriniz SSL sertifikası ile korunmaktadır.",
+    "more_payment_methods_soon": "Yakında daha fazla ödeme yöntemi eklenecek.",
+    "bank_transfer_success": "Sipariş Onaylandı",
+    "bank_transfer_success_desc": "Kurumsal müşteri olarak siparişiniz otomatik olarak onaylandı. Fatura e-posta adresinize gönderilecek.",
+    "payment_method": "Ödeme Yöntemi",
+    "order_summary": "Sipariş Özeti",
+    "order_notes": "Sipariş Notu",
+    "order_notes_placeholder": "Siparişinizle ilgili özel notlarınızı buraya yazabilirsiniz...",
+    "agree_terms": "Kullanım şartlarını ve gizlilik politikasını kabul ediyorum",
+    "missing_fields": "Lütfen tüm gerekli alanları doldurun",
+    "payment_success": "Ödeme Başarılı",
+    "payment_success_desc": "Ödemeniz başarıyla tamamlandı!",
+    "payment_failed": "Ödeme Başarısız",
+    "payment_error": "Ödeme işlemi sırasında bir hata oluştu",
+    "order_creation_failed": "Sipariş oluşturulamadı",
+    "view_bank_details_prompt": "Banka detaylarını görmek için dokunun",
+    "no_payment_method_selected": "Ödeme yöntemi seçilmedi",
+    "subtotal": "Ara Toplam",
+    "items": "ürün",
+    "shipping": "Kargo",
+    "free": "Ücretsiz",
+    "total": "Genel Toplam",
+    "complete_order": "Siparişi Tamamla",
+    "confirm_and_proceed": "Onayla ve Devam Et",
+    "payment_methods": {
+      "card": {
+        "title": "Kredi / Banka Kartı",
+        "subtitle": "Visa, Mastercard, Maestro"
+      },
+      "blik": {
+        "subtitle": "Mobil ödeme (6 haneli kod)"
+      },
+      "apple_pay": {
+        "subtitle": "Touch ID, Face ID ile hızlı ödeme"
+      },
+      "google_pay": {
+        "subtitle": "Güvenli mobil ödeme"
+      },
+      "bank_transfer": {
+        "title": "Banka Havalesi",
+        "subtitle": "Havale / EFT"
+      }
+    }
+  }
+}

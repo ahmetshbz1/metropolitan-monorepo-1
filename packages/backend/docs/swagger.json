@@ -1,0 +1,1859 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Metropolitan Food API",
+    "description": "Metropolitan Food Group API dokümantasyonu",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Kimlik doğrulama işlemleri"
+    },
+    {
+      "name": "Users",
+      "description": "Kullanıcı işlemleri"
+    },
+    {
+      "name": "Products",
+      "description": "Ürün işlemleri"
+    },
+    {
+      "name": "Orders",
+      "description": "Sipariş işlemleri"
+    },
+    {
+      "name": "Cart",
+      "description": "Sepet işlemleri"
+    },
+    {
+      "name": "Content",
+      "description": "İçerik işlemleri"
+    },
+    {
+      "name": "Utils",
+      "description": "Yardımcı işlemler"
+    }
+  ],
+  "paths": {
+    "/health/": {
+      "get": {
+        "operationId": "getHealth",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/health/detailed": {
+      "get": {
+        "operationId": "getHealthDetailed",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "operationId": "getHealthReady",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/health/live": {
+      "get": {
+        "operationId": "getHealthLive",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/stripe/webhook": {
+      "post": {
+        "operationId": "postStripeWebhook",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "operationId": "getIndex",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/health/": {
+      "get": {
+        "operationId": "getApiHealth",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/health/detailed": {
+      "get": {
+        "operationId": "getApiHealthDetailed",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/health/ready": {
+      "get": {
+        "operationId": "getApiHealthReady",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/health/live": {
+      "get": {
+        "operationId": "getApiHealthLive",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/auth/send-otp": {
+      "post": {
+        "parameters": [],
+        "operationId": "postApiAuthSend-otp",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phoneNumber": {
+                    "pattern": "^\\+[1-9]\\d{1,14}$",
+                    "error": "Invalid phone number format. Please use E.164 format (e.g., +905551234567).",
+                    "type": "string"
+                  },
+                  "userType": {
+                    "enum": ["individual", "corporate"],
+                    "type": "string"
+                  }
+                },
+                "required": ["phoneNumber", "userType"],
+                "additionalProperties": false
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phoneNumber": {
+                    "pattern": "^\\+[1-9]\\d{1,14}$",
+                    "error": "Invalid phone number format. Please use E.164 format (e.g., +905551234567).",
+                    "type": "string"
+                  },
+                  "userType": {
+                    "enum": ["individual", "corporate"],
+                    "type": "string"
+                  }
+                },
+                "required": ["phoneNumber", "userType"],
+                "additionalProperties": false
+              }
+            },
+            "text/plain": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phoneNumber": {
+                    "pattern": "^\\+[1-9]\\d{1,14}$",
+                    "error": "Invalid phone number format. Please use E.164 format (e.g., +905551234567).",
+                    "type": "string"
+                  },
+                  "userType": {
+                    "enum": ["individual", "corporate"],
+                    "type": "string"
+                  }
+                },
+                "required": ["phoneNumber", "userType"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/auth/verify-otp": {
+      "post": {
+        "parameters": [],
+        "operationId": "postApiAuthVerify-otp",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phoneNumber": {
+                    "pattern": "^\\+[1-9]\\d{1,14}$",
+                    "type": "string"
+                  },
+                  "otpCode": {
+                    "minLength": 6,
+                    "maxLength": 6,
+                    "type": "string"
+                  },
+                  "userType": {
+                    "enum": ["individual", "corporate"],
+                    "type": "string"
+                  }
+                },
+                "required": ["phoneNumber", "otpCode", "userType"],
+                "additionalProperties": false
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phoneNumber": {
+                    "pattern": "^\\+[1-9]\\d{1,14}$",
+                    "type": "string"
+                  },
+                  "otpCode": {
+                    "minLength": 6,
+                    "maxLength": 6,
+                    "type": "string"
+                  },
+                  "userType": {
+                    "enum": ["individual", "corporate"],
+                    "type": "string"
+                  }
+                },
+                "required": ["phoneNumber", "otpCode", "userType"],
+                "additionalProperties": false
+              }
+            },
+            "text/plain": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phoneNumber": {
+                    "pattern": "^\\+[1-9]\\d{1,14}$",
+                    "type": "string"
+                  },
+                  "otpCode": {
+                    "minLength": 6,
+                    "maxLength": 6,
+                    "type": "string"
+                  },
+                  "userType": {
+                    "enum": ["individual", "corporate"],
+                    "type": "string"
+                  }
+                },
+                "required": ["phoneNumber", "otpCode", "userType"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/auth/migrate-guest-data": {
+      "post": {
+        "parameters": [],
+        "operationId": "postApiAuthMigrate-guest-data",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phoneNumber": {
+                    "pattern": "^\\+[1-9]\\d{1,14}$",
+                    "type": "string"
+                  },
+                  "guestId": {
+                    "type": "string"
+                  }
+                },
+                "required": ["phoneNumber", "guestId"]
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phoneNumber": {
+                    "pattern": "^\\+[1-9]\\d{1,14}$",
+                    "type": "string"
+                  },
+                  "guestId": {
+                    "type": "string"
+                  }
+                },
+                "required": ["phoneNumber", "guestId"]
+              }
+            },
+            "text/plain": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phoneNumber": {
+                    "pattern": "^\\+[1-9]\\d{1,14}$",
+                    "type": "string"
+                  },
+                  "guestId": {
+                    "type": "string"
+                  }
+                },
+                "required": ["phoneNumber", "guestId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "operationId": "postApiAuthLogout",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/users/health/": {
+      "get": {
+        "operationId": "getApiUsersHealth",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/users/health/detailed": {
+      "get": {
+        "operationId": "getApiUsersHealthDetailed",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/users/health/ready": {
+      "get": {
+        "operationId": "getApiUsersHealthReady",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/users/health/live": {
+      "get": {
+        "operationId": "getApiUsersHealthLive",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/users/complete-profile": {
+      "post": {
+        "parameters": [],
+        "operationId": "postApiUsersComplete-profile",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userType": {
+                    "enum": ["individual", "corporate"],
+                    "type": "string"
+                  },
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "format": "email",
+                    "type": "string"
+                  },
+                  "nip": {
+                    "minLength": 10,
+                    "maxLength": 10,
+                    "type": "string"
+                  },
+                  "termsAccepted": {
+                    "error": "Kullanım koşullarını ve gizlilik politikasını kabul etmelisiniz.",
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "userType",
+                  "firstName",
+                  "lastName",
+                  "email",
+                  "termsAccepted"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userType": {
+                    "enum": ["individual", "corporate"],
+                    "type": "string"
+                  },
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "format": "email",
+                    "type": "string"
+                  },
+                  "nip": {
+                    "minLength": 10,
+                    "maxLength": 10,
+                    "type": "string"
+                  },
+                  "termsAccepted": {
+                    "error": "Kullanım koşullarını ve gizlilik politikasını kabul etmelisiniz.",
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "userType",
+                  "firstName",
+                  "lastName",
+                  "email",
+                  "termsAccepted"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "text/plain": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userType": {
+                    "enum": ["individual", "corporate"],
+                    "type": "string"
+                  },
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "format": "email",
+                    "type": "string"
+                  },
+                  "nip": {
+                    "minLength": 10,
+                    "maxLength": 10,
+                    "type": "string"
+                  },
+                  "termsAccepted": {
+                    "error": "Kullanım koşullarını ve gizlilik politikasını kabul etmelisiniz.",
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "userType",
+                  "firstName",
+                  "lastName",
+                  "email",
+                  "termsAccepted"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/users/me": {
+      "get": {
+        "operationId": "getApiUsersMe",
+        "responses": {
+          "200": {}
+        }
+      },
+      "put": {
+        "parameters": [],
+        "operationId": "putApiUsersMe",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "format": "email",
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "format": "email",
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "text/plain": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "format": "email",
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/users/me/profile-photo": {
+      "post": {
+        "parameters": [],
+        "operationId": "postApiUsersMeProfile-photo",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "photo": {
+                    "default": "File",
+                    "type": "string",
+                    "maxSize": 2097152,
+                    "error": "Invalid file. Must be JPEG, PNG, or WebP under 2MB.",
+                    "extension": [
+                      "image/jpeg",
+                      "image/jpg",
+                      "image/png",
+                      "image/webp"
+                    ],
+                    "format": "binary"
+                  }
+                },
+                "required": ["photo"]
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "photo": {
+                    "default": "File",
+                    "type": "string",
+                    "maxSize": 2097152,
+                    "error": "Invalid file. Must be JPEG, PNG, or WebP under 2MB.",
+                    "extension": [
+                      "image/jpeg",
+                      "image/jpg",
+                      "image/png",
+                      "image/webp"
+                    ],
+                    "format": "binary"
+                  }
+                },
+                "required": ["photo"]
+              }
+            },
+            "text/plain": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "photo": {
+                    "default": "File",
+                    "type": "string",
+                    "maxSize": 2097152,
+                    "error": "Invalid file. Must be JPEG, PNG, or WebP under 2MB.",
+                    "extension": [
+                      "image/jpeg",
+                      "image/jpg",
+                      "image/png",
+                      "image/webp"
+                    ],
+                    "format": "binary"
+                  }
+                },
+                "required": ["photo"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/users/me/addresses/": {
+      "get": {
+        "operationId": "getApiUsersMeAddresses",
+        "responses": {
+          "200": {}
+        }
+      },
+      "post": {
+        "parameters": [],
+        "operationId": "postApiUsersMeAddresses",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "addressTitle": {
+                    "type": "string"
+                  },
+                  "street": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  },
+                  "postalCode": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "addressTitle",
+                  "street",
+                  "city",
+                  "postalCode",
+                  "country"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "addressTitle": {
+                    "type": "string"
+                  },
+                  "street": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  },
+                  "postalCode": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "addressTitle",
+                  "street",
+                  "city",
+                  "postalCode",
+                  "country"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "text/plain": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "addressTitle": {
+                    "type": "string"
+                  },
+                  "street": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  },
+                  "postalCode": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "addressTitle",
+                  "street",
+                  "city",
+                  "postalCode",
+                  "country"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/users/me/addresses/{addressId}": {
+      "put": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "addressId",
+            "required": true
+          }
+        ],
+        "operationId": "putApiUsersMeAddressesByAddressId",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "addressTitle": {
+                    "type": "string"
+                  },
+                  "street": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  },
+                  "postalCode": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "addressTitle": {
+                    "type": "string"
+                  },
+                  "street": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  },
+                  "postalCode": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "text/plain": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "addressTitle": {
+                    "type": "string"
+                  },
+                  "street": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  },
+                  "postalCode": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {}
+        }
+      },
+      "delete": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "addressId",
+            "required": true
+          }
+        ],
+        "operationId": "deleteApiUsersMeAddressesByAddressId",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/users/me/addresses/{addressId}/set-default": {
+      "post": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "error": "Invalid address ID format."
+            },
+            "in": "path",
+            "name": "addressId",
+            "required": true
+          }
+        ],
+        "operationId": "postApiUsersMeAddressesByAddressIdSet-default",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "anyOf": [
+                      {
+                        "const": "delivery",
+                        "type": "string"
+                      },
+                      {
+                        "const": "billing",
+                        "type": "string"
+                      }
+                    ]
+                  }
+                },
+                "required": ["type"]
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "anyOf": [
+                      {
+                        "const": "delivery",
+                        "type": "string"
+                      },
+                      {
+                        "const": "billing",
+                        "type": "string"
+                      }
+                    ]
+                  }
+                },
+                "required": ["type"]
+              }
+            },
+            "text/plain": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "anyOf": [
+                      {
+                        "const": "delivery",
+                        "type": "string"
+                      },
+                      {
+                        "const": "billing",
+                        "type": "string"
+                      }
+                    ]
+                  }
+                },
+                "required": ["type"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/users/me/favorites/": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^(tr|en|pl)$"
+            },
+            "in": "query",
+            "name": "lang",
+            "required": false
+          }
+        ],
+        "operationId": "getApiUsersMeFavorites",
+        "responses": {
+          "200": {}
+        }
+      },
+      "post": {
+        "parameters": [],
+        "operationId": "postApiUsersMeFavorites",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "productId": {
+                    "format": "uuid",
+                    "type": "string"
+                  }
+                },
+                "required": ["productId"]
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "productId": {
+                    "format": "uuid",
+                    "type": "string"
+                  }
+                },
+                "required": ["productId"]
+              }
+            },
+            "text/plain": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "productId": {
+                    "format": "uuid",
+                    "type": "string"
+                  }
+                },
+                "required": ["productId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/users/me/favorites/{productId}": {
+      "delete": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "productId",
+            "required": true
+          }
+        ],
+        "operationId": "deleteApiUsersMeFavoritesByProductId",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/me/cart/": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^(tr|en|pl)$"
+            },
+            "in": "query",
+            "name": "lang",
+            "required": false
+          }
+        ],
+        "operationId": "getApiMeCart",
+        "responses": {
+          "200": {}
+        }
+      },
+      "post": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^(tr|en|pl)$"
+            },
+            "in": "query",
+            "name": "lang",
+            "required": false
+          }
+        ],
+        "operationId": "postApiMeCart",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "productId": {
+                    "format": "uuid",
+                    "type": "string"
+                  },
+                  "quantity": {
+                    "minimum": 1,
+                    "type": "number"
+                  }
+                },
+                "required": ["productId"],
+                "additionalProperties": false
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "productId": {
+                    "format": "uuid",
+                    "type": "string"
+                  },
+                  "quantity": {
+                    "minimum": 1,
+                    "type": "number"
+                  }
+                },
+                "required": ["productId"],
+                "additionalProperties": false
+              }
+            },
+            "text/plain": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "productId": {
+                    "format": "uuid",
+                    "type": "string"
+                  },
+                  "quantity": {
+                    "minimum": 1,
+                    "type": "number"
+                  }
+                },
+                "required": ["productId"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {}
+        }
+      },
+      "delete": {
+        "operationId": "deleteApiMeCart",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/me/cart/{itemId}": {
+      "put": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "itemId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^(tr|en|pl)$"
+            },
+            "in": "query",
+            "name": "lang",
+            "required": false
+          }
+        ],
+        "operationId": "putApiMeCartByItemId",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "quantity": {
+                    "minimum": 1,
+                    "type": "number"
+                  }
+                },
+                "required": ["quantity"]
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "quantity": {
+                    "minimum": 1,
+                    "type": "number"
+                  }
+                },
+                "required": ["quantity"]
+              }
+            },
+            "text/plain": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "quantity": {
+                    "minimum": 1,
+                    "type": "number"
+                  }
+                },
+                "required": ["quantity"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {}
+        }
+      },
+      "delete": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "itemId",
+            "required": true
+          }
+        ],
+        "operationId": "deleteApiMeCartByItemId",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/products/categories": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^(tr|en|pl)$"
+            },
+            "in": "query",
+            "name": "lang",
+            "required": false
+          }
+        ],
+        "operationId": "getApiProductsCategories",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/products/": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^(tr|en|pl)$"
+            },
+            "in": "query",
+            "name": "lang",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "category",
+            "required": false
+          }
+        ],
+        "operationId": "getApiProducts",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/orders/": {
+      "post": {
+        "parameters": [],
+        "operationId": "postApiOrders",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "shippingAddressId": {
+                    "type": "string"
+                  },
+                  "billingAddressId": {
+                    "type": "string"
+                  },
+                  "paymentMethodId": {
+                    "type": "string"
+                  },
+                  "notes": {
+                    "type": "string"
+                  }
+                },
+                "required": ["shippingAddressId", "paymentMethodId"],
+                "additionalProperties": false
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "shippingAddressId": {
+                    "type": "string"
+                  },
+                  "billingAddressId": {
+                    "type": "string"
+                  },
+                  "paymentMethodId": {
+                    "type": "string"
+                  },
+                  "notes": {
+                    "type": "string"
+                  }
+                },
+                "required": ["shippingAddressId", "paymentMethodId"],
+                "additionalProperties": false
+              }
+            },
+            "text/plain": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "shippingAddressId": {
+                    "type": "string"
+                  },
+                  "billingAddressId": {
+                    "type": "string"
+                  },
+                  "paymentMethodId": {
+                    "type": "string"
+                  },
+                  "notes": {
+                    "type": "string"
+                  }
+                },
+                "required": ["shippingAddressId", "paymentMethodId"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {}
+        }
+      },
+      "get": {
+        "operationId": "getApiOrders",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/orders/{orderId}": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "orderId",
+            "required": true
+          }
+        ],
+        "operationId": "getApiOrdersByOrderId",
+        "responses": {
+          "200": {}
+        }
+      },
+      "delete": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "orderId",
+            "required": true
+          }
+        ],
+        "operationId": "deleteApiOrdersByOrderId",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/orders/tracking/{trackingNumber}": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "trackingNumber",
+            "required": true
+          }
+        ],
+        "operationId": "getApiOrdersTrackingByTrackingNumber",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/invoices/{orderId}/download": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "orderId",
+            "required": true
+          }
+        ],
+        "operationId": "getApiInvoicesByOrderIdDownload",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/invoices/{orderId}/data": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "orderId",
+            "required": true
+          }
+        ],
+        "operationId": "getApiInvoicesByOrderIdData",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/invoices/cache/stats": {
+      "get": {
+        "operationId": "getApiInvoicesCacheStats",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/invoices/cache/{orderId}": {
+      "delete": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "in": "path",
+            "name": "orderId",
+            "required": true
+          }
+        ],
+        "operationId": "deleteApiInvoicesCacheByOrderId",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/invoices/cache/all": {
+      "delete": {
+        "operationId": "deleteApiInvoicesCacheAll",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/guest/session/create": {
+      "post": {
+        "parameters": [],
+        "operationId": "postApiGuestSessionCreate",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "guestId": {
+                    "type": "string"
+                  },
+                  "deviceInfo": {
+                    "type": "string"
+                  }
+                },
+                "required": ["guestId"]
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "guestId": {
+                    "type": "string"
+                  },
+                  "deviceInfo": {
+                    "type": "string"
+                  }
+                },
+                "required": ["guestId"]
+              }
+            },
+            "text/plain": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "guestId": {
+                    "type": "string"
+                  },
+                  "deviceInfo": {
+                    "type": "string"
+                  }
+                },
+                "required": ["guestId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/guest/cart/{guestId}": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "guestId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^(tr|en|pl)$"
+            },
+            "in": "query",
+            "name": "lang",
+            "required": false
+          }
+        ],
+        "operationId": "getApiGuestCartByGuestId",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/guest/cart/add": {
+      "post": {
+        "parameters": [],
+        "operationId": "postApiGuestCartAdd",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "guestId": {
+                    "type": "string"
+                  },
+                  "productId": {
+                    "type": "string"
+                  },
+                  "quantity": {
+                    "minimum": 1,
+                    "anyOf": [
+                      {
+                        "format": "integer",
+                        "default": 0,
+                        "type": "string"
+                      },
+                      {
+                        "minimum": 1,
+                        "type": "integer"
+                      }
+                    ]
+                  }
+                },
+                "required": ["guestId", "productId", "quantity"]
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "guestId": {
+                    "type": "string"
+                  },
+                  "productId": {
+                    "type": "string"
+                  },
+                  "quantity": {
+                    "minimum": 1,
+                    "anyOf": [
+                      {
+                        "format": "integer",
+                        "default": 0,
+                        "type": "string"
+                      },
+                      {
+                        "minimum": 1,
+                        "type": "integer"
+                      }
+                    ]
+                  }
+                },
+                "required": ["guestId", "productId", "quantity"]
+              }
+            },
+            "text/plain": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "guestId": {
+                    "type": "string"
+                  },
+                  "productId": {
+                    "type": "string"
+                  },
+                  "quantity": {
+                    "minimum": 1,
+                    "anyOf": [
+                      {
+                        "format": "integer",
+                        "default": 0,
+                        "type": "string"
+                      },
+                      {
+                        "minimum": 1,
+                        "type": "integer"
+                      }
+                    ]
+                  }
+                },
+                "required": ["guestId", "productId", "quantity"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/guest/cart/{guestId}/{itemId}": {
+      "delete": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "guestId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "itemId",
+            "required": true
+          }
+        ],
+        "operationId": "deleteApiGuestCartByGuestIdByItemId",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/guest/favorites/{guestId}": {
+      "get": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "guestId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^(tr|en|pl)$"
+            },
+            "in": "query",
+            "name": "lang",
+            "required": false
+          }
+        ],
+        "operationId": "getApiGuestFavoritesByGuestId",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/guest/favorites/add": {
+      "post": {
+        "parameters": [],
+        "operationId": "postApiGuestFavoritesAdd",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "guestId": {
+                    "type": "string"
+                  },
+                  "productId": {
+                    "type": "string"
+                  }
+                },
+                "required": ["guestId", "productId"]
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "guestId": {
+                    "type": "string"
+                  },
+                  "productId": {
+                    "type": "string"
+                  }
+                },
+                "required": ["guestId", "productId"]
+              }
+            },
+            "text/plain": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "guestId": {
+                    "type": "string"
+                  },
+                  "productId": {
+                    "type": "string"
+                  }
+                },
+                "required": ["guestId", "productId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/guest/favorites/{guestId}/{productId}": {
+      "delete": {
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "guestId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "productId",
+            "required": true
+          }
+        ],
+        "operationId": "deleteApiGuestFavoritesByGuestIdByProductId",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/content/faq": {
+      "get": {
+        "operationId": "getApiContentFaq",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/content/terms": {
+      "get": {
+        "operationId": "getApiContentTerms",
+        "responses": {
+          "200": {}
+        }
+      }
+    },
+    "/api/utils/check-nip": {
+      "post": {
+        "parameters": [],
+        "operationId": "postApiUtilsCheck-nip",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nip": {
+                    "type": "string"
+                  }
+                },
+                "required": ["nip"]
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nip": {
+                    "type": "string"
+                  }
+                },
+                "required": ["nip"]
+              }
+            },
+            "text/plain": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nip": {
+                    "type": "string"
+                  }
+                },
+                "required": ["nip"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {}
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {}
+  }
+}

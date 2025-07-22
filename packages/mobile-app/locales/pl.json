@@ -1,0 +1,815 @@
+{
+  "profile": {
+    "title": "Profil",
+    "account_section_title": "Konto",
+    "edit_profile": "Edytuj profil",
+    "payment_methods": "Metody płatności",
+    "addresses": "Moje adresy",
+    "favorites": "Ulubione",
+    "notifications": "Powiadomienia",
+    "app_settings_section_title": "Ustawienia aplikacji",
+    "app_theme": "Motyw aplikacji",
+    "app_language": "Język aplikacji",
+    "haptics": "Wibracje",
+    "dark_mode": "Tryb ciemny",
+    "light_mode": "Tryb jasny",
+    "communication_preferences": "Preferencje komunikacji",
+    "support_section_title": "Wsparcie",
+    "help_center": "Centrum pomocy",
+    "contact_us": "Skontaktuj się z nami",
+    "faq": {
+      "title": "Często zadawane pytania",
+      "content": "Często zadawane pytania i odpowiedzi będą wymienione tutaj. Na przykład: Jak mogę zwrócić moje zamówienie?"
+    },
+    "logout": "Wyloguj się",
+    "logout_confirm_title": "Wyloguj się",
+    "logout_confirm_message": "Czy na pewno chcesz się wylogować?",
+    "logout_confirm_cancel": "Anuluj",
+    "logout_confirm_confirm": "Wyloguj się",
+    "security": "Bezpieczeństwo i prywatność",
+    "contact": {
+      "info_text": "Jeśli potrzebujesz pomocy w jakiejkolwiek sprawie, możesz skontaktować się z nami za pośrednictwem poniższych kanałów.",
+      "address_title": "Siedziba główna"
+    },
+    "help": {
+      "send_email": "Wyślij e-mail",
+      "call_us": "Zadzwoń do nas",
+      "social_media_title": "My w mediach społecznościowych",
+      "content": "Treść centrum pomocy będzie wyświetlana tutaj. Możesz korzystać z tej sekcji, aby znaleźć szczegółowe artykuły i filmy."
+    },
+    "version": "Wersja {{version}}",
+    "logout_alert_title": "Wyloguj się",
+    "logout_alert_message": "Czy na pewno chcesz się wylogować?",
+    "logout_alert_cancel": "Anuluj",
+    "logout_alert_confirm": "Wyloguj się",
+    "communication_preferences_description": "Zarządzaj swoimi preferencjami powiadomień",
+    "email_notifications": "Powiadomienia e-mail",
+    "push_notifications": "Powiadomienia push",
+    "sms_notifications": "Powiadomienia SMS",
+    "badge": {
+      "b2b": "Firma",
+      "b2c": "Osobiste"
+    },
+    "header_edit": "Edytuj"
+  },
+  "languages": {
+    "tr": "Türkçe",
+    "pl": "Polski",
+    "en": "English",
+    "title": "Opcje językowe"
+  },
+  "language_selection": {
+    "title": "Język aplikacji"
+  },
+  "not_found": {
+    "title": "Ups!",
+    "description": "Ten ekran nie istnieje.",
+    "go_home": "Przejdź do ekranu głównego!"
+  },
+  "addresses": {
+    "title": "Moje adresy",
+    "office": {
+      "name": "Siedziba główna",
+      "address": "ul. Buyukdere 23, Sisli"
+    },
+    "warehouse": {
+      "name": "Magazyn Gebze",
+      "address": "Strefa Przemysłowa, Bulwar Ataturka 15"
+    },
+    "empty": {
+      "title": "Nie masz jeszcze adresu",
+      "subtitle": "Zacznij szybko zakupy, dodając swój pierwszy adres.",
+      "add_button": "Dodaj nowy adres"
+    },
+    "tax_id": "NIP: {{taxId}}",
+    "default_delivery": "Domyślna dostawa",
+    "default_billing": "Domyślna faktura",
+    "error_loading": "Wystąpił błąd podczas ładowania adresów.",
+    "delete": {
+      "confirm_title": "Usuń Adres",
+      "confirm_message": "Czy na pewno chcesz usunąć ten adres?",
+      "error_title": "Błąd",
+      "error_message": "Wystąpił błąd podczas usuwania adresu."
+    },
+    "default_address": "Adres Domyślny",
+    "add_new_address": "Dodaj nowy adres",
+    "set_default_title": "Ustaw jako Domyślny",
+    "set_default_message": "Który typ adresu domyślnego chcesz ustawić?",
+    "set_default_delivery": "Ustaw jako Domyślny Adres Dostawy",
+    "set_default_billing": "Ustaw jako Domyślny Adres Rozliczeniowy",
+    "set_default_error": "Wystąpił błąd podczas ustawiania adresu domyślnego.",
+    "default_delivery": "Domyślna Dostawa",
+    "default_billing": "Domyślne Rozliczenie"
+  },
+  "edit_profile": {
+    "title": "Edytuj profil",
+    "change_photo": "Zmień",
+    "first_name": "Imię",
+    "first_name_placeholder": "Wpisz swoje imię",
+    "last_name": "Nazwisko",
+    "last_name_placeholder": "Wpisz swoje nazwisko",
+    "email": "E-mail",
+    "email_placeholder": "Wprowadź swój adres e-mail",
+    "email_invalid": "Wprowadź poprawny adres e-mail",
+    "phone_number": "Numer telefonu",
+    "no_phone_number": "Nie dodano numeru telefonu",
+    "save_button": "Zapisz",
+    "camera": "Kamera",
+    "gallery": "Galeria",
+    "error_title": "Błąd",
+    "error_message": "Wystąpił błąd podczas aktualizacji profilu",
+    "success_title": "Sukces",
+    "success_message": "Profil został pomyślnie zaktualizowany",
+    "photo_error_title": "Błąd zdjęcia",
+    "photo_error_generic": "Wystąpił błąd podczas przesyłania zdjęcia"
+  },
+  "faq": {
+    "title": "Często zadawane pytania",
+    "q1": {
+      "question": "Jak mogę anulować zamówienie?",
+      "answer": "Możesz anulować zamówienie w sekcji \"Moje zamówienia\", zanim jego status zmieni się na \"W przygotowaniu\". Jeśli zamówienie zostało już wysłane, nie można go anulować."
+    },
+    "q2": {
+      "question": "Jak działa proces zwrotu produktu?",
+      "answer": "Możesz zwrócić otrzymane produkty w ciągu 14 dni. Po utworzeniu prośby o zwrot w sekcji Moje konto > Moje zamówienia, możesz bezpłatnie odesłać produkt za pomocą podanego kodu wysyłkowego."
+    },
+    "q3": {
+      "question": "Ile wynosi opłata za wysyłkę?",
+      "answer": "Wysyłka jest bezpłatna dla wszystkich zamówień. Nie ma minimalnej kwoty zamówienia."
+    },
+    "q4": {
+      "question": "Z jakich metod płatności mogę skorzystać?",
+      "answer": "Możesz płacić kartą kredytową, kartą debetową i przez PayPal. Mamy również opcję płatności przy odbiorze."
+    }
+  },
+  "favorites": {
+    "title": "Moje ulubione",
+    "empty": {
+      "title": "Twoja lista ulubionych jest pusta",
+      "subtitle": "Możesz dodawać produkty, które lubisz, do ulubionych, dotykając ikony serca.",
+      "browse_button": "Przeglądaj produkty"
+    }
+  },
+  "help_center": {
+    "title": "Centrum Pomocy",
+    "header": "Jak możemy Ci pomóc?",
+    "search_placeholder": "Wpisz, aby wyszukać...",
+    "categories": {
+      "orders": "Zamówienia",
+      "returns": "Zwroty i refundacje",
+      "account": "Zarządzanie kontem",
+      "payment": "Opcje płatności",
+      "security": "Bezpieczeństwo i prywatność"
+    }
+  },
+  "payment_methods": {
+    "title": "Metody Płatności",
+    "company_card": "Karta firmowa",
+    "personal_card": "Karta osobista",
+    "empty": {
+      "title": "Nie masz zapisanych żadnych kart",
+      "subtitle": "Dodaj nową kartę, aby przyspieszyć płatności.",
+      "add_button": "Dodaj nową kartę"
+    },
+    "card_details": "{{details}} - Ważna do {{expiry}}",
+    "default_method": "Domyślna Metoda Płatności",
+    "error_loading": "Wystąpił błąd podczas ładowania metod płatności.",
+    "delete": {
+      "confirm_title": "Usuń Metodę Płatności",
+      "confirm_message": "Czy na pewno chcesz usunąć tę metodę płatności?",
+      "error_title": "Błąd",
+      "error_message": "Wystąpił błąd podczas usuwania metody płatności."
+    },
+    "add_new_method": "Dodaj nową metodę płatności",
+    "card": {
+      "title": "Karta Kredytowa / Debetowa"
+    },
+    "bank_transfer": {
+      "title": "Przelew Bankowy"
+    }
+  },
+  "login": {
+    "welcome_title": "Witamy w Metropolitan",
+    "welcome_subtitle": "Wysokiej jakości produkty, dostarczane pod Twoje drzwi.",
+    "checkout_title": "Sfinalizuj Zamówienie",
+    "checkout_subtitle": "Zaloguj się, aby złożyć zamówienie. Twój koszyk jest bezpieczny!",
+    "phone_button": "Kontynuuj z numerem telefonu",
+    "social_separator": "lub przez media społecznościowe",
+    "guest_button": "Kontynuuj jako gość",
+    "b2b": "Firma",
+    "b2c": "Osobiste",
+    "b2b_note": "Klienci firmowi mogą dołączyć tylko za pomocą numeru telefonu."
+  },
+  "phone_login": {
+    "title": "Logowanie telefonem",
+    "header_title": "Twój numer telefonu",
+    "header_subtitle": "Wyślemy Ci kod weryfikacyjny.",
+    "info_text": "Podaj swój numer telefonu, a wyślemy Ci kod weryfikacyjny SMS.",
+    "phone_number_label": "Numer telefonu",
+    "send_code_button": "Wyślij kod weryfikacyjny",
+    "error_title": "Błąd",
+    "error_message": "Wystąpił błąd podczas wysyłania kodu"
+  },
+  "otp": {
+    "title": "Weryfikacja",
+    "subtitle_part1": "Wprowadź 6-cyfrowy kod wysłany na numer",
+    "subtitle_part2": ".",
+    "verify_button": "Weryfikuj",
+    "resend_code": "Wyślij kod ponownie",
+    "resend_code_in": "Wyślij kod ponownie za"
+  },
+  "user_info": {
+    "title": "Informacje o Koncie",
+    "header_title": "Ostatni Krok",
+    "header_subtitle": "Wprowadź swoje dane, aby ukończyć konto.",
+    "personal_info_section": "Informacje osobiste",
+    "business_info_section": "Informacje biznesowe",
+    "first_name_label": "Imię",
+    "first_name_placeholder": "Wpisz swoje imię",
+    "last_name_label": "Nazwisko",
+    "last_name_placeholder": "Wpisz swoje nazwisko",
+    "email_label": "Adres e-mail",
+    "email_placeholder": "Wprowadź swój adres e-mail",
+    "email_invalid": "Wprowadź poprawny adres e-mail",
+    "save_button": "Zapisz i kontynuuj",
+    "nip_label": "NIP (Numer Identyfikacji Podatkowej)",
+    "nip_placeholder": "Twój 10-cyfrowy NIP",
+    "nip_check_button": "Sprawdź",
+    "company_name_label": "Nazwa firmy",
+    "registration_date_label": "Data rejestracji",
+    "company_address_label": "Adres firmy",
+    "nip_verified_success": "NIP został pomyślnie zweryfikowany - Możesz się zarejestrować",
+    "nip_verified_warning": "Firma zweryfikowana - Nieaktywna dla VAT",
+    "nip_inactive_company": "Ta firma nie jest aktywna dla VAT. Tylko aktywne firmy mogą się rejestrować.",
+    "nip_error_length": "NIP musi mieć 10 cyfr.",
+    "nip_error_generic": "Weryfikacja NIP nie powiodła się. Spróbuj ponownie.",
+    "agree_to_the": "Przeczytałem i zgadzam się z",
+    "terms_and_policy": "Regulaminem i Polityką Prywatności"
+  },
+  "terms": {
+    "title": "Umowy i Zasady",
+    "header_title": "Prawie gotowe",
+    "header_subtitle": "Przed kontynuowaniem zapoznaj się z umowami i zasadami i je zaakceptuj.",
+    "info_text": "Potrzebujemy Twojej pomocy, aby Metropolitan był bezpieczną i przejrzystą platformą. Korzystając z naszych usług, oświadczasz, że rozumiesz i akceptujesz warunki i zasady określone w poniższych dokumentach.",
+    "checkbox_label": "Przeczytałem/am i zgadzam się na:",
+    "terms_title": "Umowa użytkownika",
+    "privacy_title": "Polityka prywatności",
+    "complete_button": "Akceptuj i zakończ",
+    "dummy_terms": "To jest tekst umowy użytkownika. Lorem ipsum dolor sit amet, consectetur adipiscing elit. ... (tutaj pojawi się długi tekst)",
+    "dummy_privacy": "To jest tekst polityki prywatności. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. ... (tutaj pojawi się długi tekst)",
+    "modal_accept_button": "Przeczytałem/am, Zrozumiałem/am i Akceptuję",
+    "modal_close_button": "Zamknij",
+    "agree_button": "Akceptuj",
+    "close_button": "Zamknij"
+  },
+  "errors": {
+    "INSUFFICIENT_STOCK": "Możesz dodać maksymalnie {{stock}} sztuk tego produktu.",
+    "INSUFFICIENT_STOCK_ALREADY_IN_CART": "Masz już {{inCart}} sztuk w koszyku. Możesz dodać jeszcze {{canAdd}} sztuk.",
+    "PRODUCT_NOT_FOUND": "Produkt nie znaleziony.",
+    "CART_ITEM_NOT_FOUND": "Nie znaleziono produktu w koszyku.",
+    "CART_ADD_ERROR": "Wystąpił nieoczekiwany błąd podczas dodawania produktu do koszyka. Spróbuj ponownie.",
+    "CART_UPDATE_ERROR": "Wystąpił nieoczekiwany błąd podczas aktualizacji produktu. Spróbuj ponownie."
+  },
+  "tabs": {
+    "home": "Główna",
+    "products": "Produkty",
+    "cart": {
+      "title": "Mój koszyk",
+      "clear_alert_title": "Wyczyść koszyk",
+      "clear_alert_message": "Wszystkie produkty w Twoim koszyku zostaną usunięte. Jesteś pewien?",
+      "clear_alert_cancel": "Anuluj",
+      "clear_alert_confirm": "Tak, usuń"
+    },
+    "orders": "Moje zamówienia",
+    "profile": "Profil",
+    "search_placeholder": "Szukaj produktów..."
+  },
+  "cart": {
+    "remove_item_alert_title": "Usuń produkt",
+    "remove_item_alert_message": "Czy na pewno chcesz usunąć ten produkt z koszyka?",
+    "remove_item_alert_cancel": "Anuluj",
+    "remove_item_alert_confirm": "Usuń",
+    "checkout_alert_title": "Potwierdź zamówienie",
+    "checkout_alert_message": "Całkowita kwota zamówienia wynosi {{total}}. Czy chcesz kontynuować?",
+    "checkout_alert_cancel": "Anuluj",
+    "checkout_alert_confirm": "Kontynuuj",
+    "empty": {
+      "title": "Twój koszyk jest pusty",
+      "button": "Rozpocznij zakupy"
+    },
+    "item": {
+      "price": "{{price}}"
+    },
+    "summary": {
+      "total_label": "Suma całkowita ({{count}} prod.)",
+      "total_value": "{{total}}",
+      "checkout_button": "Zrealizuj zamówienie"
+    },
+    "stock_limit_title": "Limit zapasów",
+    "stock_limit_message": "Możesz dodać maksymalnie {{stock}} sztuk tego produktu.",
+    "insufficient_stock": "W magazynie dostępne są {{availableStock}} sztuki. Możesz kupić maksymalnie {{availableStock}} sztuk.",
+    "load_error": "Wystąpił błąd podczas ładowania koszyka",
+    "add_error": "Wystąpił błąd podczas dodawania produktu do koszyka",
+    "update_error": "Wystąpił błąd podczas aktualizacji ilości produktu",
+    "remove_error": "Wystąpił błąd podczas usuwania produktu z koszyka",
+    "clear_error": "Wystąpił błąd podczas czyszczenia koszyka",
+    "min_quantity_error": "Minimalna ilość musi wynosić 1",
+    "success": "Sukces",
+    "error": "Błąd",
+    "item_added": "Produkt dodany do koszyka",
+    "item_removed": "Produkt usunięty z koszyka",
+    "cleared": "Koszyk wyczyszczony",
+    "checkout": "Złóż zamówienie",
+    "checkout_title": "Podsumowanie zamówienia",
+    "delivery_address_title": "Adres dostawy",
+    "billing_address_title": "Adres rozliczeniowy",
+    "same_as_delivery": "Adres rozliczeniowy taki sam jak dostawy",
+    "address_title": "Adres dostawy",
+    "payment_title": "Metoda płatności",
+    "complete_order": "Złóż zamówienie",
+    "selection_missing_title": "Brakujące informacje",
+    "selection_missing_message": "Proszę wybrać adres dostawy i metodę płatności.",
+    "order_success_title": "Zamówienie pomyślne",
+    "order_success_message": "Twoje zamówienie zostało pomyślnie utworzone!",
+    "order_error_title": "Błąd zamówienia",
+    "order_error_message": "Wystąpił błąd podczas tworzenia zamówienia. Spróbuj ponownie.",
+    "add_new_address": "Dodaj nowy adres",
+    "add_new_payment": "Dodaj nową kartę"
+  },
+  "checkout": {
+    "title": "Podsumowanie Zamówienia",
+    "steps": {
+      "address": "Adres",
+      "payment": "Płatność",
+      "summary": "Podsumowanie"
+    },
+    "delivery_address": "Adres dostawy",
+    "billing_address": "Adres rozliczeniowy",
+    "same_billing_address": "Adres rozliczeniowy jest taki sam jak adres dostawy",
+    "add_new_address": "Dodaj nowy adres",
+    "continue_to_payment": "Przejdź do płatności",
+    "payment_method": "Metoda płatności",
+    "payment_screen_title": "Metody Płatności",
+    "secure_payment": "Bezpieczna płatność",
+    "secure_payment_desc": "Wszystkie Twoje płatności są szyfrowane za pomocą SSL i przetwarzane na bezpiecznych serwerach.",
+    "more_payment_methods_soon": "Więcej opcji płatności zostanie dodanych wkrótce",
+    "continue_to_summary": "Przejdź do podsumowania",
+    "order_summary": "Podsumowanie zamówienia",
+    "subtotal": "Suma częściowa",
+    "shipping": "Wysyłka",
+    "free": "Za darmo",
+    "total": "Razem",
+    "items": "szt.",
+    "agree_terms": "Zgadzam się z warunkami użytkowania i polityką prywatności",
+    "complete_order": "Złóż Zamówienie",
+    "missing_info": "Brakujące Informacje",
+    "missing_info_desc": "Proszę wypełnić wszystkie wymagane informacje.",
+    "order_success": "Zamówienie Złożone Pomyślnie",
+    "order_success_desc": "Twoje zamówienie zostało pomyślnie złożone!",
+    "order_error": "Wystąpił błąd podczas składania zamówienia. Proszę spróbować ponownie.",
+    "bank_transfer_title": "Dane do Przelewu Bankowego",
+    "confirm_and_proceed": "Zatwierdź i kontynuuj",
+    "view_bank_details_prompt": "Dotknij, aby zobaczyć dane do przelewu",
+    "no_payment_method_selected": "Nie wybrano metody płatności",
+    "order_notes": "Uwagi do zamówienia",
+    "order_notes_placeholder": "Tutaj możesz dodać swoje uwagi do zamówienia (np. nie dzwonić dzwonkiem).",
+    "payment_methods": {
+      "card": {
+        "title": "Karta kredytowa / debetowa",
+        "subtitle": "Visa, Mastercard, Maestro"
+      },
+      "apple_pay": {
+        "title": "Apple Pay"
+      },
+      "blik": {
+        "title": "BLIK"
+      },
+      "bank_transfer": {
+        "title": "Przelew bankowy / EFT",
+        "subtitle": "Zapłać ręcznie na nasze konto bankowe"
+      }
+    }
+  },
+  "home": {
+    "featured_products": "Polecane produkty",
+    "weekly_products": "Produkty tygodnia",
+    "bestsellers": "Bestsellery miesiąca",
+    "new_arrivals": "Nowości",
+    "see_all_products": "Zobacz wszystkie produkty",
+    "search_results": "Wyniki wyszukiwania",
+    "no_search_results": "Nie znaleziono wyników dla \"{{query}}\"",
+    "hello": "Cześć"
+  },
+  "product": {
+    "stock": "Stan: {{count}}",
+    "out_of_stock": "Brak na stanie",
+    "price": "{{price}}"
+  },
+  "order_detail": {
+    "title": "Zamówienie #{{id}}",
+    "not_found_title": "Nie znaleziono zamówienia",
+    "not_found_body": "Żądane zamówienie nie zostało znalezione.",
+    "cancel_confirm_title": "Anuluj zamówienie",
+    "cancel_confirm_message": "Czy na pewno chcesz anulować to zamówienie?",
+    "cancel_order": "Anuluj zamówienie",
+    "cancel_success_title": "Zamówienie anulowane",
+    "cancel_error_title": "Błąd anulowania",
+    "cancel_error_message": "Wystąpił błąd podczas anulowania zamówienia.",
+    "load_error_message": "Nie удалось załadować szczegółów zamówienia. Proszę spróbować ponownie.",
+    "download_invoice": "Pobierz fakturę",
+    "help": "Pomoc",
+    "reorder": {
+      "success_title": "Ponowne Zamówienie Udane",
+      "success_message": "Wszystkie produkty z tego zamówienia zostały dodane do Twojego koszyka.",
+      "partial_success_message": "Dostępne produkty zostały dodane do Twojego koszyka.",
+      "error_message": "Nie można dodać produktów do koszyka. Proszę spróbować ponownie.",
+      "go_to_cart": "Przejdź do Koszyka",
+      "button_text": "Powtórz",
+      "stock_warning_title": "Ostrzeżenie o zapasach",
+      "out_of_stock_items": "{{count}} produkty nie są dostępne w magazynie.",
+      "insufficient_stock_items": "{{count}} produkty mają niewystarczający zapas.",
+      "insufficient_stock_details": "{{count}} produkty mają niewystarczający zapas:\n\n{{details}}",
+      "add_available_stock": "Dodaj Dostępny Zapas"
+    },
+    "actions": {
+      "repeat_order": "Powtórz zamówienie",
+      "download_invoice": "Pobierz fakturę",
+      "view_invoice": "Zobacz Fakturę",
+      "downloading_invoice": "Pobieranie faktury: Zamówienie #{{id}}",
+      "invoice_downloaded": "Faktura została pomyślnie pobrana: {{fileName}}",
+      "invoice_not_found": "Nie znaleziono faktury dla tego zamówienia.",
+      "invoice_download_error": "Nie udało się pobrać faktury. Spróbuj ponownie.",
+      "request_help": "Poproś o pomoc dotyczącą tego zamówienia",
+      "help_alert_title": "Centrum pomocy",
+      "help_alert_message": "W przypadku jakichkolwiek problemów z zamówieniem możesz skontaktować się z naszym zespołem wsparcia.\n\nE-mail: support@metropolitan.app\nTelefon: +48 123 456 789",
+      "help_alert_ok": "OK"
+    },
+    "payment": {
+      "credit_card": "Karta kredytowa",
+      "cash_on_delivery": "Płatność przy odbiorze",
+      "no_card_info": "Brak informacji o karcie"
+    },
+    "delivery_payment": {
+      "title": "Dostawa i Płatność",
+      "payment_method": "Metoda płatności",
+      "card_holder": "Właściciel karty",
+      "card_number": "Numer karty",
+      "delivery_address": "Adres dostawy",
+      "billing_address": "Adres rozliczeniowy"
+    },
+    "help_modal": {
+      "title": "Uzyskaj pomoc dotyczącą tego zamówienia",
+      "info_text": "Jeśli masz problem z zamówieniem lub potrzebujesz pomocy, możesz skontaktować się z nami za pośrednictwem poniższych kanałów.",
+      "address_title": "Adres dostawy"
+    },
+    "header": {
+      "title": "Szczegóły zamówienia"
+    },
+    "tracking_modal": {
+      "title": "Śledź przesyłkę",
+      "history": {
+        "title": "Historia śledzenia",
+        "delivered": "Dostarczono",
+        "out_for_delivery": "W doręczeniu",
+        "arrived_at_hub": "Dotarło do centrum dystrybucyjnego",
+        "picked_up": "Paczka odebrana przez kuriera",
+        "info_received": "Otrzymano informację o przesyłce"
+      }
+    },
+    "info": {
+      "order_no": "Zamówienie #{{id}}",
+      "order_no_label": "Numer zamówienia",
+      "order_date_label": "Data zamówienia"
+    },
+    "products": {
+      "title": "Produkty",
+      "no_product_info": "Brak informacji o produkcie",
+      "quantity_one": "{{count}} szt.",
+      "quantity_few": "{{count}} sztuki",
+      "quantity_many": "{{count}} sztuk",
+      "quantity": "{{count}} szt.",
+      "price": "{{price}}",
+      "total_items_one": "Łącznie {{count}} produkt",
+      "total_items_few": "Łącznie {{count}} produkty",
+      "total_items_many": "Łącznie {{count}} produktów",
+      "total_items": "Łącznie {{count}} produktów",
+      "products_title": "Produkty",
+      "reorder_button": "Zamów ponownie",
+      "review_button": "Oceń produkty",
+      "section_title": "Zawartość zamówienia",
+      "quantity_other": "{{count}} szt.",
+      "total_items_other": "Łącznie {{count}} produktów",
+      "no_items": "W tym zamówieniu nie ma żadnych produktów."
+    },
+    "summary": {
+      "subtotal": "Suma częściowa",
+      "shipping": "Dostawa",
+      "free_shipping": "Za darmo",
+      "total_items_many": "Łącznie {{count}} produktów",
+      "total": "Suma",
+      "section_title": "Podsumowanie zamówienia"
+    },
+    "tracking": {
+      "title": "Status dostawy",
+      "status_pending": "Twoje zamówienie oczekuje na potwierdzenie.",
+      "status_confirmed": "Twoje zamówienie jest w trakcie przygotowywania.",
+      "status_preparing": "Twoje zamówienie jest pakowane.",
+      "shipped_internal": "Wysłano naszym własnym pojazdem.",
+      "shipped_external": "Śledź swoją przesyłkę z {{company}}",
+      "delivered_internal": "Dostarczono naszym własnym pojazdem.",
+      "delivered_external": "Zobacz szczegóły dostawy i historię",
+      "status_delivered": "Dostarczono",
+      "status_cancelled": "Anulowano",
+      "tracking_number": "Numer śledzenia",
+      "shipping_company": "Firma kurierska",
+      "no_tracking_info": "Informacje o śledzeniu nie są jeszcze dostępne."
+    }
+  },
+  "orders": {
+    "order_no": "Zamówienie #{{id}}",
+    "price": "{{price}}",
+    "total": "Suma",
+    "empty": {
+      "title": "Nie masz jeszcze żadnych zamówień",
+      "button": "Rozpocznij zakupy"
+    }
+  },
+  "order": {
+    "orderDetails": "Szczegóły zamówienia",
+    "cancelOrder": "Anuluj zamówienie",
+    "cancelOrderConfirmation": "Czy na pewno chcesz anulować to zamówienie?",
+    "cancelOrderError": "Wystąpił błąd podczas anulowania zamówienia.",
+    "status": {
+      "pending": "Oczekujące",
+      "confirmed": "Potwierdzone",
+      "preparing": "W przygotowaniu",
+      "shipped": "Wysłane",
+      "delivered": "Dostarczone",
+      "cancelled": "Anulowane"
+    }
+  },
+  "categories": {
+    "1": "Nabiał",
+    "2": "Rośliny strączkowe",
+    "3": "Przekąski",
+    "4": "Napoje",
+    "5": "Desery",
+    "6": "Podstawowe produkty spożywcze"
+  },
+  "status": {
+    "pending": "Oczekujące",
+    "confirmed": "Potwierdzone",
+    "preparing": "W przygotowaniu",
+    "shipped": "Wysłane",
+    "delivered": "Dostarczone",
+    "unknown": "Nieznany"
+  },
+  "product_detail": {
+    "not_found_title": "Nie znaleziono produktu",
+    "not_found_body": "Żądany produkt nie został znaleziony.",
+    "go_back": "Wróć",
+    "share_message": "{{name}} - {{price}} - Sprawdź w aplikacji Metropolitan!",
+    "share": {
+      "check_out_this_product": "Sprawdź ten produkt!"
+    },
+    "low_stock_one": "Ostatnia {{count}} sztuka",
+    "low_stock_few": "Ostatnie {{count}} sztuki",
+    "low_stock_many": "Ostatnich {{count}} sztuk",
+    "low_stock": "Ostatnie {{count}} sztuk",
+    "category": "Kategoria: {{category}}",
+    "stock": "Zapas: {{count}}",
+    "in_stock": "W magazynie",
+    "out_of_stock": "Brak w magazynie",
+    "info": {
+      "price": "{{price}}",
+      "unit": "/ {{unit}}",
+      "in_stock": "W magazynie",
+      "stock_left": "{{count}} sztuk pozostało",
+      "stock_left_one": "Pozostała {{count}} sztuka",
+      "stock_left_few": "Pozostały {{count}} sztuki",
+      "stock_left_many": "Pozostało {{count}} sztuk",
+      "description_title": "Opis produktu",
+      "no_description": "Szczegółowy opis tego produktu nie jest jeszcze dostępny."
+    },
+    "purchase": {
+      "add_to_cart": "Dodaj do koszyka",
+      "added_to_cart": "Dodano do koszyka",
+      "out_of_stock": "Brak w magazynie",
+      "stock_error_title": "Przekroczono Limit Stanu Magazynowego",
+      "stock_error_message": "Możesz dodać maksymalnie {{count}} sztuk tego produktu.",
+      "generic_error_title": "Błąd",
+      "generic_error_message": "Wystąpił błąd podczas dodawania do koszyka. Proszę spróbować ponownie."
+    },
+    "stock_available": "Magazyn: {{count}} dostępne"
+  },
+  "app_bar": {
+    "search_placeholder": "Szukaj..."
+  },
+  "app_settings": {
+    "title": "Ustawienia aplikacji"
+  },
+  "brands": {
+    "yayla": "Yayla"
+  },
+  "add_address": {
+    "form": {
+      "address_title": "[PL] Address Title",
+      "error_title": "[PL] Missing Information",
+      "postal_code_placeholder": "Np. 00-001",
+      "error_message": "[PL] Please fill in all fields.",
+      "address_title_placeholder": "[PL] E.g. Home, Work",
+      "save_button": "[PL] Save Address",
+      "country": "[PL] Country",
+      "postal_code": "[PL] Postal Code",
+      "street": "[PL] Street and House Number",
+      "city_placeholder": "Np. Warszawa",
+      "submit_error_title": "[PL] Error",
+      "submit_error_message": "[PL] An error occurred while adding the address. Please try again.",
+      "street_placeholder": "[PL] Enter your address here",
+      "city": "[PL] City",
+      "success_message": "Adres został pomyślnie dodany!"
+    },
+    "title": "[PL] Add New Address"
+  },
+  "permissions": {
+    "gallery_required_title": "Wymagane uprawnienie galerii",
+    "gallery_required_message": "Potrzebujemy Twojego pozwolenia na dostęp do galerii, aby wybrać zdjęcie.",
+    "camera_required_message": "Potrzebujemy Twojego pozwolenia na używanie kamery do zrobienia zdjęcia profilowego.",
+    "camera_required_title": "Wymagane uprawnienie kamery"
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Anuluj",
+    "save": "Zapisz",
+    "delete": "Usuń",
+    "edit": "Edytuj",
+    "add": "Dodaj",
+    "search": "Szukaj",
+    "loading": "Ładowanie...",
+    "error": "Błąd",
+    "success": "Sukces",
+    "warning": "Ostrzeżenie",
+    "info": "Informacja",
+    "change": "Zmień",
+    "clear": "Wyczyść"
+  },
+  "general": {
+    "under_construction": "W budowie",
+    "feature_soon": "Ta funkcja zostanie wkrótce dodana",
+    "yes": "Tak",
+    "no": "Nie"
+  },
+  "add_payment_method": {
+    "title": "Dodaj Metodę Płatności",
+    "form": {
+      "cardholder_name": "Imię i nazwisko posiadacza karty",
+      "cardholder_name_placeholder": "Imię i nazwisko na karcie",
+      "card_number_last4": "Numer karty (ostatnie 4 cyfry)",
+      "expiry_month": "Miesiąc ważności",
+      "expiry_year": "Rok ważności",
+      "save_button": "Zapisz kartę",
+      "error_title": "Brakujące informacje",
+      "error_message": "Proszę wypełnić wszystkie pola.",
+      "submit_error_title": "Błąd",
+      "submit_error_message": "Wystąpił błąd podczas dodawania karty."
+    }
+  },
+  "edit_address": {
+    "title": "Edytuj adres",
+    "form": {
+      "save_button": "Zapisz zmiany",
+      "error_title": "Formularz niekompletny",
+      "error_message": "Proszę wypełnić wszystkie pola.",
+      "submit_error_title": "Błąd",
+      "submit_error_message": "Wystąpił błąd podczas aktualizacji adresu.",
+      "update_success_message": "Adres został pomyślnie zaktualizowany!"
+    }
+  },
+  "auth": {
+    "required": "Wymagane logowanie",
+    "login_to_continue": "Zaloguj się, aby kontynuować",
+    "login_required": "Musisz się zalogować, aby wykonać tę akcję.",
+    "guest_data_migrated": "Twój koszyk i ulubione zostały przeniesione na Twoje konto",
+    "migration_success_title": "Dane przeniesione"
+  },
+  "invoice_preview": {
+    "title": "Podgląd faktury",
+    "loading": "Ładowanie faktury...",
+    "error": "Nie udało się załadować faktury",
+    "load_error": "Wystąpił błąd podczas ładowania faktury",
+    "pdf_error": "Wystąpił błąd podczas wyświetlania PDF",
+    "share_title": "Faktura - Zamówienie {{orderNumber}}"
+  },
+  "bank_transfer": {
+    "title": "Przelew Bankowy / EFT",
+    "subtitle": "Prosimy o dokonanie płatności, korzystając z poniższych danych konta.",
+    "account_details": "Dane Konta",
+    "recipient": "Nazwa Odbiorcy",
+    "bank_name": "Nazwa Banku",
+    "description_label": "Tytuł przelewu",
+    "description_value": "Proszę podać numer zamówienia w tytule przelewu.",
+    "info_text": "Twoje zamówienie zostanie zrealizowane po zaksięgowaniu płatności. Może to potrwać 1-2 dni robocze.",
+    "confirm_button": "Rozumiem, Wróć"
+  },
+  "order_confirmation": {
+    "title": "Zamówienie Zostało Przyjęte!",
+    "subtitle": "Prosimy o dokonanie płatności, korzystając z poniższych danych bankowych.",
+    "payment_details_title": "Instrukcje Płatności",
+    "info_text": "Twoje zamówienie zostanie wysłane po potwierdzeniu płatności. Status zamówienia możesz śledzić na stronie 'Moje Zamówienia'.",
+    "button_text": "Przejdź do Moich Zamówień"
+  },
+  "notifications": {
+    "title": "Powiadomienia",
+    "mark_all_read": "Oznacz wszystkie jako przeczytane",
+    "mark_as_read": "Oznacz jako przeczytane",
+    "delete_all": "Usuń wszystkie",
+    "delete": "Usuń",
+    "empty_title": "Brak powiadomień",
+    "empty_message": "Powiadomienia o Twoich zamówieniach i ofertach specjalnych pojawią się tutaj.",
+    "time": {
+      "minutes_ago": "{{count}} minut temu",
+      "hours_ago": "{{count}} godzin temu",
+      "days_ago": "{{count}} dni temu"
+    },
+    "types": {
+      "order": "Zamówienie",
+      "promotion": "Promocja",
+      "delivery": "Dostawa",
+      "system": "System"
+    },
+    "delete_confirm_title": "Usuń powiadomienie",
+    "delete_confirm_message": "Czy na pewno chcesz trwale usunąć to powiadomienie?",
+    "delete_all_confirm_title": "Usuń wszystkie powiadomienia",
+    "delete_all_confirm_message": "Czy na pewno chcesz trwale usunąć wszystkie powiadomienia?"
+  },
+  "payment": {
+    "unknown_error": "Wystąpił nieznany błąd",
+    "canceled": "Płatność została anulowana",
+    "authentication_failed": "Uwierzytelnienie nie powiodło się",
+    "insufficient_funds": "Niewystarczające środki",
+    "card_declined": "Karta została odrzucona",
+    "processing_error": "Wystąpił błąd podczas przetwarzania płatności",
+    "apple_pay_error": "Płatność Apple Pay nie powiodła się",
+    "google_pay_error": "Płatność Google Pay nie powiodła się",
+    "client_secret_missing": "Brak klucza płatności"
+  },
+  "checkout": {
+    "payment_method": "Metoda płatności",
+    "order_summary": "Podsumowanie zamówienia",
+    "order_notes": "Notatki do zamówienia",
+    "order_notes_placeholder": "Możesz dodać swoje specjalne instrukcje dotyczące zamówienia tutaj...",
+    "agree_terms": "Zgadzam się z warunkami korzystania i polityką prywatności",
+    "view_bank_details_prompt": "Dotknij, aby zobaczyć dane do przelewu",
+    "no_payment_method_selected": "Nie wybrano metody płatności",
+    "subtotal": "Suma częściowa",
+    "items": "pozycji",
+    "shipping": "Dostawa",
+    "free": "Darmowa",
+    "total": "Suma",
+    "complete_order": "Złóż Zamówienie",
+    "confirm_and_proceed": "Potwierdź i Kontynuuj",
+    "missing_fields": "Proszę wypełnić wszystkie wymagane pola",
+    "payment_success": "Płatność Zakończona Sukcesem",
+    "payment_success_desc": "Twoja płatność została pomyślnie przetworzona!",
+    "payment_failed": "Płatność Nieudana",
+    "payment_error": "Wystąpił błąd podczas płatności",
+    "order_creation_failed": "Nie udało się utworzyć zamówienia",
+    "steps": {
+      "address": "Adres",
+      "payment": "Płatność",
+      "summary": "Podsumowanie"
+    },
+    "bank_transfer_title": "Przelew Bankowy",
+    "delivery_address": "Adres Dostawy",
+    "add_new_address": "Dodaj Nowy Adres",
+    "same_billing_address": "Mój adres rozliczeniowy jest taki sam jak adres dostawy",
+    "billing_address": "Adres Rozliczeniowy",
+    "continue_to_payment": "Przejdź do Płatności",
+    "payment_screen_title": "Wybierz Metodę Płatności",
+    "continue_to_summary": "Przejdź do Podsumowania",
+    "secure_payment": "Bezpieczna Płatność",
+    "secure_payment_desc": "Wszystkie transakcje płatnicze są chronione certyfikatem SSL.",
+    "more_payment_methods_soon": "Wkrótce zostaną dodane więcej metod płatności.",
+    "bank_transfer_success": "Zamówienie Potwierdzone",
+    "bank_transfer_success_desc": "Jako klient korporacyjny, Twoje zamówienie zostało automatycznie potwierdzone. Faktura zostanie wysłana na Twój adres e-mail.",
+    "payment_methods": {
+      "card": {
+        "title": "Karta kredytowa / debetowa",
+        "subtitle": "Visa, Mastercard, Maestro"
+      },
+      "blik": {
+        "subtitle": "Płatność mobilna (kod 6-cyfrowy)"
+      },
+      "apple_pay": {
+        "subtitle": "Szybka płatność za pomocą Touch ID, Face ID"
+      },
+      "google_pay": {
+        "subtitle": "Bezpieczna płatność mobilna"
+      },
+      "bank_transfer": {
+        "title": "Przelew bankowy",
+        "subtitle": "Przelew / Transfer"
+      }
+    }
+  }
+}

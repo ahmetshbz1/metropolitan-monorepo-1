@@ -1,0 +1,10 @@
+// Central barrel file for type re-exports – keep this lean and declarative.
+// If you add a new type file, remember to export it here.
+
+export * from "./address";
+export * from "./cart";
+export * from "./misc";
+export * from "./notification";
+export * from "./order";
+export * from "./product";
+export * from "./user";
