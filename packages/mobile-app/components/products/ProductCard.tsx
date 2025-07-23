@@ -48,18 +48,20 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
       >
         <TouchableOpacity
           activeOpacity={0.9}
-          className="overflow-hidden"
+          className={`
+            overflow-hidden rounded-2xl
+            ${colorScheme === 'dark' 
+              ? 'bg-neutral-900 border border-neutral-800' 
+              : 'bg-white border-0'
+            }
+            ${isOutOfStock ? 'opacity-70' : ''}
+          `}
           style={{
-            borderRadius: 16,
-            shadowColor: colorScheme === 'dark' ? '#000' : '#000',
+            shadowColor: '#000',
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: colorScheme === 'dark' ? 0.2 : 0.08,
             shadowRadius: 8,
             elevation: 4,
-            opacity: isOutOfStock ? 0.7 : 1,
-            backgroundColor: colorScheme === 'dark' ? '#1a1a1a' : '#fff',
-            borderWidth: colorScheme === 'dark' ? 1 : 0,
-            borderColor: colorScheme === 'dark' ? '#2a2a2a' : 'transparent',
           }}
         >
           {/* Image Section */}
@@ -84,18 +86,19 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
           {/* Modern Floating Favorite Button */}
           <HapticIconButton
             onPress={handleToggleFavorite}
-            className="absolute top-3 right-3 w-10 h-10 justify-center items-center z-10"
+            className={`
+              absolute top-3 right-3 w-10 h-10 justify-center items-center z-10 rounded-full
+              ${colorScheme === 'dark' 
+                ? 'bg-neutral-800/90' 
+                : 'bg-white/90'
+              }
+            `}
             style={{
-              backgroundColor: colorScheme === 'dark' 
-                ? 'rgba(42, 42, 42, 0.9)' 
-                : 'rgba(255, 255, 255, 0.9)',
-              borderRadius: 20,
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.1,
               shadowRadius: 8,
               elevation: 4,
-              backdropFilter: 'blur(10px)',
             }}
             hapticType="light"
           >

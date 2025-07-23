@@ -2,7 +2,6 @@
 //  metropolitan app
 //  Created by Ahmet on 26.06.2025. Edited on 23.07.2025.
 
-import { Product } from "@/context/ProductContext";
 import { formatPrice } from "@/core/utils";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
@@ -11,7 +10,7 @@ import { ColorSchemeName, TouchableOpacity, View } from "react-native";
 import { ThemedText } from "../ThemedText";
 
 interface ProductCardContentProps {
-  product: Product;
+  product: any;
   categoryName?: string;
   colorScheme: ColorSchemeName;
   colors: any;
@@ -32,7 +31,12 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
   const { t } = useTranslation();
 
   return (
-    <View className="p-3">
+    <View 
+      className={`
+        p-3
+        ${colorScheme === 'dark' ? 'bg-neutral-900' : 'bg-white'}
+      `}
+    >
       {/* Category */}
       <ThemedText
         className="text-xs font-medium mb-1"
@@ -59,12 +63,11 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
 
       {/* Price and Add to Cart Badge - Bottom */}
       <TouchableOpacity
-        className="flex-row items-center justify-between px-3 py-2"
-        style={{
-          backgroundColor: colorScheme === 'dark' ? '#2a2a2a' : '#f8f8f8',
-          borderRadius: 12,
-          opacity: isOutOfStock ? 0.6 : 1,
-        }}
+        className={`
+          flex-row items-center justify-between px-3 py-2 rounded-xl
+          ${colorScheme === 'dark' ? 'bg-neutral-800' : 'bg-gray-50'}
+          ${isOutOfStock ? 'opacity-60' : ''}
+        `}
         onPress={handleAddToCart}
         disabled={isOutOfStock}
         activeOpacity={0.8}
@@ -72,9 +75,7 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
         {/* Price */}
         <ThemedText
           className="text-lg font-bold"
-          style={{
-            color: colors.tint,
-          }}
+          style={{ color: colors.tint }}
         >
           {formatPrice(product.price, product.currency)}
         </ThemedText>
@@ -88,9 +89,7 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
           />
           <ThemedText
             className="text-sm font-medium ml-1"
-            style={{ 
-              color: isOutOfStock ? colors.mediumGray : colors.tint,
-            }}
+            style={{ color: isOutOfStock ? colors.mediumGray : colors.tint }}
           >
             {t("common.add")}
           </ThemedText>
@@ -100,11 +99,7 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
       {/* Low stock indicator */}
       {isLowStock && !isOutOfStock && (
         <ThemedText
-          className="text-xs font-medium mt-2"
-          style={{
-            color: '#f59e0b',
-            textAlign: 'center',
-          }}
+          className="text-xs font-medium mt-2 text-center text-amber-500"
         >
           {t("product.low_stock")}
         </ThemedText>
