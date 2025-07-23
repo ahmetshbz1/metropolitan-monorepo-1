@@ -188,6 +188,17 @@ bun test src/tests/race-condition.test.ts  # Run specific test
 
 ## 🚨 Critical Development Notes
 
+### ⛔ STRICT COMMAND RESTRICTIONS
+**YASAK KOMUTLAR - ASLA ÇALIŞTIRMA:**
+- `bun run dev`
+- `bun run start` 
+- `expo start`
+- `npm start`
+- `yarn start`
+- Herhangi bir sunucu başlatan komut
+
+**KURAL:** Ahmet aksini talep etmedikçe hiçbir development server komutu çalıştırılmayacak. Bu kesinlikle yasaktır.
+
 ### State Management
 - **Mobile**: React Context API (NOT Zustand despite package.json)
 - **Backend**: Domain services + repositories pattern

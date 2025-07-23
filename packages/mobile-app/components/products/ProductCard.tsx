@@ -1,6 +1,6 @@
 //  "ProductCard.tsx"
 //  metropolitan app
-//  Created by Ahmet on 30.06.2025. Edited on 19.07.2025.
+//  Created by Ahmet on 30.06.2025. Edited on 23.07.2025.
 
 import { Product } from "@/context/ProductContext";
 import { useProductCard } from "@/hooks/useProductCard";
@@ -47,18 +47,20 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
         asChild
       >
         <TouchableOpacity
-          activeOpacity={0.7}
-          className="bg-white rounded-xl overflow-hidden"
+          activeOpacity={0.95}
+          className="overflow-hidden"
           style={{
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 8,
-            elevation: 3,
+            borderRadius: 20,
+            shadowColor: colorScheme === 'dark' ? '#000' : '#000',
+            shadowOffset: { width: 0, height: 8 },
+            shadowOpacity: colorScheme === 'dark' ? 0.3 : 0.12,
+            shadowRadius: 16,
+            elevation: 8,
             opacity: isOutOfStock ? 0.7 : 1,
             backgroundColor: colorScheme === 'dark' ? '#1a1a1a' : '#fff',
             borderWidth: colorScheme === 'dark' ? 1 : 0,
-            borderColor: colorScheme === 'dark' ? '#333' : 'transparent',
+            borderColor: colorScheme === 'dark' ? '#2a2a2a' : 'transparent',
+            transform: [{ scale: 1 }],
           }}
         >
           {/* Image Section */}
@@ -80,19 +82,27 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
             handleAddToCart={handleAddToCart}
           />
 
-          {/* Favorite Button */}
+          {/* Modern Floating Favorite Button */}
           <HapticIconButton
             onPress={handleToggleFavorite}
-            className="absolute top-2 right-2 w-8 h-8 justify-center items-center z-10"
+            className="absolute top-3 right-3 w-10 h-10 justify-center items-center z-10"
             style={{
-              backgroundColor: "transparent",
+              backgroundColor: colorScheme === 'dark' 
+                ? 'rgba(42, 42, 42, 0.9)' 
+                : 'rgba(255, 255, 255, 0.9)',
               borderRadius: 20,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.1,
+              shadowRadius: 8,
+              elevation: 4,
+              backdropFilter: 'blur(10px)',
             }}
             hapticType="light"
           >
             <Ionicons
               name={isProductFavorite ? "heart" : "heart-outline"}
-              size={20}
+              size={18}
               color={
                 isProductFavorite
                   ? colors.danger
