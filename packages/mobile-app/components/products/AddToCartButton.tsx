@@ -3,8 +3,10 @@
 //  Created by Ahmet on 23.07.2025.
 
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import React, { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { ColorSchemeName, TouchableOpacity, View } from "react-native";
+import { useHaptics } from "@/hooks/useHaptics";
 import Animated, {
   Easing,
   interpolateColor,
@@ -24,7 +26,11 @@ interface AddToCartButtonProps {
   disabled?: boolean;
   colorScheme: ColorSchemeName;
   colors: any;
-  price: string;
+  price?: string;
+  showPrice?: boolean;
+  customText?: string;
+  isAlreadyAdded?: boolean;
+  size?: 'small' | 'medium' | 'large';
 }
 
 export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
@@ -33,9 +39,15 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   colorScheme,
   colors,
   price,
+  showPrice = true,
+  customText,
+  isAlreadyAdded = false,
+  size = 'small',
 }) => {
+  const { t } = useTranslation();
+  const { triggerHaptic } = useHaptics();
   const [isLoading, setIsLoading] = React.useState(false);
-  const [isSuccess, setIsSuccess] = React.useState(false);
+  const [isSuccess, setIsSuccess] = React.useState(isAlreadyAdded);
   
   // Animation values
   const loadingProgress = useSharedValue(0);
@@ -44,6 +56,14 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   const buttonScale = useSharedValue(1);
   const iconRotation = useSharedValue(0);
   const bgColorProgress = useSharedValue(0);
+
+  // Eğer component baştan "added" durumunda açılıyorsa animasyonları ayarla
+  useEffect(() => {
+    if (isAlreadyAdded) {
+      successOpacity.value = 1;
+      bgColorProgress.value = 1;
+    }
+  }, [isAlreadyAdded]);
 
   const handlePress = async (e: any) => {
     if (disabled || isLoading || isSuccess) return;
@@ -77,6 +97,9 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
       // Success animation
       setIsLoading(false);
       setIsSuccess(true);
+      
+      // Sepete ekleme başarılı olunca hafif titreşim
+      triggerHaptic("light", true);
       
       successScale.value = withSequence(
         withTiming(1.2, { duration: 200 }),
@@ -131,16 +154,28 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
     opacity: successOpacity.value,
   }));
 
+  // Size'a göre padding ve font ayarları - BaseButton ile uyumlu
+  const sizeStyles = {
+    small: { paddingX: 12, paddingY: 8, fontSize: 14, iconSize: 16 },
+    medium: { paddingX: 24, paddingY: 12, fontSize: 16, iconSize: 18 },
+    large: { paddingX: 24, paddingY: 12, fontSize: 16, iconSize: 18 },
+  };
+
+  const currentSize = sizeStyles[size];
+
   return (
     <AnimatedTouchableOpacity
       className={`
-        relative overflow-hidden flex-row items-center justify-between px-3 py-2 rounded-xl
+        relative overflow-hidden flex-row items-center justify-between rounded-xl
         ${disabled ? 'opacity-60' : ''}
       `}
+      style={[buttonAnimatedStyle, {
+        paddingHorizontal: currentSize.paddingX,
+        paddingVertical: currentSize.paddingY,
+      }]}
       onPress={handlePress}
       disabled={disabled || isSuccess}
       activeOpacity={0.8}
-      style={buttonAnimatedStyle}
     >
       {/* Loading Progress Bar */}
       <Animated.View
@@ -154,27 +189,35 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
       {!isSuccess ? (
         <>
           {/* Price */}
-          <ThemedText
-            className="text-lg font-bold z-10"
-            style={{ color: colors.tint }}
-          >
-            {price}
-          </ThemedText>
+          {showPrice && price && (
+            <ThemedText
+              className="font-bold z-10"
+              style={{ 
+                color: colors.tint,
+                fontSize: currentSize.fontSize 
+              }}
+            >
+              {price}
+            </ThemedText>
+          )}
 
           {/* Add Button with Icon */}
           <View className="flex-row items-center z-10">
             <Animated.View style={iconAnimatedStyle}>
               <Ionicons 
                 name={isLoading ? "sync" : "add"} 
-                size={16} 
+                size={currentSize.iconSize} 
                 color={disabled ? colors.mediumGray : colors.tint} 
               />
             </Animated.View>
             <ThemedText
-              className="text-sm font-medium ml-1"
-              style={{ color: disabled ? colors.mediumGray : colors.tint }}
+              className="font-medium ml-1"
+              style={{ 
+                color: disabled ? colors.mediumGray : colors.tint,
+                fontSize: currentSize.fontSize
+              }}
             >
-              {isLoading ? "Ekleniyor" : "Ekle"}
+              {customText || (isLoading ? t("product_detail.purchase.adding_to_cart") : t("common.add"))}
             </ThemedText>
           </View>
         </>
@@ -184,15 +227,18 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
           style={successIconStyle}
         >
           <AnimatedCheckmark 
-            size={18} 
+            size={currentSize.iconSize} 
             color={colors.success || colors.tint} 
             visible={isSuccess}
           />
           <ThemedText
-            className="text-sm font-semibold ml-1"
-            style={{ color: colors.success || colors.tint }}
+            className="font-semibold ml-1"
+            style={{ 
+              color: colors.success || colors.tint,
+              fontSize: currentSize.fontSize
+            }}
           >
-            {"Sepete Eklendi"}
+            {customText || t("product_detail.purchase.added_to_cart")}
           </ThemedText>
         </Animated.View>
       )}

@@ -3,7 +3,8 @@
 //  Created by Ahmet on 13.06.2025.
 
 import { Ionicons } from "@expo/vector-icons";
-import React, { useState } from "react";
+import { Link } from "expo-router";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -15,6 +16,7 @@ import Colors from "@/constants/Colors";
 import { useCart } from "@/context/CartContext";
 import { Product } from "@/context/ProductContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useHaptics } from "@/hooks/useHaptics";
 import { useToast } from "@/hooks/useToast";
 
 interface PurchaseSectionProps {
@@ -28,17 +30,38 @@ export function PurchaseSection({ product }: PurchaseSectionProps) {
   const { t } = useTranslation();
   const { addToCart, cartItems } = useCart();
   const { showToast } = useToast();
+  const { triggerHaptic } = useHaptics();
 
-  const [quantity, setQuantity] = useState("1");
+  // Ürün sepette mi kontrol et
+  const existingCartItem = cartItems.find(
+    (item) => item.product.id === product.id
+  );
+  
+  const [quantity, setQuantity] = useState(
+    existingCartItem ? String(existingCartItem.quantity) : "1"
+  );
   const [isAdded, setIsAdded] = useState(false);
+
+  // Sepet güncellendiğinde miktarı güncelle
+  useEffect(() => {
+    const currentCartItem = cartItems.find(
+      (item) => item.product.id === product.id
+    );
+    if (currentCartItem) {
+      setQuantity(String(currentCartItem.quantity));
+    } else {
+      // Ürün sepetten çıkarıldıysa miktarı 1'e sıfırla
+      setQuantity("1");
+    }
+  }, [cartItems, product.id]);
 
   const handleAddToCart = async () => {
     const numQuantity = parseInt(quantity, 10) || 1;
-
-    const existingItem = cartItems.find(
+    
+    const cartItem = cartItems.find(
       (item) => item.product.id === product.id
     );
-    const existingQuantity = existingItem ? existingItem.quantity : 0;
+    const existingQuantity = cartItem ? cartItem.quantity : 0;
 
     if (existingQuantity === 0 && numQuantity > product.stock) {
       showToast(
@@ -47,15 +70,22 @@ export function PurchaseSection({ product }: PurchaseSectionProps) {
         }),
         "warning"
       );
-      return;
+      throw new Error("Stock limit exceeded");
     }
 
     try {
       await addToCart(product.id, numQuantity);
-      setIsAdded(true);
-      setTimeout(() => {
-        setIsAdded(false);
-      }, 2000);
+      
+      // Başarılı ekleme/güncelleme sonrası hafif titreşim
+      triggerHaptic("light", true);
+      
+      if (!cartItem) {
+        // Yeni ekleme ise geçici olarak "Sepete Eklendi" göster
+        setIsAdded(true);
+        setTimeout(() => {
+          setIsAdded(false);
+        }, 2000);
+      }
     } catch (error: any) {
       console.error("Sepete ekleme hatası:", error);
       
@@ -70,6 +100,7 @@ export function PurchaseSection({ product }: PurchaseSectionProps) {
         // Generic error
         showToast(t("product_detail.purchase.generic_error_message"), "error");
       }
+      throw error;
     }
   };
 
@@ -95,6 +126,13 @@ export function PurchaseSection({ product }: PurchaseSectionProps) {
   };
 
   const numericQuantity = parseInt(quantity, 10) || 0;
+  
+  // Buton durumunu belirle
+  const currentCartItem = cartItems.find(
+    (item) => item.product.id === product.id
+  );
+  const isInCart = !!currentCartItem;
+  const isSameQuantity = currentCartItem && currentCartItem.quantity === numericQuantity;
 
   return (
     <ThemedView
@@ -158,22 +196,38 @@ export function PurchaseSection({ product }: PurchaseSectionProps) {
           />
         </HapticIconButton>
       </View>
-      <BaseButton
-        className="flex-1 ml-2" // sabit yükseklik kaldırıldı, buton küçültüldü
-        variant={isAdded ? "success" : "primary"}
-        size="medium"
-        onPress={handleAddToCart}
-        hapticType={isAdded ? "success" : "medium"}
-        disabled={product.stock === 0 || numericQuantity === 0}
-      >
-        <Text className="text-base font-bold" style={{ color: "#FFFFFF" }}>
-          {product.stock === 0
-            ? t("product_detail.purchase.out_of_stock")
-            : isAdded
-              ? t("product_detail.purchase.added_to_cart")
-              : t("product_detail.purchase.add_to_cart")}
-        </Text>
-      </BaseButton>
+      {isInCart && isSameQuantity ? (
+        <Link href="/(tabs)/cart" asChild className="flex-1 ml-2">
+          <BaseButton
+            variant="success"
+            size="medium"
+            hapticType="medium"
+          >
+            <Text className="text-base font-bold" style={{ color: "#FFFFFF" }}>
+              {t("product_detail.purchase.go_to_cart")}
+            </Text>
+          </BaseButton>
+        </Link>
+      ) : (
+        <BaseButton
+          className="flex-1 ml-2"
+          variant={isAdded ? "success" : "primary"}
+          size="medium"
+          onPress={handleAddToCart}
+          hapticType={isAdded ? "success" : "medium"}
+          disabled={product.stock === 0 || numericQuantity === 0}
+        >
+          <Text className="text-base font-bold" style={{ color: "#FFFFFF" }}>
+            {product.stock === 0
+              ? t("product_detail.purchase.out_of_stock")
+              : isAdded
+                ? t("product_detail.purchase.added_to_cart")
+                : isInCart
+                  ? t("product_detail.purchase.update_cart")
+                  : t("product_detail.purchase.add_to_cart")}
+          </Text>
+        </BaseButton>
+      )}
     </ThemedView>
   );
 }

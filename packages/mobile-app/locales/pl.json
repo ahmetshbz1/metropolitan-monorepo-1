@@ -593,7 +593,10 @@
     },
     "purchase": {
       "add_to_cart": "Dodaj do koszyka",
+      "adding_to_cart": "Dodawanie",
       "added_to_cart": "Dodano do koszyka",
+      "update_cart": "Aktualizuj",
+      "go_to_cart": "Przejdź do koszyka",
       "out_of_stock": "Brak w magazynie",
       "stock_error_title": "Przekroczono Limit Stanu Magazynowego",
       "stock_error_message": "Możesz dodać maksymalnie {{count}} sztuk tego produktu.",
@@ -651,7 +654,8 @@
     "warning": "Ostrzeżenie",
     "info": "Informacja",
     "change": "Zmień",
-    "clear": "Wyczyść"
+    "clear": "Wyczyść",
+    "add": "Dodaj"
   },
   "general": {
     "under_construction": "W budowie",

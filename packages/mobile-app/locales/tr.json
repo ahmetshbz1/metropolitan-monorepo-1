@@ -634,7 +634,10 @@
     },
     "purchase": {
       "add_to_cart": "Sepete Ekle",
+      "adding_to_cart": "Ekleniyor",
       "added_to_cart": "Sepete Eklendi",
+      "update_cart": "Güncelle",
+      "go_to_cart": "Sepete Git",
       "out_of_stock": "Stok Tükendi",
       "stock_error_title": "Stok Limiti Aşıldı",
       "stock_error_message": "Bu üründen en fazla {{count}} adet alabilirsiniz.",
