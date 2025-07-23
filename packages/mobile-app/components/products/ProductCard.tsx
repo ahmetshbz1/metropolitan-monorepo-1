@@ -8,9 +8,16 @@ import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import React from "react";
 import { TouchableOpacity, View } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
 import { HapticIconButton } from "../HapticButton";
 import { ProductCardContent } from "./ProductCardContent";
 import { ProductCardImage } from "./ProductCardImage";
+
+const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
 interface ProductCardProps {
   product: Product;
@@ -34,6 +41,27 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
 
   const isHorizontal = variant === 'horizontal';
   
+  // Animation values
+  const scale = useSharedValue(1);
+  const translateY = useSharedValue(0);
+  
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { scale: scale.value },
+      { translateY: translateY.value },
+    ],
+  }));
+  
+  const handlePressIn = () => {
+    scale.value = withSpring(0.97, { damping: 15, stiffness: 400 });
+    translateY.value = withSpring(2, { damping: 15, stiffness: 400 });
+  };
+  
+  const handlePressOut = () => {
+    scale.value = withSpring(1, { damping: 15, stiffness: 400 });
+    translateY.value = withSpring(0, { damping: 15, stiffness: 400 });
+  };
+  
   return (
     <View 
       className={isHorizontal ? "mr-3" : "mx-1 mb-3"} 
@@ -46,8 +74,10 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
         }}
         asChild
       >
-        <TouchableOpacity
-          activeOpacity={0.92}
+        <AnimatedTouchableOpacity
+          activeOpacity={1}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
           className={`
             overflow-hidden rounded-3xl
             ${colorScheme === 'dark' 
@@ -56,14 +86,13 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
             }
             ${isOutOfStock ? 'opacity-65' : ''}
           `}
-          style={{
+          style={[animatedStyle, {
             shadowColor: colorScheme === 'dark' ? '#000' : colors.tint,
             shadowOffset: { width: 0, height: 6 },
             shadowOpacity: colorScheme === 'dark' ? 0.3 : 0.12,
             shadowRadius: 12,
             elevation: 6,
-            transform: [{ scale: 1 }],
-          }}
+          }]}
         >
           {/* Image Section */}
           <ProductCardImage
@@ -115,7 +144,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
               }
             />
           </HapticIconButton>
-        </TouchableOpacity>
+        </AnimatedTouchableOpacity>
       </Link>
     </View>
   );

@@ -28,12 +28,8 @@ export const useProductCard = (product: Product) => {
     e.preventDefault();
     e.stopPropagation();
 
-    try {
-      triggerHaptic("light");
-      await addToCart(product.id, 1);
-    } catch (error) {
-      console.error("Sepete ekleme hatası:", error);
-    }
+    triggerHaptic("light");
+    await addToCart(product.id, 1);
   };
 
   const handleToggleFavorite = () => {

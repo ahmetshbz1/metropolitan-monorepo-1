@@ -3,11 +3,11 @@
 //  Created by Ahmet on 26.06.2025. Edited on 23.07.2025.
 
 import { formatPrice } from "@/core/utils";
-import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ColorSchemeName, TouchableOpacity, View } from "react-native";
+import { ColorSchemeName, View } from "react-native";
 import { ThemedText } from "../ThemedText";
+import { AddToCartButton } from "./AddToCartButton";
 
 interface ProductCardContentProps {
   product: any;
@@ -16,7 +16,7 @@ interface ProductCardContentProps {
   colors: any;
   isOutOfStock: boolean;
   isLowStock: boolean;
-  handleAddToCart: (e: any) => void;
+  handleAddToCart: (e: any) => Promise<void>;
 }
 
 export const ProductCardContent: React.FC<ProductCardContentProps> = ({
@@ -73,39 +73,14 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
       </ThemedText>
 
       {/* Price and Add to Cart Badge - Bottom */}
-      <TouchableOpacity
-        className={`
-          flex-row items-center justify-between px-3 py-2 rounded-xl
-          ${colorScheme === 'dark' ? 'bg-neutral-800' : 'bg-gray-50'}
-          ${isOutOfStock ? 'opacity-60' : ''}
-        `}
+      <AddToCartButton
         onPress={handleAddToCart}
         disabled={isOutOfStock}
-        activeOpacity={0.8}
-      >
-        {/* Price */}
-        <ThemedText
-          className="text-lg font-bold"
-          style={{ color: colors.tint }}
-        >
-          {formatPrice(product.price, product.currency)}
-        </ThemedText>
-
-        {/* Add Button */}
-        <View className="flex-row items-center">
-          <Ionicons 
-            name="add" 
-            size={16} 
-            color={isOutOfStock ? colors.mediumGray : colors.tint} 
-          />
-          <ThemedText
-            className="text-sm font-medium ml-1"
-            style={{ color: isOutOfStock ? colors.mediumGray : colors.tint }}
-          >
-            {t("common.add")}
-          </ThemedText>
-        </View>
-      </TouchableOpacity>
+        colorScheme={colorScheme}
+        colors={colors}
+        price={formatPrice(product.price, product.currency)}
+        currency={product.currency}
+      />
 
       {/* Stock Status Indicators */}
       {isLowStock && !isOutOfStock && (
