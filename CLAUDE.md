@@ -197,7 +197,13 @@ bun test src/tests/race-condition.test.ts  # Run specific test
 - `yarn start`
 - Herhangi bir sunucu başlatan komut
 
-**KURAL:** Ahmet aksini talep etmedikçe hiçbir development server komutu çalıştırılmayacak. Bu kesinlikle yasaktır.
+**GIT YASAĞI:**
+- `git add`
+- `git commit`
+- `git push`
+- Herhangi bir git komutu
+
+**KURAL:** Ahmet "commit at" diye açıkça talep etmedikçe hiçbir git komutu çalıştırılmayacak. Bu kesinlikle yasaktır.
 
 ### State Management
 - **Mobile**: React Context API (NOT Zustand despite package.json)
