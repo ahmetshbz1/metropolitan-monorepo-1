@@ -37,25 +37,36 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
         ${colorScheme === 'dark' ? 'bg-neutral-900' : 'bg-white'}
       `}
     >
-      {/* Category */}
-      <ThemedText
-        className="text-xs font-medium mb-1"
-        style={{
-          color: colors.mediumGray,
-        }}
-        numberOfLines={1}
-      >
-        {categoryName || product.category}
-      </ThemedText>
+      {/* Category Badge */}
+      <View className="mb-2">
+        <View 
+          className={`
+            self-start px-2 py-1 rounded-full
+            ${colorScheme === 'dark' ? 'bg-neutral-800' : 'bg-gray-100'}
+          `}
+        >
+          <ThemedText
+            className="text-xs font-medium uppercase tracking-wide"
+            style={{
+              color: colors.tint,
+              fontSize: 10,
+            }}
+            numberOfLines={1}
+          >
+            {categoryName || product.category}
+          </ThemedText>
+        </View>
+      </View>
 
       {/* Product Name */}
       <ThemedText
-        className="text-sm font-semibold mb-3"
+        className="text-base font-bold mb-4"
         numberOfLines={2}
         style={{
-          lineHeight: 18,
-          height: 36,
-          color: colorScheme === 'dark' ? '#fff' : '#000',
+          lineHeight: 20,
+          height: 40,
+          color: colorScheme === 'dark' ? '#fff' : '#1a1a1a',
+          letterSpacing: -0.2,
         }}
       >
         {product.name}
@@ -96,13 +107,17 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
         </View>
       </TouchableOpacity>
 
-      {/* Low stock indicator */}
+      {/* Stock Status Indicators */}
       {isLowStock && !isOutOfStock && (
-        <ThemedText
-          className="text-xs font-medium mt-2 text-center text-amber-500"
-        >
-          {t("product.low_stock")}
-        </ThemedText>
+        <View className="mt-3 flex-row items-center justify-center">
+          <View className="w-2 h-2 bg-amber-500 rounded-full mr-2" />
+          <ThemedText
+            className="text-xs font-semibold text-amber-500"
+            style={{ letterSpacing: 0.3 }}
+          >
+            {t("product.low_stock")}
+          </ThemedText>
+        </View>
       )}
     </View>
   );

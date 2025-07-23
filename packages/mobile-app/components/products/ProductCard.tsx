@@ -47,21 +47,22 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
         asChild
       >
         <TouchableOpacity
-          activeOpacity={0.9}
+          activeOpacity={0.92}
           className={`
-            overflow-hidden rounded-2xl
+            overflow-hidden rounded-3xl
             ${colorScheme === 'dark' 
-              ? 'bg-neutral-900 border border-neutral-800' 
-              : 'bg-white border-0'
+              ? 'bg-neutral-900 border border-neutral-800/50' 
+              : 'bg-white border border-gray-100'
             }
-            ${isOutOfStock ? 'opacity-70' : ''}
+            ${isOutOfStock ? 'opacity-65' : ''}
           `}
           style={{
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: colorScheme === 'dark' ? 0.2 : 0.08,
-            shadowRadius: 8,
-            elevation: 4,
+            shadowColor: colorScheme === 'dark' ? '#000' : colors.tint,
+            shadowOffset: { width: 0, height: 6 },
+            shadowOpacity: colorScheme === 'dark' ? 0.3 : 0.12,
+            shadowRadius: 12,
+            elevation: 6,
+            transform: [{ scale: 1 }],
           }}
         >
           {/* Image Section */}
@@ -83,22 +84,22 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
             handleAddToCart={handleAddToCart}
           />
 
-          {/* Modern Floating Favorite Button */}
+          {/* Simple Floating Favorite Button */}
           <HapticIconButton
             onPress={handleToggleFavorite}
             className={`
               absolute top-3 right-3 w-10 h-10 justify-center items-center z-10 rounded-full
               ${colorScheme === 'dark' 
-                ? 'bg-neutral-800/90' 
-                : 'bg-white/90'
+                ? 'bg-neutral-800' 
+                : 'bg-white'
               }
             `}
             style={{
               shadowColor: '#000',
-              shadowOffset: { width: 0, height: 4 },
+              shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.1,
-              shadowRadius: 8,
-              elevation: 4,
+              shadowRadius: 4,
+              elevation: 2,
             }}
             hapticType="light"
           >

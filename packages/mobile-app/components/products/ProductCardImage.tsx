@@ -29,18 +29,18 @@ export const ProductCardImage: React.FC<ProductCardImageProps> = ({
     <View 
       className="relative items-center justify-center overflow-hidden"
       style={{ 
-        height: 200,
+        aspectRatio: 1,
         backgroundColor: colorScheme === 'dark' ? '#1f1f1f' : '#f8f8f8',
         borderTopLeftRadius: 16,
         borderTopRightRadius: 16,
       }}
     >
-      {/* Modern gradient background */}
+      {/* Enhanced gradient background */}
       <LinearGradient
         colors={
           colorScheme === 'dark' 
-            ? ['#2a2a2a', '#1f1f1f']
-            : ['#fafafa', '#f0f0f0']
+            ? ['#2a2a2a', '#1a1a1a', '#0f0f0f']
+            : ['#ffffff', '#f8f9fa', '#f1f3f4']
         }
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
@@ -50,17 +50,22 @@ export const ProductCardImage: React.FC<ProductCardImageProps> = ({
       <Image
         source={{ uri: product.image }}
         style={{
-          width: '90%',
-          height: '90%',
+          width: '85%',
+          height: '85%',
         }}
         contentFit="contain"
-        transition={300}
+        transition={400}
+        cachePolicy="memory-disk"
       />
 
-      {/* Subtle gradient overlay for better contrast */}
+      {/* Enhanced gradient overlay for depth */}
       <LinearGradient
-        colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.03)']}
-        start={{ x: 0, y: 0.6 }}
+        colors={
+          colorScheme === 'dark'
+            ? ['rgba(255,255,255,0)', 'rgba(255,255,255,0.02)']
+            : ['rgba(0,0,0,0)', 'rgba(0,0,0,0.04)']
+        }
+        start={{ x: 0, y: 0.5 }}
         end={{ x: 0, y: 1 }}
         className="absolute inset-0"
         pointerEvents="none"
