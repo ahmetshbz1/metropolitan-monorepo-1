@@ -31,8 +31,8 @@ export const ProductCardImage: React.FC<ProductCardImageProps> = ({
       style={{ 
         height: 200,
         backgroundColor: colorScheme === 'dark' ? '#1f1f1f' : '#f8f8f8',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
+        borderTopLeftRadius: 16,
+        borderTopRightRadius: 16,
       }}
     >
       {/* Modern gradient background */}

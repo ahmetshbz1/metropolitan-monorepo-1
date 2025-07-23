@@ -1,6 +1,6 @@
 //  "ProductCardContent.tsx"
 //  metropolitan app
-//  Created by Ahmet on 26.06.2025. Edited on 19.07.2025.
+//  Created by Ahmet on 26.06.2025. Edited on 23.07.2025.
 
 import { Product } from "@/context/ProductContext";
 import { formatPrice } from "@/core/utils";
@@ -46,7 +46,7 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
 
       {/* Product Name */}
       <ThemedText
-        className="text-sm font-semibold mb-2"
+        className="text-sm font-semibold mb-3"
         numberOfLines={2}
         style={{
           lineHeight: 18,
@@ -57,38 +57,58 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
         {product.name}
       </ThemedText>
 
-      {/* Price and Add to Cart */}
-      <View className="flex-row justify-between items-center">
-        <View className="flex-1">
-          <ThemedText
-            className="text-lg font-bold"
-            style={{
-              color: colors.tint,
-            }}
-          >
-            {formatPrice(product.price, product.currency)}
-          </ThemedText>
-        </View>
-
-        {/* Add to Cart Button - Clean style */}
-        <TouchableOpacity
-          className="flex-row items-center justify-center px-3 py-1.5 rounded-lg ml-2"
+      {/* Price and Add to Cart Badge - Bottom */}
+      <TouchableOpacity
+        className="flex-row items-center justify-between px-3 py-2"
+        style={{
+          backgroundColor: colorScheme === 'dark' ? '#2a2a2a' : '#f8f8f8',
+          borderRadius: 12,
+          opacity: isOutOfStock ? 0.6 : 1,
+        }}
+        onPress={handleAddToCart}
+        disabled={isOutOfStock}
+        activeOpacity={0.8}
+      >
+        {/* Price */}
+        <ThemedText
+          className="text-lg font-bold"
           style={{
-            backgroundColor: isOutOfStock ? colors.lightGray : colors.tint,
-            opacity: isOutOfStock ? 0.5 : 1,
+            color: colors.tint,
           }}
-          onPress={handleAddToCart}
-          disabled={isOutOfStock}
         >
-          <Ionicons name="add" size={16} color={isOutOfStock ? colors.darkGray : "#fff"} />
+          {formatPrice(product.price, product.currency)}
+        </ThemedText>
+
+        {/* Add Button */}
+        <View className="flex-row items-center">
+          <Ionicons 
+            name="add" 
+            size={16} 
+            color={isOutOfStock ? colors.mediumGray : colors.tint} 
+          />
           <ThemedText
-            className="text-xs font-medium ml-1"
-            style={{ color: isOutOfStock ? colors.darkGray : "#fff" }}
+            className="text-sm font-medium ml-1"
+            style={{ 
+              color: isOutOfStock ? colors.mediumGray : colors.tint,
+            }}
           >
             {t("common.add")}
           </ThemedText>
-        </TouchableOpacity>
-      </View>
+        </View>
+      </TouchableOpacity>
+
+      {/* Low stock indicator */}
+      {isLowStock && !isOutOfStock && (
+        <ThemedText
+          className="text-xs font-medium mt-2"
+          style={{
+            color: '#f59e0b',
+            textAlign: 'center',
+          }}
+        >
+          {t("product.low_stock")}
+        </ThemedText>
+      )}
     </View>
   );
 };

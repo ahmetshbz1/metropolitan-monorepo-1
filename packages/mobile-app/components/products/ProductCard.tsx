@@ -47,20 +47,19 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
         asChild
       >
         <TouchableOpacity
-          activeOpacity={0.95}
+          activeOpacity={0.9}
           className="overflow-hidden"
           style={{
-            borderRadius: 20,
+            borderRadius: 16,
             shadowColor: colorScheme === 'dark' ? '#000' : '#000',
-            shadowOffset: { width: 0, height: 8 },
-            shadowOpacity: colorScheme === 'dark' ? 0.3 : 0.12,
-            shadowRadius: 16,
-            elevation: 8,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: colorScheme === 'dark' ? 0.2 : 0.08,
+            shadowRadius: 8,
+            elevation: 4,
             opacity: isOutOfStock ? 0.7 : 1,
             backgroundColor: colorScheme === 'dark' ? '#1a1a1a' : '#fff',
             borderWidth: colorScheme === 'dark' ? 1 : 0,
             borderColor: colorScheme === 'dark' ? '#2a2a2a' : 'transparent',
-            transform: [{ scale: 1 }],
           }}
         >
           {/* Image Section */}
