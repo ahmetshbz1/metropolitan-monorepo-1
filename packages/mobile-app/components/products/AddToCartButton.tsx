@@ -49,6 +49,9 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   const [isLoading, setIsLoading] = React.useState(false);
   const [isSuccess, setIsSuccess] = React.useState(isAlreadyAdded);
   
+  // Race condition koruması için ref
+  const isProcessingRef = React.useRef(false);
+  
   // Animation values
   const loadingProgress = useSharedValue(0);
   const successScale = useSharedValue(1);
@@ -66,7 +69,10 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   }, [isAlreadyAdded]);
 
   const handlePress = async (e: any) => {
-    if (disabled || isLoading || isSuccess) return;
+    if (disabled || isLoading || isSuccess || isProcessingRef.current) return;
+    
+    // Race condition koruması
+    isProcessingRef.current = true;
     
     e.preventDefault();
     e.stopPropagation();
@@ -120,6 +126,9 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
       );
       loadingProgress.value = withTiming(0, { duration: 200 });
       iconRotation.value = withTiming(0, { duration: 200 });
+    } finally {
+      // Race condition korumasını kaldır
+      isProcessingRef.current = false;
     }
   };
 

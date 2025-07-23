@@ -4,7 +4,7 @@
 
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Text, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -41,6 +41,7 @@ export function PurchaseSection({ product }: PurchaseSectionProps) {
     existingCartItem ? String(existingCartItem.quantity) : "1"
   );
   const [isAdded, setIsAdded] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Sepet güncellendiğinde miktarı güncelle
   useEffect(() => {
@@ -54,6 +55,16 @@ export function PurchaseSection({ product }: PurchaseSectionProps) {
       setQuantity("1");
     }
   }, [cartItems, product.id]);
+
+  // Cleanup için useEffect
+  useEffect(() => {
+    return () => {
+      // Component unmount olduğunda timeout'u temizle
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleAddToCart = async () => {
     const numQuantity = parseInt(quantity, 10) || 1;
@@ -82,8 +93,16 @@ export function PurchaseSection({ product }: PurchaseSectionProps) {
       if (!cartItem) {
         // Yeni ekleme ise geçici olarak "Sepete Eklendi" göster
         setIsAdded(true);
-        setTimeout(() => {
+        
+        // Önceki timeout'u temizle
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+        
+        // Yeni timeout oluştur
+        timeoutRef.current = setTimeout(() => {
           setIsAdded(false);
+          timeoutRef.current = null;
         }, 2000);
       }
     } catch (error: any) {
