@@ -17,6 +17,7 @@ interface ProductCardContentProps {
   colors: any;
   isOutOfStock: boolean;
   isLowStock: boolean;
+  isProductInCart: boolean;
   handleAddToCart: (e: any) => Promise<void>;
 }
 
@@ -27,6 +28,7 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
   colors,
   isOutOfStock,
   isLowStock,
+  isProductInCart,
   handleAddToCart,
 }) => {
   const { t } = useTranslation();
@@ -101,6 +103,7 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
         price={formatPrice(product.price, product.currency)}
         currency={product.currency}
         outOfStock={isOutOfStock}
+        isAlreadyAdded={isProductInCart}
       />
 
       {/* Stock Status Indicators */}

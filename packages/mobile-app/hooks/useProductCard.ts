@@ -4,13 +4,14 @@
 
 import { useCart } from "@/context/CartContext";
 import { useFavorites } from "@/context/FavoritesContext";
-import { Product, useProducts } from "@/context/ProductContext";
+import { useProducts } from "@/context/ProductContext";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useTheme } from "@/hooks/useTheme";
+import { Product } from "@metropolitan/shared";
 
 export const useProductCard = (product: Product) => {
   const { colors, colorScheme } = useTheme();
-  const { addToCart } = useCart();
+  const { addToCart, cartItems } = useCart();
   const { triggerHaptic } = useHaptics();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { categories } = useProducts();
@@ -22,6 +23,7 @@ export const useProductCard = (product: Product) => {
   )?.name;
   const isLowStock = product.stock < 10;
   const isOutOfStock = product.stock === 0;
+  const isProductInCart = cartItems.some(item => item.product.id === product.id);
 
   // Actions
   const handleAddToCart = async (e: any) => {
@@ -44,6 +46,7 @@ export const useProductCard = (product: Product) => {
     categoryName,
     isLowStock,
     isOutOfStock,
+    isProductInCart,
 
     // Actions
     handleAddToCart,

@@ -36,6 +36,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
     categoryName,
     isLowStock,
     isOutOfStock,
+    isProductInCart,
     handleAddToCart,
     handleToggleFavorite,
   } = useProductCard(product);
@@ -104,6 +105,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
             colors={colors}
             isOutOfStock={isOutOfStock}
             isLowStock={isLowStock}
+            isProductInCart={isProductInCart}
             handleAddToCart={handleAddToCart}
           />
 

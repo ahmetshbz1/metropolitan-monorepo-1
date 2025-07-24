@@ -66,10 +66,15 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   // Eğer component baştan "added" durumunda açılıyorsa animasyonları ayarla
   useEffect(() => {
     if (isAlreadyAdded) {
+      setIsSuccess(true);
       successOpacity.value = 1;
       bgColorProgress.value = 1;
+    } else {
+      setIsSuccess(false);
+      successOpacity.value = 0;
+      bgColorProgress.value = 0;
     }
-  }, [isAlreadyAdded]);
+  }, [isAlreadyAdded, successOpacity, bgColorProgress]);
 
   const handlePress = async (e: any) => {
     if (disabled || isLoading || isSuccess || isProcessingRef.current) return;
@@ -142,7 +147,7 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
       [0, 1],
       [
         colorScheme === "dark" ? "#262626" : "#f9fafb",
-        colorScheme === "dark" ? "#065f46" : "#d1fae5",
+        colorScheme === "dark" ? "#065f46" : "#a7f3d0",
       ]
     );
 
@@ -251,13 +256,13 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
         >
           <AnimatedCheckmark
             size={currentSize.iconSize}
-            color={colors.success || colors.tint}
+            color={colorScheme === "dark" ? "#FFFFFF" : "#059669"}
             visible={isSuccess}
           />
           <ThemedText
             className="font-bold ml-1"
             style={{
-              color: colors.success || colors.tint,
+              color: colorScheme === "dark" ? "#FFFFFF" : "#059669",
               fontSize: currentSize.fontSize * 0.92,
             }}
           >
