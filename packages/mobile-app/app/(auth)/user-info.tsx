@@ -3,7 +3,8 @@
 //  Created by Ahmet on 26.06.2025.
 //  Modified by Ahmet on 22.07.2025. - Professional keyboard handling
 
-import React, { useRef, useMemo } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { TextInput, View, useColorScheme } from "react-native";
 import {
@@ -11,7 +12,6 @@ import {
   KeyboardStickyView,
 } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useLocalSearchParams } from "expo-router";
 
 import { ThemedView } from "@/components/ThemedView";
 import { AuthHeader } from "@/components/auth/AuthHeader";
@@ -24,6 +24,7 @@ import { useUserInfoForm } from "@/hooks/useUserInfoForm";
 
 const UserInfoScreen = () => {
   const { type } = useLocalSearchParams<{ type?: string }>();
+  const router = useRouter();
   const isB2B = type === "b2b";
   const colorScheme = useColorScheme() ?? "light";
   const themeColors = Colors[colorScheme];
@@ -52,6 +53,7 @@ const UserInfoScreen = () => {
     nipWarning,
     canRegister,
     termsAccepted,
+    setTermsAccepted,
     isFormValid,
     isSaving,
     resetNipStatus,
@@ -60,29 +62,35 @@ const UserInfoScreen = () => {
   } = useUserInfoForm(isB2B);
 
   // Memoized keyboard configuration for stability
-  const keyboardConfig = useMemo(() => ({
-    style: { flex: 1 },
-    keyboardShouldPersistTaps: "handled" as const,
-    showsVerticalScrollIndicator: false,
-    contentContainerStyle: {
-      paddingHorizontal: 24,
-      paddingTop: 20,
-      paddingBottom: 20,
-    },
-    // Stable scroll configuration
-    bottomOffset: 320, // Footer + space for NIP + CompanyDataCard + Terms visibility
-    extraKeyboardSpace: 0, // No extra space to prevent jumpy scroll
-    enableOnAndroid: true,
-    enableResetScrollToCoords: false, // Prevent automatic scroll reset
-  }), []);
+  const keyboardConfig = useMemo(
+    () => ({
+      style: { flex: 1 },
+      keyboardShouldPersistTaps: "handled" as const,
+      showsVerticalScrollIndicator: false,
+      contentContainerStyle: {
+        paddingHorizontal: 24,
+        paddingTop: 20,
+        paddingBottom: 20,
+      },
+      // Stable scroll configuration
+      bottomOffset: 320, // Footer + space for NIP + CompanyDataCard + Terms visibility
+      extraKeyboardSpace: 0, // No extra space to prevent jumpy scroll
+      enableOnAndroid: true,
+      enableResetScrollToCoords: false, // Prevent automatic scroll reset
+    }),
+    []
+  );
 
   // Memoized footer style for performance
-  const footerStyle = useMemo(() => ({
-    backgroundColor: themeColors.background,
-    paddingHorizontal: 24,
-    paddingTop: 16,
-    paddingBottom: insets.bottom || 16,
-  }), [themeColors.background, insets.bottom]);
+  const footerStyle = useMemo(
+    () => ({
+      backgroundColor: themeColors.background,
+      paddingHorizontal: 24,
+      paddingTop: 16,
+      paddingBottom: insets.bottom || 16,
+    }),
+    [themeColors.background, insets.bottom]
+  );
 
   return (
     <ThemedView className="flex-1">
@@ -134,7 +142,7 @@ const UserInfoScreen = () => {
           <TermsSection
             termsAccepted={termsAccepted}
             onPress={() => {
-              // Navigation handled in TermsSection component
+              router.push("/terms");
             }}
             themeColors={themeColors}
             t={t}

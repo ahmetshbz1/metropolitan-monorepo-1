@@ -5,7 +5,7 @@
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "expo-router";
-import { useCallback, useState, startTransition } from "react";
+import { startTransition, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Keyboard } from "react-native";
 

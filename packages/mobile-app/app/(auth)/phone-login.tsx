@@ -87,7 +87,10 @@ const PhoneLoginScreen = () => {
               try {
                 await handleSendCode();
               } catch (error: any) {
-                showToast(error.message || t("phone_login.error_message"), "error");
+                showToast(
+                  error.message || t("phone_login.error_message"),
+                  "error"
+                );
               }
             }}
             title={t("phone_login.send_code_button")}

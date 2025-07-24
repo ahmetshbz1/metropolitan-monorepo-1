@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   TouchableOpacityProps,
   ViewStyle,
+  useColorScheme,
 } from "react-native";
 
 export type ButtonVariant =
@@ -54,6 +55,7 @@ export const BaseButton: React.FC<BaseButtonProps> = ({
 }) => {
   const { colors } = useTheme();
   const { withHapticFeedback } = useHaptics();
+  const colorScheme = useColorScheme();
 
   const handlePress = withHapticFeedback(onPress, hapticType);
 
@@ -132,20 +134,22 @@ export const BaseButton: React.FC<BaseButtonProps> = ({
         variant === "text" ||
         variant === "ghost"
         ? colors.disabled
-        : "#FFFFFF";
+        : colorScheme === "dark"
+          ? "#D1D5DB"
+          : "#FFFFFF";
     }
 
     switch (variant) {
       case "primary":
       case "danger":
       case "success":
-        return "#FFFFFF";
+        return colorScheme === "dark" ? "#D1D5DB" : "#FFFFFF";
       case "secondary":
       case "ghost":
       case "text":
         return colors.tint;
       default:
-        return "#FFFFFF";
+        return colorScheme === "dark" ? "#D1D5DB" : "#FFFFFF";
     }
   };
 
