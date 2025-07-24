@@ -112,11 +112,8 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
       // Sepete ekleme başarılı olunca hafif titreşim
       triggerHaptic("light", true);
 
-      successScale.value = withSequence(
-        withTiming(1.2, { duration: 200 }),
-        withSpring(1, { damping: 8, stiffness: 200 })
-      );
-
+      // Yumuşak geçiş animasyonu (zıplama yok)
+      successScale.value = withTiming(1, { duration: 200 });
       successOpacity.value = withTiming(1, { duration: 200 });
       bgColorProgress.value = withTiming(1, { duration: 300 });
     } catch {
