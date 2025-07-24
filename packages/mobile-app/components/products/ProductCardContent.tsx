@@ -31,24 +31,25 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
   const { t } = useTranslation();
 
   return (
-    <View 
+    <View
       className={`
         p-3
-        ${colorScheme === 'dark' ? 'bg-neutral-900' : 'bg-white'}
+        ${colorScheme === "dark" ? "bg-neutral-900" : "bg-white"}
       `}
     >
-      {/* Category Badge */}
-      <View className="mb-2">
-        <View 
+      {/* Category and Brand Badges */}
+      <View className="mb-2 flex-row gap-2">
+        {/* Category Badge */}
+        <View
           className={`
             self-start px-2 py-1 rounded-full
-            ${colorScheme === 'dark' ? 'bg-neutral-800' : 'bg-gray-100'}
+            ${colorScheme === "dark" ? "bg-neutral-800" : "bg-gray-100"}
           `}
         >
           <ThemedText
             className="text-xs font-medium uppercase tracking-wide"
             style={{
-              color: colors.tint,
+              color: colorScheme === "dark" ? colors.mediumGray : "#6b7280",
               fontSize: 10,
             }}
             numberOfLines={1}
@@ -56,6 +57,27 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
             {categoryName || product.category}
           </ThemedText>
         </View>
+
+        {/* Brand Badge */}
+        {product.brand && (
+          <View
+            className={`
+              self-start px-2 py-1 rounded-full
+              ${colorScheme === "dark" ? "bg-neutral-800" : "bg-gray-100"}
+            `}
+          >
+            <ThemedText
+              className="text-xs font-medium uppercase tracking-wide"
+              style={{
+                color: colorScheme === "dark" ? colors.mediumGray : "#6b7280",
+                fontSize: 10,
+              }}
+              numberOfLines={1}
+            >
+              {product.brand}
+            </ThemedText>
+          </View>
+        )}
       </View>
 
       {/* Product Name */}
@@ -65,7 +87,7 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
         style={{
           lineHeight: 20,
           height: 40,
-          color: colorScheme === 'dark' ? '#fff' : '#1a1a1a',
+          color: colorScheme === "dark" ? "#fff" : "#1a1a1a",
           letterSpacing: -0.2,
         }}
       >
