@@ -14,7 +14,7 @@
 
 // Ana turuncu renkler
 const PRIMARY_ORANGE = "#FF6900"; // Ana turuncu (Zalando tarzı)
-const PRIMARY_ORANGE_DARK = "#FF7A1A"; // Dark mode karşılığı
+const PRIMARY_ORANGE_DARK = "#FF7A1A"; // Dark mode karşılığı (daha canlı)
 
 export default {
   light: {
@@ -103,19 +103,19 @@ export default {
 
     // Tema renkleri
     tint: PRIMARY_ORANGE_DARK, // Dark mode turuncu
-    tintLight: "#FF9547", // Açık turuncu (dark mode)
-    tintDark: "#CC5200", // Koyu turuncu (dark mode)
+    tintLight: "#FF9547", // Açık turuncu (dark mode) - daha parlak
+    tintDark: "#E55A00", // Koyu turuncu (dark mode)
 
     // İkon renkleri
     icon: "#9CA3AF",
     tabIconDefault: "#9CA3AF",
     tabIconSelected: PRIMARY_ORANGE_DARK,
 
-    // Dark mode durum renkleri (daha parlak)
-    success: "#10B981", // Tailwind emerald-500
-    warning: "#F59E0B", // Tailwind amber-500
-    danger: "#EF4444", // Tailwind red-500
-    info: "#3B82F6", // Tailwind blue-500
+    // Dark mode durum renkleri (daha yumuşak)
+    success: "#10B981", // Tailwind emerald-500 (biraz daha parlak)
+    warning: "#D97706", // Tailwind amber-600 (daha koyu)
+    danger: "#DC2626", // Tailwind red-600 (daha koyu)
+    info: "#2563EB", // Tailwind blue-600 (daha koyu)
 
     // Status Badge Renkleri (Dark Mode)
     statusBadge: {

@@ -82,45 +82,30 @@ export const BaseButton: React.FC<BaseButtonProps> = ({
   // Variant configurations
   const getVariantStyle = (variant: ButtonVariant, isDisabled: boolean) => {
     const baseStyle = {
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.15,
-      shadowRadius: 8,
-      elevation: 6,
+      // Shadow'lar kaldırıldı - daha modern flat tasarım
     };
 
     switch (variant) {
       case "primary":
         return {
-          ...baseStyle,
           backgroundColor: isDisabled ? colors.disabled : colors.tint,
           borderWidth: 0,
-          shadowColor: isDisabled ? "#000" : colors.tint,
-          shadowOpacity: isDisabled ? 0.1 : 0.25,
         };
       case "secondary":
         return {
           backgroundColor: "transparent",
           borderWidth: 2,
           borderColor: isDisabled ? colors.disabled : colors.tint,
-          shadowColor: isDisabled ? "#000" : colors.tint,
-          shadowOpacity: isDisabled ? 0.05 : 0.15,
         };
       case "danger":
         return {
-          ...baseStyle,
           backgroundColor: isDisabled ? colors.disabled : colors.danger,
           borderWidth: 0,
-          shadowColor: isDisabled ? "#000" : colors.danger,
-          shadowOpacity: isDisabled ? 0.1 : 0.25,
         };
       case "success":
         return {
-          ...baseStyle,
           backgroundColor: isDisabled ? colors.disabled : colors.success,
           borderWidth: 0,
-          shadowColor: isDisabled ? "#000" : colors.success,
-          shadowOpacity: isDisabled ? 0.1 : 0.25,
         };
       case "ghost":
         return {
@@ -129,15 +114,11 @@ export const BaseButton: React.FC<BaseButtonProps> = ({
             : colors.tint + "15",
           borderWidth: 1,
           borderColor: isDisabled ? colors.disabled + "30" : colors.tint + "30",
-          shadowColor: isDisabled ? "#000" : colors.tint,
-          shadowOpacity: isDisabled ? 0.05 : 0.1,
         };
       case "text":
         return {
           backgroundColor: "transparent",
           borderWidth: 0,
-          shadowColor: "transparent",
-          shadowOpacity: 0,
         };
       default:
         return baseStyle;

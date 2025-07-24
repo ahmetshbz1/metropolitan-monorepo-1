@@ -258,7 +258,7 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
             visible={isSuccess}
           />
           <ThemedText
-            className="font-medium ml-1"
+            className="font-bold ml-1"
             style={{
               color: colors.success || colors.tint,
               fontSize: currentSize.fontSize * 0.92,
