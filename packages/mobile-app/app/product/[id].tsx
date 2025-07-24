@@ -2,22 +2,6 @@
 //  metropolitan app
 //  Created by Ahmet on 06.07.2025.
 
-import { Ionicons } from "@expo/vector-icons";
-import { Link, useLocalSearchParams, useNavigation } from "expo-router";
-import { useLayoutEffect, useRef } from "react";
-import { useTranslation } from "react-i18next";
-import {
-  ActivityIndicator,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
-import {
-  KeyboardAwareScrollView,
-  KeyboardStickyView,
-} from "react-native-keyboard-controller";
-
-import { HapticIconButton } from "@/components/HapticButton";
 import { ProductImage } from "@/components/product-detail/ProductImage";
 import { ProductInfo } from "@/components/product-detail/ProductInfo";
 import { PurchaseSection } from "@/components/product-detail/PurchaseSection";
@@ -27,6 +11,14 @@ import Colors from "@/constants/Colors";
 import { useCart } from "@/context/CartContext";
 import { useProducts } from "@/context/ProductContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useLocalSearchParams, useNavigation } from "expo-router";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { ActivityIndicator, ScrollView } from "react-native";
+import {
+  KeyboardAwareScrollView,
+  KeyboardStickyView,
+} from "react-native-keyboard-controller";
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -34,69 +26,65 @@ export default function ProductDetailScreen() {
   const { t } = useTranslation();
   const { cartItems } = useCart();
   const navigation = useNavigation();
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? "light"];
 
   const product = products.find((p) => p.id === id);
 
+  // Quantity state - ProductInfo ve PurchaseSection arasında paylaşılacak
+  const existingCartItem = cartItems.find(
+    (item) => item.product.id === product?.id
+  );
+
+  const [quantity, setQuantity] = useState(
+    existingCartItem ? String(existingCartItem.quantity) : "1"
+  );
+
+  // Sepet güncellendiğinde miktarı güncelle
+  useEffect(() => {
+    const currentCartItem = cartItems.find(
+      (item) => item.product.id === product?.id
+    );
+    if (currentCartItem) {
+      setQuantity(String(currentCartItem.quantity));
+    } else {
+      // Ürün sepetten çıkarıldıysa miktarı 1'e sıfırla
+      setQuantity("1");
+    }
+  }, [cartItems, product?.id]);
+
+  const handleQuantityChange = (text: string) => {
+    setQuantity(text.replace(/[^0-9]/g, ""));
+  };
+
+  const handleQuantityBlur = () => {
+    if (!product) return;
+    const num = parseInt(quantity, 10);
+    if (isNaN(num) || num < 1) {
+      setQuantity("1");
+    } else if (num > product.stock) {
+      setQuantity(String(product.stock));
+    }
+  };
+
+  const updateQuantity = (amount: number) => {
+    if (!product) return;
+    const currentQuantity = parseInt(quantity, 10) || 0;
+    const newQuantity = currentQuantity + amount;
+    if (newQuantity >= 1 && newQuantity <= product.stock) {
+      setQuantity(String(newQuantity));
+    }
+  };
+
   // Klavye açıldığında içeriğin en alta kayması için ScrollView referansı
   const scrollViewRef = useRef<ScrollView>(null);
-  const cartItemCount = cartItems.length;
 
-  // Native header'a ürün adını ve butonları dinamik olarak ekle
+  // Native header'a ürün adını ekle
   useLayoutEffect(() => {
     if (product) {
       navigation.setOptions({
         headerTitle: product.name,
-        headerRight: () => (
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginRight: -12,
-            }}
-          >
-            <Link href="/(tabs)/cart" asChild>
-              <HapticIconButton hapticType="light" style={{ padding: 8 }}>
-                <View style={{ position: "relative" }}>
-                  <Ionicons name="cart-outline" size={24} color={colors.text} />
-                  {cartItemCount > 0 && (
-                    <View
-                      style={{
-                        position: "absolute",
-                        backgroundColor: colors.tint,
-                        right: -10,
-                        top: -5,
-                        borderRadius: 10,
-                        width: 20,
-                        height: 20,
-                        justifyContent: "center",
-                        alignItems: "center",
-                        ...(cartItemCount > 99 && { width: 28, right: -15 }),
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: cartItemCount > 99 ? 10 : 12,
-                          lineHeight: 20,
-                          color: "#FFFFFF",
-                          fontWeight: "bold",
-                          textAlign: "center",
-                        }}
-                      >
-                        {cartItemCount > 99 ? "99+" : cartItemCount}
-                      </Text>
-                    </View>
-                  )}
-                </View>
-              </HapticIconButton>
-            </Link>
-          </View>
-        ),
       });
     }
-  }, [navigation, product, cartItemCount, colors]);
-
+  }, [navigation, product]);
 
   if (loadingProducts) {
     return (
@@ -128,9 +116,21 @@ export default function ProductDetailScreen() {
           extraKeyboardSpace={20} // Ekstra boşluk
         >
           <ProductImage product={product} />
-          <ProductInfo product={product} />
+          <ProductInfo
+            product={product}
+            quantity={quantity}
+            onQuantityChange={handleQuantityChange}
+            onQuantityBlur={handleQuantityBlur}
+            onUpdateQuantity={updateQuantity}
+          />
         </KeyboardAwareScrollView>
-        <PurchaseSection product={product} />
+        <PurchaseSection
+          product={product}
+          quantity={quantity}
+          onQuantityChange={handleQuantityChange}
+          onQuantityBlur={handleQuantityBlur}
+          onUpdateQuantity={updateQuantity}
+        />
       </KeyboardStickyView>
     </ThemedView>
   );

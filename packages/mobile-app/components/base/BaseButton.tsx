@@ -60,22 +60,22 @@ export const BaseButton: React.FC<BaseButtonProps> = ({
   // Size configurations
   const sizeConfig = {
     small: {
-      paddingVertical: 8,
-      paddingHorizontal: 16,
+      paddingVertical: 10,
+      paddingHorizontal: 20,
       fontSize: 14,
-      borderRadius: 8,
-    },
-    medium: {
-      paddingVertical: 12,
-      paddingHorizontal: 24,
-      fontSize: 16,
       borderRadius: 12,
     },
-    large: {
-      paddingVertical: 16,
-      paddingHorizontal: 32,
-      fontSize: 18,
+    medium: {
+      paddingVertical: 14,
+      paddingHorizontal: 28,
+      fontSize: 16,
       borderRadius: 16,
+    },
+    large: {
+      paddingVertical: 18,
+      paddingHorizontal: 36,
+      fontSize: 18,
+      borderRadius: 20,
     },
   };
 
@@ -83,10 +83,10 @@ export const BaseButton: React.FC<BaseButtonProps> = ({
   const getVariantStyle = (variant: ButtonVariant, isDisabled: boolean) => {
     const baseStyle = {
       shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.15,
+      shadowRadius: 8,
+      elevation: 6,
     };
 
     switch (variant) {
@@ -95,36 +95,49 @@ export const BaseButton: React.FC<BaseButtonProps> = ({
           ...baseStyle,
           backgroundColor: isDisabled ? colors.disabled : colors.tint,
           borderWidth: 0,
+          shadowColor: isDisabled ? "#000" : colors.tint,
+          shadowOpacity: isDisabled ? 0.1 : 0.25,
         };
       case "secondary":
         return {
           backgroundColor: "transparent",
-          borderWidth: 1,
+          borderWidth: 2,
           borderColor: isDisabled ? colors.disabled : colors.tint,
+          shadowColor: isDisabled ? "#000" : colors.tint,
+          shadowOpacity: isDisabled ? 0.05 : 0.15,
         };
       case "danger":
         return {
           ...baseStyle,
           backgroundColor: isDisabled ? colors.disabled : colors.danger,
           borderWidth: 0,
+          shadowColor: isDisabled ? "#000" : colors.danger,
+          shadowOpacity: isDisabled ? 0.1 : 0.25,
         };
       case "success":
         return {
           ...baseStyle,
           backgroundColor: isDisabled ? colors.disabled : colors.success,
           borderWidth: 0,
+          shadowColor: isDisabled ? "#000" : colors.success,
+          shadowOpacity: isDisabled ? 0.1 : 0.25,
         };
       case "ghost":
         return {
           backgroundColor: isDisabled
             ? colors.disabled + "20"
-            : colors.tint + "20",
-          borderWidth: 0,
+            : colors.tint + "15",
+          borderWidth: 1,
+          borderColor: isDisabled ? colors.disabled + "30" : colors.tint + "30",
+          shadowColor: isDisabled ? "#000" : colors.tint,
+          shadowOpacity: isDisabled ? 0.05 : 0.1,
         };
       case "text":
         return {
           backgroundColor: "transparent",
           borderWidth: 0,
+          shadowColor: "transparent",
+          shadowOpacity: 0,
         };
       default:
         return baseStyle;
@@ -166,15 +179,16 @@ export const BaseButton: React.FC<BaseButtonProps> = ({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    opacity: isDisabled && variant !== "secondary" ? 0.5 : 1,
+    opacity: isDisabled && variant !== "secondary" ? 0.6 : 1,
     ...(fullWidth && { width: "100%" }),
   };
 
   const buttonTextStyle: TextStyle = {
     color: textColor,
     fontSize: currentSize.fontSize,
-    fontWeight: "600",
+    fontWeight: "700",
     textAlign: "center",
+    letterSpacing: 0.3,
   };
 
   const content = loading ? (
@@ -186,7 +200,7 @@ export const BaseButton: React.FC<BaseButtonProps> = ({
   return (
     <TouchableOpacity
       onPress={handlePress}
-      activeOpacity={0.7}
+      activeOpacity={0.8}
       disabled={isDisabled}
       style={[buttonStyle, style]}
       {...props}
