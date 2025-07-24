@@ -47,29 +47,22 @@ export const useAuthHook = () => {
   useEffect(() => {
     const initializeAuth = async () => {
       const startTime = Date.now();
-      
+
       try {
-        console.log("🚀 Auth initialization başlatılıyor...");
         const authState = await loadAuthState();
-        console.log("📦 Auth state yüklendi:", authState);
 
         if (authState.token) {
-          console.log("🔑 Token bulundu, set ediliyor");
           setToken(authState.token);
         }
 
         if (authState.user) {
-          console.log("👤 User bulundu, set ediliyor");
           setUser(authState.user);
         }
 
         if (authState.guestId) {
-          console.log("🎭 Guest ID bulundu, set ediliyor");
           setGuestId(authState.guestId);
           setIsGuest(true);
         }
-
-        console.log("✅ Auth initialization tamamlandı");
       } catch (error) {
         console.error("❌ Kimlik doğrulama durumu yüklenemedi:", error);
       } finally {
@@ -77,9 +70,8 @@ export const useAuthHook = () => {
         const elapsedTime = Date.now() - startTime;
         const minLoadingTime = 2000;
         const remainingTime = Math.max(0, minLoadingTime - elapsedTime);
-        
+
         setTimeout(() => {
-          console.log("⏰ Auth loading false yapılıyor");
           setLoading(false);
         }, remainingTime);
       }

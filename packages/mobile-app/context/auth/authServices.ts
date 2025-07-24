@@ -168,15 +168,35 @@ export const updateUserProfile = async (
 export const uploadProfilePhoto = async (
   imageUri: string
 ): Promise<{ success: boolean; message: string; photoUrl?: string }> => {
-  const formData = new FormData();
-  // Dosya adını ve türünü URI'den çıkarmaya çalış
-  const filename = imageUri.split("/").pop();
-  const match = /\.(\w+)$/.exec(filename!);
-  const type = match ? `image/${match[1]}` : `image`;
-
-  formData.append("photo", { uri: imageUri, name: filename, type } as any);
-
   try {
+    const formData = new FormData();
+    
+    // Dosya adını ve türünü URI'den çıkarmaya çalış
+    const filename = imageUri.split("/").pop() || "photo.jpg";
+    const match = /\.(\w+)$/.exec(filename);
+    let type = "image/jpeg"; // Varsayılan tip
+    
+    if (match) {
+      const ext = match[1].toLowerCase();
+      if (ext === "png") {
+        type = "image/png";
+      } else if (ext === "jpg" || ext === "jpeg") {
+        type = "image/jpeg";
+      } else if (ext === "gif") {
+        type = "image/gif";
+      }
+    }
+    
+    // React Native FormData için doğru format
+    const photo = {
+      uri: imageUri,
+      type: type,
+      name: filename,
+    };
+    
+    // @ts-ignore - React Native FormData tipi farklı
+    formData.append("photo", photo);
+    
     const response = await api.post("/users/me/profile-photo", formData, {
       headers: {
         "Content-Type": "multipart/form-data",

@@ -39,7 +39,14 @@
       ],
       "expo-web-browser",
       "expo-font",
-      "expo-localization"
+      "expo-localization",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Fotoğraflarınıza erişerek profil resminizi seçebilirsiniz.",
+          "cameraPermission": "Kameranıza erişerek yeni bir profil fotoğrafı çekebilirsiniz."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
