@@ -10,6 +10,16 @@ import { Product } from "@metropolitan/shared/types/product";
 const PAGE_SIZE = 20;
 const MINIMUM_LOADING_TIME = 500;
 
+// Ürünleri stok durumuna göre sırala - stokta olanlar önce
+const sortProductsByStock = (products: Product[]): Product[] => {
+  return [...products].sort((a, b) => {
+    // Stokta olanlar (stock > 0) önce gelsin
+    if (a.stock > 0 && b.stock === 0) return -1;
+    if (a.stock === 0 && b.stock > 0) return 1;
+    return 0; // Aynı stok durumundakiler kendi aralarındaki sırayı korusun
+  });
+};
+
 export function useProductState() {
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
@@ -33,7 +43,7 @@ export function useProductState() {
         const { data } = await api.get("/products", { params });
 
         if (data.success) {
-          setProducts(data.data);
+          setProducts(sortProductsByStock(data.data));
           setHasMore(data.data.length === PAGE_SIZE);
         } else {
           setHasMore(false);
@@ -61,7 +71,7 @@ export function useProductState() {
         const { data } = await api.get("/products", { params });
 
         if (data.success) {
-          setProducts((prev) => [...prev, ...data.data]);
+          setProducts((prev) => sortProductsByStock([...prev, ...data.data]));
           setHasMore(data.data.length === PAGE_SIZE);
           setPage(nextPage);
         } else {
