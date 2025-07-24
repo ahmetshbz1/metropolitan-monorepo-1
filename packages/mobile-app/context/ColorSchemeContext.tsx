@@ -2,7 +2,13 @@
 //  metropolitan app
 //  Created by Ahmet on 24.07.2025.
 
-import React, { createContext, useContext, useEffect, useState, useMemo } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { Appearance, ColorSchemeName } from "react-native";
 import { useUserSettings } from "./UserSettings";
 
@@ -13,9 +19,9 @@ type ColorSchemeContextType = {
   toggleTheme: () => void;
 };
 
-export const ColorSchemeContext = createContext<ColorSchemeContextType | undefined>(
-  undefined
-);
+export const ColorSchemeContext = createContext<
+  ColorSchemeContextType | undefined
+>(undefined);
 
 export const ColorSchemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -28,31 +34,25 @@ export const ColorSchemeProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     // UserSettings yüklendikten sonra tema değerini ayarla
+    // Sadece UserSettings'ten gelen değişiklikleri işle, local state güncellemelerini görmezden gel
     if (!isLoading && settings.theme !== colorScheme) {
       setColorScheme(settings.theme);
-      
-      // React Native'in Appearance API'sini güncelle
       Appearance.setColorScheme(settings.theme);
     }
   }, [settings.theme, isLoading]);
 
   const isDark = colorScheme === "dark";
 
-  // Tema değiştirme fonksiyonu - anında güncelleme yapar
+  // Tema değiştirme fonksiyonu - optimistik güncelleme yapar
   const toggleTheme = () => {
     const newTheme = colorScheme === "light" ? "dark" : "light";
-    
-    // Local state'i anında güncelle
+
+    // Anında UI'ı güncelle
     setColorScheme(newTheme);
-    
-    // Appearance API'yi anında güncelle
     Appearance.setColorScheme(newTheme);
-    
-    // UI güncellemesini hızlandır
-    requestAnimationFrame(() => {
-      // UserSettings'i güncelle
-      updateSettings({ theme: newTheme });
-    });
+
+    // Arka planda UserSettings'i güncelle
+    updateSettings({ theme: newTheme });
   };
 
   const contextValue = useMemo(
