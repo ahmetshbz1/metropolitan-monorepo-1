@@ -17,16 +17,17 @@ import { HapticIconButton } from "../HapticButton";
 import { ProductCardContent } from "./ProductCardContent";
 import { ProductCardImage } from "./ProductCardImage";
 
-const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
+const AnimatedTouchableOpacity =
+  Animated.createAnimatedComponent(TouchableOpacity);
 
 interface ProductCardProps {
   product: Product;
-  variant?: 'grid' | 'horizontal';
+  variant?: "grid" | "horizontal";
 }
 
 export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
   product,
-  variant = 'grid',
+  variant = "grid",
 }) {
   const {
     colors,
@@ -39,33 +40,30 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
     handleToggleFavorite,
   } = useProductCard(product);
 
-  const isHorizontal = variant === 'horizontal';
-  
+  const isHorizontal = variant === "horizontal";
+
   // Animation values
   const scale = useSharedValue(1);
   const translateY = useSharedValue(0);
-  
+
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { scale: scale.value },
-      { translateY: translateY.value },
-    ],
+    transform: [{ scale: scale.value }, { translateY: translateY.value }],
   }));
-  
+
   const handlePressIn = () => {
     scale.value = withSpring(0.97, { damping: 15, stiffness: 400 });
     translateY.value = withSpring(2, { damping: 15, stiffness: 400 });
   };
-  
+
   const handlePressOut = () => {
     scale.value = withSpring(1, { damping: 15, stiffness: 400 });
     translateY.value = withSpring(0, { damping: 15, stiffness: 400 });
   };
-  
+
   return (
-    <View 
-      className={isHorizontal ? "mr-3" : "mx-1 mb-3"} 
-      style={isHorizontal ? { width: 180 } : { width: '48%' }}
+    <View
+      className={isHorizontal ? "mr-3" : "mx-1 mb-3"}
+      style={isHorizontal ? { width: 180 } : { width: "48%" }}
     >
       <Link
         href={{
@@ -80,19 +78,22 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
           onPressOut={handlePressOut}
           className={`
             overflow-hidden rounded-3xl
-            ${colorScheme === 'dark' 
-              ? 'bg-neutral-900 border border-neutral-800/50' 
-              : 'bg-white border border-gray-100'
+            ${
+              colorScheme === "dark"
+                ? "bg-neutral-900 border border-neutral-800/50"
+                : "bg-white border border-gray-100"
             }
-            ${isOutOfStock ? 'opacity-65' : ''}
           `}
-          style={[animatedStyle, {
-            shadowColor: colorScheme === 'dark' ? '#000' : colors.tint,
-            shadowOffset: { width: 0, height: 6 },
-            shadowOpacity: colorScheme === 'dark' ? 0.3 : 0.12,
-            shadowRadius: 12,
-            elevation: 6,
-          }]}
+          style={[
+            animatedStyle,
+            {
+              shadowColor: colorScheme === "dark" ? "#000" : colors.tint,
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: colorScheme === "dark" ? 0.3 : 0.12,
+              shadowRadius: 12,
+              elevation: 6,
+            },
+          ]}
         >
           {/* Image Section */}
           <ProductCardImage
@@ -118,13 +119,10 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
             onPress={handleToggleFavorite}
             className={`
               absolute top-3 right-3 w-10 h-10 justify-center items-center z-10 rounded-full
-              ${colorScheme === 'dark' 
-                ? 'bg-neutral-800' 
-                : 'bg-white'
-              }
+              ${colorScheme === "dark" ? "bg-neutral-800" : "bg-white"}
             `}
             style={{
-              shadowColor: '#000',
+              shadowColor: "#000",
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.1,
               shadowRadius: 4,
