@@ -32,6 +32,7 @@ interface AddToCartButtonProps {
   customText?: string;
   isAlreadyAdded?: boolean;
   size?: "small" | "medium" | "large";
+  outOfStock?: boolean;
 }
 
 export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
@@ -44,6 +45,7 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   customText,
   isAlreadyAdded = false,
   size = "small",
+  outOfStock = false,
 }) => {
   const { t } = useTranslation();
   const { triggerHaptic } = useHaptics();
@@ -92,11 +94,13 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
       easing: Easing.bezier(0.25, 0.1, 0.25, 1),
     });
 
-    // Rotate add icon
-    iconRotation.value = withTiming(180, {
-      duration: 400,
-      easing: Easing.out(Easing.quad),
-    });
+    // Rotate add icon (only for add to cart, not for notify)
+    if (!outOfStock) {
+      iconRotation.value = withTiming(180, {
+        duration: 400,
+        easing: Easing.out(Easing.quad),
+      });
+    }
 
     try {
       await onPress(e);
@@ -125,7 +129,9 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
         withTiming(1, { duration: 50 })
       );
       loadingProgress.value = withTiming(0, { duration: 200 });
-      iconRotation.value = withTiming(0, { duration: 200 });
+      if (!outOfStock) {
+        iconRotation.value = withTiming(0, { duration: 200 });
+      }
     } finally {
       // Race condition korumasını kaldır
       isProcessingRef.current = false;
@@ -175,7 +181,7 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   return (
     <AnimatedTouchableOpacity
       className={`
-        relative overflow-hidden flex-row items-center justify-between rounded-xl
+        relative overflow-hidden flex-row items-center ${outOfStock ? "justify-center" : "justify-between"} rounded-xl
         ${disabled ? "opacity-60" : ""}
       `}
       style={[
@@ -197,8 +203,8 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
 
       {!isSuccess ? (
         <>
-          {/* Price */}
-          {showPrice && price && (
+          {/* Price - Hide for out of stock items */}
+          {showPrice && price && !outOfStock && (
             <ThemedText
               className="font-bold z-10"
               style={{
@@ -210,11 +216,17 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
             </ThemedText>
           )}
 
-          {/* Add Button with Icon */}
+          {/* Add Button with Icon or Notify Button */}
           <View className="flex-row items-center z-10">
             <Animated.View style={iconAnimatedStyle}>
               <Ionicons
-                name={isLoading ? "sync" : "add"}
+                name={
+                  outOfStock
+                    ? "notifications-outline"
+                    : isLoading
+                      ? "sync"
+                      : "add"
+                }
                 size={currentSize.iconSize}
                 color={disabled ? colors.mediumGray : colors.tint}
               />
@@ -227,9 +239,11 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
               }}
             >
               {customText ||
-                (isLoading
-                  ? t("product_detail.purchase.adding_to_cart")
-                  : t("common.add"))}
+                (outOfStock
+                  ? t("product_detail.purchase.notify_me")
+                  : isLoading
+                    ? t("product_detail.purchase.adding_to_cart")
+                    : t("common.add"))}
             </ThemedText>
           </View>
         </>
@@ -250,7 +264,10 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
               fontSize: currentSize.fontSize * 0.92,
             }}
           >
-            {customText || t("product_detail.purchase.added_to_cart")}
+            {customText ||
+              (outOfStock
+                ? t("product_detail.purchase.notify_success")
+                : t("product_detail.purchase.added_to_cart"))}
           </ThemedText>
         </Animated.View>
       )}

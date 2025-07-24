@@ -3,6 +3,7 @@
 //  Created by Ahmet on 26.06.2025. Edited on 23.07.2025.
 
 import { formatPrice } from "@/core/utils";
+import { useToast } from "@/hooks/useToast";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { ColorSchemeName, View } from "react-native";
@@ -29,6 +30,16 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
   handleAddToCart,
 }) => {
   const { t } = useTranslation();
+  const { showToast } = useToast();
+
+  const handleNotifyMe = () => {
+    showToast(
+      t("product_detail.purchase.notify_success_message", {
+        productName: product.name,
+      }),
+      "success"
+    );
+  };
 
   return (
     <View
@@ -96,12 +107,13 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
 
       {/* Price and Add to Cart Badge - Bottom */}
       <AddToCartButton
-        onPress={handleAddToCart}
-        disabled={isOutOfStock}
+        onPress={isOutOfStock ? handleNotifyMe : handleAddToCart}
+        disabled={false}
         colorScheme={colorScheme}
         colors={colors}
         price={formatPrice(product.price, product.currency)}
         currency={product.currency}
+        outOfStock={isOutOfStock}
       />
 
       {/* Stock Status Indicators */}
