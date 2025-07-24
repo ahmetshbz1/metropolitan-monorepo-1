@@ -5,8 +5,8 @@
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
-import React from "react";
-import { Platform, StyleSheet, View } from "react-native";
+import React, { useEffect, useRef } from "react";
+import { Animated, Platform, StyleSheet, View } from "react-native";
 
 // Enhanced glassmorphism effect for both iOS and Android
 export default function TabBarBackground() {
@@ -16,17 +16,16 @@ export default function TabBarBackground() {
   if (Platform.OS === "ios") {
     return (
       <BlurView
-        tint="systemChromeMaterial"
+        tint={colorScheme === "dark" ? "dark" : "light"}
         intensity={80}
         style={StyleSheet.absoluteFill}
-        key={colorScheme}
       />
     );
   }
 
   // Android için iOS'a benzer glassmorphism simulation
   return (
-    <View style={StyleSheet.absoluteFill} key={colorScheme}>
+    <View style={StyleSheet.absoluteFill}>
       {/* Ana arkaplan gradient - iOS'a benzer */}
       <LinearGradient
         colors={

@@ -76,14 +76,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
           activeOpacity={1}
           onPressIn={handlePressIn}
           onPressOut={handlePressOut}
-          className={`
-            overflow-hidden rounded-3xl
-            ${
-              colorScheme === "dark"
-                ? "bg-neutral-900 border border-neutral-800/50"
-                : "bg-white border border-gray-100"
-            }
-          `}
+          className="overflow-hidden rounded-3xl bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800/50"
           style={[
             animatedStyle,
             {
@@ -117,10 +110,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
           {/* Simple Floating Favorite Button */}
           <HapticIconButton
             onPress={handleToggleFavorite}
-            className={`
-              absolute top-3 right-3 w-10 h-10 justify-center items-center z-10 rounded-full
-              ${colorScheme === "dark" ? "bg-neutral-800" : "bg-white"}
-            `}
+            className="absolute top-3 right-3 w-10 h-10 justify-center items-center z-10 rounded-full bg-white dark:bg-neutral-800"
             style={{
               shadowColor: "#000",
               shadowOffset: { width: 0, height: 2 },

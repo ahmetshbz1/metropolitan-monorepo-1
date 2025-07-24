@@ -74,7 +74,7 @@ export function AppSettingsSection({
             icon="color-palette-outline"
             label={t("profile.app_theme")}
             type="toggle"
-            value={colorScheme === "dark"}
+            value={settings.theme === "dark"}
             onValueChange={toggleTheme}
           />
           <View

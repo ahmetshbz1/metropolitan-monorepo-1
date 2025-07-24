@@ -4,7 +4,7 @@
 
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity, View } from "react-native";
 
@@ -65,6 +65,9 @@ export default function TabLayout() {
     getTabBarPaddingBottom
   );
 
+  // Memoize screenOptions to prevent re-renders
+  const memoizedScreenOptions = useMemo(() => screenOptions, [screenOptions]);
+
   return (
     <ProductsSearchContext.Provider
       value={{
@@ -76,7 +79,7 @@ export default function TabLayout() {
         value={{ scrollToTop, registerScrollHandler, unregisterScrollHandler }}
       >
         <Tabs
-          screenOptions={() => screenOptions}
+          screenOptions={memoizedScreenOptions}
           screenListeners={({ navigation, route }) => ({
             tabPress: () => {
               const currentRoute =

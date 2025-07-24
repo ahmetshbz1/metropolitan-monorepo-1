@@ -6,6 +6,7 @@ import { HapticTab } from "@/components/HapticTab";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { useTheme } from "@/hooks/useTheme";
 import { Platform } from "react-native";
+import { useMemo } from "react";
 
 export const useTabScreenOptions = (
   getTabBarHeight: () => number,
@@ -13,7 +14,7 @@ export const useTabScreenOptions = (
 ) => {
   const { colors, colorScheme } = useTheme();
 
-  return {
+  return useMemo(() => ({
     tabBarActiveTintColor: colors.tint,
     tabBarInactiveTintColor:
       Platform.OS === "ios"
@@ -57,5 +58,5 @@ export const useTabScreenOptions = (
     tabBarIconStyle: {
       marginTop: Platform.OS === "ios" ? 2 : 1,
     },
-  };
+  }), [colors, colorScheme, getTabBarHeight, getTabBarPaddingBottom]);
 };

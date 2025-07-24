@@ -42,21 +42,11 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
   };
 
   return (
-    <View
-      className={`
-        p-3
-        ${colorScheme === "dark" ? "bg-neutral-900" : "bg-white"}
-      `}
-    >
+    <View className="p-3 bg-white dark:bg-neutral-900">
       {/* Category and Brand Badges */}
       <View className="mb-2 flex-row gap-2">
         {/* Category Badge */}
-        <View
-          className={`
-            self-start px-2 py-1 rounded-full
-            ${colorScheme === "dark" ? "bg-neutral-800" : "bg-gray-100"}
-          `}
-        >
+        <View className="self-start px-2 py-1 rounded-full bg-gray-100 dark:bg-neutral-800">
           <ThemedText
             className="text-xs font-medium uppercase tracking-wide"
             style={{
@@ -72,10 +62,7 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
         {/* Brand Badge */}
         {product.brand && (
           <View
-            className={`
-              self-start px-2 py-1 rounded-full
-              ${colorScheme === "dark" ? "bg-neutral-800" : "bg-gray-100"}
-            `}
+            className="self-start px-2 py-1 rounded-full bg-gray-100 dark:bg-neutral-800"
           >
             <ThemedText
               className="text-xs font-medium uppercase tracking-wide"

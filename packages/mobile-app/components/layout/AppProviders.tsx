@@ -11,6 +11,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AddressProvider } from "@/context/AddressContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
+import { ColorSchemeProvider } from "@/context/ColorSchemeContext";
 import { FavoritesProvider } from "@/context/FavoritesContext";
 import { OrderProvider } from "@/context/OrderContext";
 import { PaymentMethodProvider } from "@/context/PaymentMethodContext";
@@ -30,23 +31,25 @@ export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
         <BottomSheetModalProvider>
           <ToastProvider>
             <UserSettingsProvider>
-              <AuthProvider>
-                <ProductProvider>
-                  <AddressProvider>
-                    <PaymentMethodProvider>
-                      <CartProvider>
-                        <FavoritesProvider>
-                          <OrderProvider>
-                            <StripeProviderWrapper>
-                              <SafeAreaProvider>{children}</SafeAreaProvider>
-                            </StripeProviderWrapper>
-                          </OrderProvider>
-                        </FavoritesProvider>
-                      </CartProvider>
-                    </PaymentMethodProvider>
-                  </AddressProvider>
-                </ProductProvider>
-              </AuthProvider>
+              <ColorSchemeProvider>
+                <AuthProvider>
+                  <ProductProvider>
+                    <AddressProvider>
+                      <PaymentMethodProvider>
+                        <CartProvider>
+                          <FavoritesProvider>
+                            <OrderProvider>
+                              <StripeProviderWrapper>
+                                <SafeAreaProvider>{children}</SafeAreaProvider>
+                              </StripeProviderWrapper>
+                            </OrderProvider>
+                          </FavoritesProvider>
+                        </CartProvider>
+                      </PaymentMethodProvider>
+                    </AddressProvider>
+                  </ProductProvider>
+                </AuthProvider>
+              </ColorSchemeProvider>
             </UserSettingsProvider>
           </ToastProvider>
         </BottomSheetModalProvider>

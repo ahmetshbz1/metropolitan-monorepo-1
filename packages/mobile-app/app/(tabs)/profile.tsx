@@ -17,6 +17,7 @@ import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { SupportSection } from "@/components/profile/SupportSection";
 import Colors from "@/constants/Colors";
 import { useAuth } from "@/context/AuthContext";
+import { useAppColorScheme } from "@/context/ColorSchemeContext";
 import { useUserSettings } from "@/context/UserSettings";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useTabBarHeight } from "@/hooks/useTabBarHeight";
@@ -25,6 +26,7 @@ export default function ProfileScreen() {
   const { t } = useTranslation();
   const { settings, updateSettings } = useUserSettings();
   const { refreshUserProfile } = useAuth();
+  const { toggleTheme } = useAppColorScheme();
   const { paddingBottom } = useTabBarHeight();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const colorScheme = useColorScheme() ?? "light";
@@ -54,10 +56,6 @@ export default function ProfileScreen() {
 
   const toggleHaptics = (value: boolean) =>
     updateSettings({ hapticsEnabled: value });
-  const toggleTheme = () => {
-    const newTheme = settings.theme === "light" ? "dark" : "light";
-    updateSettings({ theme: newTheme });
-  };
 
   return (
     <ThemedView className="flex-1 bg-transparent">
