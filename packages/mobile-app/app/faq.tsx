@@ -2,7 +2,8 @@
 //  metropolitan app
 //  Created by Ahmet on 01.07.2025.
 
-import React from "react";
+import { useNavigation } from "expo-router";
+import React, { useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, View } from "react-native";
 
@@ -14,8 +15,16 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 
 export default function FaqScreen() {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
+
+  // Header title'ı dinamik olarak ayarla
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: t("faq.title"),
+    });
+  }, [navigation, t]);
 
   const FAQ_DATA = [
     {

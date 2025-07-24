@@ -3,7 +3,8 @@
 //  Created by Ahmet on 17.06.2025.
 
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import { useNavigation } from "expo-router";
+import React, { useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 
@@ -67,8 +68,16 @@ const CategoryButton = ({ title, icon }: { title: string; icon: any }) => {
 
 export default function HelpCenterScreen() {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
+
+  // Header title'ı dinamik olarak ayarla
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: t("help_center.title"),
+    });
+  }, [navigation, t]);
 
   const HELP_CATEGORIES = [
     { title: t("help_center.categories.orders"), icon: "cube-outline" },

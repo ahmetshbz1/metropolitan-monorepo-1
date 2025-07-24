@@ -3,8 +3,8 @@
 //  Created by Ahmet on 25.06.2025.
 
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import React, { useCallback } from "react";
+import { useRouter, useNavigation } from "expo-router";
+import React, { useCallback, useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 
@@ -52,7 +52,16 @@ const EmptyFavorites = () => {
 };
 
 export default function FavoritesScreen() {
+  const { t } = useTranslation();
+  const navigation = useNavigation();
   const { favorites, isLoading, error, reloadFavorites } = useFavorites();
+
+  // Header title'ı dinamik olarak ayarla
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: t("favorites.title"),
+    });
+  }, [navigation, t]);
 
   const handleRefresh = useCallback(() => {
     reloadFavorites();

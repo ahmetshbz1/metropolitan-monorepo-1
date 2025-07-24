@@ -3,7 +3,8 @@
 //  Created by Ahmet on 05.07.2025.
 //  Modified by Ahmet on 15.07.2025.
 
-import React, { useState } from "react";
+import { useNavigation } from "expo-router";
+import React, { useState, useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import {
@@ -25,9 +26,17 @@ import { useToast } from "@/hooks/useToast";
 
 export default function EditProfileScreen() {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
   const safeAreaInsets = useSafeAreaInsets();
+
+  // Header title'ı dinamik olarak ayarla
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: t("edit_profile.title"),
+    });
+  }, [navigation, t]);
 
   const {
     firstName,
