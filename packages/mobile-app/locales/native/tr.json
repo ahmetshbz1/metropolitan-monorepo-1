@@ -1,0 +1,10 @@
+{
+  "ios": {
+    "NSCameraUsageDescription": "Kameranıza erişerek yeni bir profil fotoğrafı çekebilirsiniz.",
+    "NSPhotoLibraryUsageDescription": "Fotoğraflarınıza erişerek profil resminizi seçebilirsiniz."
+  },
+  "android": {
+    "CAMERA": "Kameranıza erişerek yeni bir profil fotoğrafı çekebilirsiniz.", 
+    "READ_EXTERNAL_STORAGE": "Fotoğraflarınıza erişerek profil resminizi seçebilirsiniz."
+  }
+}

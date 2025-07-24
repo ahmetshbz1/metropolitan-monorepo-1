@@ -1,0 +1,2 @@
+NSCameraUsageDescription = "Kameranıza erişerek yeni bir profil fotoğrafı çekebilirsiniz.";
+NSPhotoLibraryUsageDescription = "Fotoğraflarınıza erişerek profil resminizi seçebilirsiniz.";

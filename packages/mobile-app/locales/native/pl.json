@@ -1,0 +1,10 @@
+{
+  "ios": {
+    "NSCameraUsageDescription": "Potrzebujemy dostępu do aparatu, aby zrobić nowe zdjęcie profilowe.",
+    "NSPhotoLibraryUsageDescription": "Potrzebujemy dostępu do zdjęć, aby wybrać zdjęcie profilowe."
+  },
+  "android": {
+    "CAMERA": "Potrzebujemy dostępu do aparatu, aby zrobić nowe zdjęcie profilowe.",
+    "READ_EXTERNAL_STORAGE": "Potrzebujemy dostępu do zdjęć, aby wybrać zdjęcie profilowe."
+  }
+}

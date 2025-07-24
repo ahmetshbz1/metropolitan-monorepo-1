@@ -7,6 +7,11 @@
     "scheme": "metropolitan",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "locales": {
+      "tr": "./locales/native/tr.json",
+      "pl": "./locales/native/pl.json", 
+      "en": "./locales/native/en.json"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.ahmetshbzz.metropolitan",
@@ -40,13 +45,7 @@
       "expo-web-browser",
       "expo-font",
       "expo-localization",
-      [
-        "expo-image-picker",
-        {
-          "photosPermission": "Fotoğraflarınıza erişerek profil resminizi seçebilirsiniz.",
-          "cameraPermission": "Kameranıza erişerek yeni bir profil fotoğrafı çekebilirsiniz."
-        }
-      ]
+      "expo-image-picker"
     ],
     "experiments": {
       "typedRoutes": true

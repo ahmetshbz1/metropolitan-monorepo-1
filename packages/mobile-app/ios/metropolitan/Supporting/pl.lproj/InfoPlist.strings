@@ -1,0 +1,2 @@
+NSCameraUsageDescription = "Potrzebujemy dostępu do aparatu, aby zrobić nowe zdjęcie profilowe.";
+NSPhotoLibraryUsageDescription = "Potrzebujemy dostępu do zdjęć, aby wybrać zdjęcie profilowe.";
