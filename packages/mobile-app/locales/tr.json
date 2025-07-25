@@ -284,7 +284,8 @@
   "product": {
     "stock": "Stok: {{count}}",
     "out_of_stock": "Tükendi",
-    "price": "{{price}}"
+    "price": "{{price}}",
+    "view_cart": "Sepeti Görüntüle"
   },
   "order_detail": {
     "title": "Sipariş #{{id}}",

@@ -403,7 +403,8 @@
   "product": {
     "stock": "Stan: {{count}}",
     "out_of_stock": "Brak na stanie",
-    "price": "{{price}}"
+    "price": "{{price}}",
+    "view_cart": "Zobacz Koszyk"
   },
   "order_detail": {
     "title": "Zamówienie #{{id}}",

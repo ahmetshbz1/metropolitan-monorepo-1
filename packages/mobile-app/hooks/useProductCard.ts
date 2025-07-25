@@ -8,6 +8,7 @@ import { useProducts } from "@/context/ProductContext";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useTheme } from "@/hooks/useTheme";
 import { Product } from "@metropolitan/shared";
+import { useRouter } from "expo-router";
 
 export const useProductCard = (product: Product) => {
   const { colors, colorScheme } = useTheme();
@@ -15,6 +16,7 @@ export const useProductCard = (product: Product) => {
   const { triggerHaptic } = useHaptics();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { categories } = useProducts();
+  const router = useRouter();
 
   // Computed values
   const isProductFavorite = isFavorite(product.id);
@@ -23,12 +25,23 @@ export const useProductCard = (product: Product) => {
   )?.name;
   const isLowStock = product.stock < 10;
   const isOutOfStock = product.stock === 0;
-  const isProductInCart = cartItems.some(item => item.product.id === product.id);
+  const isProductInCart = cartItems.some(
+    (item) => item.product.id === product.id
+  );
+  const cartItemQuantity =
+    cartItems.find((item) => item.product.id === product.id)?.quantity || 0;
 
   // Actions
   const handleAddToCart = async (e: any) => {
     e.preventDefault();
     e.stopPropagation();
+
+    // Eğer ürün zaten sepetteyse sepete yönlendir
+    if (isProductInCart) {
+      triggerHaptic("light");
+      router.push("/(tabs)/cart");
+      return;
+    }
 
     triggerHaptic("light");
     await addToCart(product.id, 1);
@@ -47,6 +60,7 @@ export const useProductCard = (product: Product) => {
     isLowStock,
     isOutOfStock,
     isProductInCart,
+    cartItemQuantity,
 
     // Actions
     handleAddToCart,

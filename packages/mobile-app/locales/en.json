@@ -299,7 +299,8 @@
   "product": {
     "stock": "Stock: {{count}}",
     "out_of_stock": "Out of Stock",
-    "price": "{{price}}"
+    "price": "{{price}}",
+    "view_cart": "View Cart"
   },
   "order_detail": {
     "title": "Order #{{id}}",

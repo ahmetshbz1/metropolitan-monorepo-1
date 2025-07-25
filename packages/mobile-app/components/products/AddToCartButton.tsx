@@ -4,7 +4,7 @@
 
 import { useHaptics } from "@/hooks/useHaptics";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { ColorSchemeName, TouchableOpacity, View } from "react-native";
 import Animated, {
@@ -50,10 +50,12 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   const { t } = useTranslation();
   const { triggerHaptic } = useHaptics();
   const [isLoading, setIsLoading] = React.useState(false);
-  const [isSuccess, setIsSuccess] = React.useState(isAlreadyAdded);
+  const [isSuccess, setIsSuccess] = React.useState(false);
+  const [showAddedText, setShowAddedText] = React.useState(false);
 
   // Race condition koruması için ref
   const isProcessingRef = React.useRef(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Animation values
   const loadingProgress = useSharedValue(0);
@@ -63,21 +65,17 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   const iconRotation = useSharedValue(0);
   const bgColorProgress = useSharedValue(0);
 
-  // Eğer component baştan "added" durumunda açılıyorsa animasyonları ayarla
+  // Cleanup timeout
   useEffect(() => {
-    if (isAlreadyAdded) {
-      setIsSuccess(true);
-      successOpacity.value = 1;
-      bgColorProgress.value = 1;
-    } else {
-      setIsSuccess(false);
-      successOpacity.value = 0;
-      bgColorProgress.value = 0;
-    }
-  }, [isAlreadyAdded, successOpacity, bgColorProgress]);
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const handlePress = async (e: any) => {
-    if (disabled || isLoading || isSuccess || isProcessingRef.current) return;
+    if (disabled || isLoading || isProcessingRef.current) return;
 
     // Race condition koruması
     isProcessingRef.current = true;
@@ -113,6 +111,7 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
       // Success animation
       setIsLoading(false);
       setIsSuccess(true);
+      setShowAddedText(true);
 
       // Sepete ekleme başarılı olunca hafif titreşim
       triggerHaptic("light", true);
@@ -121,6 +120,18 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
       successScale.value = withTiming(1, { duration: 200 });
       successOpacity.value = withTiming(1, { duration: 200 });
       bgColorProgress.value = withTiming(1, { duration: 300 });
+
+      // 1.5 saniye sonra eski haline dön
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      timeoutRef.current = setTimeout(() => {
+        setIsSuccess(false);
+        setShowAddedText(false);
+        successOpacity.value = withTiming(0, { duration: 200 });
+        bgColorProgress.value = withTiming(0, { duration: 300 });
+        timeoutRef.current = null;
+      }, 1500) as any;
     } catch {
       // Error state - shake animation
       setIsLoading(false);
@@ -194,7 +205,7 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
         },
       ]}
       onPress={handlePress}
-      disabled={disabled || isSuccess}
+      disabled={disabled}
       activeOpacity={0.8}
     >
       {/* Loading Progress Bar */}
@@ -262,7 +273,7 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
           <ThemedText
             className="font-bold ml-1"
             style={{
-              color: colorScheme === "dark" ? "#FFFFFF" : "#059669",
+              color: colorScheme === "dark" ? "#FFFFFF" : "#047857", // Daha koyu yeşil
               fontSize: currentSize.fontSize * 0.92,
             }}
           >

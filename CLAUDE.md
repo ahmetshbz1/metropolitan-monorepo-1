@@ -307,5 +307,3 @@ EXPO_PUBLIC_API_BASE_URL=  # Backend API URL (e.g., http://172.20.10.2:3000)
 - Cart: Automatic guest-to-user migration
 - Orders: Multi-step with Stripe payment
 - Invoices: Fakturownia integration
-
-Bu proje-spesifik konfigürasyon ile Claude, Metropolitan e-commerce monorepo'sunda optimum performans gösterebilir.

@@ -17,7 +17,6 @@ interface ProductCardContentProps {
   colors: any;
   isOutOfStock: boolean;
   isLowStock: boolean;
-  isProductInCart: boolean;
   handleAddToCart: (e: any) => Promise<void>;
 }
 
@@ -28,13 +27,12 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
   colors,
   isOutOfStock,
   isLowStock,
-  isProductInCart,
   handleAddToCart,
 }) => {
   const { t } = useTranslation();
   const { showToast } = useToast();
 
-  const handleNotifyMe = () => {
+  const handleNotifyMe = async () => {
     showToast(
       t("product_detail.purchase.notify_success_message", {
         productName: product.name,
@@ -63,9 +61,7 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
 
         {/* Brand Badge */}
         {product.brand && (
-          <View
-            className="self-start px-2 py-1 rounded-full bg-gray-100 dark:bg-neutral-800"
-          >
+          <View className="self-start px-2 py-1 rounded-full bg-gray-100 dark:bg-neutral-800">
             <ThemedText
               className="text-xs font-medium uppercase tracking-wide"
               style={{
@@ -101,9 +97,7 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
         colorScheme={colorScheme}
         colors={colors}
         price={formatPrice(product.price, product.currency)}
-        currency={product.currency}
         outOfStock={isOutOfStock}
-        isAlreadyAdded={isProductInCart}
       />
 
       {/* Stock Status Indicators */}

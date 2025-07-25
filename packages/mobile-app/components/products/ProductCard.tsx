@@ -2,6 +2,7 @@
 //  metropolitan app
 //  Created by Ahmet on 30.06.2025. Edited on 23.07.2025.
 
+import { ThemedText } from "@/components/ThemedText";
 import { Product } from "@/context/ProductContext";
 import { useProductCard } from "@/hooks/useProductCard";
 import { Ionicons } from "@expo/vector-icons";
@@ -37,6 +38,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
     isLowStock,
     isOutOfStock,
     isProductInCart,
+    cartItemQuantity,
     handleAddToCart,
     handleToggleFavorite,
   } = useProductCard(product);
@@ -105,7 +107,6 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
             colors={colors}
             isOutOfStock={isOutOfStock}
             isLowStock={isLowStock}
-            isProductInCart={isProductInCart}
             handleAddToCart={handleAddToCart}
           />
 
@@ -134,6 +135,28 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
               }
             />
           </HapticIconButton>
+
+          {/* Cart Quantity Badge */}
+          {cartItemQuantity > 0 && (
+            <View
+              className="absolute top-3 left-3 w-6 h-6 justify-center items-center z-10 rounded-full"
+              style={{
+                backgroundColor: colors.tint,
+                shadowColor: colors.tint,
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.3,
+                shadowRadius: 4,
+                elevation: 3,
+              }}
+            >
+              <ThemedText
+                className="text-xs font-bold"
+                style={{ color: "#FFFFFF" }}
+              >
+                {cartItemQuantity}
+              </ThemedText>
+            </View>
+          )}
         </AnimatedTouchableOpacity>
       </Link>
     </View>
