@@ -10,6 +10,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { SettingsItem } from "@/components/profile/SettingsItem";
 import Colors from "@/constants/Colors";
 import { UserSettings } from "@/context/UserSettings";
+import { changeLanguage } from "@/core/i18n";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useHaptics } from "@/hooks/useHaptics";
 import { Ionicons } from "@expo/vector-icons";
@@ -36,9 +37,9 @@ export function AppSettingsSection({
   const colors = Colors[colorScheme ?? "light"];
   const { triggerHaptic } = useHaptics();
 
-  const changeLanguage = (lang: "tr" | "en" | "pl") => {
+  const handleLanguageChange = async (lang: "tr" | "en" | "pl") => {
     triggerHaptic("success");
-    i18n.changeLanguage(lang);
+    await changeLanguage(lang);
   };
 
   const getCurrentLanguageName = () => {
@@ -119,7 +120,7 @@ export function AppSettingsSection({
                 const languages = ["tr", "en", "pl"] as const;
                 const selectedLang = languages[e.nativeEvent.index];
                 if (selectedLang) {
-                  changeLanguage(selectedLang);
+                  handleLanguageChange(selectedLang);
                 }
               }}
             >

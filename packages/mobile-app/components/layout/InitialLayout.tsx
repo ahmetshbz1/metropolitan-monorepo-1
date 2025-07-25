@@ -2,11 +2,11 @@
 //  metropolitan app
 //  Created by Ahmet on 11.06.2025. Updated on 21.07.2025.
 
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
 import { View } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
 
 import { NavigationStack } from "./NavigationStack";
 
@@ -33,7 +33,7 @@ export const InitialLayout: React.FC = () => {
   }
 
   return (
-    <View 
+    <View
       className={colorScheme === "dark" ? "flex-1 dark vars" : "flex-1 vars"}
       style={{ flex: 1 }}
     >

@@ -9,6 +9,7 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 
 import { ThemedText } from "@/components/ThemedText";
 import Colors from "@/constants/Colors";
+import { changeLanguage } from "@/core/i18n";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 type Language = "tr" | "pl" | "en";
@@ -26,8 +27,8 @@ export function LanguageSelection({ onClose }: { onClose: () => void }) {
   // const { triggerHaptic } = useHaptics();
   const { i18n, t } = useTranslation();
 
-  const changeLanguage = (lang: "tr" | "en" | "pl") => {
-    i18n.changeLanguage(lang);
+  const handleLanguageChange = async (lang: "tr" | "en" | "pl") => {
+    await changeLanguage(lang);
     onClose();
   };
 
@@ -39,7 +40,7 @@ export function LanguageSelection({ onClose }: { onClose: () => void }) {
         <React.Fragment key={lang.code}>
           <TouchableOpacity
             className="flex-row justify-between items-center py-4 px-2.5"
-            onPress={() => changeLanguage(lang.code)}
+            onPress={() => handleLanguageChange(lang.code)}
           >
             <ThemedText className="text-base">{t(lang.nameKey)}</ThemedText>
             {selectedLanguage === lang.code && (
