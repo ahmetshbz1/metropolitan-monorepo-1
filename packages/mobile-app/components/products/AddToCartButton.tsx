@@ -244,20 +244,20 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
                 color={disabled ? colors.mediumGray : colors.tint}
               />
             </Animated.View>
-            {!outOfStock && (
-              <ThemedText
-                className="font-medium ml-1"
-                style={{
-                  color: disabled ? colors.mediumGray : colors.tint,
-                  fontSize: currentSize.fontSize,
-                }}
-              >
-                {customText ||
-                  (isLoading
+            <ThemedText
+              className="font-medium ml-1"
+              style={{
+                color: disabled ? colors.mediumGray : colors.tint,
+                fontSize: currentSize.fontSize,
+              }}
+            >
+              {customText ||
+                (outOfStock
+                  ? t("product_detail.purchase.notify_me")
+                  : isLoading
                     ? t("product_detail.purchase.adding_to_cart")
                     : "")}
-              </ThemedText>
-            )}
+            </ThemedText>
           </View>
         </>
       ) : (

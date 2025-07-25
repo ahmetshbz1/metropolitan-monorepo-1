@@ -4,7 +4,7 @@
 
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { ColorSchemeName, TouchableOpacity } from "react-native";
+import { ColorSchemeName, TouchableOpacity, Text } from "react-native";
 import { HapticIconButton } from "../HapticButton";
 
 interface ProductCardActionsProps {
@@ -14,6 +14,7 @@ interface ProductCardActionsProps {
   isProductFavorite: boolean;
   handleAddToCart: (e: any) => void;
   handleToggleFavorite: () => void;
+  handleNotifyRequest?: () => void;
 }
 
 export const ProductCardActions: React.FC<ProductCardActionsProps> = ({
@@ -23,11 +24,12 @@ export const ProductCardActions: React.FC<ProductCardActionsProps> = ({
   isProductFavorite,
   handleAddToCart,
   handleToggleFavorite,
+  handleNotifyRequest,
 }) => {
   return (
     <>
-      {/* Add to Cart Button */}
-      {!isOutOfStock && (
+      {!isOutOfStock ? (
+        // Add to Cart Button
         <TouchableOpacity
           className="w-11 h-11 rounded-full items-center justify-center"
           style={{
@@ -41,6 +43,26 @@ export const ProductCardActions: React.FC<ProductCardActionsProps> = ({
           onPress={handleAddToCart}
         >
           <Ionicons name="add" size={22} color="#fff" />
+        </TouchableOpacity>
+      ) : (
+        // Notify Button when out of stock
+        <TouchableOpacity
+          className="px-3 py-2 rounded-full items-center justify-center"
+          style={{
+            backgroundColor: colorScheme === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.05)",
+            borderWidth: 1,
+            borderColor: colorScheme === "dark" ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.1)",
+          }}
+          onPress={handleNotifyRequest}
+        >
+          <Text 
+            className="text-xs font-medium"
+            style={{ 
+              color: colorScheme === "dark" ? "rgba(255, 255, 255, 0.7)" : colors.darkGray 
+            }}
+          >
+            Haber Ver
+          </Text>
         </TouchableOpacity>
       )}
     </>
