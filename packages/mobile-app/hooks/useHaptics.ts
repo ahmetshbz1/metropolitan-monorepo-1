@@ -69,10 +69,12 @@ export function useHaptics() {
     type: HapticType = "light"
   ) => {
     return (event?: GestureResponderEvent) => {
-      triggerHaptic(type);
+      // Callback'i hemen çağır, haptic'i arka planda çalıştır
       if (callback) {
         callback(event);
       }
+      // Haptic feedback'i non-blocking olarak tetikle
+      setTimeout(() => triggerHaptic(type), 0);
     };
   };
 

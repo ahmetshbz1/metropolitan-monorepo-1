@@ -97,7 +97,7 @@ export function HapticIconButton({
   return (
     <TouchableOpacity
       onPress={handlePress}
-      activeOpacity={0.7}
+      activeOpacity={0.5}
       className={`justify-center items-center${className ? ` ${className}` : ""}`}
       style={[{ width: size, height: size }, style]}
       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}

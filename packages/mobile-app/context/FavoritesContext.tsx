@@ -3,6 +3,7 @@
 //  Created by Ahmet on 22.06.2025.
 
 import { api } from "@/core/api";
+import { useToast } from "@/hooks/useToast";
 import React, {
   createContext,
   useCallback,
@@ -43,6 +44,7 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const { user, isGuest, guestId } = useAuth();
   const { t, i18n } = useTranslation();
+  const { showToast } = useToast();
 
   const [favorites, setFavorites] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -148,12 +150,21 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const isCurrentlyFavorite = favorites.some((fav) => fav.id === product.id);
 
+    // Optimistic UI - Anında güncelle
     const previousFavorites = favorites;
     if (isCurrentlyFavorite) {
       setFavorites((prev) => prev.filter((fav) => fav.id !== product.id));
     } else {
       setFavorites((prev) => [...prev, product]);
     }
+
+    // Toast bildirimini hemen göster
+    showToast(
+      isCurrentlyFavorite 
+        ? t("favorites.removed", { productName: product.name })
+        : t("favorites.added", { productName: product.name }),
+      isCurrentlyFavorite ? "error" : "success"
+    );
 
     try {
       if (user) {
@@ -175,14 +186,19 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({
         }
       }
 
-      // Re-fetch without clearing for optimistic updates
-      await fetchFavorites(false);
+      // API başarılı, fetchFavorites'i kaldırdık - zaten güncel
     } catch (error) {
       console.error("Failed to toggle favorite:", error);
-      // Revert optimistic update on error
+      // Hata durumunda eski haline geri dön
       setFavorites(previousFavorites);
-      // Re-sync on error
-      await fetchFavorites(false);
+      
+      // Hata toast'ı göster
+      showToast(
+        isCurrentlyFavorite
+          ? t("favorites.remove_error", { productName: product.name })
+          : t("favorites.add_error", { productName: product.name }),
+        "error"
+      );
     }
   };
 

@@ -147,7 +147,11 @@
       "title": "Your favorites list is empty",
       "subtitle": "You can add products you like to your favorites by tapping the heart icon.",
       "browse_button": "Browse Products"
-    }
+    },
+    "added": "{{productName}} added to favorites",
+    "removed": "{{productName}} removed from favorites",
+    "add_error": "An error occurred while adding {{productName}} to favorites",
+    "remove_error": "An error occurred while removing {{productName}} from favorites"
   },
   "help_center": {
     "title": "Help Center",

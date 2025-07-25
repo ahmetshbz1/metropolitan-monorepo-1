@@ -27,7 +27,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     duration: number = 3000
   ) => {
     const id = Date.now().toString();
-    setToasts(prev => [...prev, { id, message, type, duration }]);
+    // Yeni toast geldiğinde eskileri temizle, sadece yeni toast'ı göster
+    setToasts([{ id, message, type, duration }]);
   }, []);
 
   const removeToast = useCallback((id: string) => {

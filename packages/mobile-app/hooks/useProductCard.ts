@@ -7,6 +7,7 @@ import { useFavorites } from "@/context/FavoritesContext";
 import { useProducts } from "@/context/ProductContext";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useTheme } from "@/hooks/useTheme";
+import { useToast } from "@/hooks/useToast";
 import { Product } from "@metropolitan/shared";
 import { useRouter } from "expo-router";
 
@@ -16,6 +17,7 @@ export const useProductCard = (product: Product) => {
   const { triggerHaptic } = useHaptics();
   const { isFavorite, toggleFavorite } = useFavorites();
   const { categories } = useProducts();
+  const { showToast } = useToast();
   const router = useRouter();
 
   // Computed values
@@ -35,7 +37,13 @@ export const useProductCard = (product: Product) => {
     e.stopPropagation();
 
     triggerHaptic("light");
-    await addToCart(product.id, 1);
+    
+    try {
+      await addToCart(product.id, 1);
+    } catch (error: any) {
+      // Stok yetersizliği veya diğer hatalar için toast göster
+      showToast(error.message || "Ürün sepete eklenemedi", "error");
+    }
   };
 
   const handleToggleFavorite = () => {
