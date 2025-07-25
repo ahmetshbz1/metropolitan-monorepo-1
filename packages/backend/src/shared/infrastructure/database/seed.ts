@@ -55,14 +55,19 @@ const main = async () => {
       // önce bağımlı tablolardaki verileri sil.
       await db.delete(schema.trackingEvents);
       await db.delete(schema.orderItems);
+      await db.delete(schema.orders);
       await db.delete(schema.cartItems);
       await db.delete(schema.favorites);
+      await db.delete(schema.guestCartItems);
+      await db.delete(schema.guestFavorites);
+      await db.delete(schema.guestSessions);
       await db.delete(schema.addresses);
-      await db.delete(schema.orders);
       await db.delete(schema.users);
       await db.delete(schema.companies);
       await db.delete(schema.productTranslations);
+      await db.delete(schema.products);
       await db.delete(schema.categoryTranslations);
+      await db.delete(schema.categories);
     } catch (error) {
       console.error("❌ Error deleting data:", error);
       process.exit(1);
