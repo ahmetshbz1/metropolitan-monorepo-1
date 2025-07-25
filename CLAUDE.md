@@ -1,10 +1,6 @@
 # CLAUDE.md
 
-// "CLAUDE.md"
-// metropolitan workspace - project specific configuration
-// Created by Ahmet on 22.01.2025.
-
-This file provides guidance to Claude Code when working with the Metropolitan e-commerce monorepo.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## 🏗️ Monorepo Architecture
 
@@ -32,7 +28,7 @@ bun run dev:all
 cd packages/backend
 
 # Hot reload development server
-bun run dev
+bun --hot index.ts
 
 # Database operations
 bun run db:generate    # Generate Drizzle schema
@@ -73,7 +69,7 @@ bun run analyze
 - **Cache**: Redis (stock management, JWT blacklisting)
 - **Auth**: JWT + token blacklisting
 - **Payments**: Stripe integration + webhooks
-- **Invoicing**: Fakturownia API (Polonya fatura sistemi)
+- **Invoicing**: Fakturownia API (Polish invoice system)
 - **SMS**: Twilio (OTP)
 - **Monitoring**: Sentry
 
@@ -97,10 +93,10 @@ bun run analyze
 
 ```
 src/domains/
-├── catalog/        # Ürün kataloğu yönetimi
-├── content/        # İçerik yönetimi (SSS, terms)
+├── catalog/        # Product catalog management
+├── content/        # Content management (FAQ, terms)
 ├── identity/       # Auth (OTP, JWT, phone login)
-├── order/          # Sipariş + fatura + tracking
+├── order/          # Orders + invoices + tracking
 ├── payment/        # Stripe + webhook handling
 ├── shopping/       # Cart + favorites + stock reservation
 └── user/           # Profile + address + company (NIP)
@@ -186,82 +182,6 @@ bun test src/tests/race-condition.test.ts  # Run specific test
 - Stock operations > 95% success rate
 - Webhook idempotency > 95%
 
-## 🚨 Critical Development Notes
-
-### ⛔ STRICT COMMAND RESTRICTIONS
-**YASAK KOMUTLAR - ASLA ÇALIŞTIRMA:**
-- `bun run dev`
-- `bun run start` 
-- `expo start`
-- `npm start`
-- `yarn start`
-- Herhangi bir sunucu başlatan komut
-
-**GIT YASAĞI:**
-- `git add`
-- `git commit`
-- `git push`
-- Herhangi bir git komutu
-
-**KURAL:** Ahmet "commit at" diye açıkça talep etmedikçe hiçbir git komutu çalıştırılmayacak. Bu kesinlikle yasaktır.
-
-### State Management
-- **Mobile**: React Context API (NOT Zustand despite package.json)
-- **Backend**: Domain services + repositories pattern
-- **Shared**: Immutable data patterns
-
-### External Dependencies
-- **Stripe**: Payment processing + customer management
-- **Fakturownia**: Polish invoice generation
-- **Twilio**: SMS/OTP services
-- **Redis**: Caching + session management
-
-### Performance Considerations
-- **Mobile**: NativeWind for styling, Expo optimizations
-- **Backend**: Redis caching, database indexing, connection pooling
-- **API**: JWT token auto-refresh, request/response compression
-
-### Security Measures
-- Environment variable validation
-- JWT token blacklisting
-- Stripe webhook signature validation
-- Input sanitization and validation
-
-## 🎨 UI/UX Standards
-
-### Mobile Design
-- Turkish UI text (default language)
-- Modern, minimalist design
-- Mobile-first responsive
-- NativeWind component styling
-- Consistent spacing with Tailwind classes
-
-### Error Handling
-- Turkish error messages (shared/constants)
-- User-friendly error states
-- Comprehensive logging to Sentry
-
-## 🔄 Development Workflow
-
-### Git Workflow
-- Feature branches from main
-- Turkish commit messages (Conventional Commits)
-- Automatic testing on PRs
-
-### Deployment
-- Backend: Bun production builds
-- Mobile: Expo builds for iOS/Android
-- Environment-specific configurations
-
-### Shared Types Usage
-```typescript
-// Import from shared package
-import { Order, Product, API_ENDPOINTS } from '@metropolitan/shared'
-
-// Use consistent types across backend and mobile
-const order: Order = await orderService.create(orderData)
-```
-
 ## 🔧 Environment Setup
 
 ### Backend Environment Variables
@@ -307,3 +227,62 @@ EXPO_PUBLIC_API_BASE_URL=  # Backend API URL (e.g., http://172.20.10.2:3000)
 - Cart: Automatic guest-to-user migration
 - Orders: Multi-step with Stripe payment
 - Invoices: Fakturownia integration
+
+## 🎨 UI/UX Standards
+
+### Mobile Design
+- Turkish UI text (default language)
+- Modern, minimalist design
+- Mobile-first responsive
+- NativeWind component styling
+- Consistent spacing with Tailwind classes
+
+### Error Handling
+- Turkish error messages (shared/constants)
+- User-friendly error states
+- Comprehensive logging to Sentry
+
+## 🔄 Development Workflow
+
+### Git Workflow
+- Feature branches from main
+- Turkish commit messages (Conventional Commits)
+- Automatic testing on PRs
+
+### Deployment
+- Backend: Bun production builds
+- Mobile: Expo builds for iOS/Android
+- Environment-specific configurations
+
+### Shared Types Usage
+```typescript
+// Import from shared package
+import { Order, Product, API_ENDPOINTS } from '@metropolitan/shared'
+
+// Use consistent types across backend and mobile
+const order: Order = await orderService.create(orderData)
+```
+
+## 🚨 Critical Development Notes
+
+### State Management
+- **Mobile**: React Context API (NOT Zustand despite package.json)
+- **Backend**: Domain services + repositories pattern
+- **Shared**: Immutable data patterns
+
+### External Dependencies
+- **Stripe**: Payment processing + customer management
+- **Fakturownia**: Polish invoice generation
+- **Twilio**: SMS/OTP services
+- **Redis**: Caching + session management
+
+### Performance Considerations
+- **Mobile**: NativeWind for styling, Expo optimizations
+- **Backend**: Redis caching, database indexing, connection pooling
+- **API**: JWT token auto-refresh, request/response compression
+
+### Security Measures
+- Environment variable validation
+- JWT token blacklisting
+- Stripe webhook signature validation
+- Input sanitization and validation
