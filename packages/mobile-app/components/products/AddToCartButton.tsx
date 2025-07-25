@@ -99,7 +99,7 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
 
     // Rotate add icon (only for add to cart, not for notify)
     if (!outOfStock) {
-      iconRotation.value = withTiming(180, {
+      iconRotation.value = withTiming(360, {
         duration: 400,
         easing: Easing.out(Easing.quad),
       });
@@ -117,21 +117,21 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
       triggerHaptic("light", true);
 
       // Yumuşak geçiş animasyonu (zıplama yok)
-      successScale.value = withTiming(1, { duration: 200 });
-      successOpacity.value = withTiming(1, { duration: 200 });
-      bgColorProgress.value = withTiming(1, { duration: 300 });
+      successScale.value = withTiming(1, { duration: 300 });
+      successOpacity.value = withTiming(1, { duration: 300 });
+      bgColorProgress.value = withTiming(1, { duration: 400 });
 
-      // 1.5 saniye sonra eski haline dön
+      // 2 saniye sonra eski haline dön - daha yumuşak geçiş
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
       timeoutRef.current = setTimeout(() => {
         setIsSuccess(false);
         setShowAddedText(false);
-        successOpacity.value = withTiming(0, { duration: 200 });
-        bgColorProgress.value = withTiming(0, { duration: 300 });
+        successOpacity.value = withTiming(0, { duration: 400 });
+        bgColorProgress.value = withTiming(0, { duration: 500 });
         timeoutRef.current = null;
-      }, 1500) as any;
+      }, 2000) as any;
     } catch {
       // Error state - shake animation
       setIsLoading(false);
@@ -238,26 +238,26 @@ export const AddToCartButton: React.FC<AddToCartButtonProps> = ({
                     ? "notifications-outline"
                     : isLoading
                       ? "sync"
-                      : "add"
+                      : "cart-outline"
                 }
                 size={currentSize.iconSize}
                 color={disabled ? colors.mediumGray : colors.tint}
               />
             </Animated.View>
-            <ThemedText
-              className="font-medium ml-1"
-              style={{
-                color: disabled ? colors.mediumGray : colors.tint,
-                fontSize: currentSize.fontSize,
-              }}
-            >
-              {customText ||
-                (outOfStock
-                  ? t("product_detail.purchase.notify_me")
-                  : isLoading
+            {!outOfStock && (
+              <ThemedText
+                className="font-medium ml-1"
+                style={{
+                  color: disabled ? colors.mediumGray : colors.tint,
+                  fontSize: currentSize.fontSize,
+                }}
+              >
+                {customText ||
+                  (isLoading
                     ? t("product_detail.purchase.adding_to_cart")
-                    : t("common.add"))}
-            </ThemedText>
+                    : "")}
+              </ThemedText>
+            )}
           </View>
         </>
       ) : (
