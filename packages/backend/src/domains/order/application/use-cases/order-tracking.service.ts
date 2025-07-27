@@ -101,17 +101,21 @@ export class OrderTrackingService {
       .where(eq(addresses.id, order.shippingAddressId))
       .limit(1);
 
-    const [billingAddress] = await db
-      .select({
-        addressTitle: addresses.addressTitle,
-        street: addresses.street,
-        city: addresses.city,
-        postalCode: addresses.postalCode,
-        country: addresses.country,
-      })
-      .from(addresses)
-      .where(eq(addresses.id, order.billingAddressId))
-      .limit(1);
+    let billingAddress = null;
+    if (order.billingAddressId) {
+      const [billing] = await db
+        .select({
+          addressTitle: addresses.addressTitle,
+          street: addresses.street,
+          city: addresses.city,
+          postalCode: addresses.postalCode,
+          country: addresses.country,
+        })
+        .from(addresses)
+        .where(eq(addresses.id, order.billingAddressId))
+        .limit(1);
+      billingAddress = billing;
+    }
 
     return {
       ...order,

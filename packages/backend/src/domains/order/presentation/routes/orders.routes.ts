@@ -120,17 +120,26 @@ export const createOrdersApp = () =>
       }: AuthenticatedContext & { params: { orderId: string } }) => {
         const { orderId } = params;
 
-        const [order, items, trackingEvents] = await Promise.all([
-          OrderTrackingService.getOrderDetails(orderId, user.id),
-          OrderTrackingService.getOrderItems(orderId),
-          OrderTrackingService.getTrackingEvents(orderId),
-        ]);
+        try {
+          console.log(`📦 Fetching order details for orderId: ${orderId}, userId: ${user.id}`);
+          
+          const [order, items, trackingEvents] = await Promise.all([
+            OrderTrackingService.getOrderDetails(orderId, user.id),
+            OrderTrackingService.getOrderItems(orderId),
+            OrderTrackingService.getTrackingEvents(orderId),
+          ]);
 
-        return {
-          order,
-          items,
-          trackingEvents,
-        };
+          console.log(`✅ Successfully fetched order details for orderId: ${orderId}`);
+
+          return {
+            order,
+            items,
+            trackingEvents,
+          };
+        } catch (error) {
+          console.error(`❌ Failed to fetch order details for orderId: ${orderId}`, error);
+          throw error;
+        }
       },
       {
         params: t.Object({
