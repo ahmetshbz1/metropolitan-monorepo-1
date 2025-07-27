@@ -1,5 +1,5 @@
 // Load environment variables first
-import './src/shared/infrastructure/config/env.config';
+import "./src/shared/infrastructure/config/env.config";
 
 import { logger } from "@bogeychan/elysia-logger";
 import { staticPlugin } from "@elysiajs/static";
@@ -111,12 +111,9 @@ export const app = new Elysia()
 
       // User Domain (grouped under /users prefix)
       .group("/users", (userApp) =>
-        userApp
-          .use(profileRoutes)
-          .use(addressRoutes)
-          .use(favoritesRoutes)
+        userApp.use(profileRoutes).use(addressRoutes).use(favoritesRoutes)
       )
-      
+
       // Cart routes (directly under /api for /me/cart)
       .use(cartRoutes)
 
@@ -146,5 +143,5 @@ if (process.env.NODE_ENV !== "test") {
   console.log(
     `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
   );
-  console.log(`📱 Mobile app can connect to: http://172.20.10.2:3000`);
+  console.log(`📱 Mobile app can connect to: http://172.20.10.9:3000`);
 }
