@@ -158,14 +158,6 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({
       setFavorites((prev) => [...prev, product]);
     }
 
-    // Toast bildirimini hemen göster
-    showToast(
-      isCurrentlyFavorite 
-        ? t("favorites.removed", { productName: product.name })
-        : t("favorites.added", { productName: product.name }),
-      isCurrentlyFavorite ? "error" : "success"
-    );
-
     try {
       if (user) {
         // Authenticated user
@@ -191,14 +183,6 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({
       console.error("Failed to toggle favorite:", error);
       // Hata durumunda eski haline geri dön
       setFavorites(previousFavorites);
-      
-      // Hata toast'ı göster
-      showToast(
-        isCurrentlyFavorite
-          ? t("favorites.remove_error", { productName: product.name })
-          : t("favorites.add_error", { productName: product.name }),
-        "error"
-      );
     }
   };
 

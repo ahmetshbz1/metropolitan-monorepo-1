@@ -148,11 +148,7 @@
       "title": "Twoja lista ulubionych jest pusta",
       "subtitle": "Możesz dodawać produkty, które lubisz, do ulubionych, dotykając ikony serca.",
       "browse_button": "Przeglądaj produkty"
-    },
-    "added": "{{productName}} został dodany do ulubionych",
-    "removed": "{{productName}} został usunięty z ulubionych",
-    "add_error": "Wystąpił błąd podczas dodawania {{productName}} do ulubionych",
-    "remove_error": "Wystąpił błąd podczas usuwania {{productName}} z ulubionych"
+    }
   },
   "help_center": {
     "title": "Centrum Pomocy",

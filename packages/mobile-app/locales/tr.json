@@ -159,11 +159,7 @@
       "title": "Favori listen boş",
       "subtitle": "Beğendiğin ürünleri kalp ikonuna dokunarak favorilerine ekleyebilirsin.",
       "browse_button": "Ürünlere Göz At"
-    },
-    "added": "{{productName}} favorilere eklendi",
-    "removed": "{{productName}} favorilerden kaldırıldı",
-    "add_error": "{{productName}} favorilere eklenirken bir hata oluştu",
-    "remove_error": "{{productName}} favorilerden kaldırılırken bir hata oluştu"
+    }
   },
   "help_center": {
     "title": "Yardım Merkezi",
