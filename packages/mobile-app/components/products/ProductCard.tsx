@@ -95,25 +95,18 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
 
           <HapticIconButton
             onPress={handleToggleFavorite}
-            className="absolute top-3 right-3 w-10 h-10 justify-center items-center z-10 rounded-full bg-white dark:bg-neutral-800"
-            style={{
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 4,
-              elevation: 2,
-            }}
+            className="absolute top-1 right-3 w-8 h-8 justify-center items-center z-10"
             hapticType="light"
           >
             <Ionicons
               name={isProductFavorite ? "heart" : "heart-outline"}
-              size={18}
+              size={20}
               color={
                 isProductFavorite
                   ? colors.danger
                   : colorScheme === "dark"
-                    ? "#888"
-                    : "#666"
+                    ? "#fff"
+                    : "#000"
               }
             />
           </HapticIconButton>
