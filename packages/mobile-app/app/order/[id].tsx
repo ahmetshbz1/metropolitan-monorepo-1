@@ -71,7 +71,7 @@ export default function OrderDetailScreen() {
       setContentReady(false);
       fetchOrderById(id, true); // Always get fresh data when navigating to order detail
     }
-  }, [id, fetchOrderById]);
+  }, [id]); // Remove fetchOrderById from dependencies to prevent infinite loop
 
   // Content ready check
   useEffect(() => {
