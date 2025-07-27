@@ -8,17 +8,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
 import React from "react";
 import { TouchableOpacity, View } from "react-native";
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from "react-native-reanimated";
 import { HapticIconButton } from "../HapticButton";
 import { ProductCardContent } from "./ProductCardContent";
 import { ProductCardImage } from "./ProductCardImage";
-
-const AnimatedTouchableOpacity =
-  Animated.createAnimatedComponent(TouchableOpacity);
 
 interface ProductCardProps {
   product: Product;
@@ -44,24 +36,6 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
 
   const isHorizontal = variant === "horizontal";
 
-  // Animation values
-  const scale = useSharedValue(1);
-  const translateY = useSharedValue(0);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }, { translateY: translateY.value }],
-  }));
-
-  const handlePressIn = () => {
-    scale.value = withSpring(0.97, { damping: 15, stiffness: 400 });
-    translateY.value = withSpring(2, { damping: 15, stiffness: 400 });
-  };
-
-  const handlePressOut = () => {
-    scale.value = withSpring(1, { damping: 15, stiffness: 400 });
-    translateY.value = withSpring(0, { damping: 15, stiffness: 400 });
-  };
-
   return (
     <View
       className={isHorizontal ? "mr-3" : "mx-1 mb-3"}
@@ -74,23 +48,17 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
         }}
         asChild
       >
-        <AnimatedTouchableOpacity
-          activeOpacity={1}
-          onPressIn={handlePressIn}
-          onPressOut={handlePressOut}
+        <TouchableOpacity
+          activeOpacity={0.9}
           className="overflow-hidden rounded-3xl bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800/50"
-          style={[
-            animatedStyle,
-            {
-              shadowColor: colorScheme === "dark" ? "#000" : colors.tint,
-              shadowOffset: { width: 0, height: 6 },
-              shadowOpacity: colorScheme === "dark" ? 0.3 : 0.12,
-              shadowRadius: 12,
-              elevation: 6,
-            },
-          ]}
+          style={{
+            shadowColor: colorScheme === "dark" ? "#000" : colors.tint,
+            shadowOffset: { width: 0, height: 6 },
+            shadowOpacity: colorScheme === "dark" ? 0.3 : 0.12,
+            shadowRadius: 12,
+            elevation: 6,
+          }}
         >
-          {/* Image Section */}
           <ProductCardImage
             product={product}
             colorScheme={colorScheme}
@@ -98,7 +66,6 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
             colors={colors}
           />
 
-          {/* Content Section */}
           <ProductCardContent
             product={product}
             categoryName={categoryName}
@@ -109,7 +76,6 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
             handleAddToCart={handleAddToCart}
           />
 
-          {/* Simple Floating Favorite Button */}
           <HapticIconButton
             onPress={handleToggleFavorite}
             className="absolute top-3 right-3 w-10 h-10 justify-center items-center z-10 rounded-full bg-white dark:bg-neutral-800"
@@ -134,7 +100,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
               }
             />
           </HapticIconButton>
-        </AnimatedTouchableOpacity>
+        </TouchableOpacity>
       </Link>
     </View>
   );

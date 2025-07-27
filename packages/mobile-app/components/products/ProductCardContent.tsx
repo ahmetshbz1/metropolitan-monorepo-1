@@ -8,7 +8,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { ColorSchemeName, View } from "react-native";
 import { ThemedText } from "../ThemedText";
-import { AddToCartButton } from "./AddToCartButton";
+import { SimpleAddToCartButton } from "./SimpleAddToCartButton";
 
 interface ProductCardContentProps {
   product: any;
@@ -45,7 +45,6 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
     <View className="p-3 bg-white dark:bg-neutral-900">
       {/* Category and Brand Badges */}
       <View className="mb-2 flex-row gap-2">
-        {/* Category Badge */}
         <View className="self-start px-2 py-1 rounded-full bg-gray-100 dark:bg-neutral-800">
           <ThemedText
             className="text-xs font-medium uppercase tracking-wide"
@@ -59,7 +58,6 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
           </ThemedText>
         </View>
 
-        {/* Brand Badge */}
         {product.brand && (
           <View className="self-start px-2 py-1 rounded-full bg-gray-100 dark:bg-neutral-800">
             <ThemedText
@@ -90,17 +88,23 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
         {product.name}
       </ThemedText>
 
-      {/* Price and Add to Cart Badge - Bottom */}
-      <AddToCartButton
-        onPress={isOutOfStock ? handleNotifyMe : handleAddToCart}
-        disabled={false}
-        colorScheme={colorScheme}
-        colors={colors}
-        price={formatPrice(product.price, product.currency)}
-        outOfStock={isOutOfStock}
-      />
+      {/* Price and Add to Cart - Separated */}
+      <View className="flex-row items-center justify-between">
+        <ThemedText
+          className="font-bold text-lg"
+          style={{ color: colors.tint }}
+        >
+          {formatPrice(product.price, product.currency)}
+        </ThemedText>
 
-      {/* Stock Status Indicators */}
+        <SimpleAddToCartButton
+          onPress={isOutOfStock ? handleNotifyMe : handleAddToCart}
+          colors={colors}
+          outOfStock={isOutOfStock}
+        />
+      </View>
+
+      {/* Stock Status */}
       {isLowStock && !isOutOfStock && (
         <View className="mt-3 flex-row items-center justify-center">
           <View className="w-2 h-2 bg-amber-500 rounded-full mr-2" />
