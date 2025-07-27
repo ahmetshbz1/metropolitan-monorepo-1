@@ -69,7 +69,7 @@ export function CartSummary({
 
       <BaseButton
         variant="primary"
-        size="medium"
+        size="small"
         title={t("cart.checkout")}
         onPress={onCheckout}
         loading={isCheckingOut}

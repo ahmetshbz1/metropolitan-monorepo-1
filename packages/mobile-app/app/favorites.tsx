@@ -3,7 +3,7 @@
 //  Created by Ahmet on 25.06.2025.
 
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter, useNavigation } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import React, { useCallback, useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
@@ -41,7 +41,7 @@ const EmptyFavorites = () => {
       </ThemedText>
       <BaseButton
         variant="primary"
-        size="medium"
+        size="small"
         title={t("favorites.empty.browse_button")}
         onPress={() => router.push("/(tabs)/products")}
         hapticType="light"

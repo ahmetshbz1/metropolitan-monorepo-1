@@ -24,7 +24,7 @@ export function EmptyCart() {
       <Link href="/(tabs)" asChild>
         <BaseButton
           variant="primary"
-          size="medium"
+          size="small"
           title={t("cart.empty.button")}
           hapticType="medium"
           style={{ paddingHorizontal: 24, borderRadius: 12 }}

@@ -173,7 +173,7 @@ export default function BankTransferScreen() {
         >
           <BaseButton
             variant="primary"
-            size="medium"
+            size="small"
             title={t("bank_transfer.confirm_button")}
             onPress={handleGoBack}
             fullWidth

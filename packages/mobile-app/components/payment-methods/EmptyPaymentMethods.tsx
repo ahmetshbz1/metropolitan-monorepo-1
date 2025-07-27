@@ -28,7 +28,7 @@ export const EmptyPaymentMethods = () => {
       </ThemedText>
       <BaseButton
         variant="primary"
-        size="medium"
+        size="small"
         title={t("payment_methods.empty.add_button")}
         hapticType="medium"
         onPress={() => {

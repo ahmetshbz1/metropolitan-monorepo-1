@@ -81,7 +81,7 @@ const OTPScreen = () => {
         >
           <BaseButton
             variant="primary"
-            size="medium"
+            size="small"
             title={t("otp.verify_button")}
             loading={otp.loading}
             disabled={isButtonDisabled}

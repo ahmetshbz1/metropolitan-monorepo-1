@@ -196,7 +196,7 @@ export default function OrderConfirmationScreen() {
       >
         <BaseButton
           variant="primary"
-          size="medium"
+          size="small"
           title={t("order_confirmation.button_text")}
           onPress={handleGoToOrders}
           fullWidth

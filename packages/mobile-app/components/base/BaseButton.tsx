@@ -62,10 +62,10 @@ export const BaseButton: React.FC<BaseButtonProps> = ({
   // Size configurations
   const sizeConfig = {
     small: {
-      paddingVertical: 10,
-      paddingHorizontal: 20,
-      fontSize: 14,
-      borderRadius: 12,
+      paddingVertical: 12,
+      paddingHorizontal: 24,
+      fontSize: 15,
+      borderRadius: 14,
     },
     medium: {
       paddingVertical: 14,

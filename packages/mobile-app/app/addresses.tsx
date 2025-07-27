@@ -54,7 +54,7 @@ export default function AddressesScreen() {
   const ListFooter = () => (
     <BaseButton
       variant="secondary"
-      size="medium"
+      size="small"
       title={`+ ${t("addresses.add_new_address")}`}
       onPress={handleAddAddress}
       style={{ marginTop: 16 }}

@@ -21,7 +21,7 @@ export const SendCodeButton: React.FC<SendCodeButtonProps> = ({
   return (
     <BaseButton
       variant="primary"
-      size="medium"
+      size="small"
       title={title}
       loading={loading}
       disabled={disabled}

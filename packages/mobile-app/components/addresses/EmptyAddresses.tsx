@@ -28,7 +28,7 @@ export const EmptyAddresses = () => {
       </ThemedText>
       <BaseButton
         variant="primary"
-        size="medium"
+        size="small"
         title={t("addresses.empty.add_button")}
         hapticType="medium"
         onPress={() => {

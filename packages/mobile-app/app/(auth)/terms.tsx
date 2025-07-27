@@ -96,7 +96,7 @@ export default function TermsScreen() {
       <View className="p-4 pb-8" style={{ paddingBottom: insets.bottom || 20 }}>
         <BaseButton
           variant="primary"
-          size="medium"
+          size="small"
           title={t("terms.agree_button")}
           disabled={!hasScrolledToBottom}
           onPress={handleAgree}
@@ -105,7 +105,7 @@ export default function TermsScreen() {
         />
         <BaseButton
           variant="secondary"
-          size="medium"
+          size="small"
           title={t("terms.close_button")}
           onPress={() => router.back()}
           fullWidth

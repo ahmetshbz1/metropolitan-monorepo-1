@@ -190,7 +190,7 @@ export default function CheckoutPaymentScreen() {
         >
           <BaseButton
             variant="primary"
-            size="medium"
+            size="small"
             title={t("checkout.continue_to_summary")}
             onPress={handleNext}
             disabled={!canProceedToNext()}

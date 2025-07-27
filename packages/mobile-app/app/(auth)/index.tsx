@@ -2,10 +2,10 @@
 //  metropolitan app
 //  Created by Ahmet on 04.06.2025.
 
-import { BaseButton } from "@/components/base/BaseButton";
 import { AuthHeaderImage } from "@/components/auth/AuthHeaderImage";
 import { LoginTypeSelector } from "@/components/auth/LoginTypeSelector";
 import { SocialLoginButtons } from "@/components/auth/SocialLoginButtons";
+import { BaseButton } from "@/components/base/BaseButton";
 import Colors from "@/constants/Colors";
 import { useAuth } from "@/context/AuthContext";
 import { useHaptics } from "@/hooks/useHaptics";
@@ -13,12 +13,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Text,
-  View,
-  useColorScheme,
-  useWindowDimensions,
-} from "react-native";
+import { Text, View, useColorScheme, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const LoginScreen = () => {
@@ -52,7 +47,7 @@ const LoginScreen = () => {
       style={{ backgroundColor: themeColors.background }}
     >
       <AuthHeaderImage />
-      
+
       <View className="flex-1 justify-between px-6 pt-4">
         <View>
           <Text
@@ -75,7 +70,7 @@ const LoginScreen = () => {
               ? t("login.checkout_subtitle")
               : t("login.welcome_subtitle")}
           </Text>
-          
+
           <LoginTypeSelector
             loginType={loginType}
             onLoginTypeChange={setLoginType}
@@ -89,7 +84,7 @@ const LoginScreen = () => {
         >
           <BaseButton
             variant="primary"
-            size="medium"
+            size="small"
             fullWidth
             onPress={withHapticFeedback(
               () =>
@@ -141,7 +136,7 @@ const LoginScreen = () => {
 
           <BaseButton
             variant="text"
-            size="medium"
+            size="small"
             title={t("login.guest_button")}
             onPress={withHapticFeedback(handleGuestLogin, "light")}
             style={{ marginTop: 24 }}

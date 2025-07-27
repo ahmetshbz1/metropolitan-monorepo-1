@@ -4,7 +4,7 @@
 //  Modified by Ahmet on 15.07.2025.
 
 import { useNavigation } from "expo-router";
-import React, { useState, useLayoutEffect } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import {
@@ -73,7 +73,11 @@ export default function EditProfileScreen() {
       <KeyboardAwareScrollView
         style={{ flex: 1 }}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 0 }}
+        contentContainerStyle={{
+          paddingHorizontal: 20,
+          paddingTop: 20,
+          paddingBottom: 0,
+        }}
         bottomOffset={200}
         extraKeyboardSpace={50}
       >
@@ -93,7 +97,7 @@ export default function EditProfileScreen() {
           setEmailBlurred={setEmailBlurred}
         />
       </KeyboardAwareScrollView>
-      
+
       <KeyboardStickyView>
         <View
           className="p-5"
@@ -104,7 +108,7 @@ export default function EditProfileScreen() {
         >
           <BaseButton
             variant="primary"
-            size="medium"
+            size="small"
             title={t("edit_profile.save_button")}
             onPress={async () => {
               try {
@@ -113,7 +117,10 @@ export default function EditProfileScreen() {
                   showToast(result.message, "success");
                 }
               } catch (error: any) {
-                showToast(error.message || t("edit_profile.error_message"), "error");
+                showToast(
+                  error.message || t("edit_profile.error_message"),
+                  "error"
+                );
               }
             }}
             loading={loading}

@@ -155,7 +155,7 @@ const UserInfoScreen = () => {
         <View style={footerStyle}>
           <BaseButton
             variant="primary"
-            size="medium"
+            size="small"
             title={t("user_info.save_button")}
             loading={isSaving}
             disabled={!isFormValid}

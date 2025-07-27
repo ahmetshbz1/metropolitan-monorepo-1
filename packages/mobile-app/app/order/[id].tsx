@@ -4,7 +4,13 @@
 
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
-import React, { useCallback, useLayoutEffect, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
@@ -176,7 +182,7 @@ export default function OrderDetailScreen() {
                 {canDownloadInvoice && (
                   <BaseButton
                     variant="primary"
-                    size="medium"
+                    size="small"
                     onPress={downloadInvoice}
                     hapticType="medium"
                     fullWidth
@@ -198,7 +204,7 @@ export default function OrderDetailScreen() {
                 {canBeCancelled && (
                   <BaseButton
                     variant="danger"
-                    size="medium"
+                    size="small"
                     title={t("order_detail.cancel_order")}
                     onPress={handleCancelOrder}
                     loading={loading}

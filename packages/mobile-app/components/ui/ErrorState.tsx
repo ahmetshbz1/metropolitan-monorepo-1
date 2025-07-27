@@ -51,7 +51,7 @@ export function ErrorState({ message, onRetry }: ErrorStateProps) {
         </ThemedText>
         <BaseButton
           variant="primary"
-          size="medium"
+          size="small"
           title={t("common.retry")}
           onPress={onRetry}
           fullWidth={false}

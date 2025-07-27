@@ -20,10 +20,10 @@ import { BaseCard } from "@/components/base/BaseCard";
 import { ProgressIndicator } from "@/components/checkout/ProgressIndicator";
 import Colors, { ColorUtils } from "@/constants/Colors";
 import { useAddresses } from "@/context/AddressContext";
-import { Address } from "@metropolitan/shared/types/address";
 import { useCheckout } from "@/context/CheckoutContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useHaptics } from "@/hooks/useHaptics";
+import { Address } from "@metropolitan/shared/types/address";
 
 export default function CheckoutAddressScreen() {
   const { t } = useTranslation();
@@ -167,7 +167,7 @@ export default function CheckoutAddressScreen() {
 
             <BaseButton
               variant="secondary"
-              size="medium"
+              size="small"
               title={`+ ${t("checkout.add_new_address")}`}
               onPress={() => router.push("/add-address")}
               style={{ marginTop: 8 }}
@@ -229,7 +229,7 @@ export default function CheckoutAddressScreen() {
         >
           <BaseButton
             variant="primary"
-            size="medium"
+            size="small"
             title={t("checkout.continue_to_payment")}
             onPress={handleNext}
             disabled={!canProceedToNext()}

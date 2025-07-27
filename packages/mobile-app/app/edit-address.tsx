@@ -2,8 +2,8 @@
 // metropolitan app
 // Created by Ahmet on 21.06.2025, last modified on 15.07.2025.
 
-import { useLocalSearchParams, useRouter, useNavigation } from "expo-router";
-import React, { useEffect, useState, useLayoutEffect } from "react";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import {
@@ -74,10 +74,7 @@ export default function EditAddressScreen() {
       showToast(t("edit_address.form.update_success_message"), "success");
       router.back();
     } catch (error) {
-      showToast(
-        t("edit_address.form.submit_error_message"),
-        "error"
-      );
+      showToast(t("edit_address.form.submit_error_message"), "error");
       console.error(error);
     } finally {
       setLoading(false);
@@ -96,14 +93,15 @@ export default function EditAddressScreen() {
       <KeyboardAwareScrollView
         style={{ flex: 1 }}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 0 }}
+        contentContainerStyle={{
+          paddingHorizontal: 20,
+          paddingTop: 20,
+          paddingBottom: 0,
+        }}
         bottomOffset={200}
         extraKeyboardSpace={0}
       >
-        <AddressForm
-          formData={formData}
-          onFormChange={handleFormChange}
-        />
+        <AddressForm formData={formData} onFormChange={handleFormChange} />
       </KeyboardAwareScrollView>
 
       <KeyboardStickyView>
@@ -116,7 +114,7 @@ export default function EditAddressScreen() {
         >
           <BaseButton
             variant="primary"
-            size="medium"
+            size="small"
             title={t("edit_address.form.save_button")}
             onPress={withHapticFeedback(handleUpdateAddress)}
             loading={loading}

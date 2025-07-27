@@ -44,7 +44,7 @@ export function SummaryFooter({
         <TermsAgreement />
         <BaseButton
           variant="primary"
-          size="medium"
+          size="small"
           title={
             isBankTransfer
               ? t("checkout.confirm_and_proceed")

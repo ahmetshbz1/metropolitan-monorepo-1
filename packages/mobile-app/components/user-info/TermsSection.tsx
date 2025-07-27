@@ -24,7 +24,7 @@ export function TermsSection({
     <View>
       <BaseButton
         variant="ghost"
-        size="medium"
+        size="small"
         onPress={onPress}
         style={{
           backgroundColor: themeColors.backgroundSecondary,

@@ -163,7 +163,7 @@ export function PurchaseSection({
       {isInCart && isSameQuantity ? (
         <BaseButton
           variant="success"
-          size="medium"
+          size="small"
           hapticType="medium"
           onPress={() => {
             setIsNavigating(true);
@@ -184,7 +184,7 @@ export function PurchaseSection({
       ) : (
         <BaseButton
           variant={isAdded ? "success" : "primary"}
-          size="medium"
+          size="small"
           onPress={handleAddToCart}
           hapticType={isAdded ? "success" : "medium"}
           disabled={product.stock === 0 || numericQuantity === 0 || isLoading}

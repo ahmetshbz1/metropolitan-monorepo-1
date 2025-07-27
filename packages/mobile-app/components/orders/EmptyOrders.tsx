@@ -26,7 +26,7 @@ export function EmptyOrders() {
       <Link href="/(tabs)" asChild>
         <BaseButton
           variant="primary"
-          size="medium"
+          size="small"
           title={t("orders.empty.button")}
           hapticType="medium"
           style={{ paddingHorizontal: 24, borderRadius: 12 }}

@@ -2,8 +2,8 @@
 //  metropolitan app
 //  Created by Ahmet on 26.06.2025.
 
-import { useRouter, useNavigation } from "expo-router";
-import React, { useState, useLayoutEffect } from "react";
+import { useNavigation, useRouter } from "expo-router";
+import React, { useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import {
@@ -74,10 +74,7 @@ export default function AddAddressScreen() {
       showToast(t("add_address.form.success_message"), "success");
       router.back();
     } catch (error) {
-      showToast(
-        t("add_address.form.submit_error_message"),
-        "error"
-      );
+      showToast(t("add_address.form.submit_error_message"), "error");
       console.error(error);
     } finally {
       setLoading(false);
@@ -89,14 +86,15 @@ export default function AddAddressScreen() {
       <KeyboardAwareScrollView
         style={{ flex: 1 }}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 0 }}
+        contentContainerStyle={{
+          paddingHorizontal: 20,
+          paddingTop: 20,
+          paddingBottom: 0,
+        }}
         bottomOffset={200}
         extraKeyboardSpace={0}
       >
-        <AddressForm
-          formData={formData}
-          onFormChange={handleFormChange}
-        />
+        <AddressForm formData={formData} onFormChange={handleFormChange} />
       </KeyboardAwareScrollView>
 
       <KeyboardStickyView>
@@ -109,7 +107,7 @@ export default function AddAddressScreen() {
         >
           <BaseButton
             variant="primary"
-            size="medium"
+            size="small"
             title={t("add_address.form.save_button")}
             onPress={handleAddAddress}
             loading={loading}

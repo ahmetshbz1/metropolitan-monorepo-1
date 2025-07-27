@@ -60,7 +60,7 @@ const MemoizedHomeScreenContent = React.memo(function HomeScreenContent() {
         <Link href="/(tabs)/products" asChild>
           <BaseButton
             variant="primary"
-            size="medium"
+            size="small"
             title={t("home.see_all_products")}
             fullWidth
             style={{ marginTop: 8, marginBottom: 24 }}
