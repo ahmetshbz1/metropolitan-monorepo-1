@@ -2,7 +2,7 @@
 //  metropolitan app
 //  Created by Ahmet on 07.07.2025.
 
-import { PaymentType, CheckoutPaymentMethod } from "@metropolitan/shared/types/checkout";
+import { PaymentType, type CheckoutPaymentMethod } from "@metropolitan/shared";
 import { Platform } from "react-native";
 
 export const getAvailablePaymentMethods = (

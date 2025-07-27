@@ -15,7 +15,7 @@ import { useCart } from "@/context/CartContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useToast } from "@/hooks/useToast";
-import { Product } from "@metropolitan/shared/types/product";
+import type { Product } from "@metropolitan/shared";
 
 interface PurchaseSectionProps {
   product: Product;

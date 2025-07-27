@@ -11,17 +11,8 @@ import Svg, { Path } from "react-native-svg";
 import { BaseCard } from "@/components/base/BaseCard";
 import { ThemedText } from "@/components/ThemedText";
 import Colors from "@/constants/Colors";
-import { usePaymentMethods } from "@/context/PaymentMethodContext";
+import { usePaymentMethods, PaymentMethod } from "@/context/PaymentMethodContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
-
-export type PaymentMethod = {
-  id: string;
-  type: string;
-  name: string;
-  details: string;
-  expiry: string;
-  isDefault: boolean;
-};
 
 const VisaIcon = () => (
   <Svg width="38" height="24" viewBox="0 0 38 24" fill="none">

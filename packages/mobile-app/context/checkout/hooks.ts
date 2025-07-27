@@ -3,8 +3,7 @@
 //  Created by Ahmet on 07.07.2025.
 
 import { useCallback } from "react";
-import { Address } from "@metropolitan/shared/types/address";
-import { CheckoutPaymentMethod, CheckoutState, Action } from "@metropolitan/shared/types/checkout";
+import type { Address, CheckoutPaymentMethod, CheckoutState, Action } from "@metropolitan/shared";
 
 export const useCheckoutActions = (
   state: CheckoutState,

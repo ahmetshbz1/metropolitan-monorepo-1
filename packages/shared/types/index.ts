@@ -3,8 +3,10 @@
 
 export * from "./address";
 export * from "./cart";
+export * from "./checkout";
 export * from "./misc";
 export * from "./notification";
 export * from "./order";
+export * from "./payment";
 export * from "./product";
 export * from "./user";

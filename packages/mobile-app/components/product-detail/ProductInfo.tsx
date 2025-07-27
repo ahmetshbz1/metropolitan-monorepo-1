@@ -13,7 +13,7 @@ import { ThemedView } from "@/components/ThemedView";
 import Colors from "@/constants/Colors";
 import { formatPrice } from "@/core/utils";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { Product } from "@metropolitan/shared/types/product";
+import type { Product } from "@metropolitan/shared";
 
 interface ProductInfoProps {
   product: Product | null;

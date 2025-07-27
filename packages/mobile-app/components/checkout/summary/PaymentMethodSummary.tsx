@@ -56,7 +56,7 @@ export function PaymentMethodSummary() {
           <View>
             <View className="flex-row items-center">
               <Ionicons
-                name={selectedPaymentMethod.icon}
+                name={selectedPaymentMethod.icon as any}
                 size={24}
                 color={colors.text}
                 style={{ marginRight: 12 }}

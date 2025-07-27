@@ -2,7 +2,7 @@
 //  metropolitan app
 //  Created by Ahmet on 15.07.2025.
 
-import { Action, CheckoutState } from "../../../shared/types/checkout";
+import type { Action, CheckoutState } from "@metropolitan/shared";
 
 export const checkoutReducer = (
   state: CheckoutState,

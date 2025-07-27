@@ -9,7 +9,7 @@ export type {
   Address,
   OrderDetail,
   OrderItem,
-  PaymentMethod,
+  PaymentMethodType,
   TrackingEvent,
   User,
 } from "@metropolitan/shared/types";

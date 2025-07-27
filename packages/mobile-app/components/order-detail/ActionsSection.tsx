@@ -17,11 +17,15 @@ import { useHaptics } from "@/hooks/useHaptics";
 interface ActionsSectionProps {
   orderData: FullOrderPayload;
   onPressHelp: () => void;
+  onDownloadInvoice?: () => void;
+  onCancelOrder?: () => Promise<void>;
 }
 
 export function ActionsSection({
   orderData,
   onPressHelp,
+  onDownloadInvoice,
+  onCancelOrder,
 }: ActionsSectionProps) {
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
@@ -32,7 +36,11 @@ export function ActionsSection({
   const { cancelOrder, loading } = useOrders();
 
   const handleDownloadInvoice = () => {
-    Alert.alert(t("general.under_construction"), t("general.feature_soon"));
+    if (onDownloadInvoice) {
+      onDownloadInvoice();
+    } else {
+      Alert.alert(t("general.under_construction"), t("general.feature_soon"));
+    }
   };
 
   const handleRepeatOrder = () => {
@@ -54,9 +62,13 @@ export function ActionsSection({
           style: "destructive",
           onPress: async () => {
             try {
-              await cancelOrder(orderData.order.id);
-              Alert.alert(t("order_detail.cancel_success_title"));
-              router.back();
+              if (onCancelOrder) {
+                await onCancelOrder();
+              } else {
+                await cancelOrder(orderData.order.id);
+                Alert.alert(t("order_detail.cancel_success_title"));
+                router.back();
+              }
             } catch (error: any) {
               const errorMessage =
                 error.response?.data?.message ||
@@ -72,42 +84,49 @@ export function ActionsSection({
   const canBeCancelled = ["pending", "confirmed"].includes(
     orderData.order.status
   );
+  const canDownloadInvoice = ["confirmed", "shipped", "delivered"].includes(
+    orderData.order.status
+  );
 
   return (
-    <View className="flex-row gap-2.5">
-      <HapticButton
-        onPress={handleRepeatOrder}
-        className="flex-1 flex-row items-center justify-center p-3 rounded-lg"
-        style={{
-          backgroundColor: colors.cardBackground,
-          borderWidth: 1,
-          borderColor: colors.tint,
-        }}
-      >
-        <Ionicons name="repeat" size={20} color={colors.tint} />
-        <Text
-          className="text-sm font-semibold ml-2.5"
-          style={{ color: colors.tint }}
+    <View className="gap-2.5">
+      <View className="flex-row gap-2.5">
+        <HapticButton
+          onPress={handleRepeatOrder}
+          className="flex-1 flex-row items-center justify-center p-3 rounded-lg"
+          style={{
+            backgroundColor: colors.cardBackground,
+            borderWidth: 1,
+            borderColor: colors.tint,
+          }}
         >
-          {t("order_detail.actions.repeat_order")}
-        </Text>
-      </HapticButton>
-      <HapticButton
-        onPress={handleDownloadInvoice}
-        className="flex-1 flex-row items-center justify-center p-3 rounded-lg"
-        style={{ backgroundColor: colors.tint }}
-      >
-        <Ionicons name="download-outline" size={20} color={"white"} />
-        <Text
-          className="text-sm font-semibold ml-2.5"
-          style={{ color: "white" }}
-        >
-          {t("order_detail.actions.download_invoice")}
-        </Text>
-      </HapticButton>
+          <Ionicons name="repeat" size={20} color={colors.tint} />
+          <Text
+            className="text-sm font-semibold ml-2.5"
+            style={{ color: colors.tint }}
+          >
+            {t("order_detail.actions.repeat_order")}
+          </Text>
+        </HapticButton>
+        {canDownloadInvoice && (
+          <HapticButton
+            onPress={handleDownloadInvoice}
+            className="flex-1 flex-row items-center justify-center p-3 rounded-lg"
+            style={{ backgroundColor: colors.tint }}
+          >
+            <Ionicons name="download-outline" size={20} color={"white"} />
+            <Text
+              className="text-sm font-semibold ml-2.5"
+              style={{ color: "white" }}
+            >
+              {t("order_detail.actions.download_invoice")}
+            </Text>
+          </HapticButton>
+        )}
+      </View>
       <HapticButton
         onPress={onPressHelp}
-        className="flex-row items-center justify-center p-3 rounded-lg mt-2.5"
+        className="flex-row items-center justify-center p-3 rounded-lg"
         style={{ backgroundColor: colors.background }}
       >
         <Ionicons

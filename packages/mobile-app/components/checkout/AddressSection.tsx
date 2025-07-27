@@ -14,7 +14,7 @@ import { BaseCard } from "@/components/base/BaseCard";
 import Colors, { ColorUtils } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useHaptics } from "@/hooks/useHaptics";
-import { Address } from "@metropolitan/shared/types/address";
+import type { Address } from "@metropolitan/shared";
 
 interface AddressSectionProps {
   title: string;

@@ -2,8 +2,7 @@
 //  metropolitan app
 //  Created by Ahmet on 07.07.2025.
 
-import { Address } from "@metropolitan/shared/types/address";
-import { CheckoutState, Action } from "@metropolitan/shared/types/checkout";
+import type { Address, CheckoutState, Action } from "@metropolitan/shared";
 
 export const handleAddressDefaults = (
   addresses: Address[],

@@ -8,16 +8,14 @@ import { useTranslation } from "react-i18next";
 import { ActivityIndicator, FlatList } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import {
-  AddressCard,
-  Address as CardAddress,
-} from "@/components/addresses/AddressCard";
+import { AddressCard } from "@/components/addresses/AddressCard";
 import { EmptyAddresses } from "@/components/addresses/EmptyAddresses";
 import { BaseButton } from "@/components/base/BaseButton";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Colors from "@/constants/Colors";
-import { Address as ApiAddress, useAddresses } from "@/context/AddressContext";
+import { useAddresses } from "@/context/AddressContext";
+import type { Address } from "@metropolitan/shared";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 export default function AddressesScreen() {
@@ -35,17 +33,7 @@ export default function AddressesScreen() {
     });
   }, [navigation, t]);
 
-  const { addresses: apiAddresses, loading, error } = useAddresses();
-
-  const addresses: CardAddress[] = apiAddresses.map((addr: ApiAddress) => ({
-    id: addr.id,
-    name: addr.addressTitle,
-    address: addr.street,
-    city: addr.city,
-    postalCode: addr.postalCode,
-    isDeliveryDefault: addr.isDefaultDelivery,
-    isBillingDefault: addr.isDefaultBilling,
-  }));
+  const { addresses, loading, error } = useAddresses();
 
   const handleAddAddress = () => {
     router.push("/add-address");

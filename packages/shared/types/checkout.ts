@@ -2,7 +2,6 @@
 //  metropolitan app
 //  Created by Ahmet on 15.07.2025.
 
-import { Ionicons } from "@expo/vector-icons";
 import { Address } from "./address";
 
 // Modern ödeme yöntemleri
@@ -20,7 +19,7 @@ export interface CheckoutPaymentMethod {
   type: PaymentType;
   title: string;
   subtitle?: string;
-  icon: React.ComponentProps<typeof Ionicons>["name"];
+  icon: string; // Icon name as string instead of Expo-specific type
   isAvailable: boolean;
 }
 

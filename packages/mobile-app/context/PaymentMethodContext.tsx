@@ -12,11 +12,33 @@ import React, {
 } from "react";
 import { useAuth } from "./AuthContext";
 
-import {
-  PaymentMethod,
-  PaymentMethodContextType,
-  PaymentMethodData,
-} from "../../shared/types/payment";
+// Local Payment Method types (mobile-specific)
+export type PaymentMethod = {
+  id: string;
+  type: string;
+  name: string;
+  details: string;
+  expiry: string;
+  isDefault: boolean;
+};
+
+export interface PaymentMethodData {
+  type: string;
+  name: string;
+  details: string;
+  expiry: string;
+}
+
+export interface PaymentMethodContextType {
+  paymentMethods: PaymentMethod[];
+  loading: boolean;
+  error: string | null;
+  addPaymentMethod: (method: PaymentMethodData) => Promise<void>;
+  updatePaymentMethod: (id: string, updates: Partial<PaymentMethodData>) => Promise<void>;
+  deletePaymentMethod: (id: string) => Promise<void>;
+  setDefaultPaymentMethod: (id: string) => Promise<void>;
+  refreshPaymentMethods: () => Promise<void>;
+}
 
 const PaymentMethodContext = createContext<
   PaymentMethodContextType | undefined

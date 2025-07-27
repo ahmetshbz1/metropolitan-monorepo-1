@@ -2,19 +2,17 @@
 //  metropolitan app
 //  Created by Ahmet on 24.06.2025.
 
-export type User = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone?: string;
-  profilePhotoUrl?: string; // API'den gelen orijinal, göreceli URL
+import type { ApiResponse, User } from "@metropolitan/shared";
+
+// Extended User type for mobile-specific fields
+export interface MobileUser extends User {
   profilePicture?: string; // Bileşenlerde kullanılacak tam, işlenmiş URL
   nip?: string;
   userType?: "individual" | "corporate";
-};
+}
 
 export type AuthContextType = {
-  user: User | null;
+  user: MobileUser | null;
   token: string | null;
   registrationToken: string | null;
   isGuest: boolean;
@@ -34,14 +32,14 @@ export type AuthContextType = {
     isNewUser: boolean;
   }>;
   completeProfile: (
-    userData: Omit<User, "phone" | "profilePicture"> & {
+    userData: Omit<MobileUser, "phone" | "profilePicture"> & {
       userType: "individual" | "corporate";
       nip?: string;
       termsAccepted: boolean;
     }
   ) => Promise<{ success: boolean; message: string }>;
   updateUserProfile: (
-    userData: Partial<Omit<User, "phone" | "profilePicture">>
+    userData: Partial<Omit<MobileUser, "phone" | "profilePicture">>
   ) => Promise<{ success: boolean; message: string }>;
   uploadProfilePhoto: (
     imageUri: string
@@ -61,8 +59,5 @@ export interface CompleteProfileInput {
   termsAccepted: boolean;
 }
 
-export interface ApiResponse<T = any> {
-  success: boolean;
-  message: string;
-  data?: T;
-}
+// Re-export shared ApiResponse type
+export type { ApiResponse };

@@ -5,7 +5,7 @@
 import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "@/core/api";
-import { Product } from "@metropolitan/shared/types/product";
+import type { Product } from "@metropolitan/shared";
 
 const PAGE_SIZE = 20;
 const MINIMUM_LOADING_TIME = 500;

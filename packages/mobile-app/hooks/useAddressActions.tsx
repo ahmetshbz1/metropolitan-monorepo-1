@@ -11,17 +11,7 @@ import {
 } from "react-native";
 
 import { useAddresses } from "@/context/AddressContext";
-
-export type Address = {
-  id: string;
-  name: string;
-  address: string;
-  city: string;
-  postalCode: string;
-  isDeliveryDefault: boolean;
-  isBillingDefault: boolean;
-  taxId?: string;
-};
+import type { Address } from "@metropolitan/shared";
 
 export const useAddressActions = (address: Address) => {
   const { t } = useTranslation();

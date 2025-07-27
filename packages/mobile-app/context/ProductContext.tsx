@@ -4,10 +4,10 @@
 //  Last Modified by Ahmet on 15.07.2025.
 
 import { api } from "@/core/api";
-import {
+import type {
   Category,
   ProductContextType,
-} from "@metropolitan/shared/types/product";
+} from "@metropolitan/shared";
 import {
   ReactNode,
   createContext,
@@ -130,3 +130,6 @@ export const useProducts = () => {
   }
   return context;
 };
+
+// Re-export shared types for backward compatibility
+export type { Product, Category } from "@metropolitan/shared";

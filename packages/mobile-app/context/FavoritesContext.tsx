@@ -2,8 +2,6 @@
 //  metropolitan app
 //  Created by Ahmet on 22.06.2025.
 
-import { api } from "@/core/api";
-import { useToast } from "@/hooks/useToast";
 import React, {
   createContext,
   useCallback,
@@ -12,10 +10,15 @@ import React, {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
+
 import { useAuth } from "./AuthContext";
 import { Product } from "./ProductContext";
-
-const MINIMUM_LOADING_TIME = 500; // 0.5 seconds
+import { 
+  fetchFavoritesFromApi, 
+  addFavoriteToApi, 
+  removeFavoriteFromApi 
+} from "@/hooks/favorites/useFavoritesApi";
+import { handleMinimumLoadingTime } from "@/utils/favorites/favoritesUtils";
 
 type FavoritesContextType = {
   favorites: Product[];
@@ -43,26 +46,11 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { user, isGuest, guestId } = useAuth();
-  const { t, i18n } = useTranslation();
-  const { showToast } = useToast();
+  const { i18n } = useTranslation();
 
   const [favorites, setFavorites] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  // Favorite item'ı normalize et (user ve guest endpoint'leri arasındaki farkları gider)
-  const normalizeFavoriteItem = (item: any): Product => {
-    const product = item.product || item;
-    return {
-      id: product.id,
-      name: product.name,
-      brand: product.brand,
-      price: product.price,
-      stock: product.stock,
-      image: product.imageUrl || product.image,
-      category: product.category || "",
-    };
-  };
 
   const fetchFavorites = useCallback(
     async (clearList = false) => {
@@ -80,49 +68,21 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({
 
       const startTime = Date.now();
       try {
-        let data;
-        // Backend'in beklediği dil kodu (tr, en, pl)
         const lang = i18n.language || "tr";
-
-        if (user) {
-          // Authenticated user
-          const response = await api.get("/users/me/favorites", {
-            params: { lang },
-          });
-          data = response.data;
-
-          if (data.success) {
-            setFavorites(data.data.map(normalizeFavoriteItem));
-          } else {
-            setError("Could not fetch favorites.");
-          }
-        } else if (isGuest && guestId) {
-          // Guest user
-          const response = await api.get(`/guest/favorites/${guestId}`, {
-            params: { lang },
-          });
-          data = response.data;
-
-          if (data.success) {
-            setFavorites(data.data.map(normalizeFavoriteItem));
-          } else {
-            setError("Could not fetch favorites.");
-          }
-        }
+        const fetchedFavorites = await fetchFavoritesFromApi({
+          user,
+          isGuest,
+          guestId,
+          lang,
+        });
+        setFavorites(fetchedFavorites);
       } catch (error) {
         console.error("Failed to fetch favorites:", error);
         setError(
           "A network error occurred. Please check your connection and try again."
         );
       } finally {
-        const elapsedTime = Date.now() - startTime;
-        const remainingTime = MINIMUM_LOADING_TIME - elapsedTime;
-
-        if (remainingTime > 0) {
-          setTimeout(() => setIsLoading(false), remainingTime);
-        } else {
-          setIsLoading(false);
-        }
+        handleMinimumLoadingTime(startTime, () => setIsLoading(false));
       }
     },
     [user, isGuest, guestId, i18n.language]
@@ -135,10 +95,8 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({
   // Authenticated user ile guest state arasında geçiş olduğunda favorites'i yeniden yükle
   useEffect(() => {
     if (user || (isGuest && guestId)) {
-      // Eğer kullanıcı login olduysa veya guest session varsa favorites'i yükle
       fetchFavorites();
     } else {
-      // Hiç kimse login değilse favorites'i temizle
       setFavorites([]);
     }
   }, [user, isGuest, guestId, fetchFavorites]);
@@ -159,26 +117,11 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     try {
-      if (user) {
-        // Authenticated user
-        if (isCurrentlyFavorite) {
-          await api.delete(`/users/me/favorites/${product.id}`);
-        } else {
-          await api.post("/users/me/favorites", { productId: product.id });
-        }
-      } else if (isGuest && guestId) {
-        // Guest user
-        if (isCurrentlyFavorite) {
-          await api.delete(`/guest/favorites/${guestId}/${product.id}`);
-        } else {
-          await api.post("/guest/favorites/add", {
-            guestId,
-            productId: product.id,
-          });
-        }
+      if (isCurrentlyFavorite) {
+        await removeFavoriteFromApi(product.id, { user, isGuest, guestId });
+      } else {
+        await addFavoriteToApi(product.id, { user, isGuest, guestId });
       }
-
-      // API başarılı, fetchFavorites'i kaldırdık - zaten güncel
     } catch (error) {
       console.error("Failed to toggle favorite:", error);
       // Hata durumunda eski haline geri dön

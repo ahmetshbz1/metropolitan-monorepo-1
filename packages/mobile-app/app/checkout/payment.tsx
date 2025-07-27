@@ -22,7 +22,7 @@ import Colors, { ColorUtils } from "@/constants/Colors";
 import { useCheckout } from "@/context/CheckoutContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useHaptics } from "@/hooks/useHaptics";
-import { CheckoutPaymentMethod } from "@metropolitan/shared/types/checkout";
+import type { CheckoutPaymentMethod } from "@metropolitan/shared";
 
 export default function CheckoutPaymentScreen() {
   const { t } = useTranslation();
@@ -96,13 +96,6 @@ export default function CheckoutPaymentScreen() {
               {method.subtitle && (
                 <ThemedText className="text-sm opacity-80 mt-0.5">
                   {method.subtitle}
-                </ThemedText>
-              )}
-              {/* Geçici kart bilgisi gösterimi */}
-              {method.cardInfo && (
-                <ThemedText className="text-sm opacity-70 mt-1">
-                  {method.cardInfo.cardType} ****{" "}
-                  {method.cardInfo.cardNumberLast4}
                 </ThemedText>
               )}
             </View>

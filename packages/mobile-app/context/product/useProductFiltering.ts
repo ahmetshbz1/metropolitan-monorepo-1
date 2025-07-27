@@ -2,7 +2,7 @@
 // metropolitan-app
 // Created by Ahmet on 15.07.2025.
 
-import { Product } from "@metropolitan/shared/types/product";
+import type { Product } from "@metropolitan/shared";
 import { useCallback, useMemo, useState } from "react";
 
 const normalizeText = (text: string): string => {

@@ -13,7 +13,8 @@ import { AddressInfoLine } from "./AddressInfoLine";
 import { AddressDefaultBadges } from "./AddressDefaultBadges";
 import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { useAddressActions, Address } from "@/hooks/useAddressActions";
+import { useAddressActions } from "@/hooks/useAddressActions";
+import type { Address } from "@metropolitan/shared";
 
 interface AddressCardProps {
   address: Address;
@@ -24,7 +25,7 @@ export const AddressCard = ({ address }: AddressCardProps) => {
   const colors = Colors[colorScheme];
   const { t } = useTranslation();
   const { handleEdit, handleDelete, handleSetDefault } = useAddressActions(address);
-  const isDefault = address.isDeliveryDefault || address.isBillingDefault;
+  const isDefault = address.isDefaultDelivery || address.isDefaultBilling;
 
   return (
     <BaseCard
@@ -35,7 +36,7 @@ export const AddressCard = ({ address }: AddressCardProps) => {
     >
       <View className="flex-row justify-between items-start mb-4">
         <View className="flex-1 mr-4">
-          <ThemedText className="text-lg font-bold">{address.name}</ThemedText>
+          <ThemedText className="text-lg font-bold">{address.addressTitle}</ThemedText>
         </View>
         <View className="flex-row items-center gap-4">
           <TouchableOpacity onPress={handleSetDefault} hitSlop={10}>
@@ -59,26 +60,18 @@ export const AddressCard = ({ address }: AddressCardProps) => {
       </View>
 
       <View className="gap-3">
-        <AddressInfoLine icon="location-outline" text={address.address} />
+        <AddressInfoLine icon="location-outline" text={address.street} />
         <AddressInfoLine
           icon="map-outline"
           text={`${address.postalCode}, ${address.city}`}
         />
-        {address.taxId && (
-          <AddressInfoLine
-            icon="document-text-outline"
-            text={t("addresses.tax_id", { taxId: address.taxId })}
-          />
-        )}
       </View>
 
       <AddressDefaultBadges
-        isDeliveryDefault={address.isDeliveryDefault}
-        isBillingDefault={address.isBillingDefault}
+        isDeliveryDefault={address.isDefaultDelivery}
+        isBillingDefault={address.isDefaultBilling}
       />
     </BaseCard>
   );
 };
 
-// Re-export the Address type for backward compatibility
-export type { Address } from "@/hooks/useAddressActions";

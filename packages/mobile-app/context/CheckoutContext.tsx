@@ -9,10 +9,10 @@ import { checkoutReducer } from "@/context/checkout/reducer";
 import { getAvailablePaymentMethods } from "@/context/checkout/paymentMethods";
 import { handleAddressDefaults } from "@/context/checkout/effects";
 import { useCheckoutActions } from "@/context/checkout/hooks";
-import {
+import type {
   CheckoutContextType,
   CheckoutState,
-} from "@metropolitan/shared/types/checkout";
+} from "@metropolitan/shared";
 import React, {
   createContext,
   ReactNode,

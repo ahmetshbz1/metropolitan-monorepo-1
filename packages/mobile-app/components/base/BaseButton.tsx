@@ -2,8 +2,6 @@
 //  metropolitan app
 //  Created by Ahmet on 13.06.2025.
 
-import { HapticType, useHaptics } from "@/hooks/useHaptics";
-import { useTheme } from "@/hooks/useTheme";
 import React from "react";
 import {
   ActivityIndicator,
@@ -12,19 +10,19 @@ import {
   TextStyle,
   TouchableOpacity,
   TouchableOpacityProps,
-  ViewStyle,
   useColorScheme,
 } from "react-native";
 
-export type ButtonVariant =
-  | "primary"
-  | "secondary"
-  | "danger"
-  | "success"
-  | "ghost"
-  | "text";
-
-export type ButtonSize = "small" | "medium" | "large";
+import { HapticType, useHaptics } from "@/hooks/useHaptics";
+import { useTheme } from "@/hooks/useTheme";
+import { buttonSizeConfig, ButtonSize } from "./config/buttonConfig";
+import {
+  ButtonVariant,
+  getVariantStyle,
+  getTextColor,
+  createButtonStyle,
+  createTextStyle,
+} from "./styles/buttonStyles";
 
 export interface BaseButtonProps
   extends Omit<TouchableOpacityProps, "onPress"> {
@@ -59,122 +57,13 @@ export const BaseButton: React.FC<BaseButtonProps> = ({
 
   const handlePress = withHapticFeedback(onPress, hapticType);
 
-  // Size configurations
-  const sizeConfig = {
-    small: {
-      paddingVertical: 12,
-      paddingHorizontal: 24,
-      fontSize: 15,
-      borderRadius: 14,
-    },
-    medium: {
-      paddingVertical: 14,
-      paddingHorizontal: 28,
-      fontSize: 16,
-      borderRadius: 16,
-    },
-    large: {
-      paddingVertical: 18,
-      paddingHorizontal: 36,
-      fontSize: 18,
-      borderRadius: 20,
-    },
-  };
-
-  // Variant configurations
-  const getVariantStyle = (variant: ButtonVariant, isDisabled: boolean) => {
-    const baseStyle = {
-      // Shadow'lar kaldırıldı - daha modern flat tasarım
-    };
-
-    switch (variant) {
-      case "primary":
-        return {
-          backgroundColor: isDisabled ? colors.disabled : colors.tint,
-          borderWidth: 0,
-        };
-      case "secondary":
-        return {
-          backgroundColor: "transparent",
-          borderWidth: 2,
-          borderColor: isDisabled ? colors.disabled : colors.tint,
-        };
-      case "danger":
-        return {
-          backgroundColor: isDisabled ? colors.disabled : colors.danger,
-          borderWidth: 0,
-        };
-      case "success":
-        return {
-          backgroundColor: isDisabled ? colors.disabled : colors.success,
-          borderWidth: 0,
-        };
-      case "ghost":
-        return {
-          backgroundColor: isDisabled
-            ? colors.disabled + "20"
-            : colors.tint + "15",
-          borderWidth: 1,
-          borderColor: isDisabled ? colors.disabled + "30" : colors.tint + "30",
-        };
-      case "text":
-        return {
-          backgroundColor: "transparent",
-          borderWidth: 0,
-        };
-      default:
-        return baseStyle;
-    }
-  };
-
-  // Text color configurations
-  const getTextColor = (variant: ButtonVariant, isDisabled: boolean) => {
-    if (isDisabled) {
-      return variant === "secondary" ||
-        variant === "text" ||
-        variant === "ghost"
-        ? colors.disabled
-        : colorScheme === "dark"
-          ? "#D1D5DB"
-          : "#FFFFFF";
-    }
-
-    switch (variant) {
-      case "primary":
-      case "danger":
-      case "success":
-        return colorScheme === "dark" ? "#D1D5DB" : "#FFFFFF";
-      case "secondary":
-      case "ghost":
-      case "text":
-        return colors.tint;
-      default:
-        return colorScheme === "dark" ? "#D1D5DB" : "#FFFFFF";
-    }
-  };
-
-  const currentSize = sizeConfig[size];
+  const currentSize = buttonSizeConfig[size];
   const isDisabled = disabled || loading;
-  const variantStyle = getVariantStyle(variant, isDisabled);
-  const textColor = getTextColor(variant, isDisabled);
+  const variantStyle = getVariantStyle(variant, isDisabled, colors);
+  const textColor = getTextColor(variant, isDisabled, colors, colorScheme ?? "light");
 
-  const buttonStyle: ViewStyle = {
-    ...currentSize,
-    ...variantStyle,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    opacity: isDisabled && variant !== "secondary" ? 0.6 : 1,
-    ...(fullWidth && { width: "100%" }),
-  };
-
-  const buttonTextStyle: TextStyle = {
-    color: textColor,
-    fontSize: currentSize.fontSize,
-    fontWeight: "700",
-    textAlign: "center",
-    letterSpacing: 0.3,
-  };
+  const buttonStyle = createButtonStyle(currentSize, variantStyle, fullWidth, isDisabled, variant);
+  const buttonTextStyle = createTextStyle(currentSize, textColor);
 
   const content = loading ? (
     <ActivityIndicator color={textColor} size="small" />
@@ -194,3 +83,6 @@ export const BaseButton: React.FC<BaseButtonProps> = ({
     </TouchableOpacity>
   );
 };
+
+// Re-export types
+export type { ButtonVariant, ButtonSize };

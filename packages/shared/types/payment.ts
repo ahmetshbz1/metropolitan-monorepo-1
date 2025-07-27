@@ -27,3 +27,28 @@ export type PaymentMethodType =
   | "google_pay"
   | "blik"
   | null;
+
+// Stripe payment processing result
+export interface StripePaymentResult {
+  success: boolean;
+  paymentIntentId?: string;
+  clientSecret?: string;
+  requiresAction?: boolean;
+  error?: string;
+}
+
+// Payment processor parameters
+export interface PaymentProcessorParams {
+  clientSecret: string;
+  t: (key: string) => string;
+}
+
+export interface PlatformPayParams extends PaymentProcessorParams {
+  confirmPlatformPayPayment: any;
+}
+
+export interface CardPaymentParams extends PaymentProcessorParams {
+  paymentMethodType?: string;
+  initPaymentSheet: any;
+  presentPaymentSheet: any;
+}
