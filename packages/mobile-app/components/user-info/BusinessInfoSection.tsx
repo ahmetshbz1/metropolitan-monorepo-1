@@ -5,20 +5,11 @@
 
 import React, { memo, useState } from "react";
 import { Text, TextInput, View } from "react-native";
+import type { NipResponse } from "@metropolitan/shared";
 
 import { CompanyDataCard } from "./business/CompanyDataCard";
 import { NipInput } from "./business/NipInput";
 import { NipStatusMessage } from "./business/NipStatusMessage";
-
-interface NipResponse {
-  companyName: string;
-  nip: string;
-  statusVat: string;
-  regon: string;
-  krs: string;
-  workingAddress: string;
-  registrationDate: string;
-}
 
 interface BusinessInfoSectionProps {
   nip: string;

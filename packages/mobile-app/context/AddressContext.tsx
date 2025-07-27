@@ -17,7 +17,7 @@ import {
   AddressContextType,
   AddressData,
   UpdateAddressData,
-} from "@metropolitan/shared/types/address";
+} from "@metropolitan/shared";
 
 const AddressContext = createContext<AddressContextType | undefined>(undefined);
 

@@ -1,9 +1,3 @@
-//  "user-info.ts"
-//  metropolitan app
-//  Created by Ahmet on 06.07.2025.
-
-import type {
-  CompleteProfilePayload,
-  NipResponse,
-} from "@metropolitan/shared/types";
-export type { CompleteProfilePayload, NipResponse };
+//  DEPRECATED: This file is removed - use direct imports from @metropolitan/shared instead
+//  This file has been removed as part of the type import standardization refactor.
+//  Please use direct imports from @metropolitan/shared instead of this re-export file.

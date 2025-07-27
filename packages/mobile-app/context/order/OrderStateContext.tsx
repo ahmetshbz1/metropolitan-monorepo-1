@@ -3,7 +3,7 @@
 //  Created by Ahmet on 21.06.2025.
 
 import React, { createContext, useContext, useRef, useState } from "react";
-import type { FullOrderPayload, Order } from "@metropolitan/shared/types";
+import type { FullOrderPayload, Order } from "@metropolitan/shared";
 
 export type {
   Address,
@@ -12,7 +12,7 @@ export type {
   PaymentMethodType,
   TrackingEvent,
   User,
-} from "@metropolitan/shared/types";
+} from "@metropolitan/shared";
 
 interface IOrderStateContext {
   orders: Order[];

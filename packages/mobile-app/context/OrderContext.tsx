@@ -18,7 +18,7 @@ export type {
   User,
   FullOrderPayload,
   Order,
-} from "@metropolitan/shared/types";
+} from "@metropolitan/shared";
 
 interface IOrderContext {
   orders: any[];

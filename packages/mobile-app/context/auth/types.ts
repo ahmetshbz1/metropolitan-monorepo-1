@@ -2,7 +2,7 @@
 //  metropolitan app
 //  Created by Ahmet on 24.06.2025.
 
-import type { ApiResponse, User } from "@metropolitan/shared";
+import type { ApiResponse, User, CompleteProfilePayload } from "@metropolitan/shared";
 
 // Extended User type for mobile-specific fields
 export interface MobileUser extends User {
@@ -50,14 +50,8 @@ export type AuthContextType = {
   loading: boolean;
 };
 
-export interface CompleteProfileInput {
-  userType: "individual" | "corporate";
-  firstName: string;
-  lastName: string;
-  email: string;
-  nip?: string;
-  termsAccepted: boolean;
-}
+// Re-export shared CompleteProfilePayload for consistency
+export type CompleteProfileInput = CompleteProfilePayload;
 
 // Re-export shared ApiResponse type
 export type { ApiResponse };

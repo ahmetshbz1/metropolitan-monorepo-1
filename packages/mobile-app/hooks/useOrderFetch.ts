@@ -4,7 +4,7 @@
 
 import { api } from "@/core/api";
 import { useCallback } from "react";
-import type { FullOrderPayload } from "@metropolitan/shared/types";
+import type { FullOrderPayload } from "@metropolitan/shared";
 
 interface UseOrderFetchProps {
   setOrders: (orders: any[]) => void;

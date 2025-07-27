@@ -1,0 +1,8 @@
+//  DEPRECATED AND REMOVED: This file was completely removed during type import standardization refactor.
+//  
+//  Previous content was just re-exports that are no longer needed:
+//  - CompleteProfilePayload -> use directly from @metropolitan/shared
+//  - NipResponse -> use directly from @metropolitan/shared
+//
+//  All imports have been updated to use @metropolitan/shared directly.
+//  This file is marked for deletion but kept temporarily for reference.

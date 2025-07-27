@@ -11,7 +11,7 @@ import { Keyboard } from "react-native";
 
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/core/api";
-import { NipResponse } from "@/types/user-info";
+import type { NipResponse } from "@metropolitan/shared";
 import { isValidEmail } from "@/utils/validation";
 
 interface UseUserInfoFormReturn {

@@ -2,11 +2,11 @@
 //  metropolitan app
 //  Created by Ahmet on 03.07.2025.
 
-import type {
+// Re-export shared types for convenience
+export type {
   Notification,
   NotificationType,
-} from "@metropolitan/shared/types";
-export type { Notification, NotificationType };
+} from "@metropolitan/shared";
 
 // Component prop types
 export interface NotificationItemProps {

@@ -2,8 +2,8 @@
 //  metropolitan app
 //  Created by Ahmet on 27.06.2025.
 
-import type { CartItem, CartSummary } from "@metropolitan/shared/types";
-export type { CartItem, CartSummary };
+// Re-export shared types for convenience
+export type { CartItem, CartSummary } from "@metropolitan/shared";
 
 // Context type definition
 export type CartContextType = {

@@ -4,16 +4,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Text, TouchableWithoutFeedback, View } from "react-native";
-
-interface NipResponse {
-  companyName: string;
-  nip: string;
-  statusVat: string;
-  regon: string;
-  krs: string;
-  workingAddress: string;
-  registrationDate: string;
-}
+import type { NipResponse } from "@metropolitan/shared";
 
 interface CompanyDataCardProps {
   companyData: NipResponse;

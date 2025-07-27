@@ -3,7 +3,7 @@
 //  Created by Ahmet on 21.06.2025.
 
 import React, { createContext, useContext } from "react";
-import type { FullOrderPayload } from "@metropolitan/shared/types";
+import type { FullOrderPayload } from "@metropolitan/shared";
 import { useOrderState } from "./OrderStateContext";
 import { useOrderFetch } from "@/hooks/useOrderFetch";
 import { useOrderOperations } from "@/hooks/useOrderOperations";
