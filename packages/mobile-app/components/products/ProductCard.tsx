@@ -2,6 +2,7 @@
 //  metropolitan app
 //  Created by Ahmet on 30.06.2025. Edited on 23.07.2025.
 
+import { ThemedText } from "@/components/ThemedText";
 import { Product } from "@/context/ProductContext";
 import { useProductCard } from "@/hooks/useProductCard";
 import { Ionicons } from "@expo/vector-icons";
@@ -59,6 +60,22 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
             elevation: 6,
           }}
         >
+          {/* Brand Badge - Top Left */}
+          {product.brand && (
+            <View className="absolute top-3 left-3 z-10 px-2 py-1 rounded-full bg-white dark:bg-neutral-800">
+              <ThemedText
+                className="text-xs font-medium uppercase tracking-wide"
+                style={{
+                  color: colorScheme === "dark" ? colors.mediumGray : "#6b7280",
+                  fontSize: 10,
+                }}
+                numberOfLines={1}
+              >
+                {product.brand}
+              </ThemedText>
+            </View>
+          )}
+
           <ProductCardImage
             product={product}
             colorScheme={colorScheme}

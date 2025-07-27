@@ -57,21 +57,6 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
             {categoryName || product.category}
           </ThemedText>
         </View>
-
-        {product.brand && (
-          <View className="self-start px-2 py-1 rounded-full bg-gray-100 dark:bg-neutral-800">
-            <ThemedText
-              className="text-xs font-medium uppercase tracking-wide"
-              style={{
-                color: colorScheme === "dark" ? colors.mediumGray : "#6b7280",
-                fontSize: 10,
-              }}
-              numberOfLines={1}
-            >
-              {product.brand}
-            </ThemedText>
-          </View>
-        )}
       </View>
 
       {/* Product Name */}
