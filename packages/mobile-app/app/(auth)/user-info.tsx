@@ -53,7 +53,6 @@ const UserInfoScreen = () => {
     nipWarning,
     canRegister,
     termsAccepted,
-    setTermsAccepted,
     isFormValid,
     isSaving,
     resetNipStatus,

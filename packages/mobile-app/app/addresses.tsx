@@ -15,7 +15,6 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Colors from "@/constants/Colors";
 import { useAddresses } from "@/context/AddressContext";
-import type { Address } from "@metropolitan/shared";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 export default function AddressesScreen() {

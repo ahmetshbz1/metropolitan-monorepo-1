@@ -5,8 +5,8 @@
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { BlurView } from "expo-blur";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect, useRef } from "react";
-import { Animated, Platform, StyleSheet, View } from "react-native";
+import React from "react";
+import { Platform, StyleSheet, View } from "react-native";
 
 // Enhanced glassmorphism effect for both iOS and Android
 export default function TabBarBackground() {

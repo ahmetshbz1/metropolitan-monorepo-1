@@ -41,10 +41,6 @@ export function PurchaseSection({
   const { triggerHaptic } = useHaptics();
   const router = useRouter();
 
-  // Ürün sepette mi kontrol et
-  const existingCartItem = cartItems.find(
-    (item) => item.product.id === product.id
-  );
 
   const [isAdded, setIsAdded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -120,26 +116,8 @@ export function PurchaseSection({
     }
   };
 
-  const handleQuantityChange = (text: string) => {
-    onQuantityChange(text.replace(/[^0-9]/g, ""));
-  };
 
-  const handleQuantityBlur = () => {
-    const num = parseInt(quantity, 10);
-    if (isNaN(num) || num < 1) {
-      onQuantityChange("1");
-    } else if (num > product.stock) {
-      onQuantityChange(String(product.stock));
-    }
-  };
 
-  const updateQuantity = (amount: number) => {
-    const currentQuantity = parseInt(quantity, 10) || 0;
-    const newQuantity = currentQuantity + amount;
-    if (newQuantity >= 1 && newQuantity <= product.stock) {
-      onQuantityChange(String(newQuantity));
-    }
-  };
 
   const numericQuantity = parseInt(quantity, 10) || 0;
 

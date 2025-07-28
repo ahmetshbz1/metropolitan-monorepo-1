@@ -8,7 +8,6 @@ import {
   FlatList,
   ListRenderItem,
   TouchableOpacity,
-  useWindowDimensions,
   View,
 } from "react-native";
 

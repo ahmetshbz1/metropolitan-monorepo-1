@@ -42,7 +42,8 @@ function BusinessInfoSectionComponent(props: BusinessInfoSectionProps) {
     resetNipStatus,
   } = props;
 
-  const [isNipInputFocused, setIsNipInputFocused] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_isNipInputFocused, setIsNipInputFocused] = useState(false);
 
   return (
     <View className="mb-6">

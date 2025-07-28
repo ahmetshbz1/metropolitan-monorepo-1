@@ -3,11 +3,10 @@
 //  Created by Ahmet on 27.07.2025.
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { RefreshControl, ScrollView, View } from "react-native";
+import { RefreshControl, ScrollView, View, useColorScheme } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
-import { useColorScheme } from "react-native";
 
 import { ThemedView } from "@/components/ThemedView";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -43,7 +42,6 @@ export function OrderDetailContainer({
     loadingDetail,
     fetchOrderById,
     error,
-    loading,
   } = useOrders();
 
   const helpModalRef = useRef<BottomSheetModal>(null);
@@ -55,7 +53,7 @@ export function OrderDetailContainer({
       setContentReady(false);
       fetchOrderById(orderId, true);
     }
-  }, [orderId]);
+  }, [orderId, fetchOrderById]);
 
   // Content ready check
   useEffect(() => {

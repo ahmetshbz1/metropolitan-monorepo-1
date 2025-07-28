@@ -7,14 +7,12 @@ import { ProductInfo } from "@/components/product-detail/ProductInfo";
 import { PurchaseSection } from "@/components/product-detail/PurchaseSection";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import Colors from "@/constants/Colors";
 import { useCart } from "@/context/CartContext";
 import { useProducts } from "@/context/ProductContext";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, ScrollView } from "react-native";
+import { ActivityIndicator, ScrollView, View } from "react-native";
 import {
   KeyboardAwareScrollView,
   KeyboardStickyView,

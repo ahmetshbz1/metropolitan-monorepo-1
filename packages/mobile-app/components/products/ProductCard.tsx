@@ -29,8 +29,6 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
     categoryName,
     isLowStock,
     isOutOfStock,
-    isProductInCart,
-    cartItemQuantity,
     handleAddToCart,
     handleToggleFavorite,
   } = useProductCard(product);

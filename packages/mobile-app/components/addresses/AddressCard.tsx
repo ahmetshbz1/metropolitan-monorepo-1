@@ -4,7 +4,6 @@
 
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { useTranslation } from "react-i18next";
 import { TouchableOpacity, View } from "react-native";
 
 import { BaseCard } from "@/components/base/BaseCard";
@@ -23,7 +22,6 @@ interface AddressCardProps {
 export const AddressCard = ({ address }: AddressCardProps) => {
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
-  const { t } = useTranslation();
   const { handleEdit, handleDelete, handleSetDefault } = useAddressActions(address);
   const isDefault = address.isDefaultDelivery || address.isDefaultBilling;
 

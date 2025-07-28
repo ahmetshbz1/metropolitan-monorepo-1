@@ -3,7 +3,7 @@
 //  Created by Ahmet on 27.07.2025.
 
 import React, { useEffect, useRef } from "react";
-import { Animated, View } from "react-native";
+import { Animated } from "react-native";
 
 interface BaseShimmerProps {
   width?: number | string;

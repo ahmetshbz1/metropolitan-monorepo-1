@@ -9,7 +9,7 @@ import { SplashScreen } from "@/components/screens/SplashScreen";
 import { useAuth } from "@/context/AuthContext";
 
 export default function Index() {
-  const { user, isGuest, loading } = useAuth();
+  const { user, loading } = useAuth();
 
   // Auth yükleniyor ise splash screen göster
   if (loading) {

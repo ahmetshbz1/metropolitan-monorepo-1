@@ -17,7 +17,6 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 
 // Re-export skeleton components
 export { BaseShimmer } from "./skeletons/BaseShimmer";
-export { OrderDetailSkeleton } from "./skeletons/OrderDetailSkeleton";
 
 interface ShimmerViewProps {
   style?: ViewStyle;
