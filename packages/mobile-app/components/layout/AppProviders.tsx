@@ -28,10 +28,10 @@ export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
   return (
     <KeyboardProvider>
       <GestureHandlerRootView className="flex-1">
-        <BottomSheetModalProvider>
-          <ToastProvider>
-            <UserSettingsProvider>
-              <ColorSchemeProvider>
+        <ToastProvider>
+          <UserSettingsProvider>
+            <ColorSchemeProvider>
+              <BottomSheetModalProvider>
                 <AuthProvider>
                   <ProductProvider>
                     <AddressProvider>
@@ -49,10 +49,10 @@ export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
                     </AddressProvider>
                   </ProductProvider>
                 </AuthProvider>
-              </ColorSchemeProvider>
-            </UserSettingsProvider>
-          </ToastProvider>
-        </BottomSheetModalProvider>
+              </BottomSheetModalProvider>
+            </ColorSchemeProvider>
+          </UserSettingsProvider>
+        </ToastProvider>
       </GestureHandlerRootView>
     </KeyboardProvider>
   );

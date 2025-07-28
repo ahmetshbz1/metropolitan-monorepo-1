@@ -91,7 +91,10 @@ export function HelpContent({
 
   return (
     <View className="px-1 pt-2.5">
-      <ThemedText className="text-sm leading-6 text-center mb-5 opacity-80">
+      <ThemedText 
+        className="text-sm leading-6 text-center mb-5"
+        style={{ color: colors.textSecondary }}
+      >
         {infoText}
       </ThemedText>
 

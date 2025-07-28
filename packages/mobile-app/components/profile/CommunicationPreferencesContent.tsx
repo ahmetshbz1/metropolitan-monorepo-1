@@ -44,6 +44,8 @@ const PreferenceItem = ({
 
 export function CommunicationPreferencesContent() {
   const { t } = useTranslation();
+  const colorScheme = useColorScheme() ?? "light";
+  const colors = Colors[colorScheme];
   const [pushNotifications, setPushNotifications] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [smsNotifications, setSmsNotifications] = useState(false);
@@ -52,7 +54,7 @@ export function CommunicationPreferencesContent() {
     <View className="px-2 pt-2">
       <ThemedText
         className="mb-5 text-sm leading-5 text-center"
-        style={{ color: "#888" }}
+        style={{ color: colors.textSecondary }}
       >
         {t("profile.communication_preferences_description")}
       </ThemedText>
