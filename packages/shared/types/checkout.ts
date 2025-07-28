@@ -2,7 +2,7 @@
 //  metropolitan app
 //  Created by Ahmet on 15.07.2025.
 
-import { Address } from "./address";
+import type { Address } from "./address";
 
 // Modern ödeme yöntemleri
 export enum PaymentType {

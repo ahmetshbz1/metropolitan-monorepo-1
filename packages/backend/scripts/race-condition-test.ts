@@ -27,7 +27,7 @@ async function setupTestProducts() {
         .where(eq(products.id, product.id));
       
       console.log(`✅ ${product.name}: Stock set to ${product.stock}`);
-    } catch (error) {
+    } catch (_error) {
       console.log(`ℹ️  Product ${product.id} not found, skipping...`);
     }
   }

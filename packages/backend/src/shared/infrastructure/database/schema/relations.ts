@@ -3,6 +3,7 @@
 //  Created by Ahmet on 17.06.2025.
 
 import { relations } from "drizzle-orm";
+
 import { cartItems, favorites } from "./cart.schema";
 import { orderItems, orders, trackingEvents } from "./order.schema";
 import {

@@ -9,6 +9,7 @@ import type {
   OrderItem as OrderItemData,
 } from "@metropolitan/shared/types/order";
 import { eq, sql } from "drizzle-orm";
+
 import { db } from "../../../../shared/infrastructure/database/connection";
 import {
   cartItems,
@@ -19,6 +20,7 @@ import {
 } from "../../../../shared/infrastructure/database/schema";
 import StripeService from "../../../../shared/infrastructure/external/stripe.service";
 import { generateOrderNumber } from "../../domain/value-objects/order-number.util";
+
 import { InvoiceService } from "./invoice.service";
 
 export class OrderCreationService {

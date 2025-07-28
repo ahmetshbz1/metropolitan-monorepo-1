@@ -5,6 +5,7 @@
 import { logger } from "@bogeychan/elysia-logger";
 import { and, eq } from "drizzle-orm";
 import { t } from "elysia";
+
 import {
   blacklistToken,
   isTokenBlacklisted,
@@ -122,7 +123,7 @@ export const authRoutes = createApp()
       // Misafir veri geçişi - OTP doğrulandıktan sonra çağrılır
       .post(
         "/migrate-guest-data",
-        async ({ body, jwt, db, log, error }) => {
+        async ({ body, db, log, error }) => {
           const { phoneNumber, guestId } = body;
 
           log.info(
@@ -257,7 +258,10 @@ export const authRoutes = createApp()
         },
       })
       .post("/logout", async ({ headers, jwt, log }) => {
-        const token = headers.authorization!.replace("Bearer ", "");
+        const token = headers.authorization?.replace("Bearer ", "");
+        if (!token) {
+          return error(401, "No token provided");
+        }
         const profile = (await jwt.verify(token)) as {
           userId: string;
           exp: number;

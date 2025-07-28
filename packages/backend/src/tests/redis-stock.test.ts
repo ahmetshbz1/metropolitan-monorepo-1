@@ -438,15 +438,15 @@ describe("🔥 Redis Stock Management Tests", () => {
     
     console.log("🔐 Lock test results:");
     
-    let lockedRequestFound = false;
+    let _lockedRequestFound = false;
     
     if (result1.status === 'fulfilled' && result2.status === 'fulfilled') {
       if (!result1.value.success && result1.value.error?.includes("Another user")) {
-        lockedRequestFound = true;
+        _lockedRequestFound = true;
         console.log("🔒 User 1 was blocked by lock");
       }
       if (!result2.value.success && result2.value.error?.includes("Another user")) {
-        lockedRequestFound = true;
+        _lockedRequestFound = true;
         console.log("🔒 User 2 was blocked by lock");
       }
     }

@@ -6,12 +6,13 @@
 
 import { jwt } from "@elysiajs/jwt";
 import { Elysia } from "elysia";
+
 import { healthRoutes } from "../../application/common/health.routes";
 import { correlationPlugin } from "../../application/middleware/correlation.middleware";
+import { envConfig } from "../config/env.config";
 import { db } from "../database/connection";
 import { globalLogger } from "../monitoring/logger.config";
 import { captureError, initializeSentry } from "../monitoring/sentry.config";
-import { envConfig } from "../config/env.config";
 
 // Initialize Sentry before everything else
 initializeSentry();

@@ -10,7 +10,7 @@ export interface StructuredError extends Error {
   /** Error key for localization (e.g., "auth.invalid_otp") */
   key?: string;
   /** Parameters for error message interpolation */
-  params?: Record<string, any>;
+  params?: Record<string, unknown>;
   /** Error code for categorization (e.g., "VALIDATION_ERROR", "AUTH_ERROR") */
   code?: string;
 }
@@ -23,7 +23,7 @@ export interface APIErrorPayload {
   /** Error key for localization */
   key?: string;
   /** Parameters for error message interpolation */
-  params?: Record<string, any>;
+  params?: Record<string, unknown>;
   /** Human-readable error message (fallback when key is not available) */
   message?: string;
 }

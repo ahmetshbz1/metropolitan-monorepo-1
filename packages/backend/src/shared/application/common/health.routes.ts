@@ -2,7 +2,10 @@
 //  metropolitan backend
 //  Created by Ahmet on 10.06.2025.
 
+import * as os from "os";
+
 import { Elysia } from "elysia";
+
 import { db } from "../../infrastructure/database/connection";
 import { redis } from "../../infrastructure/database/redis";
 import { globalLogger } from "../../infrastructure/monitoring/logger.config";
@@ -88,7 +91,6 @@ async function checkRedis(): Promise<{
 // System info
 function getSystemInfo() {
   const memoryUsage = process.memoryUsage();
-  const os = require("os");
 
   // Use RSS (Resident Set Size) for actual memory usage
   const usedMemory = memoryUsage.rss;

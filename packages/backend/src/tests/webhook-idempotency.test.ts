@@ -21,7 +21,7 @@ const mockDb = {
 };
 
 const mockStripeService = {
-  constructWebhookEvent: (rawBody: string, signature: string) => ({
+  constructWebhookEvent: (_rawBody: string, _signature: string) => ({
     id: "evt_test_webhook",
     type: "payment_intent.succeeded",
     data: {

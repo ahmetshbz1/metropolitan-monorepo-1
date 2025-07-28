@@ -5,6 +5,7 @@
 import type { CartItem as CartItemData } from "@metropolitan/shared/types/cart";
 import type { StockError } from "@metropolitan/shared/types/order";
 import { and, eq } from "drizzle-orm";
+
 import { db } from "../../../../shared/infrastructure/database/connection";
 import {
   addresses,

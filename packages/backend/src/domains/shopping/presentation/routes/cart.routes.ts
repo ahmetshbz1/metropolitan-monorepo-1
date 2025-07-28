@@ -8,6 +8,7 @@ import type {
 } from "@metropolitan/shared/types/cart";
 import { eq } from "drizzle-orm";
 import { Elysia, t } from "elysia";
+
 import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
 import { db } from "../../../../shared/infrastructure/database/connection";
 import { users } from "../../../../shared/infrastructure/database/schema";
@@ -39,7 +40,7 @@ export const createCartApp = () =>
     })
 
     // Sepet öğelerini listele
-    .get("/", async ({ user, query }: AuthenticatedContext & { query: { lang?: string } }) => {
+    .get("/", async ({ user }: AuthenticatedContext) => {
       return await CartItemService.getUserCartItems(user.id);
     }, {
       query: t.Object({
@@ -53,10 +54,8 @@ export const createCartApp = () =>
       async ({
         user,
         body,
-        query,
       }: AuthenticatedContext & {
         body: AddToCartRequest;
-        query: { lang?: string };
       }) => {
         return await CartItemService.addItemToCart(user.id, body);
       },
@@ -78,11 +77,9 @@ export const createCartApp = () =>
         user,
         params,
         body,
-        query,
       }: AuthenticatedContext & {
         params: { itemId: string };
         body: UpdateCartItemRequest;
-        query: { lang?: string };
       }) => {
         const { itemId } = params;
         const { quantity } = body;

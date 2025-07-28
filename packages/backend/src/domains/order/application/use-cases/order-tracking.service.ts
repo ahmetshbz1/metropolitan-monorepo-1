@@ -3,6 +3,7 @@
 //  Created by Ahmet on 15.06.2025.
 
 import { and, desc, eq } from "drizzle-orm";
+
 import { db } from "../../../../shared/infrastructure/database/connection";
 import {
   addresses,

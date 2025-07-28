@@ -187,7 +187,7 @@ describe("🏁 Race Condition Logic Tests (Standalone)", () => {
       private successCount: number = 0;
       private failureCount: number = 0;
       
-      async processOrder(userId: string): Promise<boolean> {
+      async processOrder(_userId: string): Promise<boolean> {
         // Simulate processing time
         await new Promise(resolve => setTimeout(resolve, Math.random() * 10));
         

@@ -4,6 +4,7 @@
 
 import { and, eq } from "drizzle-orm";
 import { t } from "elysia";
+
 import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
 import * as schema from "../../../../shared/infrastructure/database/schema";
 import { createApp } from "../../../../shared/infrastructure/web/app";
@@ -14,7 +15,7 @@ export const paymentRoutes = createApp()
     app
       .get("/", async ({ db, profile }) => {
         const paymentMethods = await db.query.paymentMethods.findMany({
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+           
           where: eq(schema.paymentMethods.userId, profile!.userId),
         });
 
@@ -26,7 +27,7 @@ export const paymentRoutes = createApp()
           const newPaymentMethod = await db
             .insert(schema.paymentMethods)
             .values({
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+               
               userId: profile!.userId,
               ...body,
             })

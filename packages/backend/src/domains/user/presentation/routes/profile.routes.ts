@@ -2,16 +2,17 @@
 //  metropolitan backend
 //  Created by Ahmet on 14.06.2025.
 
+import type {
+  CompleteProfilePayload as CompleteProfileRequest,
+  UpdateProfileRequest,
+} from "@metropolitan/shared/types/user";
 import { t } from "elysia";
+
 import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
 import { createApp } from "../../../../shared/infrastructure/web/app";
 import { ProfileCompletionService } from "../../application/use-cases/profile-completion.service";
 import { ProfilePhotoService } from "../../application/use-cases/profile-photo.service";
 import { ProfileUpdateService } from "../../application/use-cases/profile-update.service";
-import type {
-  CompleteProfilePayload as CompleteProfileRequest,
-  UpdateProfileRequest,
-} from "@metropolitan/shared/types/user";
 
 // Bu tip backend'e özel kalabilir, çünkü JWT payload'u ile ilgili.
 export interface RegistrationTokenPayload {

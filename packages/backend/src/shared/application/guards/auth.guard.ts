@@ -4,6 +4,7 @@
 
 import { jwt } from "@elysiajs/jwt";
 import { Elysia } from "elysia";
+
 import { isTokenBlacklisted } from "../../infrastructure/database/redis";
 
 export const isAuthenticated = (app: Elysia) =>
@@ -25,7 +26,7 @@ export const isAuthenticated = (app: Elysia) =>
         }
 
         return { profile };
-      } catch (error) {
+      } catch (_error) {
         // Token geçersiz veya süresi dolmuş
         return { profile: null };
       }

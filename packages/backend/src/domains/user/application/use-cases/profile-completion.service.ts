@@ -2,7 +2,13 @@
 //  metropolitan backend
 //  Created by Ahmet on 14.06.2025.
 
+import type {
+  CompanyInfo,
+  CompleteProfilePayload as CompleteProfileRequest,
+  NipVerificationResult,
+} from "@metropolitan/shared/types/user";
 import { and, eq } from "drizzle-orm";
+
 import { db } from "../../../../shared/infrastructure/database/connection";
 import {
   addresses,
@@ -10,11 +16,6 @@ import {
   users,
 } from "../../../../shared/infrastructure/database/schema";
 import { verifyNipAndGetName } from "../../../../shared/infrastructure/external/nip.service";
-import type {
-  CompanyInfo,
-  CompleteProfilePayload as CompleteProfileRequest,
-  NipVerificationResult,
-} from "@metropolitan/shared/types/user";
 
 interface ProfileCompletionResponse {
   success: boolean;
@@ -78,7 +79,7 @@ export class ProfileCompletionService {
         success: true,
         companyName: nipInfo.companyName,
       };
-    } catch (error) {
+    } catch (_error) {
       return {
         success: false,
         message: "NIP verification failed",

@@ -8,6 +8,7 @@ import type {
   UpdateProfileRequest,
 } from "@metropolitan/shared/types/user";
 import { eq } from "drizzle-orm";
+
 import { db } from "../../../../shared/infrastructure/database/connection";
 import { users } from "../../../../shared/infrastructure/database/schema";
 

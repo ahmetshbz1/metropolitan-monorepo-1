@@ -4,6 +4,7 @@
 
 import { and, eq } from "drizzle-orm";
 import { t } from "elysia";
+
 import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
 import {
   categories,

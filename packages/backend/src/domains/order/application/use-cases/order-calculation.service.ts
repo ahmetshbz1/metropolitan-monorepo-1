@@ -2,8 +2,8 @@
 //  metropolitan backend
 //  Created by Ahmet on 11.07.2025.
 
-import type { OrderItem as OrderItemData } from "@metropolitan/shared/types/order";
 import type { CartItem as CartItemData } from "@metropolitan/shared/types/cart";
+import type { OrderItem as OrderItemData } from "@metropolitan/shared/types/order";
 
 export class OrderCalculationService {
   /**

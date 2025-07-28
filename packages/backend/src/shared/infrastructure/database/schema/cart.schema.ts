@@ -10,6 +10,7 @@ import {
   unique,
   uuid,
 } from "drizzle-orm/pg-core";
+
 import { products } from "./product.schema";
 import { users } from "./user.schema";
 

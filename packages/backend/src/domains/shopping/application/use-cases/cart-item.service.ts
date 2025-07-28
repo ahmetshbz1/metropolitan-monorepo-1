@@ -9,12 +9,14 @@ import type {
   CartSummary,
 } from "@metropolitan/shared/types/cart";
 import { and, desc, eq } from "drizzle-orm";
+
 import { db } from "../../../../shared/infrastructure/database/connection";
 import {
   cartItems,
   productTranslations,
   products,
 } from "../../../../shared/infrastructure/database/schema";
+
 import { CartCalculationService } from "./cart-calculation.service";
 import { CartValidationService } from "./cart-validation.service";
 

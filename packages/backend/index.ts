@@ -1,18 +1,16 @@
 // Load environment variables first
 import "./src/shared/infrastructure/config/env.config";
 
+import { randomBytes } from "crypto";
+
 import { logger } from "@bogeychan/elysia-logger";
 import { staticPlugin } from "@elysiajs/static";
 import { swagger } from "@elysiajs/swagger";
 import { spawnSync } from "bun";
-import { randomBytes } from "crypto";
 import { Elysia } from "elysia";
 import pretty from "pino-pretty";
 
 // Shared Infrastructure
-import { healthRoutes } from "./src/shared/application/common/health.routes";
-import { db } from "./src/shared/infrastructure/database/connection";
-import { initializeSentry } from "./src/shared/infrastructure/monitoring/sentry.config";
 
 // Domain Routes
 import { productRoutes } from "./src/domains/catalog/presentation/routes/products.routes";
@@ -26,7 +24,10 @@ import { cartRoutes } from "./src/domains/shopping/presentation/routes/cart.rout
 import { favoritesRoutes } from "./src/domains/shopping/presentation/routes/favorites.routes";
 import { addressRoutes } from "./src/domains/user/presentation/routes/address.routes";
 import { profileRoutes } from "./src/domains/user/presentation/routes/profile.routes";
+import { healthRoutes } from "./src/shared/application/common/health.routes";
 import { utilsRoutes } from "./src/shared/application/common/utils.routes";
+import { db } from "./src/shared/infrastructure/database/connection";
+import { initializeSentry } from "./src/shared/infrastructure/monitoring/sentry.config";
 
 // Initialize Sentry monitoring
 initializeSentry();
@@ -41,7 +42,7 @@ const getGitCommitHash = () => {
   try {
     const { stdout } = spawnSync(["git", "rev-parse", "HEAD"]);
     return stdout.toString().trim();
-  } catch (e) {
+  } catch (_e) {
     return "unknown";
   }
 };
@@ -90,7 +91,7 @@ export const app = new Elysia()
 
   .get("/", () => `Welcome to Metropolitan!`, {
     beforeHandle(context) {
-      (context.store as any).rootReqStartTime = process.hrtime.bigint();
+      (context.store as { rootReqStartTime?: bigint }).rootReqStartTime = process.hrtime.bigint();
     },
     afterHandle({ response, store }) {
       const { rootReqStartTime } = store as { rootReqStartTime: bigint };

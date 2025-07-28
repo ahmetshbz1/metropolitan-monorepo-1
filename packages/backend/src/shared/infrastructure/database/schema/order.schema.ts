@@ -10,6 +10,7 @@ import {
   timestamp,
   uuid,
 } from "drizzle-orm/pg-core";
+
 import { products } from "./product.schema";
 import { addresses, users } from "./user.schema";
 

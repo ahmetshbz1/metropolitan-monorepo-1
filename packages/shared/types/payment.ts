@@ -44,13 +44,13 @@ export interface PaymentProcessorParams {
 }
 
 export interface PlatformPayParams extends PaymentProcessorParams {
-  confirmPlatformPayPayment: any;
+  confirmPlatformPayPayment: () => Promise<{ error?: { message: string } }>;
 }
 
 export interface CardPaymentParams extends PaymentProcessorParams {
   paymentMethodType?: string;
-  initPaymentSheet: any;
-  presentPaymentSheet: any;
+  initPaymentSheet: (params: { paymentIntentClientSecret: string }) => Promise<{ error?: { message: string } }>;
+  presentPaymentSheet: () => Promise<{ error?: { message: string } }>;
 }
 
 // Saved payment method types for user payment methods management

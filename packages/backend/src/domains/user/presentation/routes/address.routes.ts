@@ -4,6 +4,7 @@
 
 import { and, eq } from "drizzle-orm";
 import { t } from "elysia";
+
 import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
 import * as schema from "../../../../shared/infrastructure/database/schema";
 import { createApp } from "../../../../shared/infrastructure/web/app";
@@ -14,7 +15,7 @@ export const addressRoutes = createApp()
     app
       .get("/", async ({ db, profile }) => {
         const userAddresses = await db.query.addresses.findMany({
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+           
           where: eq(schema.addresses.userId, profile!.userId),
         });
         return { success: true, data: userAddresses };
@@ -25,7 +26,7 @@ export const addressRoutes = createApp()
           const newAddress = await db
             .insert(schema.addresses)
             .values({
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+               
               userId: profile!.userId,
               ...body,
             })

@@ -3,10 +3,12 @@
 //  Created by Ahmet on 30.06.2025.
 
 import "dotenv/config";
-import { drizzle } from "drizzle-orm/postgres-js";
 import * as fs from "fs";
 import * as path from "path";
+
+import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
+
 import * as schema from "./schema";
 import {
   categories,

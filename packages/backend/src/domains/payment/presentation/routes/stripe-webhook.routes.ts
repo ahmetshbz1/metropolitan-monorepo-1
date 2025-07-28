@@ -2,11 +2,12 @@
 //  metropolitan backend
 //  Created by Ahmet on 27.01.2025.
 
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { Elysia } from "elysia";
 import type Stripe from "stripe";
+
 import { db } from "../../../../shared/infrastructure/database/connection";
-import { orders, cartItems, products, orderItems } from "../../../../shared/infrastructure/database/schema";
+import { orders, cartItems, orderItems } from "../../../../shared/infrastructure/database/schema";
 import StripeService from "../../../../shared/infrastructure/external/stripe.service";
 import { InvoiceService } from "../../../order/application/use-cases/invoice.service";
 

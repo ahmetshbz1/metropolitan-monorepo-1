@@ -7,7 +7,12 @@
     "@types/bun": "latest",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/pg": "^8.15.4",
-    "drizzle-kit": "^0.31.1"
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/parser": "^8.38.0",
+    "drizzle-kit": "^0.31.1",
+    "eslint": "^9.32.0",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-node": "^11.1.0"
   },
   "peerDependencies": {
     "typescript": "^5"
@@ -18,6 +23,9 @@
     "build": "bun build index.ts --outdir ./dist --target bun --minify",
     "start:prod": "bun dist/index.js",
     "test": "bun test",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:check": "eslint . --max-warnings 0",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "bun src/shared/infrastructure/database/migrate.ts",
     "db:seed": "bun src/shared/infrastructure/database/seed.ts"

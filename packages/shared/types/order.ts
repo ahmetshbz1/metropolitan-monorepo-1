@@ -1,7 +1,7 @@
 import type { Address } from "./address";
 import type { Product } from "./product";
 
-export interface ProductInItem extends Product {}
+export type ProductInItem = Product
 
 export interface OrderItem {
   id: string;
