@@ -8,6 +8,7 @@ import { BaseCard } from "@/components/base/BaseCard";
 import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { NotificationItemProps } from "@/types/notifications.types";
+import { IoniconsName } from "@/types/ionicons.types";
 import {
   formatTime,
   getNotificationColor,
@@ -73,7 +74,7 @@ export function NotificationItem({
               }}
             >
               <Ionicons
-                name={getNotificationIcon(item.type) as any}
+                name={getNotificationIcon(item.type) as IoniconsName}
                 size={22}
                 color={getNotificationColor(item.type, colors.tint)}
               />

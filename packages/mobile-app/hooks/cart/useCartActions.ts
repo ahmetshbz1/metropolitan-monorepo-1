@@ -5,6 +5,7 @@
 import { CartService } from "@/services/cartService";
 import { CartItem } from "@/types/cart";
 import { useTranslation } from "react-i18next";
+import { APIError, StructuredError } from "@/types/error.types";
 
 interface UseCartActionsProps {
   refreshCart: () => Promise<void>;
@@ -32,8 +33,8 @@ export const useCartActions = ({
   // Sepete ürün ekle (hybrid)
   const addToCart = async (productId: string, quantity: number = 1) => {
     if (!hasValidSession) {
-      const error = new Error(t("auth.login_to_continue"));
-      (error as any).code = "AUTH_REQUIRED";
+      const error: StructuredError = new Error(t("auth.login_to_continue"));
+      error.code = "AUTH_REQUIRED";
       throw error;
     }
 
@@ -47,16 +48,17 @@ export const useCartActions = ({
         i18n.language
       );
       await refreshCart();
-    } catch (error: any) {
-      console.error("Sepete ekleme hatası:", error.response?.data || error);
+    } catch (error) {
+      const apiError = error as APIError;
+      console.error("Sepete ekleme hatası:", apiError.response?.data || apiError);
       
       // Auth error'ı olduğu gibi fırlat
-      if (error.code === "AUTH_REQUIRED") {
+      if ((error as StructuredError).code === "AUTH_REQUIRED") {
         throw error;
       }
       
       // Backend'den gelen structured error'ı handle et
-      const errorPayload = error.response?.data;
+      const errorPayload = apiError.response?.data;
       const key = errorPayload?.key;
 
       if (key && i18n.exists(`errors.${key}`)) {
@@ -65,9 +67,9 @@ export const useCartActions = ({
         setError(translatedMessage);
         
         // Error'ı structured olarak fırlat
-        const structuredError = new Error(translatedMessage);
-        (structuredError as any).key = key;
-        (structuredError as any).params = params;
+        const structuredError: StructuredError = new Error(translatedMessage);
+        structuredError.key = key;
+        structuredError.params = params;
         throw structuredError;
       } else {
         // Generic error
@@ -83,8 +85,8 @@ export const useCartActions = ({
     if (!hasValidSession) return;
 
     if (quantity < 1) {
-      const error = new Error(t("cart.min_quantity_error"));
-      (error as any).code = "MIN_QUANTITY_ERROR";
+      const error: StructuredError = new Error(t("cart.min_quantity_error"));
+      error.code = "MIN_QUANTITY_ERROR";
       throw error;
     }
 
@@ -105,16 +107,17 @@ export const useCartActions = ({
       );
 
       await refreshCart();
-    } catch (error: any) {
-      console.error("Miktar güncelleme hatası:", error.response?.data || error);
+    } catch (error) {
+      const apiError = error as APIError;
+      console.error("Miktar güncelleme hatası:", apiError.response?.data || apiError);
       
       // Validation error'ı olduğu gibi fırlat
-      if (error.code === "MIN_QUANTITY_ERROR") {
+      if ((error as StructuredError).code === "MIN_QUANTITY_ERROR") {
         throw error;
       }
       
       // Backend'den gelen structured error'ı handle et
-      const errorPayload = error.response?.data;
+      const errorPayload = apiError.response?.data;
       const key = errorPayload?.key;
 
       if (key && i18n.exists(`errors.${key}`)) {
@@ -123,9 +126,9 @@ export const useCartActions = ({
         setError(translatedMessage);
         
         // Error'ı structured olarak fırlat
-        const structuredError = new Error(translatedMessage);
-        (structuredError as any).key = key;
-        (structuredError as any).params = params;
+        const structuredError: StructuredError = new Error(translatedMessage);
+        structuredError.key = key;
+        structuredError.params = params;
         throw structuredError;
       } else {
         // Generic error
@@ -149,10 +152,11 @@ export const useCartActions = ({
       );
       await refreshCart();
       // Başarıyla silindi - toast göstermiyoruz, UI güncellemesi yeterli
-    } catch (error: any) {
-      console.error("Ürün kaldırma hatası:", error);
+    } catch (error) {
+      const apiError = error as APIError;
+      console.error("Ürün kaldırma hatası:", apiError);
       const errorMessage =
-        error.response?.data?.message || t("cart.remove_error");
+        apiError.response?.data?.message || t("cart.remove_error");
       setError(errorMessage);
       throw new Error(errorMessage);
     }
@@ -176,10 +180,11 @@ export const useCartActions = ({
 
       // Success durumunu döndürelim, component toast göstersin
       return { success: true, message: t("cart.cleared") };
-    } catch (error: any) {
-      console.error("Sepet temizleme hatası:", error);
+    } catch (error) {
+      const apiError = error as APIError;
+      console.error("Sepet temizleme hatası:", apiError);
       const errorMessage =
-        error.response?.data?.message || t("cart.clear_error");
+        apiError.response?.data?.message || t("cart.clear_error");
       setError(errorMessage);
       throw new Error(errorMessage);
     }

@@ -13,6 +13,7 @@ import Colors from "@/constants/Colors";
 import { useCheckout } from "@/context/CheckoutContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useHaptics } from "@/hooks/useHaptics";
+import { IoniconsName } from "@/types/ionicons.types";
 
 export function PaymentMethodSummary() {
   const { t } = useTranslation();
@@ -56,7 +57,7 @@ export function PaymentMethodSummary() {
           <View>
             <View className="flex-row items-center">
               <Ionicons
-                name={selectedPaymentMethod.icon as any}
+                name={selectedPaymentMethod.icon as IoniconsName}
                 size={24}
                 color={colors.text}
                 style={{ marginRight: 12 }}

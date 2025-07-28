@@ -12,6 +12,7 @@ import {
   KeyboardStickyView,
 } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { IoniconsName } from "@/types/ionicons.types";
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -84,7 +85,7 @@ export default function CheckoutPaymentScreen() {
               style={{ backgroundColor: colors.background }}
             >
               <Ionicons
-                name={method.icon as any}
+                name={method.icon as IoniconsName}
                 size={24}
                 color={isSelected ? colors.tint : colors.textSecondary}
               />

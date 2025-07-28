@@ -5,8 +5,13 @@
 import { api, API_BASE_URL } from "@/core/api";
 import { CompleteProfileInput, User } from "@/context/auth/types";
 
+// Backend response type that may include phoneNumber
+interface BackendUserResponse extends User {
+  phoneNumber?: string;
+}
+
 // Kullanıcı verisini işleyip profil resmini oluşturan yardımcı fonksiyon
-export const processUserData = (userData: User): User => {
+export const processUserData = (userData: BackendUserResponse): User => {
   // Null/undefined kontrolü ekle
   if (!userData) {
     console.error("processUserData: userData is null or undefined");
@@ -16,8 +21,8 @@ export const processUserData = (userData: User): User => {
   if (userData.profilePhotoUrl) {
     userData.profilePicture = `${API_BASE_URL}${userData.profilePhotoUrl}`;
   }
-  if ((userData as any).phoneNumber) {
-    userData.phone = (userData as any).phoneNumber;
+  if (userData.phoneNumber) {
+    userData.phone = userData.phoneNumber;
   }
   return userData;
 };

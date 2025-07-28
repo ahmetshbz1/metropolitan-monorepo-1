@@ -93,7 +93,7 @@ export function useNotifications(): UseNotificationsReturn {
 
     // Eğer actionUrl varsa o sayfaya yönlendir
     if (notification.actionUrl) {
-      router.push(notification.actionUrl as any);
+      router.push(notification.actionUrl);
     }
   };
 

@@ -91,7 +91,7 @@ const LoginScreen = () => {
                 router.push({
                   pathname: "/(auth)/phone-login",
                   params: { type: loginType },
-                } as any),
+                }),
               "light"
             )}
             style={{ marginBottom: 20 }}

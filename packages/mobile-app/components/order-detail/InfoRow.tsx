@@ -10,9 +10,10 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { TouchableOpacity, View } from "react-native";
+import { IoniconsName } from "@/types/ionicons.types";
 
 interface InfoRowProps {
-  icon: string;
+  icon: IoniconsName;
   label: string;
   value: string;
   colors: any;
@@ -40,7 +41,7 @@ export const InfoRow: React.FC<InfoRowProps> = ({
     >
       <View className="flex-row items-center py-2.5">
         <Ionicons
-          name={icon as any}
+          name={icon}
           size={INFO_ROW_CONFIG.iconSize}
           color={colors.darkGray}
           style={styles.infoRowIcon}

@@ -52,3 +52,33 @@ export interface CardPaymentParams extends PaymentProcessorParams {
   initPaymentSheet: any;
   presentPaymentSheet: any;
 }
+
+// Saved payment method types for user payment methods management
+export interface SavedPaymentMethod {
+  id: string;
+  /** Payment method type (e.g., "card", "blik") */
+  type: string;
+  /** Display name for the payment method */
+  name: string;
+  /** Masked details (e.g., "•••• 4242" for cards) */
+  details: string;
+  /** Expiry date in MM/YY format (for cards) */
+  expiry?: string;
+  /** Whether this is the default payment method */
+  isDefault: boolean;
+  /** User ID who owns this payment method */
+  userId?: string;
+  /** Creation timestamp */
+  createdAt?: string | Date;
+}
+
+export interface SavedPaymentMethodData {
+  /** Payment method type (e.g., "card", "blik") */
+  type: string;
+  /** Display name for the payment method */
+  name: string;
+  /** Masked details (e.g., "•••• 4242" for cards) */
+  details: string;
+  /** Expiry date in MM/YY format (for cards) */
+  expiry?: string;
+}

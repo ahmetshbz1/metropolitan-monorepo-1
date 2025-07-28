@@ -16,6 +16,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useToast } from "@/hooks/useToast";
 import type { Product } from "@metropolitan/shared";
+import { StructuredError } from "@/types/error.types";
 
 interface PurchaseSectionProps {
   product: Product;
@@ -94,18 +95,19 @@ export function PurchaseSection({
         timeoutRef.current = setTimeout(() => {
           setIsAdded(false);
           timeoutRef.current = null;
-        }, 2000) as any;
+        }, 2000);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Sepete ekleme hatası:", error);
+      const structuredError = error as StructuredError;
 
       // useCartState'ten gelen structured error'ı handle et
-      if (error.key) {
+      if (structuredError.key) {
         // Structured error message'ı direkt kullan (zaten çevrilmiş)
-        showToast(error.message, "error");
-      } else if (error.code === "AUTH_REQUIRED") {
+        showToast(structuredError.message, "error");
+      } else if (structuredError.code === "AUTH_REQUIRED") {
         // Auth error'ı handle et
-        showToast(error.message, "warning");
+        showToast(structuredError.message, "warning");
       } else {
         // Generic error
         showToast(t("product_detail.purchase.generic_error_message"), "error");

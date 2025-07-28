@@ -11,8 +11,13 @@ import { HapticButton } from "@/components/HapticButton";
 import { ThemedText } from "@/components/ThemedText";
 import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { IoniconsName } from "@/types/ionicons.types";
 
-const actions = [
+const actions: {
+  icon: IoniconsName;
+  labelKey: string;
+  route: "/favorites" | "/addresses" | "/notifications";
+}[] = [
   {
     icon: "heart-outline",
     labelKey: "profile.favorites",
@@ -73,7 +78,7 @@ export function AccountSection() {
             }}
           >
             <Ionicons
-              name={action.icon as any}
+              name={action.icon}
               size={28}
               color={colors.tint}
               style={{ marginBottom: 6 }}

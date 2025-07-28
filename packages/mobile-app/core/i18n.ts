@@ -49,7 +49,7 @@ const loadLanguageFromStorage = async (): Promise<string> => {
 const initializeI18n = async () => {
   const savedLanguage = await loadLanguageFromStorage();
 
-  (i18n as any).use(initReactI18next).init({
+  i18n.use(initReactI18next).init({
     resources,
     lng: savedLanguage,
     fallbackLng: "tr",

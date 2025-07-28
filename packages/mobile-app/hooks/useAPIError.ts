@@ -3,11 +3,12 @@
 //  Created by Ahmet on 09.07.2025.
 
 import { useTranslation } from "react-i18next";
+import { APIError, StructuredError } from "@/types/error.types";
 
 export const useAPIError = () => {
   const { t, i18n } = useTranslation();
 
-  const handleStructuredError = (error: any, setError: (error: string | null) => void, defaultErrorKey: string) => {
+  const handleStructuredError = (error: APIError, setError: (error: string | null) => void, defaultErrorKey: string) => {
     // Auth error'ı olduğu gibi fırlat
     if (error.code === "AUTH_REQUIRED" || error.code === "MIN_QUANTITY_ERROR") {
       throw error;
@@ -23,9 +24,9 @@ export const useAPIError = () => {
       setError(translatedMessage);
       
       // Error'ı structured olarak fırlat
-      const structuredError = new Error(translatedMessage);
-      (structuredError as any).key = key;
-      (structuredError as any).params = params;
+      const structuredError: StructuredError = new Error(translatedMessage);
+      structuredError.key = key;
+      structuredError.params = params;
       throw structuredError;
     } else {
       // Generic error
