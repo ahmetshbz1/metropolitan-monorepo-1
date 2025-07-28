@@ -33,9 +33,9 @@ config.transformer = {
       keep_fnames: false,
     },
     compress: {
-      drop_console: true, // Remove console logs in production
+      drop_console: process.env.NODE_ENV === "production", // Only remove console logs in production
       drop_debugger: true,
-      pure_funcs: ["console.log", "console.info", "console.debug"],
+      pure_funcs: process.env.NODE_ENV === "production" ? ["console.log", "console.info", "console.debug"] : [],
     },
     output: {
       ascii_only: true,
