@@ -82,10 +82,10 @@ export function ActionsSection({
   };
 
   const canBeCancelled = ["pending", "confirmed"].includes(
-    orderData.order.status
+    orderData.order.status.toLowerCase()
   );
   const canDownloadInvoice = ["confirmed", "shipped", "delivered"].includes(
-    orderData.order.status
+    orderData.order.status.toLowerCase()
   );
 
   return (

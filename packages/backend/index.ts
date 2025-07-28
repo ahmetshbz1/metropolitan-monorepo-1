@@ -10,6 +10,9 @@ import { spawnSync } from "bun";
 import { Elysia } from "elysia";
 import pretty from "pino-pretty";
 
+// Performance optimization imports
+import { compressionPlugin } from "./src/shared/infrastructure/middleware/compression";
+
 // Shared Infrastructure
 
 // Domain Routes
@@ -49,6 +52,7 @@ const getGitCommitHash = () => {
 const commitHash = getGitCommitHash();
 
 export const app = new Elysia()
+  .use(compressionPlugin) // Add compression before logging
   .use(
     logger({
       stream,
