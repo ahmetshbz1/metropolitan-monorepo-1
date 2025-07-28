@@ -39,8 +39,37 @@ export const lightTheme = {
   cardBackground: "#FFFFFF",
   border: "#E5E7EB",
   borderColor: "#E5E7EB",
+  borderLight: "#F3F4F6",
+  inputBorder: "#E5E7EB",
   disabled: "#D1D5DB",
   mutedForeground: "#8E8E93", // Disabled text color
+
+  // Background variants
+  secondaryBackground: "#FAFAFA",
+  tertiaryBackground: "#F3F4F6",
+  modalBackground: "#FFFFFF",
+  inputBackground: "#F9FAFB",
+  
+  // Text variants
+  textTertiary: "#9CA3AF",
+  inputText: "#1A1A1A",
+  placeholderText: "#9CA3AF",
+  
+  // Status backgrounds
+  successBackground: "#D1FAE5",
+  errorBackground: "#FEE2E2",
+  warningBackground: "#FEF3C7",
+  infoBackground: "#DBEAFE",
+  
+  // UI elements
+  ripple: "#00000010",
+  skeletonBase: "#E5E7EB",
+  skeletonHighlight: "#F3F4F6",
+  overlay: "#00000080",
+  divider: "#E5E7EB",
+  link: PRIMARY_ORANGE,
+  badge: PRIMARY_ORANGE,
+  badgeText: "#FFFFFF",
 
   // Eski sistemle uyumluluk
   lightGray: "#F3F4F6",
@@ -80,8 +109,37 @@ export const darkTheme = {
   cardBackground: "#1C1C1E",
   border: "#2C2C2E",
   borderColor: "#2C2C2E",
+  borderLight: "#3C3C3E",
+  inputBorder: "#3C3C3E",
   disabled: "#4B5563",
   mutedForeground: "#9CA3AF", // Disabled text color
+
+  // Background variants
+  secondaryBackground: "#1C1C1E",
+  tertiaryBackground: "#2C2C2E",
+  modalBackground: "#1C1C1E",
+  inputBackground: "#2C2C2E",
+  
+  // Text variants
+  textTertiary: "#6B7280",
+  inputText: "#FFFFFF",
+  placeholderText: "#6B7280",
+  
+  // Status backgrounds
+  successBackground: "#064E3B",
+  errorBackground: "#7F1D1D",
+  warningBackground: "#78350F",
+  infoBackground: "#1E3A8A",
+  
+  // UI elements
+  ripple: "#FFFFFF10",
+  skeletonBase: "#2C2C2E",
+  skeletonHighlight: "#3C3C3E",
+  overlay: "#000000CC",
+  divider: "#2C2C2E",
+  link: PRIMARY_ORANGE_DARK,
+  badge: PRIMARY_ORANGE_DARK,
+  badgeText: "#FFFFFF",
 
   // Eski sistemle uyumluluk
   lightGray: "#4B5563",

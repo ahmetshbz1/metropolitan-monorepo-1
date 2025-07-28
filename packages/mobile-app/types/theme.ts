@@ -1,6 +1,11 @@
 // Theme type definitions for the mobile app
 // All UI color and theme-related types
 
+export interface StatusBadgeColor {
+  background: string;
+  text: string;
+}
+
 export interface ThemeColors {
   // Primary colors
   primary: string;
@@ -46,12 +51,15 @@ export interface ThemeColors {
   tabIconDefault: string;
   tabIconSelected: string;
   
-  // Order status colors
-  orderPending: string;
-  orderProcessing: string;
-  orderShipped: string;
-  orderDelivered: string;
-  orderCancelled: string;
+  // Status badge colors
+  statusBadge: {
+    pending: { background: string; text: string };
+    confirmed: { background: string; text: string };
+    preparing: { background: string; text: string };
+    shipped: { background: string; text: string };
+    delivered: { background: string; text: string };
+    cancelled: { background: string; text: string };
+  };
   
   // Additional UI colors
   overlay: string;

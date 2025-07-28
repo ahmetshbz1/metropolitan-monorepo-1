@@ -44,10 +44,10 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
   };
 
   return (
-    <View className="p-3 bg-white dark:bg-neutral-900">
+    <View className="p-3" style={{ backgroundColor: colors.cardBackground }}>
       {/* Category and Brand Badges */}
       <View className="mb-2 flex-row gap-2">
-        <View className="self-start px-2 py-1 rounded-full bg-gray-100 dark:bg-neutral-800">
+        <View className="self-start px-2 py-1 rounded-full" style={{ backgroundColor: colorScheme === "dark" ? colors.tertiaryBackground : colors.lightGray }}>
           <ThemedText
             className="text-xs font-medium uppercase tracking-wide"
             style={{

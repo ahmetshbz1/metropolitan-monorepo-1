@@ -9,7 +9,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { Appearance, ColorSchemeName } from "react-native";
+import { ColorSchemeName } from "react-native";
 import { useUserSettings } from "./UserSettings";
 
 type ColorSchemeContextType = {
@@ -27,17 +27,14 @@ export const ColorSchemeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const { settings, isLoading, updateSettings } = useUserSettings();
-  // Başlangıç değerini UserSettings'ten al
-  const [colorScheme, setColorScheme] = useState<ColorSchemeName>(
-    isLoading ? "light" : settings.theme
-  );
+  // Başlangıç değerini UserSettings'ten al, yoksa varsayılan light
+  const [colorScheme, setColorScheme] = useState<ColorSchemeName>("light");
 
   useEffect(() => {
     // UserSettings yüklendikten sonra tema değerini ayarla
-    // Sadece UserSettings'ten gelen değişiklikleri işle, local state güncellemelerini görmezden gel
-    if (!isLoading && settings.theme !== colorScheme) {
+    if (!isLoading) {
       setColorScheme(settings.theme);
-      Appearance.setColorScheme(settings.theme);
+      // Sistem temasını değiştirmiyoruz, sadece uygulama içi tema
     }
   }, [settings.theme, isLoading]);
 
@@ -49,7 +46,7 @@ export const ColorSchemeProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Anında UI'ı güncelle
     setColorScheme(newTheme);
-    Appearance.setColorScheme(newTheme);
+    // Sistem temasını değiştirmiyoruz
 
     // Arka planda UserSettings'i güncelle
     updateSettings({ theme: newTheme });

@@ -49,8 +49,10 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
       >
         <TouchableOpacity
           activeOpacity={0.9}
-          className="overflow-hidden rounded-3xl bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800/50"
+          className="overflow-hidden rounded-3xl border"
           style={{
+            backgroundColor: colors.cardBackground,
+            borderColor: colors.border,
             shadowColor: colorScheme === "dark" ? "#000" : colors.tint,
             shadowOffset: { width: 0, height: 6 },
             shadowOpacity: colorScheme === "dark" ? 0.3 : 0.12,
@@ -60,7 +62,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
         >
           {/* Brand Badge - Top Left */}
           {product.brand && (
-            <View className="absolute top-3 left-3 z-10 px-2 py-1 rounded-full bg-white dark:bg-neutral-800">
+            <View className="absolute top-3 left-3 z-10 px-2 py-1 rounded-full" style={{ backgroundColor: colorScheme === "dark" ? colors.tertiaryBackground : colors.background }}>
               <ThemedText
                 className="text-xs font-medium uppercase tracking-wide"
                 style={{

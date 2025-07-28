@@ -35,20 +35,18 @@ export const ColorUtils = {
 export const StatusUtils = {
   // Status badge renklerini al
   getStatusColor: (status: string, colors: ThemeColors) => {
-    switch (status.toLowerCase()) {
-      case "pending":
-        return { bg: colors.orderPending, text: colors.cardBackground };
-      case "processing":
-        return { bg: colors.orderProcessing, text: colors.cardBackground };
-      case "shipped":
-        return { bg: colors.orderShipped, text: colors.cardBackground };
-      case "delivered":
-        return { bg: colors.orderDelivered, text: colors.cardBackground };
-      case "cancelled":
-        return { bg: colors.orderCancelled, text: colors.cardBackground };
-      default:
-        return { bg: colors.secondaryBackground, text: colors.text };
+    const statusColors = colors.statusBadge;
+    const statusKey = status.toLowerCase();
+    
+    if (statusColors && statusColors[statusKey]) {
+      return {
+        bg: statusColors[statusKey].background,
+        text: statusColors[statusKey].text
+      };
     }
+    
+    // Fallback for unknown status
+    return { bg: colors.backgroundSecondary, text: colors.text };
   },
 
   // Status çevirisini al
