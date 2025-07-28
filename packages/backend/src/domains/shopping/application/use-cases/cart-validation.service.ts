@@ -10,6 +10,35 @@ import {
   products,
 } from "../../../../shared/infrastructure/database/schema";
 
+// Error types for cart validation
+const CartValidationErrors = {
+  PRODUCT_NOT_FOUND: (productId?: string) => ({
+    key: "PRODUCT_NOT_FOUND",
+    message: productId ? `Product ${productId} not found` : "Product not found",
+  }),
+  INSUFFICIENT_STOCK: (availableStock: number) => ({
+    key: "INSUFFICIENT_STOCK",
+    params: { stock: availableStock },
+    message: `Only ${availableStock} items available in stock`,
+  }),
+  INSUFFICIENT_STOCK_ALREADY_IN_CART: (
+    availableStock: number,
+    inCart: number
+  ) => ({
+    key: "INSUFFICIENT_STOCK_ALREADY_IN_CART",
+    params: {
+      stock: availableStock,
+      inCart: inCart,
+      canAdd: availableStock - inCart,
+    },
+    message: `You already have ${inCart} in cart. Only ${availableStock - inCart} more available`,
+  }),
+  CART_ITEM_NOT_FOUND: () => ({
+    key: "CART_ITEM_NOT_FOUND",
+    message: "Cart item not found or unauthorized",
+  }),
+} as const;
+
 export class CartValidationService {
   /**
    * Ürünün varlığını ve stok durumunu kontrol eder
@@ -22,21 +51,14 @@ export class CartValidationService {
       .limit(1);
 
     if (!product.length) {
-      throw new Error(
-        JSON.stringify({
-          key: "PRODUCT_NOT_FOUND",
-        })
-      );
+      throw new Error(JSON.stringify(CartValidationErrors.PRODUCT_NOT_FOUND(productId)));
     }
 
     const productData = product[0];
     const availableStock = productData.stock || 0;
     if (availableStock < requestedQuantity) {
       throw new Error(
-        JSON.stringify({
-          key: "INSUFFICIENT_STOCK",
-          params: { stock: availableStock },
-        })
+        JSON.stringify(CartValidationErrors.INSUFFICIENT_STOCK(availableStock))
       );
     }
 
@@ -61,34 +83,21 @@ export class CartValidationService {
       .limit(1);
 
     if (!product.length) {
-      throw new Error(JSON.stringify({ key: "PRODUCT_NOT_FOUND" }));
+      throw new Error(JSON.stringify(CartValidationErrors.PRODUCT_NOT_FOUND(productId)));
     }
 
     const productData = product[0];
     const availableStock = productData.stock || 0;
 
     if (newTotalQuantity > availableStock) {
-      if (oldCartQuantity > 0) {
-        // Sepette ürün varken stok aşımı durumu
-        throw new Error(
-          JSON.stringify({
-            key: "INSUFFICIENT_STOCK_ALREADY_IN_CART",
-            params: {
-              stock: availableStock,
-              inCart: oldCartQuantity,
-              canAdd: availableStock - oldCartQuantity,
-            },
-          })
-        );
-      } else {
-        // Sepet boşken stok aşımı durumu
-        throw new Error(
-          JSON.stringify({
-            key: "INSUFFICIENT_STOCK",
-            params: { stock: availableStock },
-          })
-        );
-      }
+      const error = oldCartQuantity > 0
+        ? CartValidationErrors.INSUFFICIENT_STOCK_ALREADY_IN_CART(
+            availableStock,
+            oldCartQuantity
+          )
+        : CartValidationErrors.INSUFFICIENT_STOCK(availableStock);
+      
+      throw new Error(JSON.stringify(error));
     }
 
     return productData;

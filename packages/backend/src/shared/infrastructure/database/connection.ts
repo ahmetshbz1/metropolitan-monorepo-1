@@ -16,17 +16,24 @@ const client = postgres({
   password: process.env.POSTGRES_PASSWORD,
   ssl: false,
   
-  // Connection pooling optimization
-  max: 20, // Maximum number of connections in the pool
-  idle_timeout: 20, // Seconds to wait before closing idle connections
-  connect_timeout: 10, // Seconds to wait for new connections
+  // Enhanced connection pooling for production
+  max: 30, // Increased for production load
+  idle_timeout: 30, // Increased for better connection reuse
+  connect_timeout: 5, // Reduced for faster failure detection
   
-  // Performance optimizations
-  prepare: false, // Disable prepared statements for better performance with connection pooling
+  // Query optimizations
+  prepare: true, // Enable prepared statements for repeated queries
+  statement_timeout: 10000, // 10 second query timeout
+  query_timeout: 10000, // Overall query timeout
   
-  // Statement caching
+  // Statement caching and type handling
   types: {
     bigint: postgres.BigInt,
+  },
+  
+  // Transform undefined to null for consistency
+  transform: {
+    undefined: null,
   },
   
   // Connection health check

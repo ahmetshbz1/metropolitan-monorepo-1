@@ -18,6 +18,16 @@ interface ProductCardProps {
   variant?: "grid" | "horizontal";
 }
 
+// Helper function to determine favorite icon color
+const getFavoriteIconColor = (
+  isFavorite: boolean,
+  colorScheme: string,
+  colors: any
+): string => {
+  if (isFavorite) return colors.danger;
+  return colorScheme === "dark" ? "#fff" : "#000";
+};
+
 export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
   product,
   variant = "grid",
@@ -62,11 +72,20 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
         >
           {/* Brand Badge - Top Left */}
           {product.brand && (
-            <View className="absolute top-3 left-3 z-10 px-2 py-1 rounded-full" style={{ backgroundColor: colorScheme === "dark" ? colors.tertiaryBackground : colors.background }}>
+            <View 
+              className="absolute top-3 left-3 z-10 px-2 py-1 rounded-full" 
+              style={{ 
+                backgroundColor: colorScheme === "dark" 
+                  ? colors.tertiaryBackground 
+                  : colors.background 
+              }}
+            >
               <ThemedText
                 className="text-xs font-medium uppercase tracking-wide"
                 style={{
-                  color: colorScheme === "dark" ? colors.mediumGray : "#6b7280",
+                  color: colorScheme === "dark" 
+                    ? colors.mediumGray 
+                    : "#6b7280",
                   fontSize: 10,
                 }}
                 numberOfLines={1}
@@ -101,13 +120,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
             <Ionicons
               name={isProductFavorite ? "heart" : "heart-outline"}
               size={20}
-              color={
-                isProductFavorite
-                  ? colors.danger
-                  : colorScheme === "dark"
-                    ? "#fff"
-                    : "#000"
-              }
+              color={getFavoriteIconColor(isProductFavorite, colorScheme, colors)}
             />
           </HapticIconButton>
         </TouchableOpacity>

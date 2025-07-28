@@ -1,86 +1,69 @@
 //  "stripe-webhook.routes.ts"
-//  metropolitan backend
-//  Created by Ahmet on 27.01.2025.
+//  metropolitan backend  
+//  Main orchestrator for Stripe webhook processing
+//  Refactored: Now delegates to focused modular services for better maintainability
 
-import { eq } from "drizzle-orm";
 import { Elysia } from "elysia";
 import type Stripe from "stripe";
 
-import { db } from "../../../../shared/infrastructure/database/connection";
-import { orders, cartItems, orderItems } from "../../../../shared/infrastructure/database/schema";
+// Import focused modular services
 import StripeService from "../../../../shared/infrastructure/external/stripe.service";
-import { InvoiceService } from "../../../order/application/use-cases/invoice.service";
+import { WebhookIdempotencyService } from "../../application/webhook/idempotency.service";
+import { PaymentIntentHandlersService } from "../../application/webhook/payment-intent-handlers.service";
+import type { SupportedWebhookEvent } from "../../application/webhook/webhook-types";
 
-// İdempotency için işlenmiş webhook event'leri cache'le
-const processedEvents = new Set<string>();
+// Re-export types for backward compatibility
+export type { 
+  WebhookProcessingResult,
+  WebhookEventMetadata,
+  OrderStatusUpdate,
+  SupportedWebhookEvent
+} from "../../application/webhook/webhook-types";
 
+/**
+ * Main Stripe Webhook Routes - Now acts as orchestrator for modular services
+ * Maintains backward compatibility while providing better code organization
+ */
 export const stripeWebhookRoutes = new Elysia().group("/stripe", (app) =>
   app.post("/webhook", async ({ request, headers }) => {
     try {
+      // 1. Validate Stripe signature
       const signature = headers["stripe-signature"];
-
       if (!signature) {
         throw new Error("Stripe signature missing");
       }
 
-      // Raw body'yi al
+      // Get raw body and construct webhook event
       const rawBody = await request.text();
-
-      // Webhook event'ini doğrula
-      const event = await StripeService.constructWebhookEvent(
-        rawBody,
-        signature
-      );
+      const event = await StripeService.constructWebhookEvent(rawBody, signature);
 
       console.log(`Stripe webhook received: ${event.type} - ${event.id}`);
 
-      // İdempotency kontrolü - aynı event'i birden fazla kez işleme
-      if (processedEvents.has(event.id)) {
-        console.log(`Event ${event.id} already processed, skipping...`);
-        return { received: true, status: "already_processed" };
+      // 2. Check idempotency using modular service
+      const idempotencyCheck = WebhookIdempotencyService.processEvent(event.id);
+      
+      if (!idempotencyCheck.shouldProcess) {
+        console.log(idempotencyCheck.reason);
+        return { 
+          received: true, 
+          status: "already_processed",
+          eventId: event.id 
+        };
       }
 
-      // Event'i işlenmiş olarak işaretle
-      processedEvents.add(event.id);
+      console.log(idempotencyCheck.reason);
 
-      // Memory leak'i önlemek için cache'i sınırla (1000 event)
-      if (processedEvents.size > 1000) {
-        const firstEvent = processedEvents.values().next().value;
-        processedEvents.delete(firstEvent);
-      }
+      // 3. Route event to appropriate handler using modular service
+      const result = await routeWebhookEvent(event);
 
-      // Event type'a göre işle
-      switch (event.type) {
-        case "payment_intent.succeeded":
-          await handlePaymentIntentSucceeded(
-            event.data.object as Stripe.PaymentIntent
-          );
-          break;
-        case "payment_intent.payment_failed":
-          await handlePaymentIntentFailed(
-            event.data.object as Stripe.PaymentIntent
-          );
-          break;
-        case "payment_intent.requires_action":
-          await handlePaymentIntentRequiresAction(
-            event.data.object as Stripe.PaymentIntent
-          );
-          break;
-        case "payment_intent.canceled":
-          await handlePaymentIntentCanceled(
-            event.data.object as Stripe.PaymentIntent
-          );
-          break;
-        case "payment_intent.processing":
-          await handlePaymentIntentProcessing(
-            event.data.object as Stripe.PaymentIntent
-          );
-          break;
-        default:
-          console.log(`Unhandled webhook event type: ${event.type}`);
-      }
-
-      return { received: true, status: "processed" };
+      return { 
+        received: true, 
+        status: result.success ? "processed" : "error",
+        eventId: event.id,
+        orderId: result.orderId,
+        message: result.message,
+        error: result.error
+      };
     } catch (error) {
       console.error("Stripe webhook error:", error);
       throw new Error(
@@ -90,286 +73,164 @@ export const stripeWebhookRoutes = new Elysia().group("/stripe", (app) =>
   })
 );
 
-// Payment Intent başarılı olduğunda
-async function handlePaymentIntentSucceeded(
-  paymentIntent: Stripe.PaymentIntent
-) {
-  try {
-    const orderId = paymentIntent.metadata.order_id;
-    const userId = paymentIntent.metadata.user_id;
+/**
+ * Route webhook event to appropriate handler
+ */
+async function routeWebhookEvent(event: Stripe.Event) {
+  const eventType = event.type as SupportedWebhookEvent;
 
-    if (!orderId) {
-      console.error("Order ID not found in payment intent metadata");
-      return;
-    }
-
-    if (!userId) {
-      console.error("User ID not found in payment intent metadata");
-      return;
-    }
-
-    // İdempotency kontrolü - order zaten completed mı?
-    const existingOrder = await db
-      .select({ paymentStatus: orders.paymentStatus, status: orders.status })
-      .from(orders)
-      .where(eq(orders.id, orderId))
-      .limit(1);
-
-    if (existingOrder.length > 0 && existingOrder[0].paymentStatus === "completed") {
-      console.log(`Order ${orderId} already completed, skipping...`);
-      return;
-    }
-
-    // Order'ı güncelle - ödeme başarılı
-    await db
-      .update(orders)
-      .set({
-        paymentStatus: "completed",
-        status: "confirmed",
-        stripePaymentIntentId: paymentIntent.id,
-        paidAt: new Date(),
-        updatedAt: new Date(),
-      })
-      .where(eq(orders.id, orderId));
-
-    console.log(`✅ Order ${orderId} payment completed successfully`);
-
-    // ✅ Stock already reserved during order creation - no need to deduct again
-    // 🛒 Only clear cart if it wasn't already cleared during order creation
-    try {
-      await db.transaction(async (tx) => {
-        // Check if cart still has items (might be cleared during order creation)
-        const remainingCartItems = await tx
-          .select({ id: cartItems.id })
-          .from(cartItems)
-          .where(eq(cartItems.userId, userId))
-          .limit(1);
-
-        if (remainingCartItems.length > 0) {
-          // Clear cart if not already cleared
-          await tx.delete(cartItems).where(eq(cartItems.userId, userId));
-          console.log(`🛒 Cart cleared for user ${userId} after payment success`);
-        } else {
-          console.log(`🛒 Cart already cleared for user ${userId}`);
-        }
-      });
-    } catch (cartError) {
-      console.error(`❌ Cart clearing failed for order ${orderId}:`, cartError);
-    }
-
-    // 📄 Fatura oluştur (arka planda, async)
-    try {
-      console.log(`📄 Generating invoice for order ${orderId}...`);
-      await InvoiceService.generateInvoicePDF(orderId, userId);
-      console.log(`✅ Invoice generated successfully for order ${orderId}`);
-    } catch (invoiceError) {
-      // Fatura hatası ödeme başarısını etkilemez, sadece log'la
-      console.error(
-        `❌ Invoice generation failed for order ${orderId}:`,
-        invoiceError
-      );
-    }
-
-    // TODO: Order işleme pipeline'ını başlat
-    // - Teslimat planla
-    // - Müşteriye bildirim gönder
-  } catch (error) {
-    console.error("Error handling payment_intent.succeeded:", error);
+  // Get handler for this event type
+  const handler = PaymentIntentHandlersService.getHandler(eventType);
+  
+  if (!handler) {
+    console.log(`Unhandled webhook event type: ${event.type}`);
+    return {
+      success: true,
+      message: `Event type ${event.type} ignored (not implemented)`,
+    };
   }
-}
 
-// Payment Intent başarısız olduğunda
-async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
+  // Process the event using the appropriate handler
   try {
-    const orderId = paymentIntent.metadata.order_id;
-
-    if (!orderId) {
-      console.error("Order ID not found in payment intent metadata");
-      return;
-    }
-
-    // Order'ı güncelle - ödeme başarısız
-    await db
-      .update(orders)
-      .set({
-        paymentStatus: "failed",
-        status: "canceled",
-        updatedAt: new Date(),
-      })
-      .where(eq(orders.id, orderId));
-
-    console.log(`❌ Order ${orderId} payment failed`);
-
-    // CRITICAL: Rollback stock since payment failed (Redis + Database)
-    try {
-      // Try Redis rollback first
-      const { RedisStockService } = await import("../../../shared/infrastructure/cache/redis-stock.service");
-      
-      // Get order details to identify products for rollback
-      const orderDetails = await db
-        .select({
-          userId: orders.userId,
-          items: orderItems
-        })
-        .from(orders)
-        .leftJoin(orderItems, eq(orders.id, orderItems.orderId))
-        .where(eq(orders.id, orderId));
-
-      // Rollback each product in Redis
-      for (const detail of orderDetails) {
-        if (detail.items?.productId) {
-          await RedisStockService.rollbackReservation(detail.userId, detail.items.productId);
-        }
-      }
-      
-      console.log(`🔄 Redis stock rollback completed for order ${orderId}`);
-    } catch (redisError) {
-      console.warn("Redis rollback failed, using database rollback:", redisError);
+    const paymentIntent = event.data.object as Stripe.PaymentIntent;
+    const result = await handler.handle(paymentIntent);
+    
+    if (result.success) {
+      console.log(`✅ Successfully processed ${event.type} for order ${result.orderId}`);
+    } else {
+      console.error(`❌ Failed to process ${event.type}: ${result.message}`);
     }
     
-    // Always do database rollback as well for consistency
-    const { OrderCreationService } = await import("../../../order/application/use-cases/order-creation.service");
-    await OrderCreationService.rollbackStock(orderId);
-
-    // TODO:
-    // - Müşteriye bildirim gönder  
-    // - Failed payment analytics'e kaydet
-  } catch (error) {
-    console.error("Error handling payment_intent.payment_failed:", error);
+    return result;
+  } catch (handlerError) {
+    console.error(`Handler error for ${event.type}:`, handlerError);
+    return {
+      success: false,
+      message: `Handler error for ${event.type}`,
+      error: handlerError instanceof Error ? handlerError.message : 'Unknown handler error',
+    };
   }
 }
 
-// Payment Intent ek doğrulama gerektirdiğinde (3D Secure vb.)
-async function handlePaymentIntentRequiresAction(
-  paymentIntent: Stripe.PaymentIntent
-) {
-  try {
-    const orderId = paymentIntent.metadata.order_id;
-
-    if (!orderId) {
-      console.error("Order ID not found in payment intent metadata");
-      return;
-    }
-
-    // Order'ı güncelle - ek doğrulama bekleniyor
-    await db
-      .update(orders)
-      .set({
-        paymentStatus: "requires_action",
-        status: "pending",
-        updatedAt: new Date(),
-      })
-      .where(eq(orders.id, orderId));
-
-    console.log(`🔐 Order ${orderId} requires additional authentication`);
-
-    // TODO: Müşteriye 3D Secure için bildirim gönder
-  } catch (error) {
-    console.error("Error handling payment_intent.requires_action:", error);
+/**
+ * Webhook management utilities
+ */
+export class WebhookUtils {
+  /**
+   * Get webhook processing statistics
+   */
+  static getIdempotencyStats() {
+    return WebhookIdempotencyService.getStats();
   }
-}
 
-// Payment Intent iptal edildiğinde
-async function handlePaymentIntentCanceled(
-  paymentIntent: Stripe.PaymentIntent
-) {
-  try {
-    const orderId = paymentIntent.metadata.order_id;
-    const userId = paymentIntent.metadata.user_id;
+  /**
+   * Clear processed events cache (for testing)
+   */
+  static clearIdempotencyCache() {
+    return WebhookIdempotencyService.clear();
+  }
 
-    if (!orderId) {
-      console.error("Order ID not found in payment intent metadata");
-      return;
-    }
+  /**
+   * Get list of supported webhook events
+   */
+  static getSupportedEvents(): SupportedWebhookEvent[] {
+    return [
+      'payment_intent.succeeded',
+      'payment_intent.payment_failed',
+      'payment_intent.requires_action',
+      'payment_intent.canceled',
+      'payment_intent.processing',
+    ];
+  }
 
-    // İdempotency kontrolü - order zaten canceled mı?
-    const existingOrder = await db
-      .select({ paymentStatus: orders.paymentStatus, status: orders.status })
-      .from(orders)
-      .where(eq(orders.id, orderId))
-      .limit(1);
+  /**
+   * Check if event type is supported
+   */
+  static isEventSupported(eventType: string): boolean {
+    return this.getSupportedEvents().includes(eventType as SupportedWebhookEvent);
+  }
 
-    if (existingOrder.length > 0 && existingOrder[0].paymentStatus === "canceled") {
-      console.log(`Order ${orderId} already canceled, skipping...`);
-      return;
-    }
+  /**
+   * Get available payment intent handlers
+   */
+  static getAvailableHandlers() {
+    return PaymentIntentHandlersService.getHandlers().map(h => ({
+      eventType: h.eventType,
+      description: this.getEventDescription(h.eventType),
+    }));
+  }
 
-    // Order'ı güncelle - iptal edildi
-    await db
-      .update(orders)
-      .set({
-        paymentStatus: "canceled",
-        status: "canceled",
-        cancelledAt: new Date(),
-        cancelReason: "Payment canceled by customer",
-        updatedAt: new Date(),
-      })
-      .where(eq(orders.id, orderId));
-
-    console.log(`🚫 Order ${orderId} payment canceled`);
-
-    // Stock'u geri ver (Redis + Database)
-    try {
-      // Redis rollback
-      const { RedisStockService } = await import("../../../../shared/infrastructure/cache/redis-stock.service");
-      
-      // Get order details to identify products for rollback
-      const orderDetails = await db
-        .select({
-          userId: orders.userId,
-          items: orderItems
-        })
-        .from(orders)
-        .leftJoin(orderItems, eq(orders.id, orderItems.orderId))
-        .where(eq(orders.id, orderId));
-
-      // Rollback each product in Redis
-      for (const detail of orderDetails) {
-        if (detail.items?.productId && userId) {
-          await RedisStockService.rollbackReservation(userId, detail.items.productId);
-        }
-      }
-      
-      console.log(`🔄 Redis stock rollback completed for canceled order ${orderId}`);
-    } catch (redisError) {
-      console.warn("Redis rollback failed, using database rollback:", redisError);
-    }
+  /**
+   * Get human-readable description for webhook event
+   */
+  private static getEventDescription(eventType: SupportedWebhookEvent): string {
+    const descriptions: Record<SupportedWebhookEvent, string> = {
+      'payment_intent.succeeded': 'Payment completed successfully',
+      'payment_intent.payment_failed': 'Payment failed to process',
+      'payment_intent.requires_action': 'Payment requires additional authentication',
+      'payment_intent.canceled': 'Payment canceled by customer',
+      'payment_intent.processing': 'Payment is being processed',
+    };
     
-    // Database rollback
-    const { OrderCreationService } = await import("../../../order/application/use-cases/order-creation.service");
-    await OrderCreationService.rollbackStock(orderId);
-
-    // TODO:
-    // - Müşteriye bildirim gönder
-  } catch (error) {
-    console.error("Error handling payment_intent.canceled:", error);
+    return descriptions[eventType] || 'Unknown event type';
   }
-}
 
-// Payment Intent işlenmeye başladığında
-async function handlePaymentIntentProcessing(
-  paymentIntent: Stripe.PaymentIntent
-) {
-  try {
-    const orderId = paymentIntent.metadata.order_id;
+  /**
+   * Health check for webhook system
+   */
+  static async healthCheck(): Promise<{
+    status: 'healthy' | 'warning' | 'error';
+    services: {
+      idempotency: boolean;
+      handlers: boolean;
+      stripe: boolean;
+    };
+    stats: {
+      supportedEvents: number;
+      availableHandlers: number;
+      cacheUtilization: number;
+    };
+    issues: string[];
+  }> {
+    const issues: string[] = [];
+    const services = {
+      idempotency: true, // In-memory service, always available
+      handlers: true,    // Static service, always available
+      stripe: false,
+    };
 
-    if (!orderId) {
-      console.error("Order ID not found in payment intent metadata");
-      return;
+    // Check Stripe service
+    try {
+      // This is a basic check - could be enhanced
+      if (StripeService) {
+        services.stripe = true;
+      }
+    } catch (error) {
+      issues.push('Stripe service not available');
     }
 
-    // Order'ı güncelle - ödeme işleniyor
-    await db
-      .update(orders)
-      .set({
-        paymentStatus: "processing",
-        status: "processing",
-        updatedAt: new Date(),
-      })
-      .where(eq(orders.id, orderId));
+    const stats = {
+      supportedEvents: this.getSupportedEvents().length,
+      availableHandlers: PaymentIntentHandlersService.getHandlers().length,
+      cacheUtilization: WebhookIdempotencyService.getStats().cacheUtilization,
+    };
 
-    console.log(`⏳ Order ${orderId} payment is processing`);
-  } catch (error) {
-    console.error("Error handling payment_intent.processing:", error);
+    // Check cache utilization
+    if (stats.cacheUtilization > 90) {
+      issues.push('Webhook idempotency cache is near capacity');
+    }
+
+    const status = issues.length === 0 ? 'healthy' : 
+                  issues.length === 1 ? 'warning' : 'error';
+
+    return {
+      status,
+      services,
+      stats,
+      issues,
+    };
   }
 }
+
+// Legacy compatibility exports
+export { WebhookIdempotencyService, PaymentIntentHandlersService };

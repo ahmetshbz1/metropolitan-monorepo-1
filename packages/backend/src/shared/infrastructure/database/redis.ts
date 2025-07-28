@@ -11,7 +11,26 @@ const redisClient = new Redis({
   host: process.env.REDIS_HOST || "localhost",
   port: Number(process.env.REDIS_PORT) || 6379,
   password: process.env.REDIS_PASSWORD,
-  maxRetriesPerRequest: null, // TODO: Sonsuz tekrar yerine uygun bir limit belirlenmeli
+  
+  // Performance optimizations
+  maxRetriesPerRequest: 3, // Limit retries to prevent infinite loops
+  retryStrategy: (times) => Math.min(times * 50, 2000), // Exponential backoff with 2s max
+  enableReadyCheck: true,
+  enableOfflineQueue: false, // Fail fast when Redis is down
+  
+  // Connection pooling and performance
+  lazyConnect: false, // Connect immediately
+  keepAlive: 30000, // 30 seconds keepalive
+  connectTimeout: 5000, // 5 second connection timeout
+  
+  // Reconnection strategy
+  reconnectOnError: (err) => {
+    const targetError = 'READONLY';
+    if (err.message.includes(targetError)) {
+      return true; // Reconnect on READONLY errors (failover scenarios)
+    }
+    return false;
+  },
 });
 
 redisClient.on("connect", () => {

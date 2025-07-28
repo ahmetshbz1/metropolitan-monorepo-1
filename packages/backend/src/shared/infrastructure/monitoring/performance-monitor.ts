@@ -1,49 +1,40 @@
 //  "performance-monitor.ts"
-//  metropolitan backend
-//  Real-time performance monitoring and alerting
+//  metropolitan backend  
+//  Main orchestrator for performance monitoring system
+//  Refactored: Now delegates to focused modular services for better maintainability
 
-import { Elysia } from "elysia";
+// Import focused modular services
+import { MetricsCollectionService } from "./performance/metrics-collection.service";
+import { AlertManagementService } from "./performance/alert-management.service";
+import { PerformanceAnalyticsService } from "./performance/performance-analytics.service";
 import { redis } from "../database/redis";
-import { db } from "../database/connection";
-import { sql } from "drizzle-orm";
+import { PERFORMANCE_CONFIG } from "./performance/performance-types";
 
-interface PerformanceMetrics {
-  timestamp: number;
-  api: {
-    responseTime: number;
-    throughput: number;
-    errorRate: number;
-    activeConnections: number;
-  };
-  database: {
-    queryTime: number;
-    connectionPoolUsage: number;
-    slowQueries: number;
-    deadlocks: number;
-  };
-  redis: {
-    hitRate: number;
-    evictionRate: number;
-    memoryUsage: number;
-    latency: number;
-  };
-  system: {
-    cpuUsage: number;
-    memoryUsage: number;
-    diskIO: number;
-    networkIO: number;
-  };
-}
+// Re-export types and middleware for backward compatibility
+export type { 
+  PerformanceMetrics, 
+  PerformanceAlert, 
+  PerformanceReport,
+  PerformanceThresholds
+} from "./performance/performance-types";
 
+export { 
+  performanceMiddleware,
+  detailedPerformanceMiddleware,
+  PerformanceMiddlewareUtils
+} from "./performance/performance-middleware";
+
+/**
+ * Main Performance Monitor - Now acts as orchestrator for modular services
+ * Maintains backward compatibility while providing better code organization
+ */
 export class PerformanceMonitor {
-  private static metrics: PerformanceMetrics[] = [];
-  private static readonly MAX_METRICS_HISTORY = 1000;
   private static monitoringInterval: Timer | null = null;
   
   /**
-   * Start performance monitoring
+   * Start performance monitoring with automatic metric collection and alerting
    */
-  static start(intervalMs: number = 5000) {
+  static start(intervalMs: number = PERFORMANCE_CONFIG.DEFAULT_MONITORING_INTERVAL) {
     if (this.monitoringInterval) {
       console.warn("Performance monitoring already started");
       return;
@@ -53,21 +44,19 @@ export class PerformanceMonitor {
     
     this.monitoringInterval = setInterval(async () => {
       try {
-        const metrics = await this.collectMetrics();
-        this.metrics.push(metrics);
+        // Collect metrics using modular service
+        const metrics = await MetricsCollectionService.collectAllMetrics();
         
-        // Keep only recent metrics
-        if (this.metrics.length > this.MAX_METRICS_HISTORY) {
-          this.metrics = this.metrics.slice(-this.MAX_METRICS_HISTORY);
-        }
+        // Add to analytics for trending and reporting
+        PerformanceAnalyticsService.addMetrics(metrics);
         
-        // Check for performance issues
-        await this.checkThresholds(metrics);
+        // Check thresholds and generate alerts
+        await AlertManagementService.checkThresholds(metrics);
         
         // Store metrics in Redis for distributed monitoring
         await redis.setex(
-          `performance:metrics:${Date.now()}`,
-          3600, // 1 hour TTL
+          `${PERFORMANCE_CONFIG.REDIS_KEYS.METRICS}:${Date.now()}`,
+          PERFORMANCE_CONFIG.REDIS_TTL.METRICS,
           JSON.stringify(metrics)
         );
       } catch (error) {
@@ -86,290 +75,190 @@ export class PerformanceMonitor {
       console.log("🛑 Performance monitoring stopped");
     }
   }
-  
+
+  // === METRICS COLLECTION (delegated to MetricsCollectionService) ===
+
   /**
-   * Collect current performance metrics
+   * Collect all current performance metrics
    */
-  private static async collectMetrics(): Promise<PerformanceMetrics> {
-    const [apiMetrics, dbMetrics, redisMetrics, systemMetrics] = await Promise.all([
-      this.getAPIMetrics(),
-      this.getDatabaseMetrics(),
-      this.getRedisMetrics(),
-      this.getSystemMetrics(),
-    ]);
-    
+  static async collectMetrics() {
+    return MetricsCollectionService.collectAllMetrics();
+  }
+
+  /**
+   * Get specific metric categories for targeted monitoring
+   */
+  static async getAPIMetrics() {
+    return MetricsCollectionService.getAPIMetricsOnly();
+  }
+
+  static async getDatabaseMetrics() {
+    return MetricsCollectionService.getDatabaseMetricsOnly();
+  }
+
+  static async getRedisMetrics() {
+    return MetricsCollectionService.getRedisMetricsOnly();
+  }
+
+  static async getSystemMetrics() {
+    return MetricsCollectionService.getSystemMetricsOnly();
+  }
+
+  // === ALERT MANAGEMENT (delegated to AlertManagementService) ===
+
+  /**
+   * Set custom performance thresholds
+   */
+  static setThresholds(thresholds: any) {
+    return AlertManagementService.setThresholds(thresholds);
+  }
+
+  /**
+   * Get current alert thresholds
+   */
+  static getThresholds() {
+    return AlertManagementService.getThresholds();
+  }
+
+  /**
+   * Get recent performance alerts
+   */
+  static async getRecentAlerts(limit?: number) {
+    return AlertManagementService.getRecentAlerts(limit);
+  }
+
+  /**
+   * Get alerts by category
+   */
+  static async getAlertsByCategory(category: 'api' | 'database' | 'redis' | 'system', limit?: number) {
+    return AlertManagementService.getAlertsByCategory(category, limit);
+  }
+
+  /**
+   * Clear all stored alerts
+   */
+  static async clearAlerts() {
+    return AlertManagementService.clearAlerts();
+  }
+
+  // === ANALYTICS & REPORTING (delegated to PerformanceAnalyticsService) ===
+
+  /**
+   * Get comprehensive performance report
+   */
+  static async getReport(duration?: number) {
+    return PerformanceAnalyticsService.getReport(duration);
+  }
+
+  /**
+   * Get performance trends over time
+   */
+  static getPerformanceTrends(hours?: number) {
+    return PerformanceAnalyticsService.getPerformanceTrends(hours);
+  }
+
+  /**
+   * Get current system health status
+   */
+  static getCurrentStatus() {
+    return PerformanceAnalyticsService.getCurrentStatus();
+  }
+
+  /**
+   * Get detailed statistics for time range
+   */
+  static getStatistics(startTime: number, endTime: number) {
+    return PerformanceAnalyticsService.getStatistics(startTime, endTime);
+  }
+
+  // === EXTENDED OPERATIONS (new capabilities from modular services) ===
+
+  /**
+   * Clear all stored metrics (for testing or reset)
+   */
+  static clearMetrics() {
+    return PerformanceAnalyticsService.clearMetrics();
+  }
+
+  /**
+   * Get alerts by severity level
+   */
+  static async getAlertsBySeverity(severity: 'warning' | 'error', limit?: number) {
+    return AlertManagementService.getAlertsBySeverity(severity, limit);
+  }
+
+  /**
+   * Check if monitoring is currently active
+   */
+  static isMonitoring(): boolean {
+    return this.monitoringInterval !== null;
+  }
+
+  /**
+   * Get monitoring configuration
+   */
+  static getConfig() {
     return {
-      timestamp: Date.now(),
-      api: apiMetrics,
-      database: dbMetrics,
-      redis: redisMetrics,
-      system: systemMetrics,
+      ...PERFORMANCE_CONFIG,
+      isMonitoring: this.isMonitoring(),
     };
   }
-  
+
   /**
-   * Get API performance metrics
+   * Health check for the monitoring system itself
    */
-  private static async getAPIMetrics() {
-    // Get response times from recent requests
-    const recentRequests = await redis.lrange("api:response_times", -100, -1);
-    const responseTimes = recentRequests.map(t => parseFloat(t));
-    
-    const avgResponseTime = responseTimes.length > 0
-      ? responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length
-      : 0;
-    
-    // Get error rate
-    const totalRequests = parseInt(await redis.get("api:total_requests") || "0");
-    const errorRequests = parseInt(await redis.get("api:error_requests") || "0");
-    const errorRate = totalRequests > 0 ? (errorRequests / totalRequests) * 100 : 0;
-    
+  static async healthCheck(): Promise<{
+    status: 'healthy' | 'warning' | 'error';
+    monitoring: boolean;
+    services: {
+      redis: boolean;
+      database: boolean;
+      metrics: boolean;
+    };
+    issues: string[];
+  }> {
+    const issues: string[] = [];
+    const services = {
+      redis: false,
+      database: false,
+      metrics: false,
+    };
+
+    // Check Redis connectivity
+    try {
+      await redis.ping();
+      services.redis = true;
+    } catch (error) {
+      issues.push('Redis connection failed');
+    }
+
+    // Check if metrics collection is working
+    try {
+      await MetricsCollectionService.getAPIMetricsOnly();
+      services.metrics = true;
+    } catch (error) {
+      issues.push('Metrics collection failed');
+    }
+
+    // Check database connectivity (through metrics collection)
+    try {
+      await MetricsCollectionService.getDatabaseMetricsOnly();
+      services.database = true;
+    } catch (error) {
+      issues.push('Database metrics collection failed');
+    }
+
+    const status = issues.length === 0 ? 'healthy' : 
+                  issues.length <= 1 ? 'warning' : 'error';
+
     return {
-      responseTime: avgResponseTime,
-      throughput: responseTimes.length, // Requests in last sampling period
-      errorRate,
-      activeConnections: parseInt(await redis.get("api:active_connections") || "0"),
+      status,
+      monitoring: this.isMonitoring(),
+      services,
+      issues,
     };
-  }
-  
-  /**
-   * Get database performance metrics
-   */
-  private static async getDatabaseMetrics() {
-    // Get query statistics
-    const queryStats = await db.execute(sql`
-      SELECT 
-        AVG(mean_exec_time) as avg_query_time,
-        COUNT(*) FILTER (WHERE mean_exec_time > 100) as slow_queries,
-        SUM(calls) as total_queries
-      FROM pg_stat_statements
-      WHERE query NOT LIKE '%pg_stat_statements%'
-    `);
-    
-    // Get connection pool stats
-    const poolStats = await db.execute(sql`
-      SELECT 
-        COUNT(*) as total_connections,
-        COUNT(*) FILTER (WHERE state = 'active') as active_connections,
-        COUNT(*) FILTER (WHERE wait_event_type = 'Lock') as waiting_on_locks
-      FROM pg_stat_activity
-      WHERE datname = current_database()
-    `);
-    
-    // Get deadlock count
-    const deadlocks = await db.execute(sql`
-      SELECT deadlocks 
-      FROM pg_stat_database 
-      WHERE datname = current_database()
-    `);
-    
-    const stats = queryStats[0] as any;
-    const pool = poolStats[0] as any;
-    const dl = deadlocks[0] as any;
-    
-    return {
-      queryTime: parseFloat(stats?.avg_query_time || 0),
-      connectionPoolUsage: (parseInt(pool?.active_connections || 0) / 20) * 100, // Assuming max 20 connections
-      slowQueries: parseInt(stats?.slow_queries || 0),
-      deadlocks: parseInt(dl?.deadlocks || 0),
-    };
-  }
-  
-  /**
-   * Get Redis performance metrics
-   */
-  private static async getRedisMetrics() {
-    const info = await redis.info();
-    
-    // Parse Redis info
-    const stats = {
-      hitRate: 0,
-      evictionRate: 0,
-      memoryUsage: 0,
-      latency: 0,
-    };
-    
-    // Extract hit rate
-    const keyspaceHits = parseInt(info.match(/keyspace_hits:(\d+)/)?.[1] || "0");
-    const keyspaceMisses = parseInt(info.match(/keyspace_misses:(\d+)/)?.[1] || "0");
-    const totalOps = keyspaceHits + keyspaceMisses;
-    
-    if (totalOps > 0) {
-      stats.hitRate = (keyspaceHits / totalOps) * 100;
-    }
-    
-    // Extract eviction rate
-    const evictedKeys = parseInt(info.match(/evicted_keys:(\d+)/)?.[1] || "0");
-    stats.evictionRate = evictedKeys; // Total evictions
-    
-    // Extract memory usage
-    const usedMemory = parseInt(info.match(/used_memory:(\d+)/)?.[1] || "0");
-    const maxMemory = parseInt(info.match(/maxmemory:(\d+)/)?.[1] || "1073741824"); // 1GB default
-    stats.memoryUsage = (usedMemory / maxMemory) * 100;
-    
-    // Measure latency
-    const start = Date.now();
-    await redis.ping();
-    stats.latency = Date.now() - start;
-    
-    return stats;
-  }
-  
-  /**
-   * Get system performance metrics
-   */
-  private static async getSystemMetrics() {
-    // Bun doesn't have direct access to system metrics, so we'll use approximations
-    const memoryUsage = process.memoryUsage();
-    
-    return {
-      cpuUsage: 0, // Would need OS-specific implementation
-      memoryUsage: (memoryUsage.heapUsed / memoryUsage.heapTotal) * 100,
-      diskIO: 0, // Would need OS-specific implementation
-      networkIO: 0, // Would need OS-specific implementation
-    };
-  }
-  
-  /**
-   * Check performance thresholds and alert if needed
-   */
-  private static async checkThresholds(metrics: PerformanceMetrics) {
-    const alerts: string[] = [];
-    
-    // API thresholds
-    if (metrics.api.responseTime > 500) {
-      alerts.push(`⚠️ High API response time: ${metrics.api.responseTime.toFixed(2)}ms`);
-    }
-    if (metrics.api.errorRate > 5) {
-      alerts.push(`🚨 High API error rate: ${metrics.api.errorRate.toFixed(2)}%`);
-    }
-    
-    // Database thresholds
-    if (metrics.database.queryTime > 100) {
-      alerts.push(`⚠️ Slow database queries: ${metrics.database.queryTime.toFixed(2)}ms avg`);
-    }
-    if (metrics.database.connectionPoolUsage > 80) {
-      alerts.push(`🚨 High connection pool usage: ${metrics.database.connectionPoolUsage.toFixed(2)}%`);
-    }
-    if (metrics.database.deadlocks > 0) {
-      alerts.push(`🚨 Database deadlocks detected: ${metrics.database.deadlocks}`);
-    }
-    
-    // Redis thresholds
-    if (metrics.redis.hitRate < 80) {
-      alerts.push(`⚠️ Low Redis hit rate: ${metrics.redis.hitRate.toFixed(2)}%`);
-    }
-    if (metrics.redis.memoryUsage > 80) {
-      alerts.push(`🚨 High Redis memory usage: ${metrics.redis.memoryUsage.toFixed(2)}%`);
-    }
-    if (metrics.redis.latency > 10) {
-      alerts.push(`⚠️ High Redis latency: ${metrics.redis.latency}ms`);
-    }
-    
-    // System thresholds
-    if (metrics.system.memoryUsage > 90) {
-      alerts.push(`🚨 High memory usage: ${metrics.system.memoryUsage.toFixed(2)}%`);
-    }
-    
-    // Log alerts
-    if (alerts.length > 0) {
-      console.error("Performance alerts:", alerts);
-      
-      // Store alerts in Redis for dashboard
-      await redis.lpush("performance:alerts", ...alerts.map(alert => 
-        JSON.stringify({ alert, timestamp: Date.now() })
-      ));
-      
-      // Keep only recent alerts
-      await redis.ltrim("performance:alerts", 0, 999);
-    }
-  }
-  
-  /**
-   * Get performance report
-   */
-  static async getReport(duration: number = 3600000) { // 1 hour default
-    const now = Date.now();
-    const startTime = now - duration;
-    
-    // Filter metrics within duration
-    const relevantMetrics = this.metrics.filter(m => m.timestamp >= startTime);
-    
-    if (relevantMetrics.length === 0) {
-      return { error: "No metrics available for the specified duration" };
-    }
-    
-    // Calculate aggregates
-    const avgMetrics = {
-      api: {
-        responseTime: this.average(relevantMetrics.map(m => m.api.responseTime)),
-        throughput: this.average(relevantMetrics.map(m => m.api.throughput)),
-        errorRate: this.average(relevantMetrics.map(m => m.api.errorRate)),
-      },
-      database: {
-        queryTime: this.average(relevantMetrics.map(m => m.database.queryTime)),
-        connectionPoolUsage: this.average(relevantMetrics.map(m => m.database.connectionPoolUsage)),
-        slowQueries: this.sum(relevantMetrics.map(m => m.database.slowQueries)),
-      },
-      redis: {
-        hitRate: this.average(relevantMetrics.map(m => m.redis.hitRate)),
-        memoryUsage: this.average(relevantMetrics.map(m => m.redis.memoryUsage)),
-        latency: this.average(relevantMetrics.map(m => m.redis.latency)),
-      },
-    };
-    
-    // Get recent alerts
-    const alerts = await redis.lrange("performance:alerts", 0, 49);
-    
-    return {
-      duration,
-      sampleCount: relevantMetrics.length,
-      averages: avgMetrics,
-      current: relevantMetrics[relevantMetrics.length - 1],
-      alerts: alerts.map(a => JSON.parse(a)),
-    };
-  }
-  
-  private static average(numbers: number[]): number {
-    if (numbers.length === 0) return 0;
-    return numbers.reduce((a, b) => a + b, 0) / numbers.length;
-  }
-  
-  private static sum(numbers: number[]): number {
-    return numbers.reduce((a, b) => a + b, 0);
   }
 }
 
-// Performance monitoring middleware
-export const performanceMiddleware = new Elysia()
-  .onBeforeHandle(({ request, set, store }) => {
-    // Track request start time
-    store.requestStartTime = Date.now();
-    
-    // Increment active connections
-    redis.incr("api:active_connections");
-  })
-  .onAfterHandle(({ store, set }) => {
-    // Calculate response time
-    const responseTime = Date.now() - (store.requestStartTime as number);
-    
-    // Store response time
-    redis.lpush("api:response_times", responseTime.toString());
-    redis.ltrim("api:response_times", 0, 999); // Keep last 1000
-    
-    // Increment total requests
-    redis.incr("api:total_requests");
-    
-    // Add performance headers
-    set.headers["X-Response-Time"] = `${responseTime}ms`;
-    
-    // Decrement active connections
-    redis.decr("api:active_connections");
-  })
-  .onError(({ store }) => {
-    // Increment error count
-    redis.incr("api:error_requests");
-    
-    // Decrement active connections on error
-    redis.decr("api:active_connections");
-  });
+// Legacy compatibility - ensure old imports still work
+export default PerformanceMonitor;

@@ -1,15 +1,25 @@
 //  "redis-stock.service.ts"
-//  Redis-based stock management for race condition prevention
-//  High-performance distributed locking and stock tracking
+//  metropolitan backend  
+//  Main orchestrator for Redis-based stock management
+//  Refactored: Now delegates to focused modular services for better maintainability
 
-import { redis } from "../database/redis";
+// Import focused modular services
+import { StockReservationService } from "./stock/stock-reservation.service";
+import { StockSyncService } from "./stock/stock-sync.service";
+import { StockMonitoringService } from "./stock/stock-monitoring.service";
+import { StockMaintenanceService } from "./stock/stock-maintenance.service";
+import { REDIS_STOCK_SCRIPTS } from "./stock/stock-maintenance.service";
 
+// Re-export types for backward compatibility
+export type { ReservationResult, StockReservation, StockActivity } from "./stock/stock-config";
+
+/**
+ * Main Redis Stock Service - Now acts as orchestrator for modular services
+ * Maintains backward compatibility while providing better code organization
+ */
 export class RedisStockService {
-  private static LOCK_TIMEOUT = 5000; // 5 seconds
-  private static STOCK_PREFIX = "stock:";
-  private static LOCK_PREFIX = "stock_lock:";
-  private static RESERVATION_PREFIX = "reservation:";
-
+  // === RESERVATION OPERATIONS (delegated to StockReservationService) ===
+  
   /**
    * Atomic stock reservation with distributed locking
    * Prevents race conditions across multiple server instances
@@ -18,104 +28,8 @@ export class RedisStockService {
     productId: string,
     userId: string,
     quantity: number
-  ): Promise<{ success: boolean; remainingStock?: number; error?: string }> {
-    const lockKey = `${this.LOCK_PREFIX}${productId}`;
-    const stockKey = `${this.STOCK_PREFIX}${productId}`;
-    const reservationKey = `${this.RESERVATION_PREFIX}${userId}:${productId}`;
-
-    // 1. Acquire distributed lock
-    const lockAcquired = await redis.set(
-      lockKey,
-      userId,
-      "PX",
-      this.LOCK_TIMEOUT,
-      "NX"
-    );
-
-    if (!lockAcquired) {
-      return {
-        success: false,
-        error:
-          "Another user is currently processing this product. Please try again.",
-      };
-    }
-
-    try {
-      // 2. Get current stock from Redis, if not exists load from database
-      const currentStock = await redis.get(stockKey);
-      let availableStock = currentStock ? parseInt(currentStock) : null;
-      
-      // If stock not in Redis, load from database
-      if (availableStock === null) {
-        console.log(`🔍 Stock not found in Redis for ${productId}, loading from database...`);
-        
-        try {
-          const { db } = await import("../database/connection");
-          const { products } = await import("../database/schema");
-          const { eq } = await import("drizzle-orm");
-          
-          const product = await db.query.products.findFirst({
-            where: eq(products.id, productId),
-            columns: { stock: true }
-          });
-          
-          if (product) {
-            availableStock = product.stock || 0;
-            // Set stock in Redis for future use
-            await redis.set(stockKey, availableStock.toString());
-            console.log(`📊 Stock loaded from database: ${productId} = ${availableStock}`);
-          } else {
-            console.log(`❌ Product not found in database: ${productId}`);
-            availableStock = 0;
-          }
-        } catch (dbError) {
-          console.error(`❌ Database error loading stock for ${productId}:`, dbError);
-          availableStock = 0;
-        }
-      }
-
-      console.log(`🔒 Lock acquired by ${userId} for product ${productId}`);
-      console.log(
-        `📦 Current stock: ${availableStock}, Requested: ${quantity}`
-      );
-
-      // 3. Check if sufficient stock available
-      if (availableStock < quantity) {
-        return {
-          success: false,
-          error: `Insufficient stock. Available: ${availableStock}, Requested: ${quantity}`,
-        };
-      }
-
-      // 4. Reserve stock atomically
-      const newStock = await redis.decrby(stockKey, quantity);
-
-      // 5. Store reservation info (for rollback)
-      await redis.setex(
-        reservationKey,
-        3600,
-        JSON.stringify({
-          productId,
-          userId,
-          quantity,
-          reservedAt: new Date().toISOString(),
-          status: "reserved",
-        })
-      );
-
-      console.log(
-        `✅ Stock reserved: ${quantity} items, Remaining: ${newStock}`
-      );
-
-      return {
-        success: true,
-        remainingStock: newStock,
-      };
-    } finally {
-      // 6. Always release the lock
-      await redis.del(lockKey);
-      console.log(`🔓 Lock released for product ${productId}`);
-    }
+  ) {
+    return StockReservationService.reserveStockAtomic(productId, userId, quantity);
   }
 
   /**
@@ -125,42 +39,7 @@ export class RedisStockService {
     userId: string,
     productId: string
   ): Promise<void> {
-    const stockKey = `${this.STOCK_PREFIX}${productId}`;
-    const reservationKey = `${this.RESERVATION_PREFIX}${userId}:${productId}`;
-
-    try {
-      // Get reservation details
-      const reservationData = await redis.get(reservationKey);
-      if (!reservationData) {
-        console.warn(`No reservation found for ${userId}:${productId}`);
-        return;
-      }
-
-      const reservation = JSON.parse(reservationData);
-
-      // Return stock to Redis
-      const newStock = await redis.incrby(stockKey, reservation.quantity);
-
-      // Mark reservation as rolled back
-      await redis.setex(
-        reservationKey,
-        3600,
-        JSON.stringify({
-          ...reservation,
-          status: "rolled_back",
-          rolledBackAt: new Date().toISOString(),
-        })
-      );
-
-      console.log(
-        `🔄 Stock rolled back: +${reservation.quantity} items, New stock: ${newStock}`
-      );
-    } catch (error) {
-      console.error(
-        `Failed to rollback reservation for ${userId}:${productId}`,
-        error
-      );
-    }
+    return StockReservationService.rollbackReservation(userId, productId);
   }
 
   /**
@@ -170,37 +49,10 @@ export class RedisStockService {
     userId: string,
     productId: string
   ): Promise<void> {
-    const reservationKey = `${this.RESERVATION_PREFIX}${userId}:${productId}`;
-
-    try {
-      const reservationData = await redis.get(reservationKey);
-      if (!reservationData) {
-        console.warn(`No reservation found for ${userId}:${productId}`);
-        return;
-      }
-
-      const reservation = JSON.parse(reservationData);
-
-      // Mark reservation as confirmed
-      await redis.setex(
-        reservationKey,
-        86400,
-        JSON.stringify({
-          // Keep for 24h for audit
-          ...reservation,
-          status: "confirmed",
-          confirmedAt: new Date().toISOString(),
-        })
-      );
-
-      console.log(`✅ Reservation confirmed for ${userId}:${productId}`);
-    } catch (error) {
-      console.error(
-        `Failed to confirm reservation for ${userId}:${productId}`,
-        error
-      );
-    }
+    return StockReservationService.confirmReservation(userId, productId);
   }
+
+  // === SYNCHRONIZATION OPERATIONS (delegated to StockSyncService) ===
 
   /**
    * Sync stock from database to Redis (initialization)
@@ -209,18 +61,14 @@ export class RedisStockService {
     productId: string,
     stockAmount: number
   ): Promise<void> {
-    const stockKey = `${this.STOCK_PREFIX}${productId}`;
-    await redis.set(stockKey, stockAmount);
-    console.log(`📊 Stock synced to Redis: ${productId} = ${stockAmount}`);
+    return StockSyncService.syncStockFromDB(productId, stockAmount);
   }
 
   /**
    * Get current stock from Redis (fast read)
    */
   static async getCurrentStock(productId: string): Promise<number> {
-    const stockKey = `${this.STOCK_PREFIX}${productId}`;
-    const stock = await redis.get(stockKey);
-    return stock ? parseInt(stock) : 0;
+    return StockSyncService.getCurrentStock(productId);
   }
 
   /**
@@ -229,100 +77,97 @@ export class RedisStockService {
   static async checkMultipleProductsStock(
     productIds: string[]
   ): Promise<Record<string, number>> {
-    const stockKeys = productIds.map((id) => `${this.STOCK_PREFIX}${id}`);
-    const stocks = await redis.mget(...stockKeys);
-
-    const result: Record<string, number> = {};
-    productIds.forEach((productId, index) => {
-      result[productId] = stocks[index] ? parseInt(stocks[index]!) : 0;
-    });
-
-    return result;
+    return StockSyncService.checkMultipleProductsStock(productIds);
   }
+
+  // === MONITORING OPERATIONS (delegated to StockMonitoringService) ===
 
   /**
    * Monitor real-time stock changes (for admin dashboard)
    */
-  static async getStockActivity(productId: string): Promise<any[]> {
-    const pattern = `${this.RESERVATION_PREFIX}*:${productId}`;
-    const keys = await redis.keys(pattern);
-
-    const activities = [];
-    for (const key of keys) {
-      const data = await redis.get(key);
-      if (data) {
-        activities.push(JSON.parse(data));
-      }
-    }
-
-    return activities.sort(
-      (a, b) =>
-        new Date(b.reservedAt).getTime() - new Date(a.reservedAt).getTime()
-    );
+  static async getStockActivity(productId: string) {
+    return StockMonitoringService.getStockActivity(productId);
   }
+
+  /**
+   * Get all stock activities across all products
+   */
+  static async getAllStockActivities(limit?: number) {
+    return StockMonitoringService.getAllStockActivities(limit);
+  }
+
+  /**
+   * Get stock activity statistics for analytics
+   */
+  static async getStockStats() {
+    return StockMonitoringService.getStockStats();
+  }
+
+  // === MAINTENANCE OPERATIONS (delegated to StockMaintenanceService) ===
 
   /**
    * Clean up expired reservations (cleanup job)
    */
   static async cleanupExpiredReservations(): Promise<number> {
-    const pattern = `${this.RESERVATION_PREFIX}*`;
-    const keys = await redis.keys(pattern);
+    return StockMaintenanceService.cleanupExpiredReservations();
+  }
 
-    let cleanedCount = 0;
-    const now = new Date();
+  /**
+   * Health check for Redis stock system
+   */
+  static async healthCheck() {
+    return StockMaintenanceService.healthCheck();
+  }
 
-    for (const key of keys) {
-      const data = await redis.get(key);
-      if (data) {
-        const reservation = JSON.parse(data);
-        const reservedAt = new Date(reservation.reservedAt);
-        const hoursSinceReservation =
-          (now.getTime() - reservedAt.getTime()) / (1000 * 60 * 60);
+  // === EXTENDED OPERATIONS (new capabilities from modular services) ===
 
-        // Clean up reservations older than 24 hours
-        if (hoursSinceReservation > 24) {
-          await redis.del(key);
-          cleanedCount++;
-        }
-      }
-    }
+  /**
+   * Bulk sync multiple products from database to Redis
+   */
+  static async bulkSyncFromDB(
+    productStocks: Array<{ productId: string; stock: number }>
+  ): Promise<void> {
+    return StockSyncService.bulkSyncFromDB(productStocks);
+  }
 
-    console.log(`🧹 Cleaned up ${cleanedCount} expired reservations`);
-    return cleanedCount;
+  /**
+   * Get all stock levels from Redis (admin use)
+   */
+  static async getAllStockLevels(): Promise<Record<string, number>> {
+    return StockSyncService.getAllStockLevels();
+  }
+
+  /**
+   * Set stock level directly in Redis (admin use)
+   */
+  static async setStockLevel(
+    productId: string,
+    stockLevel: number
+  ): Promise<void> {
+    return StockSyncService.setStockLevel(productId, stockLevel);
+  }
+
+  /**
+   * Get active reservations (not yet confirmed or rolled back)
+   */
+  static async getActiveReservations() {
+    return StockMonitoringService.getActiveReservations();
+  }
+
+  /**
+   * Clean up all reservations for specific product (admin use)
+   */
+  static async cleanupProductReservations(productId: string): Promise<number> {
+    return StockMaintenanceService.cleanupProductReservations(productId);
   }
 }
 
-/**
- * Redis Lua Script for atomic stock operations
- * Ensures true atomicity even under high concurrency
- */
-export const REDIS_STOCK_SCRIPTS = {
-  // Atomic reserve with availability check
-  atomicReserve: `
-    local stockKey = KEYS[1]
-    local quantity = tonumber(ARGV[1])
-    local currentStock = tonumber(redis.call('GET', stockKey) or 0)
-
-    if currentStock >= quantity then
-      local newStock = redis.call('DECRBY', stockKey, quantity)
-      return {1, newStock}
-    else
-      return {0, currentStock}
-    end
-  `,
-
-  // Atomic rollback
-  atomicRollback: `
-    local stockKey = KEYS[1]
-    local quantity = tonumber(ARGV[1])
-    local newStock = redis.call('INCRBY', stockKey, quantity)
-    return newStock
-  `,
-};
+// Re-export Lua scripts for backward compatibility
+export { REDIS_STOCK_SCRIPTS };
 
 // Usage example:
 /*
-// Order creation with Redis
+// Order creation with Redis (same API as before)
 const reservation = await RedisStockService.reserveStockAtomic(
   productId,
   userId,
@@ -338,4 +183,9 @@ if (reservation.success) {
   // On payment failure:
   await RedisStockService.rollbackReservation(userId, productId);
 }
+
+// New capabilities from modular refactoring:
+const stats = await RedisStockService.getStockStats();
+const health = await RedisStockService.healthCheck();
+const activeReservations = await RedisStockService.getActiveReservations();
 */

@@ -30,6 +30,26 @@ export class CartItemService {
   /**
    * Kullanıcının sepet öğelerini getirir
    */
+  /**
+   * Maps raw cart item data to CartItem type
+   */
+  private static mapCartItem(item: any): CartItem {
+    return {
+      ...item,
+      createdAt: item.createdAt.toISOString(),
+      product: {
+        ...item.product,
+        price: Number(item.product.price),
+        image: item.product.image || "",
+        category: item.product.category || "",
+        brand: item.product.brand || "",
+        name: item.product.name || "",
+        stock: item.product.stock || 0,
+        size: item.product.size || undefined,
+      },
+    };
+  }
+
   static async getUserCartItems(userId: string): Promise<CartResponse> {
     const userCartItems = await db
       .select({
@@ -61,38 +81,11 @@ export class CartItemService {
       .where(eq(cartItems.userId, userId))
       .orderBy(desc(cartItems.createdAt));
 
-    const summary = CartCalculationService.generateCartSummary(
-      userCartItems.map((item) => ({
-        ...item,
-        createdAt: item.createdAt.toISOString(),
-        product: {
-          ...item.product,
-          price: Number(item.product.price),
-          image: item.product.image || "",
-          category: item.product.category || "",
-          brand: item.product.brand || "",
-          name: item.product.name || "",
-          stock: item.product.stock || 0,
-          size: item.product.size || undefined,
-        },
-      }))
-    );
+    const mappedItems = userCartItems.map(this.mapCartItem);
+    const summary = CartCalculationService.generateCartSummary(mappedItems);
 
     return {
-      items: userCartItems.map((item) => ({
-        ...item,
-        createdAt: item.createdAt.toISOString(),
-        product: {
-          ...item.product,
-          price: Number(item.product.price),
-          image: item.product.image || "",
-          category: item.product.category || "",
-          brand: item.product.brand || "",
-          name: item.product.name || "",
-          stock: item.product.stock || 0,
-          size: item.product.size || undefined,
-        },
-      })),
+      items: mappedItems,
       summary,
     };
   }
