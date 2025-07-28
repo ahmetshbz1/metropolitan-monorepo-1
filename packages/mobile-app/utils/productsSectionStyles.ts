@@ -3,8 +3,9 @@
 //  Created by Ahmet on 13.06.2025.
 
 import { StyleSheet } from "react-native";
+import type { ThemeColors } from "@/types/theme";
 
-export const createProductsSectionStyles = (colors: any) => ({
+export const createProductsSectionStyles = (colors: ThemeColors) => ({
   container: {
     backgroundColor: colors.cardBackground,
     shadowColor: "#000",

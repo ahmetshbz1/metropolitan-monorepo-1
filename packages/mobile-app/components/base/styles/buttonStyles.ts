@@ -3,6 +3,7 @@
 //  Created by Ahmet on 27.07.2025.
 
 import { ViewStyle, TextStyle } from "react-native";
+import type { ThemeColors, ColorScheme } from "@/types/theme";
 
 export type ButtonVariant =
   | "primary"
@@ -12,37 +13,44 @@ export type ButtonVariant =
   | "ghost"
   | "text";
 
+export type ButtonSize = {
+  paddingHorizontal: number;
+  paddingVertical: number;
+  fontSize: number;
+  minHeight: number;
+};
+
 // Variant configurations
-export const getVariantStyle = (variant: ButtonVariant, isDisabled: boolean, colors: any) => {
+export const getVariantStyle = (variant: ButtonVariant, isDisabled: boolean, colors: ThemeColors) => {
   switch (variant) {
     case "primary":
       return {
-        backgroundColor: isDisabled ? colors.disabled : colors.tint,
+        backgroundColor: isDisabled ? colors.mutedForeground : colors.primary,
         borderWidth: 0,
       };
     case "secondary":
       return {
         backgroundColor: "transparent",
         borderWidth: 2,
-        borderColor: isDisabled ? colors.disabled : colors.tint,
+        borderColor: isDisabled ? colors.mutedForeground : colors.primary,
       };
     case "danger":
       return {
-        backgroundColor: isDisabled ? colors.disabled : colors.danger,
+        backgroundColor: isDisabled ? colors.mutedForeground : colors.error,
         borderWidth: 0,
       };
     case "success":
       return {
-        backgroundColor: isDisabled ? colors.disabled : colors.success,
+        backgroundColor: isDisabled ? colors.mutedForeground : colors.success,
         borderWidth: 0,
       };
     case "ghost":
       return {
         backgroundColor: isDisabled
-          ? colors.disabled + "20"
-          : colors.tint + "15",
+          ? colors.mutedForeground + "20"
+          : colors.primary + "15",
         borderWidth: 1,
-        borderColor: isDisabled ? colors.disabled + "30" : colors.tint + "30",
+        borderColor: isDisabled ? colors.mutedForeground + "30" : colors.primary + "30",
       };
     case "text":
       return {
@@ -55,32 +63,30 @@ export const getVariantStyle = (variant: ButtonVariant, isDisabled: boolean, col
 };
 
 // Text color configurations
-export const getTextColor = (variant: ButtonVariant, isDisabled: boolean, colors: any, colorScheme: string) => {
+export const getTextColor = (variant: ButtonVariant, isDisabled: boolean, colors: ThemeColors, colorScheme: ColorScheme) => {
   if (isDisabled) {
     return variant === "secondary" ||
       variant === "text" ||
       variant === "ghost"
-      ? colors.disabled
-      : colorScheme === "dark"
-        ? "#D1D5DB"
-        : "#FFFFFF";
+      ? colors.mutedForeground
+      : colors.primaryForeground;
   }
 
   switch (variant) {
     case "primary":
     case "danger":
     case "success":
-      return colorScheme === "dark" ? "#D1D5DB" : "#FFFFFF";
+      return colors.primaryForeground;
     case "secondary":
     case "ghost":
     case "text":
-      return colors.tint;
+      return colors.primary;
     default:
-      return colorScheme === "dark" ? "#D1D5DB" : "#FFFFFF";
+      return colors.primaryForeground;
   }
 };
 
-export const createButtonStyle = (size: any, variantStyle: any, fullWidth: boolean, isDisabled: boolean, variant: ButtonVariant): ViewStyle => ({
+export const createButtonStyle = (size: ButtonSize, variantStyle: ViewStyle, fullWidth: boolean, isDisabled: boolean, variant: ButtonVariant): ViewStyle => ({
   ...size,
   ...variantStyle,
   flexDirection: "row",
@@ -90,7 +96,7 @@ export const createButtonStyle = (size: any, variantStyle: any, fullWidth: boole
   ...(fullWidth && { width: "100%" }),
 });
 
-export const createTextStyle = (size: any, textColor: string): TextStyle => ({
+export const createTextStyle = (size: ButtonSize, textColor: string): TextStyle => ({
   color: textColor,
   fontSize: size.fontSize,
   fontWeight: "700",

@@ -6,7 +6,7 @@
 import { api } from "@/core/api";
 import type {
   Category,
-  ProductContextType,
+  Product,
 } from "@metropolitan/shared";
 import {
   ReactNode,
@@ -19,6 +19,25 @@ import {
 import { useTranslation } from "react-i18next";
 import { useProductFiltering } from "./product/useProductFiltering";
 import { useProductState } from "./product/useProductState";
+
+// React Context type - should be local to mobile app
+interface ProductContextType {
+  products: Product[];
+  filteredProducts: Product[];
+  categories: Category[];
+  loadingProducts: boolean;
+  loadingCategories: boolean;
+  selectedCategory: string | null;
+  searchQuery: string;
+  hasMoreProducts: boolean;
+  error: string | null;
+  setSelectedCategory: (slug: string | null) => void;
+  setSearchQuery: (query: string) => void;
+  fetchProducts: (categorySlug?: string | null) => void;
+  refreshProducts: (categorySlug?: string | null) => void;
+  fetchMoreProducts: () => void;
+  fetchCategories: () => void;
+}
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 

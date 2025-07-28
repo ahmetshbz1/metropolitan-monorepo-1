@@ -25,7 +25,7 @@ export function OrderNotes({ onFocus, onBlur }: OrderNotesProps) {
   const { withHapticFeedback } = useHaptics();
 
   return (
-    <View>
+    <View style={{ marginBottom: 20 }}>
       <ThemedText className="text-base font-semibold mb-3">
         {t("checkout.order_notes")}
       </ThemedText>
@@ -72,11 +72,7 @@ export function OrderNotes({ onFocus, onBlur }: OrderNotesProps) {
             accessibilityLabel={t("common.clear")}
             hitSlop={8}
           >
-            <Ionicons
-              name="close-circle"
-              size={22}
-              color={colors.mediumGray}
-            />
+            <Ionicons name="close-circle" size={22} color={colors.mediumGray} />
           </Pressable>
         ) : null}
       </View>

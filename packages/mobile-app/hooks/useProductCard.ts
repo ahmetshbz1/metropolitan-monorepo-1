@@ -10,6 +10,8 @@ import { useTheme } from "@/hooks/useTheme";
 import { useToast } from "@/hooks/useToast";
 import { Product } from "@metropolitan/shared";
 import { useRouter } from "expo-router";
+import { getErrorMessage } from "@/types/error";
+import type { GestureResponderEvent } from "react-native";
 
 export const useProductCard = (product: Product) => {
   const { colors, colorScheme } = useTheme();
@@ -32,7 +34,7 @@ export const useProductCard = (product: Product) => {
   );
 
   // Actions
-  const handleAddToCart = async (e: any) => {
+  const handleAddToCart = async (e: GestureResponderEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
@@ -40,9 +42,9 @@ export const useProductCard = (product: Product) => {
     
     try {
       await addToCart(product.id, 1);
-    } catch (error: any) {
+    } catch (error) {
       // Stok yetersizliği veya diğer hatalar için toast göster
-      showToast(error.message || "Ürün sepete eklenemedi", "error");
+      showToast(getErrorMessage(error) || "Ürün sepete eklenemedi", "error");
     }
   };
 

@@ -5,6 +5,7 @@
 import React, { useMemo } from "react";
 import { OrderStateProvider, useOrderState } from "./order/OrderStateContext";
 import { OrderActionsProvider, useOrderActions } from "./order/OrderActionsContext";
+import type { Order, OrderDetail, OrderCreationResult } from "@metropolitan/shared";
 
 // =================================================================
 // Shared types (imported from @metropolitan/shared)
@@ -21,23 +22,23 @@ export type {
 } from "@metropolitan/shared";
 
 interface IOrderContext {
-  orders: any[];
+  orders: Order[];
   loading: boolean;
-  selectedOrder: any | null;
+  selectedOrder: OrderDetail | null;
   loadingDetail: boolean;
-  error: any;
+  error: string | null;
   fetchOrders: (forceRefresh?: boolean) => Promise<void>;
   refreshOrders: () => Promise<void>;
   fetchOrderById: (
     id: string,
     forceRefresh?: boolean
-  ) => Promise<any>;
+  ) => Promise<OrderDetail | null>;
   createOrder: (data: {
     shippingAddressId: string;
     billingAddressId?: string;
     paymentMethodId: string;
     notes?: string;
-  }) => Promise<any>;
+  }) => Promise<OrderCreationResult>;
   cancelOrder: (orderId: string) => Promise<void>;
 }
 

@@ -2,6 +2,9 @@
 //  metropolitan app
 //  Created by Ahmet on 03.07.2025.
 
+import type { ThemeColors } from "./theme";
+import type { Notification } from "@metropolitan/shared";
+
 // Re-export shared types for convenience
 export type {
   Notification,
@@ -16,7 +19,7 @@ export interface NotificationItemProps {
 }
 
 export interface EmptyNotificationsProps {
-  colors: any;
+  colors: ThemeColors;
 }
 
 export interface NotificationActionButtonsProps {
@@ -24,7 +27,7 @@ export interface NotificationActionButtonsProps {
   unreadCount: number;
   onMarkAllAsRead: () => void;
   onDeleteAll: () => void;
-  colors: any;
+  colors: ThemeColors;
 }
 
 export interface SwipeActionsProps {

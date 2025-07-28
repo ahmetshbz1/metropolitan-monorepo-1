@@ -2,6 +2,9 @@
 //  metropolitan app
 //  Created by Ahmet on 27.07.2025.
 
+import type { ThemeColors } from "@/types/theme";
+import type { TranslationFunction } from "@/types/i18n";
+
 // Renk yardımcı fonksiyonları
 export const ColorUtils = {
   // Opacity ekleme
@@ -31,22 +34,25 @@ export const ColorUtils = {
 // Status Badge yardımcı fonksiyonları
 export const StatusUtils = {
   // Status badge renklerini al
-  getStatusColor: (status: string, colors: any) => {
-    const statusKey = status.toLowerCase() as keyof typeof colors.statusBadge;
-
-    if (colors.statusBadge && colors.statusBadge[statusKey]) {
-      return {
-        bg: colors.statusBadge[statusKey].background,
-        text: colors.statusBadge[statusKey].text,
-      };
+  getStatusColor: (status: string, colors: ThemeColors) => {
+    switch (status.toLowerCase()) {
+      case "pending":
+        return { bg: colors.orderPending, text: colors.cardBackground };
+      case "processing":
+        return { bg: colors.orderProcessing, text: colors.cardBackground };
+      case "shipped":
+        return { bg: colors.orderShipped, text: colors.cardBackground };
+      case "delivered":
+        return { bg: colors.orderDelivered, text: colors.cardBackground };
+      case "cancelled":
+        return { bg: colors.orderCancelled, text: colors.cardBackground };
+      default:
+        return { bg: colors.secondaryBackground, text: colors.text };
     }
-
-    // Fallback for unknown status
-    return { bg: colors.lightGray, text: colors.text };
   },
 
   // Status çevirisini al
-  getStatusText: (status: string, t: any) => {
+  getStatusText: (status: string, t: TranslationFunction) => {
     switch (status.toLowerCase()) {
       case "pending":
         return t("order.status.pending");

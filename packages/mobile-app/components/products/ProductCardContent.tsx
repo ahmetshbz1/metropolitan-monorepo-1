@@ -6,18 +6,20 @@ import { formatPrice } from "@/core/utils";
 import { useToast } from "@/hooks/useToast";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ColorSchemeName, View } from "react-native";
+import { ColorSchemeName, View, GestureResponderEvent } from "react-native";
 import { ThemedText } from "../ThemedText";
 import { SimpleAddToCartButton } from "./SimpleAddToCartButton";
+import type { Product } from "@metropolitan/shared";
+import type { ThemeColors } from "@/types/theme";
 
 interface ProductCardContentProps {
-  product: any;
+  product: Product;
   categoryName?: string;
   colorScheme: ColorSchemeName;
-  colors: any;
+  colors: ThemeColors;
   isOutOfStock: boolean;
   isLowStock: boolean;
-  handleAddToCart: (e: any) => Promise<void>;
+  handleAddToCart: (e: GestureResponderEvent) => Promise<void>;
 }
 
 export const ProductCardContent: React.FC<ProductCardContentProps> = ({
@@ -49,7 +51,7 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
           <ThemedText
             className="text-xs font-medium uppercase tracking-wide"
             style={{
-              color: colorScheme === "dark" ? colors.mediumGray : "#6b7280",
+              color: colorScheme === "dark" ? colors.textSecondary : "#6b7280",
               fontSize: 10,
             }}
             numberOfLines={1}
@@ -77,7 +79,7 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
       <View className="flex-row items-center justify-between">
         <ThemedText
           className="font-bold text-lg"
-          style={{ color: colors.tint }}
+          style={{ color: colors.primary }}
         >
           {formatPrice(product.price, product.currency)}
         </ThemedText>

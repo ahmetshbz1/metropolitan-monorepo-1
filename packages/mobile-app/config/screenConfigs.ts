@@ -2,9 +2,19 @@
 //  metropolitan app
 //  Created by Ahmet on 08.06.2025.
 
+import type { NativeStackNavigationOptions } from "@react-navigation/native-stack";
+
+interface RouteProps {
+  route: {
+    params?: Record<string, any>;
+    name: string;
+  };
+  navigation: any;
+}
+
 export interface ScreenConfig {
   name: string;
-  options: any | ((props: any) => any);
+  options: NativeStackNavigationOptions | ((props: RouteProps) => NativeStackNavigationOptions);
 }
 
 export const SCREEN_CONFIGS = {
@@ -30,7 +40,7 @@ export const SCREEN_CONFIGS = {
 export const DYNAMIC_SCREEN_CONFIGS: ScreenConfig[] = [
   {
     name: "product/[id]",
-    options: ({ route }: any) => ({
+    options: ({ route }: RouteProps) => ({
       headerShown: true,
       headerTitle: "", // Dinamik olarak ayarlanacak
       headerBackTitle: "",

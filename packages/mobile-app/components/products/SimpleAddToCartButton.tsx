@@ -5,11 +5,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import React, { useState } from "react";
-import { ActivityIndicator, TouchableOpacity } from "react-native";
+import { ActivityIndicator, TouchableOpacity, GestureResponderEvent } from "react-native";
+import type { ThemeColors } from "@/types/theme";
 
 interface SimpleAddToCartButtonProps {
-  onPress: (e: any) => Promise<void>;
-  colors: any;
+  onPress: (e: GestureResponderEvent) => Promise<void>;
+  colors: ThemeColors;
   outOfStock?: boolean;
 }
 
@@ -20,7 +21,7 @@ export const SimpleAddToCartButton: React.FC<SimpleAddToCartButtonProps> = ({
 }) => {
   const [state, setState] = useState<"idle" | "loading" | "success">("idle");
 
-  const handlePress = async (e: any) => {
+  const handlePress = async (e: GestureResponderEvent) => {
     if (state !== "idle") return;
 
     Haptics.selectionAsync();
@@ -50,7 +51,7 @@ export const SimpleAddToCartButton: React.FC<SimpleAddToCartButtonProps> = ({
     <TouchableOpacity
       onPress={handlePress}
       className="w-10 h-10 rounded-full items-center justify-center"
-      style={{ backgroundColor: colors.tint }}
+      style={{ backgroundColor: colors.primary }}
       activeOpacity={0.8}
     >
       {state === "loading" ? (

@@ -2,6 +2,8 @@
 //  metropolitan app
 //  Created by Ahmet on 25.06.2025.
 
+import type { ThemeColors } from "@/types/theme";
+
 export const LAYOUT_CONSTANTS = {
   headerHeight: {
     ios: 44,
@@ -17,7 +19,7 @@ export const LAYOUT_CONSTANTS = {
   },
 } as const;
 
-export const createLayoutStyles = (colors: any) => {
+export const createLayoutStyles = (colors: ThemeColors) => {
   return {
     container: {
       flex: 1,

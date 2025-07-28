@@ -3,8 +3,9 @@
 //  Created by Ahmet on 22.06.2025.
 
 import { StyleSheet } from "react-native";
+import type { ThemeColors } from "@/types/theme";
 
-export const createDeliveryPaymentStyles = (colors: any) => ({
+export const createDeliveryPaymentStyles = (colors: ThemeColors) => ({
   container: {
     backgroundColor: colors.cardBackground,
     shadowColor: "#000",
@@ -15,7 +16,7 @@ export const createDeliveryPaymentStyles = (colors: any) => ({
   },
   divider: {
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.lightGray,
+    borderBottomColor: colors.borderLight,
   },
   infoRowIcon: {
     marginRight: 15,

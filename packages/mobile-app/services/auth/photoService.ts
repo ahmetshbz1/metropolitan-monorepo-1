@@ -3,6 +3,7 @@
 //  Created by Ahmet on 27.07.2025.
 
 import { api } from "@/core/api";
+import { getErrorMessage, isAxiosError } from "@/types/error";
 
 // Profil fotoğrafı yükle
 export const uploadProfilePhoto = async (
@@ -56,11 +57,15 @@ export const uploadProfilePhoto = async (
         message: data.message || "Fotoğraf yükleme başarısız.",
       };
     }
-  } catch (e: any) {
-    console.error("Fotoğraf yükleme başarısız:", e.response?.data || e.message);
+  } catch (e) {
+    console.error("Fotoğraf yükleme başarısız:", e);
+    const errorMessage = isAxiosError(e) 
+      ? e.response?.data?.message || e.message
+      : getErrorMessage(e);
+    
     return {
       success: false,
-      message: e.response?.data?.message || e.message,
+      message: errorMessage,
     };
   }
 };

@@ -3,7 +3,8 @@
 //  Created by Ahmet on 08.07.2025.
 
 import { notificationTypeConfig } from "@/constants/notifications.constants";
-import { NotificationType } from "@/types/notifications.types";
+import { NotificationType, Notification } from "@/types/notifications.types";
+import type { TranslationFunction } from "@/types/i18n";
 
 // Bildirim tipine göre ikon belirleme
 export const getNotificationIcon = (type: NotificationType): string => {
@@ -19,7 +20,7 @@ export const getNotificationColor = (
 };
 
 // Zaman formatı
-export const formatTime = (date: Date, t: any): string => {
+export const formatTime = (date: Date, t: TranslationFunction): string => {
   const now = new Date();
   const diff = now.getTime() - date.getTime();
   const minutes = Math.floor(diff / (1000 * 60));
@@ -36,12 +37,12 @@ export const formatTime = (date: Date, t: any): string => {
 };
 
 // Okunmamış bildirim sayısını hesaplama
-export const getUnreadCount = (notifications: any[]): number => {
+export const getUnreadCount = (notifications: Notification[]): number => {
   return notifications.filter((n) => !n.isRead).length;
 };
 
 // Bildirim listesini tarihe göre sıralama
-export const sortNotificationsByDate = (notifications: any[]): any[] => {
+export const sortNotificationsByDate = (notifications: Notification[]): Notification[] => {
   return [...notifications].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );

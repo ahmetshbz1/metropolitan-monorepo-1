@@ -3,10 +3,11 @@
 //  Created by Ahmet on 02.06.2025.
 
 import { ColorSchemeName } from "react-native";
+import type { ThemeColors } from "@/types/theme";
 
 export const getCartItemGradientColors = (
   colorScheme: ColorSchemeName,
-  colors: any
+  colors: ThemeColors
 ): [string, string] => {
   return colorScheme === "dark"
     ? [colors.card, colors.cardBackground]
@@ -25,13 +26,13 @@ export const getSwipeActionStyle = () => ({
   width: 80,
 });
 
-export const getQuantityControlStyle = (colors: any) => ({
-  borderColor: colors.borderColor,
+export const getQuantityControlStyle = (colors: ThemeColors) => ({
+  borderColor: colors.border,
 });
 
-export const getQuantityButtonStyle = (colors: any) => ({
+export const getQuantityButtonStyle = (colors: ThemeColors) => ({
   borderLeftWidth: 1,
   borderRightWidth: 1,
-  borderColor: colors.borderColor,
+  borderColor: colors.border,
   paddingHorizontal: 12,
 });

@@ -19,7 +19,7 @@ interface IOrderStateContext {
   loading: boolean;
   selectedOrder: FullOrderPayload | null;
   loadingDetail: boolean;
-  error: any;
+  error: string | null;
   lastFetchTime: number | null;
   orderDetailCache: Map<string, { data: FullOrderPayload; timestamp: number }>;
   ordersRef: React.MutableRefObject<Order[]>;
@@ -28,7 +28,7 @@ interface IOrderStateContext {
   setLoading: (loading: boolean) => void;
   setSelectedOrder: (order: FullOrderPayload | null) => void;
   setLoadingDetail: (loading: boolean) => void;
-  setError: (error: any) => void;
+  setError: (error: string | null) => void;
   setLastFetchTime: (time: number) => void;
   setOrderDetailCache: (
     cache: Map<string, { data: FullOrderPayload; timestamp: number }>
@@ -50,7 +50,7 @@ export const OrderStateProvider = ({
     null
   );
   const [loadingDetail, setLoadingDetail] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [lastFetchTime, setLastFetchTime] = useState<number | null>(null);
   const [orderDetailCache, setOrderDetailCache] = useState<
     Map<string, { data: FullOrderPayload; timestamp: number }>

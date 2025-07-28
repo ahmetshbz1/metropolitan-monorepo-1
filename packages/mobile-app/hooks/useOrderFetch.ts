@@ -4,19 +4,20 @@
 
 import { api } from "@/core/api";
 import { useCallback } from "react";
-import type { FullOrderPayload } from "@metropolitan/shared";
+import type { FullOrderPayload, Order } from "@metropolitan/shared";
+import { getErrorMessage } from "@/types/error";
 
 interface UseOrderFetchProps {
-  setOrders: (orders: any[]) => void;
+  setOrders: (orders: Order[]) => void;
   setLoading: (loading: boolean) => void;
   setSelectedOrder: (order: FullOrderPayload | null) => void;
   setLoadingDetail: (loading: boolean) => void;
-  setError: (error: any) => void;
+  setError: (error: string | null) => void;
   setLastFetchTime: (time: number) => void;
   setOrderDetailCache: (
     cache: Map<string, { data: FullOrderPayload; timestamp: number }>
   ) => void;
-  ordersRef: React.MutableRefObject<any[]>;
+  ordersRef: React.MutableRefObject<Order[]>;
   lastFetchTimeRef: React.MutableRefObject<number | null>;
   orderDetailCache: Map<string, { data: FullOrderPayload; timestamp: number }>;
 }
@@ -59,11 +60,12 @@ export const useOrderFetch = ({
 
       setError(null);
       try {
-        const { data } = await api.get<{ orders: any[] }>("/orders");
+        const { data } = await api.get<{ orders: Order[] }>("/orders");
         setOrders(data.orders);
         setLastFetchTime(now);
-      } catch (err: any) {
-        setError(err);
+      } catch (err) {
+        const errorMessage = getErrorMessage(err);
+        setError(errorMessage);
         console.error("Failed to fetch orders:", err);
       } finally {
         setLoading(false);
@@ -125,15 +127,10 @@ export const useOrderFetch = ({
         }
 
         return data;
-      } catch (err: any) {
-        setError(err);
+      } catch (err) {
+        const errorMessage = getErrorMessage(err);
+        setError(errorMessage);
         console.error(`Failed to fetch order ${id}:`, err);
-        console.error("Error details:", {
-          status: err.response?.status,
-          statusText: err.response?.statusText,
-          data: err.response?.data,
-          message: err.message,
-        });
         throw err;
       } finally {
         if (shouldShowLoading) {

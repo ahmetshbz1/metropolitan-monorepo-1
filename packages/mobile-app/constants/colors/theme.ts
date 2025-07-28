@@ -9,6 +9,8 @@ export const PRIMARY_ORANGE_DARK = "#FF7A1A"; // Dark mode karşılığı (daha 
 // Tema renk tanımları
 export const lightTheme = {
   // Ana renkler
+  primary: PRIMARY_ORANGE, // Ana buton rengi
+  primaryForeground: "#FFFFFF", // Buton text rengi (beyaz)
   text: "#1A1A1A", // Ultra koyu, saf siyah değil
   textSecondary: "#8E8E93", // iOS tarzı gri
   textMuted: "#C7C7CC", // Çok açık gri
@@ -29,6 +31,7 @@ export const lightTheme = {
   success: "#4CAF50", // Material Design yeşil
   warning: "#FF9800", // Material Design turuncu
   danger: "#F44336", // Material Design kırmızı
+  error: "#F44336", // Danger alias
   info: "#2196F3", // Material Design mavi
 
   // Kart ve sınır renkleri
@@ -37,6 +40,7 @@ export const lightTheme = {
   border: "#E5E7EB",
   borderColor: "#E5E7EB",
   disabled: "#D1D5DB",
+  mutedForeground: "#8E8E93", // Disabled text color
 
   // Eski sistemle uyumluluk
   lightGray: "#F3F4F6",
@@ -46,6 +50,8 @@ export const lightTheme = {
 
 export const darkTheme = {
   // Dark mode - Instagram/Twitter kalitesinde
+  primary: PRIMARY_ORANGE_DARK, // Ana buton rengi
+  primaryForeground: "#FFFFFF", // Buton text rengi (beyaz)
   text: "#FFFFFF", // Saf beyaz
   textSecondary: "#9CA3AF", // Orta gri
   textMuted: "#6B7280", // Koyu gri
@@ -66,6 +72,7 @@ export const darkTheme = {
   success: "#10B981", // Tailwind emerald-500 (biraz daha parlak)
   warning: "#D97706", // Tailwind amber-600 (daha koyu)
   danger: "#DC2626", // Tailwind red-600 (daha koyu)
+  error: "#DC2626", // Danger alias
   info: "#2563EB", // Tailwind blue-600 (daha koyu)
 
   // Kart ve sınır renkleri
@@ -74,6 +81,7 @@ export const darkTheme = {
   border: "#2C2C2E",
   borderColor: "#2C2C2E",
   disabled: "#4B5563",
+  mutedForeground: "#9CA3AF", // Disabled text color
 
   // Eski sistemle uyumluluk
   lightGray: "#4B5563",

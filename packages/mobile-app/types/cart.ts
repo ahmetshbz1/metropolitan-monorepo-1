@@ -4,6 +4,7 @@
 
 // Re-export shared types for convenience
 export type { CartItem, CartSummary } from "@metropolitan/shared";
+import type { CartItem, CartSummary } from "@metropolitan/shared";
 
 // Context type definition
 export type CartContextType = {
@@ -20,14 +21,14 @@ export type CartContextType = {
 
 // API response types
 export type UserCartResponse = {
-  items: any[];
-  summary: any;
+  items: CartItem[];
+  summary: CartSummary;
 };
 
 export type GuestCartResponse = {
   success: boolean;
   data: {
-    items: any[];
+    items: CartItem[];
     totalAmount: string | number;
     itemCount: number;
     currency: string;
