@@ -1,16 +1,12 @@
-//  "payment-intent-handlers.service.ts"
-//  metropolitan backend  
-//  Focused service for handling different Stripe Payment Intent events
-//  Extracted from stripe-webhook.routes.ts (payment intent handlers)
+// payment-intent-handlers.service.ts
+// Orchestrator service for handling Stripe Payment Intent events
 
 import type Stripe from "stripe";
-import { WebhookOrderManagementService } from "./order-management.service";
-import { WebhookStockRollbackService } from "./stock-rollback.service";
-import { InvoiceService } from "../../../order/application/use-cases/invoice.service";
+import { PaymentIntentValidatorService } from "./payment-intent-validator.service";
+import { PaymentStateHandlersService } from "./payment-state-handlers.service";
 import type { WebhookProcessingResult, WebhookHandler } from "./webhook-types";
 
 export class PaymentIntentHandlersService {
-
   /**
    * Handle successful payment intent
    */
@@ -18,62 +14,17 @@ export class PaymentIntentHandlersService {
     paymentIntent: Stripe.PaymentIntent
   ): Promise<WebhookProcessingResult> {
     try {
-      const orderInfo = WebhookOrderManagementService.extractOrderInfo(paymentIntent.metadata);
+      const validation = PaymentIntentValidatorService.validate(paymentIntent, true);
       
-      if (!orderInfo.isValid || !orderInfo.orderId || !orderInfo.userId) {
-        return {
-          success: false,
-          message: 'Invalid payment intent metadata',
-          error: orderInfo.errors.join(', '),
-        };
+      if (!validation.isValid) {
+        return PaymentIntentValidatorService.createValidationErrorResponse(validation);
       }
 
-      const { orderId, userId } = orderInfo;
-
-      // Check idempotency - order already completed?
-      const idempotencyCheck = await WebhookOrderManagementService.checkOrderIdempotency(
-        orderId, 
-        'completed'
-      );
-
-      if (!idempotencyCheck.shouldProcess) {
-        console.log(`Order ${orderId} already completed, skipping...`);
-        return {
-          success: true,
-          message: idempotencyCheck.reason,
-          orderId,
-        };
-      }
-
-      // Mark order as completed
-      const orderUpdateResult = await WebhookOrderManagementService.markOrderCompleted(
-        orderId,
+      return await PaymentStateHandlersService.handleSuccess(
+        validation.orderId!,
+        validation.userId!,
         paymentIntent.id
       );
-
-      if (!orderUpdateResult.success) {
-        return orderUpdateResult;
-      }
-
-      console.log(`✅ Order ${orderId} payment completed successfully`);
-
-      // Clear user's cart (if not already cleared)
-      try {
-        const cartResult = await WebhookOrderManagementService.clearUserCart(userId);
-        console.log(cartResult.message);
-      } catch (cartError) {
-        console.error(`❌ Cart clearing failed for order ${orderId}:`, cartError);
-        // Don't fail the webhook for cart clearing issues
-      }
-
-      // Generate invoice asynchronously (don't block webhook response)
-      this.generateInvoiceAsync(orderId, userId);
-
-      return {
-        success: true,
-        message: `Payment succeeded for order ${orderId}`,
-        orderId,
-      };
     } catch (error) {
       console.error("Error handling payment_intent.succeeded:", error);
       return {
@@ -91,40 +42,13 @@ export class PaymentIntentHandlersService {
     paymentIntent: Stripe.PaymentIntent
   ): Promise<WebhookProcessingResult> {
     try {
-      const orderInfo = WebhookOrderManagementService.extractOrderInfo(paymentIntent.metadata);
+      const validation = PaymentIntentValidatorService.validate(paymentIntent);
       
-      if (!orderInfo.isValid || !orderInfo.orderId) {
-        return {
-          success: false,
-          message: 'Invalid payment intent metadata',
-          error: orderInfo.errors.join(', '),
-        };
+      if (!validation.isValid) {
+        return PaymentIntentValidatorService.createValidationErrorResponse(validation);
       }
 
-      const { orderId } = orderInfo;
-
-      // Mark order as failed
-      const orderUpdateResult = await WebhookOrderManagementService.markOrderFailed(orderId);
-
-      if (!orderUpdateResult.success) {
-        return orderUpdateResult;
-      }
-
-      console.log(`❌ Order ${orderId} payment failed`);
-
-      // Rollback stock since payment failed
-      const rollbackResult = await WebhookStockRollbackService.rollbackOrderStock(orderId);
-      
-      if (!rollbackResult.success) {
-        console.error(`Stock rollback failed for order ${orderId}:`, rollbackResult.errors);
-        // Don't fail webhook for stock rollback issues, but log them
-      }
-
-      return {
-        success: true,
-        message: `Payment failed for order ${orderId}, stock rolled back`,
-        orderId,
-      };
+      return await PaymentStateHandlersService.handleFailure(validation.orderId!);
     } catch (error) {
       console.error("Error handling payment_intent.payment_failed:", error);
       return {
@@ -136,38 +60,19 @@ export class PaymentIntentHandlersService {
   }
 
   /**
-   * Handle payment intent that requires additional action (3D Secure, etc.)
+   * Handle payment requiring action
    */
   static async handlePaymentRequiresAction(
     paymentIntent: Stripe.PaymentIntent
   ): Promise<WebhookProcessingResult> {
     try {
-      const orderInfo = WebhookOrderManagementService.extractOrderInfo(paymentIntent.metadata);
+      const validation = PaymentIntentValidatorService.validate(paymentIntent);
       
-      if (!orderInfo.isValid || !orderInfo.orderId) {
-        return {
-          success: false,
-          message: 'Invalid payment intent metadata',
-          error: orderInfo.errors.join(', '),
-        };
+      if (!validation.isValid) {
+        return PaymentIntentValidatorService.createValidationErrorResponse(validation);
       }
 
-      const { orderId } = orderInfo;
-
-      // Mark order as requiring action
-      const orderUpdateResult = await WebhookOrderManagementService.markOrderRequiresAction(orderId);
-
-      if (!orderUpdateResult.success) {
-        return orderUpdateResult;
-      }
-
-      console.log(`🔐 Order ${orderId} requires additional authentication`);
-
-      return {
-        success: true,
-        message: `Order ${orderId} requires additional authentication`,
-        orderId,
-      };
+      return await PaymentStateHandlersService.handleRequiresAction(validation.orderId!);
     } catch (error) {
       console.error("Error handling payment_intent.requires_action:", error);
       return {
@@ -185,54 +90,13 @@ export class PaymentIntentHandlersService {
     paymentIntent: Stripe.PaymentIntent
   ): Promise<WebhookProcessingResult> {
     try {
-      const orderInfo = WebhookOrderManagementService.extractOrderInfo(paymentIntent.metadata);
+      const validation = PaymentIntentValidatorService.validate(paymentIntent);
       
-      if (!orderInfo.isValid || !orderInfo.orderId || !orderInfo.userId) {
-        return {
-          success: false,
-          message: 'Invalid payment intent metadata',
-          error: orderInfo.errors.join(', '),
-        };
+      if (!validation.isValid) {
+        return PaymentIntentValidatorService.createValidationErrorResponse(validation);
       }
 
-      const { orderId } = orderInfo;
-
-      // Check idempotency - order already canceled?
-      const idempotencyCheck = await WebhookOrderManagementService.checkOrderIdempotency(
-        orderId, 
-        'canceled'
-      );
-
-      if (!idempotencyCheck.shouldProcess) {
-        console.log(`Order ${orderId} already canceled, skipping...`);
-        return {
-          success: true,
-          message: idempotencyCheck.reason,
-          orderId,
-        };
-      }
-
-      // Mark order as canceled
-      const orderUpdateResult = await WebhookOrderManagementService.markOrderCanceled(orderId);
-
-      if (!orderUpdateResult.success) {
-        return orderUpdateResult;
-      }
-
-      console.log(`🚫 Order ${orderId} payment canceled`);
-
-      // Rollback stock since payment was canceled
-      const rollbackResult = await WebhookStockRollbackService.rollbackOrderStock(orderId);
-      
-      if (!rollbackResult.success) {
-        console.error(`Stock rollback failed for canceled order ${orderId}:`, rollbackResult.errors);
-      }
-
-      return {
-        success: true,
-        message: `Payment canceled for order ${orderId}, stock rolled back`,
-        orderId,
-      };
+      return await PaymentStateHandlersService.handleCancellation(validation.orderId!);
     } catch (error) {
       console.error("Error handling payment_intent.canceled:", error);
       return {
@@ -250,32 +114,13 @@ export class PaymentIntentHandlersService {
     paymentIntent: Stripe.PaymentIntent
   ): Promise<WebhookProcessingResult> {
     try {
-      const orderInfo = WebhookOrderManagementService.extractOrderInfo(paymentIntent.metadata);
+      const validation = PaymentIntentValidatorService.validate(paymentIntent);
       
-      if (!orderInfo.isValid || !orderInfo.orderId) {
-        return {
-          success: false,
-          message: 'Invalid payment intent metadata',
-          error: orderInfo.errors.join(', '),
-        };
+      if (!validation.isValid) {
+        return PaymentIntentValidatorService.createValidationErrorResponse(validation);
       }
 
-      const { orderId } = orderInfo;
-
-      // Mark order as processing
-      const orderUpdateResult = await WebhookOrderManagementService.markOrderProcessing(orderId);
-
-      if (!orderUpdateResult.success) {
-        return orderUpdateResult;
-      }
-
-      console.log(`⏳ Order ${orderId} payment is processing`);
-
-      return {
-        success: true,
-        message: `Order ${orderId} payment is processing`,
-        orderId,
-      };
+      return await PaymentStateHandlersService.handleProcessing(validation.orderId!);
     } catch (error) {
       console.error("Error handling payment_intent.processing:", error);
       return {
@@ -284,26 +129,6 @@ export class PaymentIntentHandlersService {
         error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
-  }
-
-  /**
-   * Generate invoice asynchronously (non-blocking)
-   */
-  private static generateInvoiceAsync(orderId: string, userId: string): void {
-    // Run in background without blocking webhook response
-    Promise.resolve().then(async () => {
-      try {
-        console.log(`📄 Generating invoice for order ${orderId}...`);
-        await InvoiceService.generateInvoicePDF(orderId, userId);
-        console.log(`✅ Invoice generated successfully for order ${orderId}`);
-      } catch (invoiceError) {
-        // Invoice errors don't affect payment success, just log them
-        console.error(
-          `❌ Invoice generation failed for order ${orderId}:`,
-          invoiceError
-        );
-      }
-    });
   }
 
   /**

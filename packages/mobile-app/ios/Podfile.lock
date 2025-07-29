@@ -1526,6 +1526,8 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-netinfo (11.4.1):
+    - React-Core
   - react-native-pdf (6.7.7):
     - DoubleConversion
     - glog
@@ -2414,6 +2416,7 @@ DEPENDENCIES:
   - react-native-blob-util (from `../../../node_modules/react-native-blob-util`)
   - react-native-context-menu-view (from `../../../node_modules/react-native-context-menu-view`)
   - react-native-keyboard-controller (from `../../../node_modules/react-native-keyboard-controller`)
+  - "react-native-netinfo (from `../../../node_modules/@react-native-community/netinfo`)"
   - react-native-pdf (from `../../../node_modules/react-native-pdf`)
   - react-native-safe-area-context (from `../../../node_modules/react-native-safe-area-context`)
   - react-native-webview (from `../../../node_modules/react-native-webview`)
@@ -2607,6 +2610,8 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native-context-menu-view"
   react-native-keyboard-controller:
     :path: "../../../node_modules/react-native-keyboard-controller"
+  react-native-netinfo:
+    :path: "../../../node_modules/@react-native-community/netinfo"
   react-native-pdf:
     :path: "../../../node_modules/react-native-pdf"
   react-native-safe-area-context:
@@ -2759,6 +2764,7 @@ SPEC CHECKSUMS:
   react-native-blob-util: ad4b90441a79599b4b869f475eb324ac579f97f8
   react-native-context-menu-view: 3a8fb510448efa9d477f645dafa889ef1c78daaa
   react-native-keyboard-controller: 46ff1d24f868d895763d2043dac37909bc07c6fa
+  react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
   react-native-pdf: 36118ab1926ea47ea8de8b1b8f681b69e3afc7d3
   react-native-safe-area-context: 562163222d999b79a51577eda2ea8ad2c32b4d06
   react-native-webview: 520bcb79c3f2af91e157cdd695732a34ab5f25c8
