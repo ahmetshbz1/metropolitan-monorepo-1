@@ -1,10 +1,11 @@
 //  "stock-management.service.ts"
 //  metropolitan backend
-//  Stock validation and reservation logic extracted from OrderCreationService
+//  Orchestrates stock validation and reservation using specialized services
 
 import type { OrderItem as OrderItemData } from "@metropolitan/shared/types/order";
-import { eq, sql } from "drizzle-orm";
-import { products } from "../../../../../shared/infrastructure/database/schema";
+import { StockValidationService } from "./stock-validation.service";
+import { StockRedisOperationsService } from "./stock-redis-operations.service";
+import { StockDatabaseSyncService } from "./stock-database-sync.service";
 
 export class StockManagementService {
   /**
@@ -15,63 +16,26 @@ export class StockManagementService {
     tx: any,
     orderItemsData: OrderItemData[]
   ): Promise<void> {
-    // Try Redis-based reservation first (faster + distributed locking)
-    const redisReservations: {
-      productId: string;
-      userId: string;
-      success: boolean;
-    }[] = [];
-
     try {
-      // Import Redis service dynamically to avoid dependency issues
-      const { RedisStockService } = await import(
-        "../../../../../shared/infrastructure/cache/redis-stock.service"
-      );
+      // Try Redis-based reservation first (faster + distributed locking)
+      const { reservations, allSuccessful } = await StockRedisOperationsService
+        .reserveStockInRedis(orderItemsData);
 
-      for (const item of orderItemsData) {
-        const productId = item.product.id;
-        const requestedQuantity = item.quantity;
-        const userId = "temp-user"; // Will be replaced with actual userId
-
-        console.log(`🔄 Attempting Redis stock reservation for ${productId}`);
-
-        const reservation = await RedisStockService.reserveStockAtomic(
-          productId,
-          userId,
-          requestedQuantity
-        );
-
-        redisReservations.push({
-          productId,
-          userId,
-          success: reservation.success,
-        });
-
-        if (!reservation.success) {
-          // Rollback any successful reservations before throwing
-          await this.rollbackRedisReservations(
-            redisReservations.filter((r) => r.success)
-          );
-          throw new Error(
-            JSON.stringify({
-              code: "INSUFFICIENT_STOCK",
-              message: "Stok yetersiz",
-              productId: productId,
-              error: reservation.error,
-            })
-          );
-        }
-
-        console.log(
-          `✅ Redis stock reserved: ${productId} - Remaining: ${reservation.remainingStock}`
+      if (!allSuccessful) {
+        // Rollback any successful reservations before throwing
+        await StockRedisOperationsService.rollbackReservations(reservations);
+        
+        const failedReservation = reservations.find(r => !r.success);
+        throw StockValidationService.createInsufficientStockError(
+          failedReservation?.productId || "unknown"
         );
       }
 
       // If Redis succeeds, also update database for consistency
-      await this.syncDatabaseWithRedisReservations(
+      await StockDatabaseSyncService.syncWithRedisReservations(
         tx,
         orderItemsData,
-        redisReservations
+        reservations
       );
     } catch (redisError) {
       console.warn(
@@ -88,160 +52,25 @@ export class StockManagementService {
       }
 
       // Fallback to database-only reservation for other errors
-      await this.fallbackDatabaseStockReservation(tx, orderItemsData);
-    }
-  }
-
-  /**
-   * Fallback database stock reservation (original method)
-   */
-  private static async fallbackDatabaseStockReservation(
-    tx: any,
-    orderItemsData: OrderItemData[]
-  ): Promise<void> {
-    for (const item of orderItemsData) {
-      const productId = item.product.id;
-      const requestedQuantity = item.quantity;
-
-      // Atomic stock check and reservation using SQL
-      const [result] = await tx
-        .update(products)
-        .set({
-          stock: sql`${products.stock} - ${requestedQuantity}`,
-          updatedAt: new Date(),
-        })
-        .where(
-          sql`${products.id} = ${productId} AND ${products.stock} >= ${requestedQuantity}`
-        )
-        .returning({
-          id: products.id,
-          name: products.name,
-          newStock: products.stock,
-        });
-
-      // If no rows affected, stock was insufficient
-      if (!result) {
-        // Get current stock for error message
-        const [currentProduct] = await tx
-          .select({
-            name: products.name,
-            stock: products.stock,
-          })
-          .from(products)
-          .where(eq(products.id, productId))
-          .limit(1);
-
-        const productName = currentProduct?.name || `Product ${productId}`;
-        const currentStock = currentProduct?.stock || 0;
-
-        throw new Error(
-          `Insufficient stock for ${productName}. Requested: ${requestedQuantity}, Available: ${currentStock}`
-        );
-      }
-
-      console.log(
-        `✅ Database stock reserved: ${result.name} - Quantity: ${requestedQuantity}, Remaining: ${result.newStock}`
-      );
-    }
-  }
-
-  /**
-   * Sync database with Redis reservations for consistency
-   */
-  private static async syncDatabaseWithRedisReservations(
-    tx: any,
-    orderItemsData: OrderItemData[],
-    redisReservations: { productId: string; userId: string; success: boolean }[]
-  ): Promise<void> {
-    for (const item of orderItemsData) {
-      const reservation = redisReservations.find(
-        (r) => r.productId === item.product.id
-      );
-      if (reservation?.success) {
-        // Update database to match Redis state
-        await tx
-          .update(products)
-          .set({
-            stock: sql`${products.stock} - ${item.quantity}`,
-            updatedAt: new Date(),
-          })
-          .where(eq(products.id, item.product.id));
-
-        console.log(
-          `🔄 Database synced with Redis for product ${item.product.id}`
-        );
-      }
-    }
-  }
-
-  /**
-   * Rollback Redis reservations in case of failure
-   */
-  private static async rollbackRedisReservations(
-    reservations: { productId: string; userId: string; success: boolean }[]
-  ): Promise<void> {
-    try {
-      const { RedisStockService } = await import(
-        "../../../../../shared/infrastructure/cache/redis-stock.service"
-      );
-
-      for (const reservation of reservations) {
-        await RedisStockService.rollbackReservation(
-          reservation.userId,
-          reservation.productId
-        );
-        console.log(
-          `🔄 Redis reservation rolled back: ${reservation.productId}`
-        );
-      }
-    } catch (error) {
-      console.error("Failed to rollback Redis reservations:", error);
+      await StockDatabaseSyncService.reserveStockInDatabase(tx, orderItemsData);
     }
   }
 
   /**
    * Rollback stock if order fails (called from webhook on payment failure)
+   * @deprecated Use WebhookStockRollbackService.rollbackOrderStock() instead
    */
   static async rollbackStock(orderId: string): Promise<void> {
-    const { db } = await import("../../../../../shared/infrastructure/database/connection");
-    const { orderItems, orders } = await import("../../../../../shared/infrastructure/database/schema");
-
-    await db.transaction(async (tx) => {
-      // Get order items that need stock rollback
-      const orderItemsToRollback = await tx
-        .select({
-          productId: orderItems.productId,
-          quantity: orderItems.quantity,
-        })
-        .from(orderItems)
-        .where(eq(orderItems.orderId, orderId));
-
-      // Rollback stock for each item
-      for (const item of orderItemsToRollback) {
-        await tx
-          .update(products)
-          .set({
-            stock: sql`${products.stock} + ${item.quantity}`,
-            updatedAt: new Date(),
-          })
-          .where(eq(products.id, item.productId));
-
-        console.log(
-          `🔄 Stock rolled back: Product ${item.productId} + ${item.quantity}`
-        );
-      }
-
-      // Mark order as cancelled
-      await tx
-        .update(orders)
-        .set({
-          status: "cancelled",
-          paymentStatus: "failed",
-          updatedAt: new Date(),
-        })
-        .where(eq(orders.id, orderId));
-
-      console.log(`❌ Order cancelled and stock rolled back: ${orderId}`);
-    });
+    // This method is kept for backward compatibility
+    // The actual implementation has been moved to WebhookStockRollbackService
+    const { WebhookStockRollbackService } = await import(
+      "../../../../payment/application/webhook/stock-rollback.service"
+    );
+    
+    const result = await WebhookStockRollbackService.rollbackOrderStock(orderId);
+    
+    if (!result.success) {
+      throw new Error(`Stock rollback failed: ${result.errors.join(", ")}`);
+    }
   }
 }
