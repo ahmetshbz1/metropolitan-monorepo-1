@@ -18,10 +18,8 @@ export type {
   SupportedWebhookEvent
 } from "../../application/webhook/webhook-types";
 
-export { 
-  WebhookIdempotencyService, 
-  PaymentIntentHandlersService 
-} from "../../application/webhook/payment-intent-handlers.service";
+export { PaymentIntentHandlersService } from "../../application/webhook/payment-intent-handlers.service";
+export { WebhookIdempotencyService } from "../../application/webhook/idempotency.service";
 
 export { WebhookUtils };
 
