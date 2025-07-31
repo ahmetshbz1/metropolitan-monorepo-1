@@ -3,13 +3,13 @@
 //  Created by Ahmet on 02.07.2025.
 
 import Colors from "@/constants/Colors";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { useHaptics } from "@/hooks/useHaptics";
 import React, { useEffect, useRef } from "react";
 import {
   TextInput,
   TouchableOpacity,
   View,
-  useColorScheme,
 } from "react-native";
 import Animated, {
   useAnimatedStyle,

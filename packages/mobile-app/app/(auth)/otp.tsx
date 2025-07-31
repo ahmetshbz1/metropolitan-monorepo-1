@@ -6,11 +6,12 @@ import { OTPScreenContent } from "@/components/auth/OTPScreenContent";
 import { BaseButton } from "@/components/base/BaseButton";
 import { ThemedView } from "@/components/ThemedView";
 import Colors from "@/constants/Colors";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { useOTP } from "@/hooks/useOTP";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useColorScheme, View } from "react-native";
+import { View } from "react-native";
 import {
   KeyboardAwareScrollView,
   KeyboardStickyView,

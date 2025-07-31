@@ -6,7 +6,7 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { TextInput, View, useColorScheme } from "react-native";
+import { TextInput, View } from "react-native";
 import {
   KeyboardAwareScrollView,
   KeyboardStickyView,
@@ -20,6 +20,7 @@ import { BusinessInfoSection } from "@/components/user-info/BusinessInfoSection"
 import { PersonalInfoSection } from "@/components/user-info/PersonalInfoSection";
 import { TermsSection } from "@/components/user-info/TermsSection";
 import Colors from "@/constants/Colors";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { useUserInfoForm } from "@/hooks/useUserInfoForm";
 
 const UserInfoScreen = () => {

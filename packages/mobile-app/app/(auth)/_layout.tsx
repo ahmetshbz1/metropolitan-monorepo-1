@@ -3,10 +3,10 @@
 //  Created by Ahmet on 17.06.2025.
 
 import Colors from "@/constants/Colors";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { Stack } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { useColorScheme } from "react-native";
 
 const AuthLayout = () => {
   const { t } = useTranslation();

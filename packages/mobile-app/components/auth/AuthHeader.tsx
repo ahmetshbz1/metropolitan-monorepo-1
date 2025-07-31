@@ -2,9 +2,10 @@
 //  metropolitan app
 //  Created by Ahmet on 08.07.2025.
 
-import { Text, useColorScheme, View, ViewStyle } from "react-native";
+import { Text, View, ViewStyle } from "react-native";
 
 import Colors from "@/constants/Colors";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
 interface AuthHeaderProps {
   title: string;

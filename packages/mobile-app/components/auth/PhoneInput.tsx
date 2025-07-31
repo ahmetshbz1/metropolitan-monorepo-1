@@ -4,9 +4,10 @@
 
 import React, { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Text, TextInput, View, useColorScheme } from "react-native";
+import { Text, TextInput, View } from "react-native";
 
 import Colors from "@/constants/Colors";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { PHONE_INPUT_CONFIG } from "@/utils/phoneFormatters";
 
 interface PhoneInputProps {

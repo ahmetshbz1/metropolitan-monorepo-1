@@ -8,12 +8,13 @@ import { SocialLoginButtons } from "@/components/auth/SocialLoginButtons";
 import { BaseButton } from "@/components/base/BaseButton";
 import Colors from "@/constants/Colors";
 import { useAuth } from "@/context/AuthContext";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { useHaptics } from "@/hooks/useHaptics";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Text, View, useColorScheme, useWindowDimensions } from "react-native";
+import { Text, View, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const LoginScreen = () => {

@@ -2,10 +2,10 @@
 //  metropolitan app
 //  Created by Ahmet on 11.06.2025.
 
-import { useColorScheme } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Colors from "@/constants/Colors";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
 export const usePhoneLoginStyles = () => {
   const colorScheme = useColorScheme() ?? "light";
