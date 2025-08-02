@@ -2,19 +2,19 @@
   "expo": {
     "name": "metropolitan",
     "slug": "metropolitan",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "scheme": "metropolitan",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "locales": {
       "tr": "./locales/native/tr.json",
-      "pl": "./locales/native/pl.json", 
+      "pl": "./locales/native/pl.json",
       "en": "./locales/native/en.json"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.ahmetshbzz.metropolitan",
+      "bundleIdentifier": "com.metropolitan.food",
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
         "CFBundleLocalizations": ["tr", "en", "pl"]
@@ -25,7 +25,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.ahmetshbzz.metropolitan"
+      "package": "com.metropolitan.food"
     },
     "web": {
       "bundler": "metro",
