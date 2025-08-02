@@ -11,7 +11,6 @@ import { Elysia } from "elysia";
 import pretty from "pino-pretty";
 
 // Performance optimization imports
-import { compressionPlugin } from "./src/shared/infrastructure/middleware/compression";
 
 // Shared Infrastructure
 
@@ -30,6 +29,7 @@ import { profileRoutes } from "./src/domains/user/presentation/routes/profile.ro
 import { healthRoutes } from "./src/shared/application/common/health.routes";
 import { utilsRoutes } from "./src/shared/application/common/utils.routes";
 import { db } from "./src/shared/infrastructure/database/connection";
+import { compressionPlugin } from "./src/shared/infrastructure/middleware/compression";
 import { initializeSentry } from "./src/shared/infrastructure/monitoring/sentry.config";
 
 // Initialize Sentry monitoring
@@ -69,7 +69,7 @@ export const app = new Elysia()
         },
         servers: [
           {
-            url: "http://localhost:3000",
+            url: "http://192.168.1.55:3000",
             description: "Development server",
           },
         ],
@@ -95,7 +95,8 @@ export const app = new Elysia()
 
   .get("/", () => `Welcome to Metropolitan!`, {
     beforeHandle(context) {
-      (context.store as { rootReqStartTime?: bigint }).rootReqStartTime = process.hrtime.bigint();
+      (context.store as { rootReqStartTime?: bigint }).rootReqStartTime =
+        process.hrtime.bigint();
     },
     afterHandle({ response, store }) {
       const { rootReqStartTime } = store as { rootReqStartTime: bigint };
@@ -148,5 +149,5 @@ if (process.env.NODE_ENV !== "test") {
   console.log(
     `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
   );
-  console.log(`📱 Mobile app can connect to: http://172.20.10.9:3000`);
+  console.log(`📱 Mobile app can connect to: http://192.168.1.55:3000`);
 }
