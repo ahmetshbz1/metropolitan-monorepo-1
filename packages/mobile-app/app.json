@@ -4,6 +4,7 @@
     "slug": "metropolitan",
     "version": "1.0.1",
     "orientation": "portrait",
+    "icon": "./assets/images/icooon.png",
     "scheme": "metropolitan",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -15,17 +16,20 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.metropolitan.food",
+      "buildNumber": "2",
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
         "CFBundleLocalizations": ["tr", "en", "pl"]
-      }
+      },
+      "appleTeamId": "64XKK46655"
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.metropolitan.food"
+      "package": "com.metropolitan.food",
+      "permissions": ["android.permission.RECORD_AUDIO"]
     },
     "web": {
       "bundler": "metro",
