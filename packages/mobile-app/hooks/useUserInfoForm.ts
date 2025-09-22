@@ -22,6 +22,7 @@ interface UseUserInfoFormReturn {
   nip: string;
   companyData: NipResponse | null;
   termsAccepted: boolean;
+  privacyAccepted: boolean;
   isFormValid: boolean;
   // status flags
   isNipChecking: boolean;
@@ -38,6 +39,7 @@ interface UseUserInfoFormReturn {
   handleCheckNip: () => Promise<void>;
   handleSave: () => Promise<void>;
   setTermsAccepted: (v: boolean) => void;
+  setPrivacyAccepted: (v: boolean) => void;
 }
 
 export function useUserInfoForm(isB2B: boolean): UseUserInfoFormReturn {
@@ -57,19 +59,26 @@ export function useUserInfoForm(isB2B: boolean): UseUserInfoFormReturn {
   const [canRegister, setCanRegister] = useState(false);
 
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  // --- Terms acceptance persistence (temp flag from Terms screen) ---
+  // --- Terms and privacy acceptance persistence (temp flag from Terms screen) ---
   useFocusEffect(
     useCallback(() => {
-      const checkTermsAcceptance = async () => {
-        const accepted = await AsyncStorage.getItem("terms_accepted_temp");
-        if (accepted === "true") {
+      const checkAcceptance = async () => {
+        const termsAcceptedTemp = await AsyncStorage.getItem("terms_accepted_temp");
+        const privacyAcceptedTemp = await AsyncStorage.getItem("privacy_accepted_temp");
+
+        if (termsAcceptedTemp === "true") {
           setTermsAccepted(true);
           await AsyncStorage.removeItem("terms_accepted_temp");
         }
+        if (privacyAcceptedTemp === "true") {
+          setPrivacyAccepted(true);
+          await AsyncStorage.removeItem("privacy_accepted_temp");
+        }
       };
-      checkTermsAcceptance();
+      checkAcceptance();
     }, [])
   );
 
@@ -79,11 +88,13 @@ export function useUserInfoForm(isB2B: boolean): UseUserInfoFormReturn {
       isValidEmail(email) &&
       isNipVerified &&
       canRegister &&
-      termsAccepted
+      termsAccepted &&
+      privacyAccepted
     : firstName.trim() !== "" &&
       lastName.trim() !== "" &&
       isValidEmail(email) &&
-      termsAccepted;
+      termsAccepted &&
+      privacyAccepted;
 
   // helper to reset nip-related status when input changes - optimized with transition
   const resetNipStatus = useCallback(() => {
@@ -141,6 +152,7 @@ export function useUserInfoForm(isB2B: boolean): UseUserInfoFormReturn {
       userType: isB2B ? "corporate" : "individual",
       ...(isB2B && { nip: nip.trim() }),
       termsAccepted: true,
+      privacyAccepted: true,
     });
     setIsSaving(false);
     if (!result.success) {
@@ -156,6 +168,7 @@ export function useUserInfoForm(isB2B: boolean): UseUserInfoFormReturn {
     nip,
     companyData,
     termsAccepted,
+    privacyAccepted,
     isFormValid,
     // status flags
     isNipChecking,
@@ -172,5 +185,6 @@ export function useUserInfoForm(isB2B: boolean): UseUserInfoFormReturn {
     handleCheckNip,
     handleSave,
     setTermsAccepted,
+    setPrivacyAccepted,
   };
 }

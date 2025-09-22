@@ -54,6 +54,9 @@ const UserInfoScreen = () => {
     nipWarning,
     canRegister,
     termsAccepted,
+    setTermsAccepted,
+    privacyAccepted,
+    setPrivacyAccepted,
     isFormValid,
     isSaving,
     resetNipStatus,
@@ -141,8 +144,12 @@ const UserInfoScreen = () => {
           {/* Terms and Conditions Section */}
           <TermsSection
             termsAccepted={termsAccepted}
-            onPress={() => {
-              router.push("/terms");
+            privacyAccepted={privacyAccepted}
+            onTermsPress={() => {
+              setTermsAccepted(!termsAccepted);
+            }}
+            onPrivacyPress={() => {
+              setPrivacyAccepted(!privacyAccepted);
             }}
             themeColors={themeColors}
             t={t}

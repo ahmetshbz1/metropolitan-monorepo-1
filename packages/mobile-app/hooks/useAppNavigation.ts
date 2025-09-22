@@ -24,6 +24,11 @@ export const useAppNavigation = () => {
 
     const inAuthGroup = segments[0] === "(auth)";
     const inTabsGroup = segments[0] === "(tabs)";
+    const currentRoute = segments[0];
+
+    // Public routes that don't require auth
+    const publicRoutes = ["legal-webview", "terms"];
+    const isPublicRoute = publicRoutes.includes(currentRoute);
 
     // Kullanıcı giriş yapmışsa ama auth grubundaysa → tabs'a git
     if (user && inAuthGroup) {
@@ -33,8 +38,8 @@ export const useAppNavigation = () => {
     else if (!user && !isGuest && inTabsGroup) {
       router.replace("/(auth)");
     }
-    // Kullanıcı yoksa ve auth grubunda da değilse → auth'a git
-    else if (!user && !isGuest && !inAuthGroup) {
+    // Kullanıcı yoksa ve auth grubunda da değilse ve public route değilse → auth'a git
+    else if (!user && !isGuest && !inAuthGroup && !isPublicRoute) {
       router.replace("/(auth)");
     }
   }, [user, isGuest, loading, segments, router]);

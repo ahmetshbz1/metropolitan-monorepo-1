@@ -236,7 +236,10 @@
     "nip_error_generic": "NIP doğrulaması başarısız oldu. Lütfen tekrar deneyin.",
     "save_error_title": "Profil Kaydedilemedi",
     "agree_to_the": "Şunu okudum ve kabul ediyorum:",
-    "terms_and_policy": "Kullanım Koşulları ve Gizlilik Politikası"
+    "terms_and_policy": "Kullanım Koşulları ve Gizlilik Politikası",
+    "agree_to": "Kabul ediyorum:",
+    "terms_of_service": "Kullanım Koşulları",
+    "privacy_policy": "Gizlilik Politikası"
   },
   "terms": {
     "title": "Şartlar ve Koşullar",
