@@ -18,7 +18,9 @@ export const useStripePayment = () => {
 
   const processPayment = async (
     clientSecret: string,
-    paymentMethodType?: string
+    paymentMethodType?: string,
+    amount?: string,
+    currency?: string
   ): Promise<StripePaymentResult> => {
     setLoading(true);
 
@@ -31,7 +33,9 @@ export const useStripePayment = () => {
         return await processApplePayPayment({
           clientSecret,
           confirmPlatformPayPayment,
-          t
+          t,
+          amount,
+          currency
         });
       }
 
@@ -40,7 +44,9 @@ export const useStripePayment = () => {
         return await processGooglePayPayment({
           clientSecret,
           confirmPlatformPayPayment,
-          t
+          t,
+          amount,
+          currency
         });
       }
 

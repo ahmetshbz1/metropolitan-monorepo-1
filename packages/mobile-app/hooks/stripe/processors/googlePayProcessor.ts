@@ -7,7 +7,9 @@ import { PlatformPayParams, StripePaymentResult } from '../types';
 export const processGooglePayPayment = async ({
   clientSecret,
   confirmPlatformPayPayment,
-  t
+  t,
+  amount,
+  currency = "PLN"
 }: PlatformPayParams): Promise<StripePaymentResult> => {
   console.log("🟢 Processing Google Pay payment...");
 

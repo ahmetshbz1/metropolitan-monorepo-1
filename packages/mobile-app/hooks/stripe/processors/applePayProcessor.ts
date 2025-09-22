@@ -8,21 +8,24 @@ import { PlatformPayParams, StripePaymentResult } from '../types';
 export const processApplePayPayment = async ({
   clientSecret,
   confirmPlatformPayPayment,
-  t
+  t,
+  amount,
+  currency = "PLN"
 }: PlatformPayParams): Promise<StripePaymentResult> => {
   console.log("🍎 Processing Apple Pay payment...");
+  console.log("💰 Amount:", amount, currency);
 
   const { error } = await confirmPlatformPayPayment(clientSecret, {
     applePay: {
       cartItems: [
         {
           label: "Metropolitan Food",
-          amount: "0.00", // Backend'den glebe gerçek tutar
+          amount: amount || "0.00",
           paymentType: PlatformPay.PaymentType.Immediate,
         },
       ],
       merchantCountryCode: "PL",
-      currencyCode: "PLN",
+      currencyCode: currency,
     },
   });
 

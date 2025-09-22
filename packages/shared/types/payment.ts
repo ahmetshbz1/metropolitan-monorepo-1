@@ -44,7 +44,9 @@ export interface PaymentProcessorParams {
 }
 
 export interface PlatformPayParams extends PaymentProcessorParams {
-  confirmPlatformPayPayment: () => Promise<{ error?: { message: string } }>;
+  confirmPlatformPayPayment: (clientSecret: string, params: any) => Promise<{ error?: { message: string } }>;
+  amount?: string;
+  currency?: string;
 }
 
 export interface CardPaymentParams extends PaymentProcessorParams {

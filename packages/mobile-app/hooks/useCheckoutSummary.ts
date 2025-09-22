@@ -83,9 +83,17 @@ export function useCheckoutSummary() {
           "🔧 Processing payment with method:",
           selectedPaymentMethod.id
         );
+        // Format amount for Apple Pay (expected as string)
+        // Backend sends totalAmount as string ("15.50"), convert to number first
+        const formattedAmount = order.totalAmount
+          ? parseFloat(order.totalAmount).toFixed(2)
+          : "0.00";
+
         const paymentResult = await processPayment(
           clientSecret,
-          selectedPaymentMethod.id
+          selectedPaymentMethod.id,
+          formattedAmount,
+          order.currency || "PLN"
         );
 
         if (!paymentResult.success) {
