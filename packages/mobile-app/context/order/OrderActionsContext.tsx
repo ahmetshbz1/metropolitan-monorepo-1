@@ -22,6 +22,7 @@ interface IOrderActionsContext {
     notes?: string;
   }) => Promise<any>;
   cancelOrder: (orderId: string) => Promise<void>;
+  rollbackStock: (orderId: string) => Promise<any>;
 }
 
 const OrderActionsContext = createContext<IOrderActionsContext | undefined>(
@@ -48,7 +49,7 @@ export const OrderActionsProvider = ({
     orderDetailCache: state.orderDetailCache,
   });
 
-  const { createOrder, cancelOrder } = useOrderOperations({
+  const { createOrder, cancelOrder, rollbackStock } = useOrderOperations({
     setLoading: state.setLoading,
     setError: state.setError,
     fetchOrders,
@@ -62,6 +63,7 @@ export const OrderActionsProvider = ({
         fetchOrderById,
         createOrder,
         cancelOrder,
+        rollbackStock,
       }}
     >
       {children}

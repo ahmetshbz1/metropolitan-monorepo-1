@@ -3,6 +3,7 @@
 //  Response compression middleware for performance optimization
 
 import { gzipSync, deflateSync } from "node:zlib";
+
 import { Elysia } from "elysia";
 
 export const compressionPlugin = new Elysia()

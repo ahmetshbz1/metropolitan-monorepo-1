@@ -4,9 +4,11 @@
 
 import { eq } from "drizzle-orm";
 import { Elysia, t } from "elysia";
+
 import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
 import { db } from "../../../../shared/infrastructure/database/connection";
 import { orders, users } from "../../../../shared/infrastructure/database/schema";
+import { WebhookStockRollbackService } from "../../../payment/application/webhook/stock-rollback.service";
 import { InvoiceService } from "../../application/use-cases/invoice.service";
 import { OrderTrackingService } from "../../application/use-cases/order-tracking.service";
 
@@ -66,11 +68,73 @@ export const orderManagementRoutes = new Elysia()
 
       console.log(`❌ Order cancelled: ${orderId}`);
 
-      return { 
+      return {
         message: "Sipariş başarıyla iptal edildi",
         orderId,
         status: "cancelled"
       };
+    },
+    {
+      params: t.Object({
+        orderId: t.String({ format: "uuid" }),
+      }),
+    }
+  )
+  // Rollback stock for failed payments
+  .post(
+    "/:orderId/rollback-stock",
+    async ({
+      user,
+      params,
+    }: AuthenticatedContext & { params: { orderId: string } }) => {
+      const { orderId } = params;
+
+      console.log(`🔄 Manual stock rollback requested for order ${orderId} by user ${user.id}`);
+
+      try {
+        // Verify order belongs to user
+        const [order] = await db
+          .select()
+          .from(orders)
+          .where(eq(orders.id, orderId))
+          .limit(1);
+
+        if (!order) {
+          throw new Error("Sipariş bulunamadı");
+        }
+
+        if (order.userId !== user.id) {
+          throw new Error("Bu siparişe erişim yetkiniz yok");
+        }
+
+        // Only allow rollback for pending/failed orders
+        if (!["pending", "failed", "cancelled"].includes(order.status)) {
+          throw new Error("Bu sipariş durumu için stok geri alımı yapılamaz");
+        }
+
+        // Perform stock rollback
+        const rollbackResult = await WebhookStockRollbackService.rollbackOrderStock(orderId);
+
+        if (!rollbackResult.success) {
+          console.error(`Stock rollback failed for order ${orderId}:`, rollbackResult.errors);
+          throw new Error(`Stok geri alımı başarısız: ${rollbackResult.errors.join(", ")}`);
+        }
+
+        console.log(`✅ Stock rollback successful for order ${orderId}:`, rollbackResult.message);
+
+        return {
+          success: true,
+          message: "Stok başarıyla geri alındı",
+          orderId,
+          rollbackDetails: {
+            redisRollback: rollbackResult.redisRollback,
+            databaseRollback: rollbackResult.databaseRollback,
+          },
+        };
+      } catch (error: any) {
+        console.error(`❌ Stock rollback failed for order ${orderId}:`, error);
+        throw new Error(error.message || "Stok geri alımı başarısız oldu");
+      }
     },
     {
       params: t.Object({

@@ -3,8 +3,9 @@
 //  Service for formatting invoice data
 
 import type { InvoiceData } from "@metropolitan/shared/types/order";
-import { VatCalculatorService } from "../../../domain/services/vat-calculator.service";
+
 import { SELLER_CONFIG } from "../../../domain/config/seller.config";
+import { VatCalculatorService } from "../../../domain/services/vat-calculator.service";
 
 export class InvoiceFormatterService {
   /**

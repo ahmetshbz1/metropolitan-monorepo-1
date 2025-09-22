@@ -4,7 +4,9 @@
 
 import type { OrderItem as OrderItemData } from "@metropolitan/shared/types/order";
 import { eq, sql } from "drizzle-orm";
+
 import { products } from "../../../../../shared/infrastructure/database/schema";
+
 import type { RedisReservation } from "./stock-redis-operations.service";
 
 export class StockDatabaseSyncService {

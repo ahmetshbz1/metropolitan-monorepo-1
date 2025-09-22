@@ -3,6 +3,7 @@
 // Featured, bestsellers, weekly, and new arrivals
 
 import type { Product } from "@metropolitan/shared";
+
 import { BaseCacheService } from "./base-cache.service";
 
 export class SpecialProductCacheService extends BaseCacheService<Product[]> {

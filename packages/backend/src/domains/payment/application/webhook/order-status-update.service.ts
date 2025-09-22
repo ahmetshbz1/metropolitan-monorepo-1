@@ -3,8 +3,10 @@
 // Core order status update operations
 
 import { eq } from "drizzle-orm";
+
 import { db } from "../../../../shared/infrastructure/database/connection";
 import { orders } from "../../../../shared/infrastructure/database/schema";
+
 import type { OrderStatusUpdate, WebhookProcessingResult } from "./webhook-types";
 
 export class OrderStatusUpdateService {

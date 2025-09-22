@@ -64,8 +64,26 @@ export const useOrderOperations = ({
     [fetchOrders, setLoading, setError]
   );
 
+  const rollbackStock = useCallback(
+    async (orderId: string) => {
+      console.log(`🔄 Requesting stock rollback for order ${orderId}`);
+
+      try {
+        const response = await api.post(`/orders/${orderId}/rollback-stock`);
+        console.log(`✅ Stock rollback successful:`, response.data);
+        return response.data;
+      } catch (err: any) {
+        console.error(`❌ Stock rollback failed for order ${orderId}:`, err);
+        const errorMessage = err.response?.data?.message || err.message || 'Stok geri alımı başarısız oldu';
+        throw new Error(errorMessage);
+      }
+    },
+    []
+  );
+
   return {
     createOrder,
     cancelOrder,
+    rollbackStock,
   };
 };

@@ -3,6 +3,7 @@
 // NIP verification and validation operations
 
 import type { NipVerificationResult } from "@metropolitan/shared/types/user";
+
 import { verifyNipAndGetName } from "../../../../shared/infrastructure/external/nip.service";
 
 export class NipVerificationService {

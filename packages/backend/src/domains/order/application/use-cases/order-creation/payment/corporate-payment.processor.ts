@@ -2,9 +2,10 @@
 //  metropolitan backend
 //  Corporate bank transfer payment processing
 
-import type { OrderCreationResult, OrderItem as OrderItemData } from "@metropolitan/shared/types/order";
 import type { CartItem as CartItemData } from "@metropolitan/shared/types/cart";
+import type { OrderCreationResult, OrderItem as OrderItemData } from "@metropolitan/shared/types/order";
 import { eq } from "drizzle-orm";
+
 import { BackgroundInvoiceService } from "./background-invoice.service";
 
 export class CorporatePaymentProcessor {

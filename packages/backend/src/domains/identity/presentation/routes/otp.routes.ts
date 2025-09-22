@@ -5,9 +5,11 @@
 import { logger } from "@bogeychan/elysia-logger";
 import { and, eq } from "drizzle-orm";
 import { t } from "elysia";
+
 import { users } from "../../../../shared/infrastructure/database/schema";
 import { createApp } from "../../../../shared/infrastructure/web/app";
 import { createOtp, verifyOtp } from "../../application/use-cases/otp.service";
+
 import { phoneNumberSchema, userTypeEnum } from "./auth-guards";
 
 export const otpRoutes = createApp()

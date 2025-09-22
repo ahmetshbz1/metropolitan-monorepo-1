@@ -4,11 +4,11 @@
 //  Refactored: Delegates to specialized services for better maintainability
 
 // Import focused modular services
-import { MetricsCollectionService } from "./performance/metrics-collection.service";
 import { AlertManagementService } from "./performance/alert-management.service";
-import { PerformanceAnalyticsService } from "./performance/performance-analytics.service";
-import { MonitoringOrchestrationService } from "./performance/monitoring-orchestration.service";
+import { MetricsCollectionService } from "./performance/metrics-collection.service";
 import { MonitoringHealthService } from "./performance/monitoring-health.service";
+import { MonitoringOrchestrationService } from "./performance/monitoring-orchestration.service";
+import { PerformanceAnalyticsService } from "./performance/performance-analytics.service";
 
 // Re-export types and middleware for backward compatibility
 export type { 

@@ -3,6 +3,7 @@
 // Health check and monitoring status service
 
 import { redis } from "../../database/redis";
+
 import { MetricsCollectionService } from "./metrics-collection.service";
 
 export interface MonitoringHealthStatus {

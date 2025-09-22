@@ -3,6 +3,7 @@
 // Manages category products with pagination support
 
 import type { Product } from "@metropolitan/shared";
+
 import { BaseCacheService } from "./base-cache.service";
 
 export class CategoryCacheService extends BaseCacheService<Product[]> {

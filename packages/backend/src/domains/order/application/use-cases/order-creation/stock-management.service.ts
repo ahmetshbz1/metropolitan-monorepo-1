@@ -3,9 +3,10 @@
 //  Orchestrates stock validation and reservation using specialized services
 
 import type { OrderItem as OrderItemData } from "@metropolitan/shared/types/order";
-import { StockValidationService } from "./stock-validation.service";
-import { StockRedisOperationsService } from "./stock-redis-operations.service";
+
 import { StockDatabaseSyncService } from "./stock-database-sync.service";
+import { StockRedisOperationsService } from "./stock-redis-operations.service";
+import { StockValidationService } from "./stock-validation.service";
 
 export class StockManagementService {
   /**

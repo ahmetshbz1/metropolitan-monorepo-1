@@ -2,10 +2,10 @@
 //  metropolitan backend
 //  Coordinator service that delegates to specialized stock services
 
-import { StockSyncService } from "./stock-sync.service";
-import { StockMonitoringService } from "./stock-monitoring.service";
-import { StockMaintenanceService } from "./stock-maintenance.service";
 import type { StockActivity } from "./stock-config";
+import { StockMaintenanceService } from "./stock-maintenance.service";
+import { StockMonitoringService } from "./stock-monitoring.service";
+import { StockSyncService } from "./stock-sync.service";
 
 /**
  * Redis Stock Operations Coordinator

@@ -20,7 +20,8 @@ export const useStripePayment = () => {
     clientSecret: string,
     paymentMethodType?: string,
     amount?: string,
-    currency?: string
+    currency?: string,
+    orderId?: string // Add orderId parameter
   ): Promise<StripePaymentResult> => {
     setLoading(true);
 
@@ -35,7 +36,8 @@ export const useStripePayment = () => {
           confirmPlatformPayPayment,
           t,
           amount,
-          currency
+          currency,
+          orderId
         });
       }
 
@@ -46,7 +48,8 @@ export const useStripePayment = () => {
           confirmPlatformPayPayment,
           t,
           amount,
-          currency
+          currency,
+          orderId
         });
       }
 
@@ -56,7 +59,8 @@ export const useStripePayment = () => {
         paymentMethodType,
         initPaymentSheet,
         presentPaymentSheet,
-        t
+        t,
+        orderId
       });
     } catch (error: any) {
       console.error("❌ Stripe payment error:", error);

@@ -4,9 +4,10 @@
 //  Refactored to use modular route structure
 
 import { createApp } from "../../../../shared/infrastructure/web/app";
-import { otpRoutes } from "./otp.routes";
+
 import { guestMigrationRoutes } from "./guest-migration.routes";
 import { logoutRoutes } from "./logout.routes";
+import { otpRoutes } from "./otp.routes";
 
 /**
  * Authentication routes coordinator

@@ -4,11 +4,10 @@
 //  Refactored: Now delegates to focused modular services for better maintainability
 
 // Import focused modular services
+import { StockMaintenanceService , REDIS_STOCK_SCRIPTS } from "./stock/stock-maintenance.service";
+import { StockMonitoringService } from "./stock/stock-monitoring.service";
 import { StockReservationService } from "./stock/stock-reservation.service";
 import { StockSyncService } from "./stock/stock-sync.service";
-import { StockMonitoringService } from "./stock/stock-monitoring.service";
-import { StockMaintenanceService } from "./stock/stock-maintenance.service";
-import { REDIS_STOCK_SCRIPTS } from "./stock/stock-maintenance.service";
 
 // Re-export types for backward compatibility
 export type { ReservationResult, StockReservation, StockActivity } from "./stock/stock-config";

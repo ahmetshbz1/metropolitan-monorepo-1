@@ -4,6 +4,7 @@
 //  Extracted from redis-stock.service.ts (lines 28-214)
 
 import { redis } from "../../database/redis";
+
 import { REDIS_STOCK_CONFIG, type ReservationResult, type StockReservation } from "./stock-config";
 
 export class StockReservationService {

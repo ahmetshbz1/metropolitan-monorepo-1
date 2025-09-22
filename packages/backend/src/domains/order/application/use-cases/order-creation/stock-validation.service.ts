@@ -4,6 +4,7 @@
 
 import type { OrderItem as OrderItemData } from "@metropolitan/shared/types/order";
 import { eq } from "drizzle-orm";
+
 import { products } from "../../../../../shared/infrastructure/database/schema";
 
 export class StockValidationService {

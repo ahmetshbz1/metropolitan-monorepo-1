@@ -2,18 +2,18 @@
 //  metropolitan backend  
 //  Orchestrator for performance threshold monitoring and alerting
 
+import { APIAlertChecker } from "./alert-checkers/api-alert-checker";
+import type { AlertChecker } from "./alert-checkers/base-alert-checker";
+import { DatabaseAlertChecker } from "./alert-checkers/database-alert-checker";
+import { RedisAlertChecker } from "./alert-checkers/redis-alert-checker";
+import { SystemAlertChecker } from "./alert-checkers/system-alert-checker";
+import { AlertStorageService } from "./alert-storage.service";
+import { DEFAULT_THRESHOLDS } from "./performance-types";
 import type { 
   PerformanceMetrics, 
   PerformanceAlert, 
   PerformanceThresholds 
 } from "./performance-types";
-import { DEFAULT_THRESHOLDS } from "./performance-types";
-import { APIAlertChecker } from "./alert-checkers/api-alert-checker";
-import { DatabaseAlertChecker } from "./alert-checkers/database-alert-checker";
-import { RedisAlertChecker } from "./alert-checkers/redis-alert-checker";
-import { SystemAlertChecker } from "./alert-checkers/system-alert-checker";
-import { AlertStorageService } from "./alert-storage.service";
-import type { AlertChecker } from "./alert-checkers/base-alert-checker";
 
 export class AlertManagementService {
   private static thresholds: PerformanceThresholds = DEFAULT_THRESHOLDS;

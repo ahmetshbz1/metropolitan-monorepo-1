@@ -2,9 +2,10 @@
 //  metropolitan backend
 //  Expands cache key patterns to actual keys
 
+import { sql, desc } from "drizzle-orm";
+
 import { db } from "../../database/connection";
 import { users, products, orderItems } from "../../database/schema";
-import { sql, desc } from "drizzle-orm";
 
 export async function expandKeyPattern(pattern: string): Promise<string[]> {
   // Handle specific patterns

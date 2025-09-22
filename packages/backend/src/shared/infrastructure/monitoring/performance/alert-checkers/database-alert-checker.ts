@@ -2,8 +2,9 @@
 //  metropolitan backend
 //  Database performance alert checking
 
-import { BaseAlertChecker } from "./base-alert-checker";
 import type { PerformanceMetrics, PerformanceAlert, DatabaseThresholds } from "../performance-types";
+
+import { BaseAlertChecker } from "./base-alert-checker";
 
 export class DatabaseAlertChecker extends BaseAlertChecker {
   constructor(private readonly thresholds: DatabaseThresholds) {

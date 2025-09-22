@@ -40,6 +40,7 @@ interface IOrderContext {
     notes?: string;
   }) => Promise<OrderCreationResult>;
   cancelOrder: (orderId: string) => Promise<void>;
+  rollbackStock: (orderId: string) => Promise<any>;
 }
 
 const OrderProviderInternal = ({ children }: { children: React.ReactNode }) => {
@@ -70,6 +71,7 @@ export const useOrders = (): IOrderContext => {
       fetchOrderById: actions.fetchOrderById,
       createOrder: actions.createOrder,
       cancelOrder: actions.cancelOrder,
+      rollbackStock: actions.rollbackStock,
     }),
     [state, actions]
   );

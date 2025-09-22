@@ -4,6 +4,7 @@
 
 import { eq } from "drizzle-orm";
 import { Elysia, t } from "elysia";
+
 import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
 import { db } from "../../../../shared/infrastructure/database/connection";
 import { users } from "../../../../shared/infrastructure/database/schema";

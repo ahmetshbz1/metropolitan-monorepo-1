@@ -3,6 +3,7 @@
 //  Emergency stock data reset service
 
 import { redis } from "../../database/redis";
+
 import { REDIS_STOCK_CONFIG } from "./stock-config";
 
 export class StockResetService {

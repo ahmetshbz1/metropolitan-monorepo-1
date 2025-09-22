@@ -3,7 +3,9 @@
 //  Extended performance monitoring with per-endpoint tracking
 
 import { Elysia } from "elysia";
+
 import { redis } from "../../database/redis";
+
 import { PERFORMANCE_CONFIG } from "./performance-types";
 
 /**

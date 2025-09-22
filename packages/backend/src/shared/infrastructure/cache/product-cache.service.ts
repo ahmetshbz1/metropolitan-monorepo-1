@@ -3,10 +3,11 @@
 // Delegates to specialized cache services for better modularity
 
 import type { Product } from "@metropolitan/shared";
-import { IndividualProductCacheService } from "./individual-product-cache.service";
-import { CategoryCacheService } from "./category-cache.service";
-import { SpecialProductCacheService } from "./special-product-cache.service";
+
 import { CacheManagementService } from "./cache-management.service";
+import { CategoryCacheService } from "./category-cache.service";
+import { IndividualProductCacheService } from "./individual-product-cache.service";
+import { SpecialProductCacheService } from "./special-product-cache.service";
 
 export class ProductCacheService {
   private static individualCache = new IndividualProductCacheService();

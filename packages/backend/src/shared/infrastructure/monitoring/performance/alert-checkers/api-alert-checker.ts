@@ -2,8 +2,9 @@
 //  metropolitan backend
 //  API performance alert checking
 
-import { BaseAlertChecker } from "./base-alert-checker";
 import type { PerformanceMetrics, PerformanceAlert, APIThresholds } from "../performance-types";
+
+import { BaseAlertChecker } from "./base-alert-checker";
 
 export class APIAlertChecker extends BaseAlertChecker {
   constructor(private readonly thresholds: APIThresholds) {

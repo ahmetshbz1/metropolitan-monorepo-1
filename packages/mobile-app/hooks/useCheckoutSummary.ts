@@ -93,7 +93,8 @@ export function useCheckoutSummary() {
           clientSecret,
           selectedPaymentMethod.id,
           formattedAmount,
-          order.currency || "PLN"
+          order.currency || "PLN",
+          order.id // Pass orderId for rollback
         );
 
         if (!paymentResult.success) {

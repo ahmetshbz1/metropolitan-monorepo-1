@@ -4,10 +4,10 @@
 //  Refactored to use modular rollback strategies
 
 import { WebhookOrderManagementService } from "./order-management.service";
-import { RedisRollbackStrategy } from "./rollback-strategies/redis-rollback.strategy";
 import { DatabaseRollbackStrategy } from "./rollback-strategies/database-rollback.strategy";
-import { StockVerificationService } from "./stock-verification.service";
+import { RedisRollbackStrategy } from "./rollback-strategies/redis-rollback.strategy";
 import type { RollbackResult } from "./rollback-types";
+import { StockVerificationService } from "./stock-verification.service";
 
 export class WebhookStockRollbackService {
 

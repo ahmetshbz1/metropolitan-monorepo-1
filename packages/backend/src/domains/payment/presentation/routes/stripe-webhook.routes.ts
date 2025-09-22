@@ -4,11 +4,12 @@
 //  Refactored: Cleaner separation of concerns
 
 import { Elysia } from "elysia";
+
 import StripeService from "../../../../shared/infrastructure/external/stripe.service";
 import { WebhookIdempotencyService } from "../../application/webhook/idempotency.service";
+import { WebhookHealthService } from "../../application/webhook/webhook-health.service";
 import { WebhookRouterService } from "../../application/webhook/webhook-router.service";
 import { WebhookUtils } from "../../application/webhook/webhook-utils.service";
-import { WebhookHealthService } from "../../application/webhook/webhook-health.service";
 
 // Re-export types and services for backward compatibility
 export type { 

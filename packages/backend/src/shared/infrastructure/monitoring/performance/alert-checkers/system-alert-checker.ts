@@ -2,8 +2,9 @@
 //  metropolitan backend
 //  System performance alert checking
 
-import { BaseAlertChecker } from "./base-alert-checker";
 import type { PerformanceMetrics, PerformanceAlert, SystemThresholds } from "../performance-types";
+
+import { BaseAlertChecker } from "./base-alert-checker";
 
 export class SystemAlertChecker extends BaseAlertChecker {
   constructor(private readonly thresholds: SystemThresholds) {

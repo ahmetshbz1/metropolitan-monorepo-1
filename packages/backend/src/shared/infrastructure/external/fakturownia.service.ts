@@ -3,8 +3,8 @@
 // Delegates to specialized services for better modularity
 
 import { FakturowniaApiClientService } from "./fakturownia-api-client.service";
-import { FakturowniaInvoiceService } from "./fakturownia-invoice.service";
 import { FakturowniaClientService } from "./fakturownia-client.service";
+import { FakturowniaInvoiceService } from "./fakturownia-invoice.service";
 import type { 
   FakturowniaInvoice, 
   FakturowniaInvoiceResponse,

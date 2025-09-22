@@ -2,6 +2,7 @@
 // Validation and metadata extraction for Stripe payment intents
 
 import type Stripe from "stripe";
+
 import { WebhookOrderManagementService } from "./order-management.service";
 import type { WebhookProcessingResult } from "./webhook-types";
 

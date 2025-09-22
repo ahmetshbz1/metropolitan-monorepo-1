@@ -4,8 +4,10 @@
 //  Extracted from performance-monitor.ts (lines 113-231)
 
 import { sql } from "drizzle-orm";
+
 import { db } from "../../database/connection";
 import { redis } from "../../database/redis";
+
 import type { 
   APIMetrics, 
   DatabaseMetrics, 

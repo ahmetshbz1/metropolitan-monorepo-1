@@ -3,6 +3,7 @@
 //  Health check service for Redis stock system
 
 import { redis } from "../../database/redis";
+
 import { REDIS_STOCK_CONFIG, type StockReservation } from "./stock-config";
 
 export interface StockHealthStatus {

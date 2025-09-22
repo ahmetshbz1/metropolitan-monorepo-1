@@ -3,8 +3,9 @@
 // Monitoring orchestration and lifecycle management
 
 import { redis } from "../../database/redis";
-import { MetricsCollectionService } from "./metrics-collection.service";
+
 import { AlertManagementService } from "./alert-management.service";
+import { MetricsCollectionService } from "./metrics-collection.service";
 import { PerformanceAnalyticsService } from "./performance-analytics.service";
 import { PERFORMANCE_CONFIG } from "./performance-types";
 

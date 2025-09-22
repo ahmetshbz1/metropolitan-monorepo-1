@@ -5,12 +5,12 @@
 import type { PerformanceMetrics, PerformanceReport } from "./performance-types";
 import { PERFORMANCE_CONFIG } from "./performance-types";
 import { PerformanceReportService } from "./services/performance-report.service";
-import { PerformanceTrendsService } from "./services/performance-trends.service";
-import { PerformanceStatusService } from "./services/performance-status.service";
 import { PerformanceStatisticsService } from "./services/performance-statistics.service";
-import type { PerformanceTrends } from "./services/performance-trends.service";
-import type { PerformanceStatus } from "./services/performance-status.service";
 import type { PerformanceStatistics } from "./services/performance-statistics.service";
+import { PerformanceStatusService } from "./services/performance-status.service";
+import type { PerformanceStatus } from "./services/performance-status.service";
+import { PerformanceTrendsService } from "./services/performance-trends.service";
+import type { PerformanceTrends } from "./services/performance-trends.service";
 
 export class PerformanceAnalyticsService {
   private static metrics: PerformanceMetrics[] = [];

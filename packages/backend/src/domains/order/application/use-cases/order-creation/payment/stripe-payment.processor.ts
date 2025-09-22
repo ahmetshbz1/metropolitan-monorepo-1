@@ -2,9 +2,11 @@
 //  metropolitan backend
 //  Stripe-specific payment processing logic
 
-import type { OrderCreationRequest } from "@metropolitan/shared/types/order";
 import type { CartItem as CartItemData } from "@metropolitan/shared/types/cart";
+import type { OrderCreationRequest } from "@metropolitan/shared/types/order";
+
 import StripeService from "../../../../../../shared/infrastructure/external/stripe.service";
+
 import { PaymentCalculatorService } from "./payment-calculator.service";
 
 export interface StripePaymentResult {

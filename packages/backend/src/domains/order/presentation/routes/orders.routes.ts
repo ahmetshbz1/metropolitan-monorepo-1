@@ -4,9 +4,10 @@
 //  Refactored for better modularity
 
 import { Elysia } from "elysia";
+
 import { orderCreationRoutes } from "./order-creation.routes";
-import { orderQueryRoutes } from "./order-query.routes";
 import { orderManagementRoutes } from "./order-management.routes";
+import { orderQueryRoutes } from "./order-query.routes";
 
 /**
  * Create modular orders application by composing feature-specific routes

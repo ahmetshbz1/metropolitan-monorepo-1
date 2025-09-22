@@ -3,7 +3,9 @@
 // Extends base cache service for common functionality
 
 import type { Product } from "@metropolitan/shared";
+
 import { redis } from "../database/redis";
+
 import { BaseCacheService } from "./base-cache.service";
 
 export class IndividualProductCacheService extends BaseCacheService<Product> {

@@ -3,8 +3,10 @@
 // Logout operations routes
 
 import { logger } from "@bogeychan/elysia-logger";
+
 import { blacklistToken } from "../../../../shared/infrastructure/database/redis";
 import { createApp } from "../../../../shared/infrastructure/web/app";
+
 import { authTokenGuard, extractToken } from "./auth-guards";
 
 export const logoutRoutes = createApp()

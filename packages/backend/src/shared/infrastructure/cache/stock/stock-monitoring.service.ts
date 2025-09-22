@@ -4,6 +4,7 @@
 //  Extracted from redis-stock.service.ts (lines 258-295)
 
 import { redis } from "../../database/redis";
+
 import { REDIS_STOCK_CONFIG, type StockActivity } from "./stock-config";
 
 export class StockMonitoringService {

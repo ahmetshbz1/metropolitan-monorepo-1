@@ -2,8 +2,9 @@
 //  metropolitan backend
 //  Redis performance alert checking
 
-import { BaseAlertChecker } from "./base-alert-checker";
 import type { PerformanceMetrics, PerformanceAlert, RedisThresholds } from "../performance-types";
+
+import { BaseAlertChecker } from "./base-alert-checker";
 
 export class RedisAlertChecker extends BaseAlertChecker {
   constructor(private readonly thresholds: RedisThresholds) {

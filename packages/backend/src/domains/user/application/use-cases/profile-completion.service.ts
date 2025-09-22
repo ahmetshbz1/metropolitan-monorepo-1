@@ -8,10 +8,10 @@ import type {
   NipVerificationResult,
 } from "@metropolitan/shared/types/user";
 
-import { NipVerificationService } from "./nip-verification.service";
-import { CompanyManagementService } from "./company-management.service";
-import { UserProfileOperationsService } from "./user-profile-operations.service";
 import { AddressManagementService } from "./address-management.service";
+import { CompanyManagementService } from "./company-management.service";
+import { NipVerificationService } from "./nip-verification.service";
+import { UserProfileOperationsService } from "./user-profile-operations.service";
 
 interface ProfileCompletionResponse {
   success: boolean;

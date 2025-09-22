@@ -3,6 +3,7 @@
 //  Alert storage and retrieval service
 
 import { redis } from "../../database/redis";
+
 import type { PerformanceAlert } from "./performance-types";
 import { PERFORMANCE_CONFIG } from "./performance-types";
 

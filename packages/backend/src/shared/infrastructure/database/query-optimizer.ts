@@ -3,6 +3,7 @@
 //  Database query optimization utilities
 
 import { sql } from "drizzle-orm";
+
 import { db } from "./connection";
 
 export class QueryOptimizer {

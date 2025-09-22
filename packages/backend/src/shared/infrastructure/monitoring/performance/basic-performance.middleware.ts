@@ -3,7 +3,9 @@
 //  Basic performance monitoring middleware
 
 import { Elysia } from "elysia";
+
 import { redis } from "../../database/redis";
+
 import { PERFORMANCE_CONFIG } from "./performance-types";
 
 /**

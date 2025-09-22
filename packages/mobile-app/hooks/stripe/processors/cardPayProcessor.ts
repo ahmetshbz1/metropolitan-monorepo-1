@@ -5,17 +5,20 @@
 import { CardPaymentParams, StripePaymentResult } from '../types';
 import { getPaymentSheetConfig } from '../config/paymentSheetConfig';
 import { handlePaymentError } from '../utils/errorHandlers';
+import { api } from '@/core/api';
 
 export const processCardPayment = async ({
   clientSecret,
   paymentMethodType,
   initPaymentSheet,
   presentPaymentSheet,
-  t
-}: CardPaymentParams): Promise<StripePaymentResult> => {
+  t,
+  orderId // Add orderId parameter
+}: CardPaymentParams & { orderId?: string }): Promise<StripePaymentResult> => {
   console.log(
     `💳 Processing ${paymentMethodType} payment with Payment Sheet...`
   );
+  console.log("📦 Order ID:", orderId);
 
   // Payment Sheet'i initialize et
   const initConfig = getPaymentSheetConfig(clientSecret, paymentMethodType);
@@ -48,6 +51,21 @@ export const processCardPayment = async ({
 
   if (presentError) {
     console.error("❌ Payment Sheet presentation error:", presentError);
+
+    // CRITICAL: Rollback stock if payment was cancelled/failed
+    if (orderId && (presentError.code === 'Canceled' || presentError.code === 'Failed')) {
+      console.log(`🔄 Payment ${presentError.code.toLowerCase()}, attempting stock rollback for order ${orderId}`);
+
+      try {
+        const rollbackResponse = await api.post(`/orders/${orderId}/rollback-stock`);
+        console.log(`✅ Stock rollback successful:`, rollbackResponse.data);
+      } catch (rollbackError: any) {
+        console.error(`❌ Stock rollback failed for order ${orderId}:`, rollbackError);
+        // Don't fail the payment error response due to rollback failure
+        // Just log it for monitoring
+      }
+    }
+
     return handlePaymentError(presentError, t);
   }
 
