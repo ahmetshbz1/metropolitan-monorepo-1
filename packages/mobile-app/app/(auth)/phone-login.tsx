@@ -64,6 +64,7 @@ const PhoneLoginScreen = () => {
           title={t("phone_login.header_title")}
           subtitle={t("phone_login.info_text")}
           style={{ paddingVertical: PHONE_LOGIN_LAYOUT.headerPadding }}
+          minimal
         />
         <View className="flex-1 justify-center px-6 pt-4">
           <PhoneInput

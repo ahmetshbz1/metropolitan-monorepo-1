@@ -46,6 +46,7 @@ export const OTPScreenContent: React.FC<OTPScreenContentProps> = ({
         title={t("otp.title")}
         subtitle={`${t("otp.subtitle_part1")} ${phone} ${t("otp.subtitle_part2")}`}
         style={{ paddingVertical: 16 }}
+        minimal
       />
 
       <View className="flex-1 justify-center px-6 pt-4">

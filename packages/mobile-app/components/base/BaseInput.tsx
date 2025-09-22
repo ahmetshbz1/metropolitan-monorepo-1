@@ -1,99 +1,158 @@
 //  "BaseInput.tsx"
 //  metropolitan app
 //  Created by Ahmet on 01.06.2025.
+//  Redesigned on 23.09.2025 for modern minimalist experience
 
-import { useTheme } from "@/hooks/useTheme";
-import React, { forwardRef, useState } from "react";
-import { StyleSheet, TextInput, TextInputProps, TextStyle } from "react-native";
+import React, { forwardRef } from "react";
+import {
+  StyleSheet,
+  TextInput as RNTextInput,
+  TextInputProps as RNTextInputProps,
+  TextStyle,
+  Text,
+  View,
+  ViewStyle,
+} from "react-native";
+import { zincColors } from "@/constants/colors/zincColors";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import Colors from "@/constants/Colors";
 
+export type InputVariant = "default" | "filled" | "outlined" | "ghost";
 export type InputSize = "small" | "medium" | "large";
 
-export interface BaseInputProps extends Omit<TextInputProps, "style"> {
+export interface BaseInputProps extends Omit<RNTextInputProps, "style"> {
+  label?: string;
+  error?: string;
+  variant?: InputVariant;
   size?: InputSize;
-  error?: boolean;
+  containerStyle?: ViewStyle;
+  inputStyle?: TextStyle;
+  disabled?: boolean;
   fullWidth?: boolean;
-  style?: TextStyle;
 }
 
-const sizeConfig = {
-  small: {
-    height: 48,
-    fontSize: 15,
-    paddingHorizontal: 14,
-    borderRadius: 10,
-  },
-  medium: {
-    height: 56,
-    fontSize: 16,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-  },
-  large: {
-    height: 64,
-    fontSize: 18,
-    paddingHorizontal: 20,
-    borderRadius: 16,
-  },
-} as const;
-
-export const BaseInput = forwardRef<TextInput, BaseInputProps>(
+export const BaseInput = forwardRef<RNTextInput, BaseInputProps>(
   (
     {
+      label,
+      error,
+      variant = "default",
       size = "medium",
-      error = false,
+      containerStyle,
+      inputStyle,
+      disabled = false,
       fullWidth = true,
-      onFocus,
-      onBlur,
-      placeholderTextColor,
       ...props
     },
     ref
   ) => {
-    const { colors } = useTheme();
-    const [, setFocused] = useState(false);
-    const current = sizeConfig[size];
+    const colorScheme = useColorScheme();
+    const isDark = colorScheme === "dark";
+    const themeColors = Colors[colorScheme ?? "light"];
 
-    const dynamicStyle: TextStyle = {
-      height: current.height,
-      paddingHorizontal: current.paddingHorizontal,
-      fontSize: current.fontSize,
-      borderRadius: current.borderRadius,
-      backgroundColor: colors.card,
-      color: colors.text,
-      borderWidth: 1,
-      borderColor: error ? colors.danger : colors.border,
-      ...(fullWidth && { width: "100%" }),
+    const sizeStyles: Record<
+      InputSize,
+      { height?: number; fontSize: number; padding: number }
+    > = {
+      small: { height: 48, fontSize: 15, padding: 14 },
+      medium: { height: 56, fontSize: 16, padding: 16 },
+      large: { height: 64, fontSize: 18, padding: 20 },
     };
 
-    const inputBaseStyle = StyleSheet.create({
-      shadow: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3,
-        elevation: 2,
-      },
-    });
+    const getVariantStyle = (): ViewStyle => {
+      const baseStyle: ViewStyle = {
+        borderRadius: 12,
+        backgroundColor: isDark ? zincColors[900] : zincColors[100],
+      };
+
+      switch (variant) {
+        case "filled":
+          return {
+            ...baseStyle,
+            backgroundColor: isDark ? zincColors[800] : zincColors[200],
+          };
+        case "outlined":
+          return {
+            ...baseStyle,
+            backgroundColor: "transparent",
+            borderWidth: 1,
+            borderColor: isDark ? zincColors[700] : zincColors[300],
+          };
+        case "ghost":
+          return {
+            ...baseStyle,
+            backgroundColor: "transparent",
+          };
+        default:
+          return baseStyle;
+      }
+    };
+
+    const getTextColor = () => {
+      if (disabled) {
+        return isDark ? zincColors[600] : zincColors[400];
+      }
+      return isDark ? zincColors[50] : zincColors[900];
+    };
 
     return (
-      <TextInput
-        ref={ref}
-        style={[inputBaseStyle.shadow, dynamicStyle, props.style]}
-        placeholderTextColor={
-          placeholderTextColor ? placeholderTextColor : colors.mediumGray
-        }
-        onFocus={(e) => {
-          setFocused(true);
-          onFocus?.(e);
-        }}
-        onBlur={(e) => {
-          setFocused(false);
-          onBlur?.(e);
-        }}
-        {...props}
-      />
+      <View style={[styles.container, fullWidth && { width: "100%" }, containerStyle]}>
+        {label && (
+          <Text style={[styles.label, { color: themeColors.text }]}>{label}</Text>
+        )}
+        <View
+          style={[
+            getVariantStyle(),
+            disabled && styles.disabled,
+            error && styles.errorBorder,
+          ]}
+        >
+          <RNTextInput
+            ref={ref}
+            style={[
+              {
+                height: sizeStyles[size].height,
+                fontSize: sizeStyles[size].fontSize,
+                padding: sizeStyles[size].padding,
+                color: getTextColor(),
+              },
+              inputStyle,
+            ]}
+            placeholderTextColor={isDark ? zincColors[500] : zincColors[400]}
+            editable={!disabled}
+            {...props}
+          />
+        </View>
+        {error && <Text style={styles.error}>{error}</Text>}
+      </View>
     );
   }
 );
 
 BaseInput.displayName = "BaseInput";
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 4,
+  },
+  label: {
+    marginBottom: 8,
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  error: {
+    color: "#ef4444",
+    marginTop: 4,
+    fontSize: 12,
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+  errorBorder: {
+    borderWidth: 1,
+    borderColor: "#ef4444",
+  },
+});
+
+// Export default for backwards compatibility
+export default BaseInput;

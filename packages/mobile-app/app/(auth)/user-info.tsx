@@ -105,6 +105,7 @@ const UserInfoScreen = () => {
           title={t("user_info.header_title")}
           subtitle={t("user_info.header_subtitle")}
           style={{ paddingBottom: 16 }}
+          minimal
         />
 
         {/* Form Content */}
