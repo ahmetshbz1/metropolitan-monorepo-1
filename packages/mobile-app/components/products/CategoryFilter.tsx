@@ -4,6 +4,7 @@
 
 import React from "react";
 import { ScrollView, View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { Category } from "@/context/ProductContext";
 import { useHaptics } from "@/hooks/useHaptics";
@@ -21,24 +22,44 @@ export function CategoryFilter({
   onCategoryPress,
 }: CategoryFilterProps) {
   const { triggerHaptic } = useHaptics();
+  const { t } = useTranslation();
 
-  const handleCategoryPress = (slug: string) => {
+  const handleCategoryPress = (slug: string | null) => {
     triggerHaptic("light");
-    onCategoryPress(slug);
+    onCategoryPress(slug === "all" ? null : slug);
   };
 
+  // "Tümü" kategorisini manuel olarak ekle
+  const allCategory: Category = {
+    id: "all",
+    name: t("categories.all"),
+    slug: "all",
+    description: "",
+    image: "",
+    productCount: 0,
+  };
+
+  const allCategories = [allCategory, ...categories];
+
   return (
-    <View className="py-3 justify-center">
+    <View className="py-3">
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 16 }}
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          alignItems: 'center'
+        }}
       >
-        {categories.map((category) => (
+        {allCategories.map((category) => (
           <CategoryFilterItem
             key={category.id}
             category={category}
-            isActive={activeCategory === category.slug}
+            isActive={
+              category.slug === "all"
+                ? activeCategory === null
+                : activeCategory === category.slug
+            }
             onPress={handleCategoryPress}
           />
         ))}
