@@ -50,14 +50,14 @@ export const SimpleAddToCartButton: React.FC<SimpleAddToCartButtonProps> = ({
   return (
     <TouchableOpacity
       onPress={handlePress}
-      className="w-10 h-10 rounded-full items-center justify-center"
+      className="w-9 h-9 rounded-full items-center justify-center"
       style={{ backgroundColor: colors.primary }}
       activeOpacity={0.8}
     >
       {state === "loading" ? (
         <ActivityIndicator size="small" color="#fff" />
       ) : (
-        <Ionicons name={getIcon()} size={18} color="#fff" />
+        <Ionicons name={getIcon()} size={16} color="#fff" />
       )}
     </TouchableOpacity>
   );

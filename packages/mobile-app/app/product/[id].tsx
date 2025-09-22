@@ -2,21 +2,22 @@
 //  metropolitan app
 //  Created by Ahmet on 06.07.2025.
 
+import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ProductImage } from "@/components/product-detail/ProductImage";
 import { ProductInfo } from "@/components/product-detail/ProductInfo";
 import { PurchaseSection } from "@/components/product-detail/PurchaseSection";
+import { SimilarProducts } from "@/components/product-detail/SimilarProducts";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import Colors from "@/constants/Colors";
 import { useCart } from "@/context/CartContext";
 import { useProducts } from "@/context/ProductContext";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, ScrollView, View } from "react-native";
-import {
-  KeyboardAwareScrollView,
-  KeyboardStickyView,
-} from "react-native-keyboard-controller";
+import { ActivityIndicator, View } from "react-native";
+import { KeyboardStickyView } from "react-native-keyboard-controller";
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -24,6 +25,8 @@ export default function ProductDetailScreen() {
   const { t } = useTranslation();
   const { cartItems } = useCart();
   const navigation = useNavigation();
+  const colorScheme = useColorScheme() ?? "light";
+  const colors = Colors[colorScheme];
 
   const product = products.find((p) => p.id === id);
 
@@ -72,9 +75,6 @@ export default function ProductDetailScreen() {
     }
   };
 
-  // Klavye açıldığında içeriğin en alta kayması için ScrollView referansı
-  const scrollViewRef = useRef<ScrollView>(null);
-
   // Native header'a ürün adını ekle
   useLayoutEffect(() => {
     if (product) {
@@ -105,15 +105,13 @@ export default function ProductDetailScreen() {
   return (
     <ThemedView className="flex-1">
       <KeyboardStickyView style={{ flex: 1 }}>
-        <KeyboardAwareScrollView
-          ref={scrollViewRef}
-          style={{ flex: 1 }}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-          bottomOffset={100} // PurchaseSection yüksekliği için space
-          extraKeyboardSpace={20} // Ekstra boşluk
+        <ParallaxScrollView
+          headerImage={<ProductImage product={product} />}
+          headerBackgroundColor={{
+            dark: colors.background,
+            light: "#ffffff",
+          }}
         >
-          <ProductImage product={product} />
           <ProductInfo
             product={product}
             quantity={quantity}
@@ -121,7 +119,8 @@ export default function ProductDetailScreen() {
             onQuantityBlur={handleQuantityBlur}
             onUpdateQuantity={updateQuantity}
           />
-        </KeyboardAwareScrollView>
+          <SimilarProducts currentProduct={product} />
+        </ParallaxScrollView>
         <PurchaseSection
           product={product}
           quantity={quantity}

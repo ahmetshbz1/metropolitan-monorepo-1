@@ -94,11 +94,12 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
         data={products}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        numColumns={2}
+        numColumns={3}
         contentContainerStyle={[
-          { paddingHorizontal: 8, paddingVertical: 8 },
+          { paddingHorizontal: 12, paddingVertical: 8, gap: 8 },
           contentContainerStyle,
         ]}
+        columnWrapperStyle={{ gap: 8 }}
         onEndReached={onEndReached}
         onEndReachedThreshold={0.5}
         ListHeaderComponent={ListHeaderComponent}
@@ -116,7 +117,7 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
         removeClippedSubviews={true}
         maxToRenderPerBatch={10}
         windowSize={10}
-        initialNumToRender={6}
+        initialNumToRender={9}
         updateCellsBatchingPeriod={100}
         showsVerticalScrollIndicator={false}
       />

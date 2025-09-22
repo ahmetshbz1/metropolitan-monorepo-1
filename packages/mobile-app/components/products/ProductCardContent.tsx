@@ -44,26 +44,10 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
   };
 
   return (
-    <View className="p-3" style={{ backgroundColor: colors.cardBackground }}>
-      {/* Category and Brand Badges */}
-      <View className="mb-2 flex-row gap-2">
-        <View className="self-start px-2 py-1 rounded-full" style={{ backgroundColor: colorScheme === "dark" ? colors.tertiaryBackground : colors.lightGray }}>
-          <ThemedText
-            className="text-xs font-medium uppercase tracking-wide"
-            style={{
-              color: colorScheme === "dark" ? colors.textSecondary : "#6b7280",
-              fontSize: 10,
-            }}
-            numberOfLines={1}
-          >
-            {categoryName || product.category}
-          </ThemedText>
-        </View>
-      </View>
-
+    <View className="p-2" style={{ backgroundColor: colors.cardBackground }}>
       {/* Product Name */}
       <ThemedText
-        className="text-base font-bold mb-4"
+        className="text-sm font-bold mb-3"
         numberOfLines={2}
         style={{
           lineHeight: 20,
@@ -78,7 +62,7 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
       {/* Price and Add to Cart - Separated */}
       <View className="flex-row items-center justify-between">
         <ThemedText
-          className="font-bold text-lg"
+          className="font-bold text-base"
           style={{ color: colors.primary }}
         >
           {formatPrice(product.price, product.currency)}

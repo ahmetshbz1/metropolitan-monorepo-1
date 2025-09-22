@@ -47,8 +47,8 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
 
   return (
     <View
-      className={isHorizontal ? "mr-3" : "mx-1 mb-3"}
-      style={isHorizontal ? { width: 180 } : { width: "48%" }}
+      className={isHorizontal ? "mr-3" : "mb-3"}
+      style={isHorizontal ? { width: 180 } : { flex: 1/3 }}
     >
       <Link
         href={{
@@ -70,30 +70,6 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
             elevation: 6,
           }}
         >
-          {/* Brand Badge - Top Left */}
-          {product.brand && (
-            <View 
-              className="absolute top-3 left-3 z-10 px-2 py-1 rounded-full" 
-              style={{ 
-                backgroundColor: colorScheme === "dark" 
-                  ? colors.tertiaryBackground 
-                  : colors.background 
-              }}
-            >
-              <ThemedText
-                className="text-xs font-medium uppercase tracking-wide"
-                style={{
-                  color: colorScheme === "dark" 
-                    ? colors.mediumGray 
-                    : "#6b7280",
-                  fontSize: 10,
-                }}
-                numberOfLines={1}
-              >
-                {product.brand}
-              </ThemedText>
-            </View>
-          )}
 
           <ProductCardImage
             product={product}

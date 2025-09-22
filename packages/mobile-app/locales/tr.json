@@ -633,6 +633,7 @@
     "low_stock": "Son {{count}} ürün",
     "category": "Kategori",
     "stock": "Stok: {{count}}",
+    "similar_products": "Benzer Ürünler",
     "in_stock": "Stokta var",
     "out_of_stock": "Stokta yok",
     "info": {
