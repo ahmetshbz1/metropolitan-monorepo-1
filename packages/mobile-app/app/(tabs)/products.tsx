@@ -100,14 +100,7 @@ export default function ProductsScreen() {
   return (
     <View className="flex-1">
       {showSkeleton || showErrorOverlay ? (
-        <>
-          <CategoryFilter
-            categories={categories}
-            activeCategory={selectedCategory}
-            onCategoryPress={handleCategoryPress}
-          />
-          <ProductGridSkeleton />
-        </>
+        <ProductGridSkeleton />
       ) : (
         <ProductGrid
           ref={productGridRef}

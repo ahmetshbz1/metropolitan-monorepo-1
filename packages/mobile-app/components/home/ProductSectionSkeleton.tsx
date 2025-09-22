@@ -22,7 +22,7 @@ export function ProductSectionSkeleton() {
       />
       <View className="flex-row flex-wrap px-0.5">
         {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
-          <ProductCardSkeleton key={`skeleton-${index}`} />
+          <ProductCardSkeleton key={`skeleton-${index}`} variant="grid-2" />
         ))}
       </View>
     </View>
