@@ -1,0 +1,4 @@
+<resources>
+  <string name="CAMERA">"Kameranıza erişerek yeni bir profil fotoğrafı çekebilirsiniz."</string>
+  <string name="READ_EXTERNAL_STORAGE">"Fotoğraflarınıza erişerek profil resminizi seçebilirsiniz."</string>
+</resources>

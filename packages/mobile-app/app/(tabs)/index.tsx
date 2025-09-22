@@ -129,7 +129,7 @@ export default function HomeScreen() {
       fetchCategories();
       fetchProducts();
     }
-  }, [products.length, loadingProducts, error, fetchCategories, fetchProducts]);
+  }, []); // Dependency array'i boş bırakıyoruz - sadece component mount'ta çalışsın
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);

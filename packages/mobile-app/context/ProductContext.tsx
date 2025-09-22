@@ -88,11 +88,11 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [lang]);
 
-  const refreshProducts = useCallback(async () => {
+  const refreshProducts = useCallback(async (categorySlug?: string | null) => {
     setLoading(true);
     setPage(1);
     setHasMore(true);
-    await fetchProducts(selectedCategory);
+    await fetchProducts(categorySlug ?? selectedCategory);
     setLoading(false);
   }, [fetchProducts, selectedCategory, setLoading, setPage, setHasMore]);
 

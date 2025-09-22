@@ -533,6 +533,11 @@
     "empty": {
       "title": "Nie masz jeszcze żadnych zamówień",
       "button": "Rozpocznij zakupy"
+    },
+    "guest_empty": {
+      "title": "Zaloguj się, aby zobaczyć historię zamówień",
+      "subtitle": "Musisz zalogować się na swoje konto, aby przeglądać i śledzić swoje zamówienia.",
+      "button": "Zaloguj się"
     }
   },
   "order": {

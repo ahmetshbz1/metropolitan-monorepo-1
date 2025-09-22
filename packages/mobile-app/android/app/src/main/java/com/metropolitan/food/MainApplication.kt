@@ -1,4 +1,4 @@
-package com.ahmetshbzz.metropolitan
+package com.metropolitan.food
 
 import android.app.Application
 import android.content.res.Configuration

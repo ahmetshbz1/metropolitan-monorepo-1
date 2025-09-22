@@ -423,6 +423,11 @@
     "empty": {
       "title": "You don't have any orders yet",
       "button": "Start Shopping"
+    },
+    "guest_empty": {
+      "title": "Sign in to view order history",
+      "subtitle": "You need to sign in to your account to view and track your orders.",
+      "button": "Sign In"
     }
   },
   "order": {

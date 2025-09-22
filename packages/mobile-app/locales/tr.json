@@ -408,6 +408,11 @@
     "empty": {
       "title": "Henüz hiç siparişiniz yok",
       "button": "Alışverişe Başla"
+    },
+    "guest_empty": {
+      "title": "Sipariş geçmişi için giriş yapın",
+      "subtitle": "Siparişlerinizi görüntülemek ve takip etmek için hesabınıza giriş yapmanız gerekiyor.",
+      "button": "Giriş Yap"
     }
   },
   "order": {

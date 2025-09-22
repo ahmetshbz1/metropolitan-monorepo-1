@@ -10,6 +10,7 @@ import { EmptyOrders } from "@/components/orders/EmptyOrders";
 import { OrderCard } from "@/components/orders/OrderCard";
 import { ErrorState } from "@/components/ui/ErrorState";
 import Colors from "@/constants/Colors";
+import { useAuth } from "@/context/AuthContext";
 import { useOrders } from "@/context/OrderContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useTabBarHeight } from "@/hooks/useTabBarHeight";
@@ -17,19 +18,36 @@ import { useFocusEffect } from "expo-router";
 
 export default function OrdersScreen() {
   const { paddingBottom } = useTabBarHeight();
+  const { isGuest } = useAuth();
   const { orders, loading, error, fetchOrders, refreshOrders } = useOrders();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
 
   useFocusEffect(
     useCallback(() => {
-      fetchOrders(); // Use cache if available
-    }, [fetchOrders])
+      // Misafir kullanıcı değilse siparişleri getir
+      if (!isGuest) {
+        fetchOrders(); // Use cache if available
+      }
+    }, [fetchOrders, isGuest])
   );
 
   const handleRefresh = useCallback(() => {
-    return refreshOrders(); // Force refresh
-  }, [refreshOrders]);
+    // Misafir kullanıcı değilse refresh yap
+    if (!isGuest) {
+      return refreshOrders(); // Force refresh
+    }
+    return Promise.resolve(); // Misafir kullanıcı için boş promise
+  }, [refreshOrders, isGuest]);
+
+  // Misafir kullanıcı için direkt EmptyOrders göster
+  if (isGuest) {
+    return (
+      <ThemedView className="flex-1">
+        <EmptyOrders />
+      </ThemedView>
+    );
+  }
 
   if (loading && orders.length === 0) {
     return (

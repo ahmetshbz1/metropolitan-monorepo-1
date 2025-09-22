@@ -39,12 +39,6 @@
           <string>com.metropolitan.food</string>
         </array>
       </dict>
-      <dict>
-        <key>CFBundleURLSchemes</key>
-        <array>
-          <string>exp+metropolitan</string>
-        </array>
-      </dict>
     </array>
     <key>CFBundleVersion</key>
     <string>3</string>

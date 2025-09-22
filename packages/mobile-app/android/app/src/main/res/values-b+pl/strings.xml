@@ -1,0 +1,4 @@
+<resources>
+  <string name="CAMERA">"Potrzebujemy dostępu do aparatu, aby zrobić nowe zdjęcie profilowe."</string>
+  <string name="READ_EXTERNAL_STORAGE">"Potrzebujemy dostępu do zdjęć, aby wybrać zdjęcie profilowe."</string>
+</resources>

@@ -69,7 +69,7 @@ export const app = new Elysia()
         },
         servers: [
           {
-            url: "http://192.168.1.55:3000",
+            url: "http://192.168.1.210:3000",
             description: "Development server",
           },
         ],
@@ -149,5 +149,5 @@ if (process.env.NODE_ENV !== "test") {
   console.log(
     `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
   );
-  console.log(`📱 Mobile app can connect to: http://192.168.1.55:3000`);
+  console.log(`📱 Mobile app can connect to: http://192.168.1.210:3000`);
 }
