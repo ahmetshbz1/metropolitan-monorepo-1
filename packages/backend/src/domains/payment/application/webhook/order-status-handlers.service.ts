@@ -2,8 +2,8 @@
 // metropolitan backend  
 // Status-specific handler methods for orders
 
-import type { OrderStatusUpdate, WebhookProcessingResult } from "./webhook-types";
 import { OrderStatusUpdateService } from "./order-status-update.service";
+import type { OrderStatusUpdate, WebhookProcessingResult } from "./webhook-types";
 
 export class OrderStatusHandlersService {
   
@@ -34,7 +34,16 @@ export class OrderStatusHandlersService {
       updatedAt: new Date(),
     };
 
-    return OrderStatusUpdateService.updateOrderStatus(orderId, statusUpdate);
+    const updateResult = await OrderStatusUpdateService.updateOrderStatus(orderId, statusUpdate);
+
+    // Restore cart items so user can try again
+    if (updateResult.success) {
+      const { WebhookOrderManagementService } = await import('./order-management.service');
+      const restoreResult = await WebhookOrderManagementService.restoreCartFromOrder(orderId);
+      console.log(`🛒 Cart restore after payment failure: ${restoreResult.message}`);
+    }
+
+    return updateResult;
   }
 
   /**
@@ -49,7 +58,16 @@ export class OrderStatusHandlersService {
       updatedAt: new Date(),
     };
 
-    return OrderStatusUpdateService.updateOrderStatus(orderId, statusUpdate);
+    const updateResult = await OrderStatusUpdateService.updateOrderStatus(orderId, statusUpdate);
+
+    // Restore cart items so user can try again
+    if (updateResult.success) {
+      const { WebhookOrderManagementService } = await import('./order-management.service');
+      const restoreResult = await WebhookOrderManagementService.restoreCartFromOrder(orderId);
+      console.log(`🛒 Cart restore after payment cancellation: ${restoreResult.message}`);
+    }
+
+    return updateResult;
   }
 
   /**

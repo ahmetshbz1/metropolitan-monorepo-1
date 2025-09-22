@@ -5,6 +5,7 @@
 import type { OrderCreationRequest } from "@metropolitan/shared/types/order";
 import { eq } from "drizzle-orm";
 import { Elysia, t } from "elysia";
+
 import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
 import { db } from "../../../../shared/infrastructure/database/connection";
 import { users } from "../../../../shared/infrastructure/database/schema";
@@ -49,6 +50,23 @@ export const orderCreationRoutes = new Elysia()
         await OrderValidationService.validateCartItems(user.id);
 
       if (!validation.isValid) {
+        // Check if cart is empty specifically
+        const isEmptyCart = validation.errors?.some(err => err.productId === "EMPTY_CART");
+
+        if (isEmptyCart) {
+          throw new Error(
+            JSON.stringify({
+              code: "EMPTY_CART",
+              message: "Sepetiniz boş. Lütfen ürün ekleyerek tekrar deneyin.",
+              details: {
+                reason: "Cart is empty - this usually happens after payment cancellation",
+                solution: "Please add products to your cart and try again",
+                cartItems: cartItems.length,
+              },
+            })
+          );
+        }
+
         throw new Error(
           JSON.stringify({
             code: "INSUFFICIENT_STOCK",

@@ -18,9 +18,9 @@ import {
 } from "../../../../shared/infrastructure/database/schema";
 
 // Refactored modular services
-import { StockManagementService } from "./order-creation/stock-management.service";
-import { PaymentProcessingService } from "./order-creation/payment-processing.service";
 import { CartManagementService } from "./order-creation/cart-management.service";
+import { PaymentProcessingService } from "./order-creation/payment-processing.service";
+import { StockManagementService } from "./order-creation/stock-management.service";
 
 export class OrderCreationService {
   /**
@@ -101,10 +101,9 @@ export class OrderCreationService {
       // Create order items (delegated)
       await CartManagementService.createOrderItems(tx, order.id, orderItemsData);
 
-      // Clear cart (delegated)
-      if (cartItemsData.length > 0) {
-        await CartManagementService.clearUserCart(tx, userId);
-      }
+      // DON'T clear cart here - wait for payment success
+      // Cart will be cleared in webhook after payment confirmation
+      console.log("🛒 Cart will be cleared after payment confirmation via webhook");
 
       return {
         ...order,
@@ -153,7 +152,8 @@ export class OrderCreationService {
       // Use modular services
       await CartManagementService.createOrderItems(tx, order.id, orderItemsData);
       await StockManagementService.fallbackDatabaseStockReservation?.(tx, orderItemsData);
-      await CartManagementService.clearUserCart(tx, userId);
+      // DON'T clear cart for legacy orders either - depends on payment method
+      console.log("🛒 Legacy order created, cart clearing depends on payment method");
 
       return order;
     });

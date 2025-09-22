@@ -116,8 +116,8 @@ export class OrderValidationService {
           isValid: false,
           errors: [
             {
-              productId: "",
-              productName: "Sepet",
+              productId: "EMPTY_CART",
+              productName: "Sepetiniz boş",
               requestedQuantity: 0,
               availableStock: 0,
             },

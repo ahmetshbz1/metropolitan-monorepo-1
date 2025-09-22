@@ -3,10 +3,10 @@
 //  Coordinator service for webhook-triggered order management
 //  Refactored to use modular services
 
-import type { WebhookProcessingResult } from "./webhook-types";
-import { OrderStatusUpdateService } from "./order-status-update.service";
-import { OrderStatusHandlersService } from "./order-status-handlers.service";
 import { OrderCartOperationsService } from "./order-cart-operations.service";
+import { OrderStatusHandlersService } from "./order-status-handlers.service";
+import { OrderStatusUpdateService } from "./order-status-update.service";
+import type { WebhookProcessingResult } from "./webhook-types";
 
 /**
  * Webhook Order Management Coordinator
@@ -50,6 +50,13 @@ export class WebhookOrderManagementService {
    */
   static async getOrderDetailsForRollback(orderId: string) {
     return OrderCartOperationsService.getOrderDetailsForRollback(orderId);
+  }
+
+  /**
+   * Restore cart items after payment cancellation/failure
+   */
+  static async restoreCartFromOrder(orderId: string) {
+    return OrderCartOperationsService.restoreCartFromOrder(orderId);
   }
 
   /**
