@@ -54,7 +54,12 @@
       "b2b": "Kurumsal",
       "b2c": "Bireysel"
     },
-    "header_edit": "Düzenle"
+    "header_edit": "Düzenle",
+    "legal_section_title": "Yasal Belgeler",
+    "privacy_policy": "Gizlilik Politikası",
+    "privacy_policy_subtitle": "Kişisel verilerinizin korunması ve kullanımı",
+    "terms_of_service": "Kullanım Koşulları",
+    "terms_of_service_subtitle": "Hizmet kullanım şartları ve kuralları"
   },
   "languages": {
     "tr": "Türkçe",

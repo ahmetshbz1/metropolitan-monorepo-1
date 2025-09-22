@@ -50,7 +50,12 @@
       "b2b": "Firma",
       "b2c": "Osobiste"
     },
-    "header_edit": "Edytuj"
+    "header_edit": "Edytuj",
+    "legal_section_title": "Dokumenty prawne",
+    "privacy_policy": "Polityka prywatności",
+    "privacy_policy_subtitle": "Ochrona i wykorzystanie danych osobowych",
+    "terms_of_service": "Regulamin",
+    "terms_of_service_subtitle": "Warunki korzystania z usługi"
   },
   "languages": {
     "tr": "Türkçe",

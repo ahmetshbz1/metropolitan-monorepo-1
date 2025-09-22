@@ -12,6 +12,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { AccountSection } from "@/components/profile/AccountSection";
 import { AppSettingsSection } from "@/components/profile/AppSettingsSection";
+import { LegalSection } from "@/components/profile/LegalSection";
 import { LogoutButton } from "@/components/profile/LogoutButton";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { SupportSection } from "@/components/profile/SupportSection";
@@ -90,6 +91,9 @@ export default function ProfileScreen() {
         </View>
         <View className="mb-4">
           <SupportSection handlePresentModal={handlePresentModal} />
+        </View>
+        <View className="mb-4">
+          <LegalSection />
         </View>
         <View className="mb-4">
           <LogoutButton />

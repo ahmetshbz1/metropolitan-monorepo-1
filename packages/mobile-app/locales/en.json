@@ -53,7 +53,12 @@
       "b2b": "Business",
       "b2c": "Personal"
     },
-    "header_edit": "Edit"
+    "header_edit": "Edit",
+    "legal_section_title": "Legal Documents",
+    "privacy_policy": "Privacy Policy",
+    "privacy_policy_subtitle": "Protection and use of your personal data",
+    "terms_of_service": "Terms of Service",
+    "terms_of_service_subtitle": "Service usage terms and conditions"
   },
   "languages": {
     "tr": "Türkçe",
