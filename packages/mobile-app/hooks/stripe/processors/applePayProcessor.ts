@@ -49,9 +49,17 @@ export const processApplePayPayment = async ({
       }
     }
 
+    // Use general localized error messages instead of hardcoded English from Stripe
+    let errorMessage: string;
+    if (error.code === 'Canceled') {
+      errorMessage = t("payment.canceled");
+    } else {
+      errorMessage = t("payment.apple_pay_error");
+    }
+
     return {
       success: false,
-      error: error.message || t("payment.apple_pay_error"),
+      error: errorMessage,
     };
   }
 
