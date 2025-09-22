@@ -33,11 +33,15 @@ export interface CompleteProfilePayload {
   firstName: string;
   lastName: string;
   email: string;
-  /** ‘corporate’ users provide a NIP (Polish VAT number). */
+  /** 'corporate' users provide a NIP (Polish VAT number). */
   userType: "corporate" | "individual";
   nip?: string;
   /** Indicates that the user has accepted the current Terms & Conditions. */
   termsAccepted: boolean;
+  /** Indicates that the user has accepted the Privacy Policy. */
+  privacyAccepted: boolean;
+  /** Indicates whether the user wants to receive marketing communications. */
+  marketingConsent?: boolean;
 }
 
 export interface UpdateProfileRequest {

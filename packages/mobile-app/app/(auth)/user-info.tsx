@@ -57,6 +57,8 @@ const UserInfoScreen = () => {
     setTermsAccepted,
     privacyAccepted,
     setPrivacyAccepted,
+    marketingAccepted,
+    setMarketingAccepted,
     isFormValid,
     isSaving,
     resetNipStatus,
@@ -145,11 +147,15 @@ const UserInfoScreen = () => {
           <TermsSection
             termsAccepted={termsAccepted}
             privacyAccepted={privacyAccepted}
+            marketingAccepted={marketingAccepted}
             onTermsPress={() => {
               setTermsAccepted(!termsAccepted);
             }}
             onPrivacyPress={() => {
               setPrivacyAccepted(!privacyAccepted);
+            }}
+            onMarketingPress={() => {
+              setMarketingAccepted(!marketingAccepted);
             }}
             themeColors={themeColors}
             t={t}

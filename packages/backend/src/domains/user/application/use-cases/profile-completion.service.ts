@@ -66,8 +66,9 @@ export class ProfileCompletionService {
     profileData: CompleteProfileRequest,
     jwt: any
   ): Promise<ProfileCompletionResponse> {
-    // 1. Validate terms acceptance
+    // 1. Validate terms and privacy policy acceptance
     UserProfileOperationsService.validateTermsAcceptance(profileData.termsAccepted);
+    UserProfileOperationsService.validatePrivacyAcceptance(profileData.privacyAccepted);
 
     let companyId: string | null = null;
     let nipValidation: any = null;
@@ -101,6 +102,8 @@ export class ProfileCompletionService {
         lastName: profileData.lastName,
         email: profileData.email,
         companyId: companyId,
+        privacyAccepted: profileData.privacyAccepted,
+        marketingConsent: profileData.marketingConsent,
       }
     );
 

@@ -239,7 +239,9 @@
     "terms_and_policy": "Kullanım Koşulları ve Gizlilik Politikası",
     "agree_to": "Kabul ediyorum:",
     "terms_of_service": "Kullanım Koşulları",
-    "privacy_policy": "Gizlilik Politikası"
+    "privacy_policy": "Gizlilik Politikası",
+    "marketing_consent": "Kampanya ve duyurulardan haberdar olmak istiyorum",
+    "marketing_consent_desc": "SMS, e-posta ve uygulama bildirimleri ile özel kampanyalardan haberdar olun"
   },
   "terms": {
     "title": "Şartlar ve Koşullar",

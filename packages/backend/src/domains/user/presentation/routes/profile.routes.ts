@@ -73,8 +73,13 @@ const publicProfileRoutes = createApp().post(
       nip: t.Optional(t.String({ minLength: 10, maxLength: 10 })),
       termsAccepted: t.Boolean({
         error:
-          "Kullanım koşullarını ve gizlilik politikasını kabul etmelisiniz.",
+          "Kullanım koşullarını kabul etmelisiniz.",
       }),
+      privacyAccepted: t.Boolean({
+        error:
+          "Gizlilik politikasını kabul etmelisiniz.",
+      }),
+      marketingConsent: t.Optional(t.Boolean()),
     }),
   }
 );

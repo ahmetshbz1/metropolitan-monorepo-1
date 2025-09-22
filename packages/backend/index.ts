@@ -38,6 +38,8 @@ initializeSentry();
 const stream = pretty({
   colorize: true,
   translateTime: "SYS:standard",
+  destination: process.stdout,
+  sync: true,
 });
 
 // Root endpoint'te göstermek için git commit hash'ini al

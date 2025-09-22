@@ -23,6 +23,7 @@ interface UseUserInfoFormReturn {
   companyData: NipResponse | null;
   termsAccepted: boolean;
   privacyAccepted: boolean;
+  marketingAccepted: boolean;
   isFormValid: boolean;
   // status flags
   isNipChecking: boolean;
@@ -40,6 +41,7 @@ interface UseUserInfoFormReturn {
   handleSave: () => Promise<void>;
   setTermsAccepted: (v: boolean) => void;
   setPrivacyAccepted: (v: boolean) => void;
+  setMarketingAccepted: (v: boolean) => void;
 }
 
 export function useUserInfoForm(isB2B: boolean): UseUserInfoFormReturn {
@@ -60,6 +62,7 @@ export function useUserInfoForm(isB2B: boolean): UseUserInfoFormReturn {
 
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [marketingAccepted, setMarketingAccepted] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   // --- Terms and privacy acceptance persistence (temp flag from Terms screen) ---
@@ -151,8 +154,9 @@ export function useUserInfoForm(isB2B: boolean): UseUserInfoFormReturn {
       email: email.trim(),
       userType: isB2B ? "corporate" : "individual",
       ...(isB2B && { nip: nip.trim() }),
-      termsAccepted: true,
-      privacyAccepted: true,
+      termsAccepted: termsAccepted,
+      privacyAccepted: privacyAccepted,
+      marketingConsent: marketingAccepted,
     });
     setIsSaving(false);
     if (!result.success) {
@@ -169,6 +173,7 @@ export function useUserInfoForm(isB2B: boolean): UseUserInfoFormReturn {
     companyData,
     termsAccepted,
     privacyAccepted,
+    marketingAccepted,
     isFormValid,
     // status flags
     isNipChecking,
@@ -186,5 +191,6 @@ export function useUserInfoForm(isB2B: boolean): UseUserInfoFormReturn {
     handleSave,
     setTermsAccepted,
     setPrivacyAccepted,
+    setMarketingAccepted,
   };
 }

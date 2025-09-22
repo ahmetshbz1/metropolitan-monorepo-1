@@ -12,8 +12,10 @@ import { useTranslation } from "react-i18next";
 interface TermsSectionProps {
   termsAccepted: boolean;
   privacyAccepted: boolean;
+  marketingAccepted: boolean;
   onTermsPress: () => void;
   onPrivacyPress: () => void;
+  onMarketingPress: () => void;
   themeColors: any;
   t: (key: string) => string;
 }
@@ -21,8 +23,10 @@ interface TermsSectionProps {
 export function TermsSection({
   termsAccepted,
   privacyAccepted,
+  marketingAccepted,
   onTermsPress,
   onPrivacyPress,
+  onMarketingPress,
   themeColors,
   t,
 }: TermsSectionProps) {
@@ -119,6 +123,45 @@ export function TermsSection({
               >
                 {t("user_info.privacy_policy")}
               </Text>
+            </Text>
+          </View>
+        </View>
+      </BaseButton>
+
+      {/* Marketing Communications Checkbox (Optional) */}
+      <BaseButton
+        variant="ghost"
+        size="small"
+        onPress={onMarketingPress}
+        style={{
+          backgroundColor: themeColors.backgroundSecondary,
+          borderWidth: 1,
+          borderColor: themeColors.border,
+          justifyContent: "flex-start",
+          paddingHorizontal: 16,
+          paddingVertical: 16,
+        }}
+      >
+        <View className="flex-row items-start">
+          <View className="mr-3 mt-0.5">
+            <Ionicons
+              name={marketingAccepted ? "checkbox" : "square-outline"}
+              size={24}
+              color={marketingAccepted ? themeColors.tint : themeColors.mediumGray}
+            />
+          </View>
+          <View className="flex-1">
+            <Text
+              className="text-base leading-6"
+              style={{ color: themeColors.text }}
+            >
+              <Text>{t("user_info.marketing_consent")}</Text>
+            </Text>
+            <Text
+              className="text-xs mt-1 opacity-70"
+              style={{ color: themeColors.mediumGray }}
+            >
+              {t("user_info.marketing_consent_desc")}
             </Text>
           </View>
         </View>

@@ -54,6 +54,8 @@ export class UserProfileOperationsService {
       lastName: string;
       email: string;
       companyId: string | null;
+      privacyAccepted?: boolean;
+      marketingConsent?: boolean;
     }
   ) {
     const [updatedUser] = await db
@@ -64,6 +66,9 @@ export class UserProfileOperationsService {
         email: profileData.email,
         companyId: profileData.companyId,
         termsAcceptedAt: new Date(),
+        privacyAcceptedAt: profileData.privacyAccepted ? new Date() : null,
+        marketingConsent: profileData.marketingConsent || false,
+        marketingConsentAt: profileData.marketingConsent ? new Date() : null,
         updatedAt: new Date(),
       })
       .where(
@@ -104,7 +109,18 @@ export class UserProfileOperationsService {
   static validateTermsAcceptance(termsAccepted?: boolean): void {
     if (!termsAccepted) {
       throw new Error(
-        "Kullanım koşulları ve gizlilik politikasını kabul etmelisiniz."
+        "Kullanım koşullarını kabul etmelisiniz."
+      );
+    }
+  }
+
+  /**
+   * Validate privacy policy acceptance
+   */
+  static validatePrivacyAcceptance(privacyAccepted?: boolean): void {
+    if (!privacyAccepted) {
+      throw new Error(
+        "Gizlilik politikasını kabul etmelisiniz."
       );
     }
   }

@@ -42,6 +42,8 @@ export const completeProfile = async (
         userType: userData.userType,
         ...(userData.nip ? { nip: userData.nip } : {}),
         termsAccepted: userData.termsAccepted,
+        privacyAccepted: userData.privacyAccepted,
+        marketingConsent: userData.marketingConsent,
       },
       {
         headers: {
