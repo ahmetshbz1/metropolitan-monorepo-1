@@ -21,7 +21,12 @@
         "CFBundleAllowMixedLocalizations": true,
         "CFBundleLocalizations": ["tr", "en", "pl"]
       },
-      "appleTeamId": "64XKK46655"
+      "appleTeamId": "64XKK46655",
+      "entitlements": {
+        "com.apple.developer.in-app-payments": [
+          "merchant.com.metropolitan.food"
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {

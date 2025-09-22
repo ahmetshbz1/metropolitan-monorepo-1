@@ -8,6 +8,9 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
+    "build:ios": "NODE_ENV=production eas build --platform ios",
+    "build:android": "NODE_ENV=production eas build --platform android",
+    "build:all": "NODE_ENV=production eas build --platform all",
     "lint": "expo lint",
     "analyze": "EXPO_ATLAS=true expo export --platform ios"
   },

@@ -13,6 +13,12 @@ const getApiBaseUrl = (): string => {
     return envUrl;
   }
 
+  // Development fallback (sadece development için)
+  if (__DEV__) {
+    console.warn("EXPO_PUBLIC_API_BASE_URL not found, using fallback for development");
+    return "http://192.168.1.230:3000";
+  }
+
   throw new Error(
     "EXPO_PUBLIC_API_BASE_URL environment variable is required for production"
   );
