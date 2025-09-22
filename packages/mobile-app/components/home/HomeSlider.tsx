@@ -21,7 +21,10 @@ const sliderImages = [
 ];
 
 const { width } = Dimensions.get("window");
-const SLIDER_HEIGHT = width * 0.5;
+const H_MARGIN = 4; // minimal margin for maximum width
+const SLIDER_WIDTH = width - H_MARGIN * 2;
+const SLIDER_HEIGHT = width * 0.6; // height ratio
+const BORDER_RADIUS = 20;
 
 export function HomeSlider() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -33,7 +36,7 @@ export function HomeSlider() {
   useEffect(() => {
     const interval = setInterval(() => {
       const nextIndex = (activeIndex + 1) % sliderImages.length;
-      scrollViewRef.current?.scrollTo({ x: nextIndex * width, animated: true });
+      scrollViewRef.current?.scrollTo({ x: nextIndex * SLIDER_WIDTH, animated: true });
     }, 3000); // 3 seconds
 
     return () => clearInterval(interval);
@@ -49,8 +52,17 @@ export function HomeSlider() {
     }
   };
 
-  return (
-    <View className="mb-5" style={{ height: SLIDER_HEIGHT }}>
+return (
+    <View
+      className="mb-4"
+      style={{
+        height: SLIDER_HEIGHT,
+        marginHorizontal: H_MARGIN,
+        borderRadius: BORDER_RADIUS,
+        overflow: "hidden", // ensure images are clipped to rounded corners
+        backgroundColor: "transparent",
+      }}
+    >
       <ScrollView
         ref={scrollViewRef}
         horizontal
@@ -58,17 +70,17 @@ export function HomeSlider() {
         showsHorizontalScrollIndicator={false}
         onScroll={onScroll}
         scrollEventThrottle={16}
-        style={{ width, height: SLIDER_HEIGHT }}
+        style={{ width: SLIDER_WIDTH, height: SLIDER_HEIGHT, alignSelf: "center" }}
       >
         {sliderImages.map((image, index) => (
           <View
             key={index}
             className="justify-center items-center"
-            style={{ width, height: SLIDER_HEIGHT }}
+            style={{ width: SLIDER_WIDTH, height: SLIDER_HEIGHT }}
           >
-            <Image
+<Image
               source={image}
-              style={{ width: width, height: "100%" }}
+              style={{ width: "100%", height: "100%", borderRadius: BORDER_RADIUS }}
               contentFit="cover"
             />
           </View>
