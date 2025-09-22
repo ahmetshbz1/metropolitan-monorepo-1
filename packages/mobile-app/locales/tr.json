@@ -634,6 +634,8 @@
     "category": "Kategori",
     "stock": "Stok: {{count}}",
     "similar_products": "Benzer Ürünler",
+    "product_details": "Ürün Detayları",
+    "product_details_sheet_title": "Ürün Detayları",
     "in_stock": "Stokta var",
     "out_of_stock": "Stokta yok",
     "info": {

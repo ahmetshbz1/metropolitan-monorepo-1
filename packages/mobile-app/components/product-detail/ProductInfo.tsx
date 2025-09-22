@@ -77,7 +77,7 @@ export function ProductInfo({
         >
           <Ionicons name="information-circle-outline" size={18} color={colors.tint} />
           <ThemedText className="text-sm ml-1.5 font-medium" style={{ color: colors.tint }}>
-            Ürün Detayları
+            {t("product_detail.product_details")}
           </ThemedText>
           <Ionicons name="chevron-forward" size={16} color={colors.tint} className="ml-1" />
         </TouchableOpacity>
@@ -178,7 +178,7 @@ Miktar
 
       <CustomBottomSheet
         ref={bottomSheetRef}
-        title="Ürün Detayları"
+        title={t("product_detail.product_details_sheet_title")}
       >
         <View className="p-4">
           <ThemedText className="text-base leading-6">

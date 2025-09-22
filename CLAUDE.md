@@ -286,3 +286,7 @@ const order: Order = await orderService.create(orderData)
 - JWT token blacklisting
 - Stripe webhook signature validation
 - Input sanitization and validation
+
+
+Kullanıcı istekleri,
+mobile-app de sadece tr.json dosyasına çevirileri ekle kullanıcı en sonunda en ve pl json dosyalarını tr.json dosyasından çoğaltacak 
