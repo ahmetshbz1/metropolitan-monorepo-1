@@ -20,8 +20,21 @@ interface TrackingSectionProps {
 const getTrackingInfo = (order: OrderDetail, t: any) => {
   const status = order.status.toLowerCase();
 
+  // Check if it's a bank transfer payment
+  const isBankTransfer =
+    order.paymentMethodType === "bank_transfer" ||
+    order.paymentMethod?.cardType === "bank_transfer";
+
   switch (status) {
     case "pending":
+      // Special message for bank transfer pending orders
+      if (isBankTransfer) {
+        return {
+          text: t("order_detail.tracking.bank_transfer_pending"),
+          pressable: false,
+          isInternal: false,
+        };
+      }
       return {
         text: t("order_detail.tracking.status_pending"),
         pressable: false,

@@ -393,6 +393,7 @@
     "tracking": {
       "title": "Teslimat Durumu",
       "status_pending": "Siparişiniz onay bekliyor.",
+      "bank_transfer_pending": "Siparişiniz onaylanınca size haber vereceğiz.",
       "status_confirmed": "Siparişiniz hazırlanmaya başladı.",
       "status_preparing": "Siparişiniz paketleniyor.",
       "shipped_internal": "Kendi aracımızla yola çıktı.",
