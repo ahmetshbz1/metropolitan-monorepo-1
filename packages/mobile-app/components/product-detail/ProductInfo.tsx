@@ -139,7 +139,7 @@ export function ProductInfo({
       </View>
 
       {product.description && (
-        <View className="mb-4 p-3 rounded-xl" style={{ backgroundColor: colors.card }}>
+        <View className="mb-2 p-3 rounded-xl" style={{ backgroundColor: colors.card }}>
           <ThemedText className="text-sm leading-5" style={{ color: colors.mediumGray }}>
             {product.description.length > 120
               ? `${product.description.substring(0, 120)}...`

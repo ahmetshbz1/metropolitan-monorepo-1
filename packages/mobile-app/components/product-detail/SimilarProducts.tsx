@@ -40,8 +40,8 @@ export const SimilarProducts: React.FC<SimilarProductsProps> = ({
   );
 
   return (
-    <View className="mt-6 mb-4">
-      <ThemedText className="text-lg font-bold px-4 mb-3">
+    <View className="mt-0 mb-4">
+      <ThemedText className="text-xl font-bold px-4 mb-3">
         {t("product_detail.similar_products", "Benzer Ürünler")}
       </ThemedText>
       <FlatList
