@@ -71,15 +71,17 @@ export class OrderCreationService {
       const [order] = await tx.insert(orders).values(orderPayload).returning();
       if (!order) throw new Error("Sipariş oluşturulamadı");
 
-      // Handle corporate bank transfer auto-approval (delegated)
+      // Handle corporate bank transfer (requires manual approval)
       if (isBankTransfer && user.userType === "corporate") {
-        return await PaymentProcessingService.handleCorporateBankTransfer(
+        const bankTransferResult = await PaymentProcessingService.handleCorporateBankTransfer(
           tx,
           order,
           orderItemsData,
           cartItemsData,
           userId
         );
+        // Bank transfer handler already returns a formatted OrderCreationResult
+        return bankTransferResult;
       }
 
       // Process Stripe payment (delegated)
@@ -112,6 +114,12 @@ export class OrderCreationService {
       };
     });
 
+    // Check if result is already formatted (bank transfer case)
+    if (result && typeof result === 'object' && 'success' in result && 'order' in result) {
+      return result as OrderCreationResult;
+    }
+
+    // Format result for Stripe payment cases
     return this.formatOrderCreationResult(result);
   }
 

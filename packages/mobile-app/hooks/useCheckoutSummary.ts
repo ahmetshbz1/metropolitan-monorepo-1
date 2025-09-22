@@ -128,9 +128,10 @@ export function useCheckoutSummary() {
         });
 
         console.log("✅ Bank transfer order creation response:", orderData);
-        const orderId = orderData?.order?.id || orderData?.id;
 
-        if (orderId) {
+        // Check if the order was created successfully
+        if (orderData?.order?.id) {
+          const orderId = orderData.order.id;
           await clearCart();
           resetCheckout();
           
@@ -140,6 +141,7 @@ export function useCheckoutSummary() {
             params: { id: orderId },
           });
         } else {
+          console.error("❌ Bank transfer order failed:", orderData);
           throw new Error(t("checkout.order_creation_failed"));
         }
       }

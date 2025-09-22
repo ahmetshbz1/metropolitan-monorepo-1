@@ -1,16 +1,14 @@
 //  "corporate-payment.processor.ts"
 //  metropolitan backend
-//  Corporate bank transfer payment processing
+//  Bank transfer payment processing
 
 import type { CartItem as CartItemData } from "@metropolitan/shared/types/cart";
 import type { OrderCreationResult, OrderItem as OrderItemData } from "@metropolitan/shared/types/order";
 import { eq } from "drizzle-orm";
 
-import { BackgroundInvoiceService } from "./background-invoice.service";
-
 export class CorporatePaymentProcessor {
   /**
-   * Handle corporate bank transfer with auto-approval
+   * Handle bank transfer orders - require manual admin approval
    */
   static async processCorporateBankTransfer(
     tx: any,
@@ -22,17 +20,18 @@ export class CorporatePaymentProcessor {
     const { orders, orderItems } = await import("../../../../../../shared/infrastructure/database/schema");
     const { CartManagementService } = await import("../cart-management.service");
     
-    console.log("🏢 Kurumsal müşteri banka havalesi - otomatik onay");
+    console.log("🏦 Banka havalesi siparişi - manuel onay bekliyor");
 
-    // Auto-approve order
-    await tx
+    // Keep order in pending status for manual approval
+    const [updatedOrder] = await tx
       .update(orders)
       .set({
-        status: "confirmed",
+        status: "pending",
         paymentStatus: "pending",
         updatedAt: new Date(),
       })
-      .where(eq(orders.id, order.id));
+      .where(eq(orders.id, order.id))
+      .returning();
 
     // Create order items
     await this.createOrderItems(tx, orderItems, order.id, orderItemsData);
@@ -42,10 +41,10 @@ export class CorporatePaymentProcessor {
       await CartManagementService.clearUserCart(tx, userId);
     }
 
-    // Generate invoice in background
-    BackgroundInvoiceService.scheduleInvoiceGeneration(order.id, userId);
+    // Note: Invoice will be generated after admin approval
+    console.log("📝 Fatura admin onayından sonra oluşturulacak");
 
-    return this.buildSuccessResult(order);
+    return this.buildSuccessResult(updatedOrder || order);
   }
   
   /**
@@ -69,17 +68,24 @@ export class CorporatePaymentProcessor {
   }
   
   /**
-   * Build success result for corporate order
+   * Build success result for bank transfer order
    */
   private static buildSuccessResult(order: any): OrderCreationResult {
+    console.log("📝 Building success result for order:", {
+      id: order.id,
+      orderNumber: order.orderNumber,
+      totalAmount: order.totalAmount,
+      currency: order.currency
+    });
+
     return {
       success: true,
       order: {
         id: order.id,
         orderNumber: order.orderNumber,
-        status: "confirmed",
+        status: "pending", // Bank transfer orders need manual approval
         totalAmount: order.totalAmount,
-        currency: order.currency,
+        currency: order.currency || "PLN",
         createdAt: order.createdAt,
         paymentStatus: "pending",
       },
