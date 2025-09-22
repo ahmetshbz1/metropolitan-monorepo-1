@@ -11,10 +11,20 @@ import { ProductCard } from "@/components/products/ProductCard";
 import { useLocalSearchParams } from "expo-router";
 import type { Product } from "@metropolitan/shared";
 
+import { useNavigation } from "@react-navigation/native";
+import { useLayoutEffect } from "react";
+
 export default function SimilarProductsScreen() {
   const { t } = useTranslation();
   const { products } = useProducts();
   const { productId, category, brand } = useLocalSearchParams();
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: t("product_detail.similar_products_page_title", "Benzer Ürünler"),
+    });
+  }, [navigation, t]);
 
   // İlk satır için gerçek benzer ürünler + geri kalanı için az satılanlar
   const combinedProducts = useMemo(() => {
