@@ -60,6 +60,7 @@ export const productRoutes = createApp().group("/products", (app) =>
           .select({
             id: products.id,
             name: productTranslations.name,
+            description: productTranslations.description,
             imageUrl: products.imageUrl,
             price: products.price,
             currency: products.currency,
@@ -80,6 +81,7 @@ export const productRoutes = createApp().group("/products", (app) =>
         const formattedProducts = allProducts.map((p) => ({
           id: p.id,
           name: p.name,
+          description: p.description,
           image: p.imageUrl ? `${baseUrl}${p.imageUrl}` : "",
           price: Number(p.price) || 0,
           currency: p.currency,

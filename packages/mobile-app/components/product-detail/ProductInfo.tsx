@@ -3,13 +3,15 @@
 //  Created by Ahmet on 15.06.2025.
 
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import React, { useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { TextInput, View } from "react-native";
+import { TextInput, View, TouchableOpacity } from "react-native";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
 import { HapticIconButton } from "@/components/HapticButton";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import CustomBottomSheet from "@/components/CustomBottomSheet";
 import Colors from "@/constants/Colors";
 import { formatPrice } from "@/core/utils";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -33,6 +35,7 @@ export function ProductInfo({
   const { t } = useTranslation();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
+  const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   const numericQuantity = parseInt(quantity, 10) || 0;
 
@@ -46,32 +49,57 @@ export function ProductInfo({
         <ThemedText className="text-2xl font-bold leading-8">
           {product.name}
         </ThemedText>
-        <ThemedText className="text-sm" style={{ color: "#9E9E9E" }}>
-          {t(`brands.${product.brand.toLowerCase()}`)}
-        </ThemedText>
-      </View>
-
-      <View className="mb-4">
         <ThemedText className="text-3xl font-bold leading-9">
           {formatPrice(product.price, product.currency)}
         </ThemedText>
       </View>
 
-      <View className="flex-row items-center mb-2.5">
-        <Ionicons name="cube-outline" size={20} color={colors.text} />
-        <ThemedText className="text-sm leading-6 ml-2">
-          {product.stock > 0
-            ? t("product_detail.stock_available", { count: product.stock })
-            : t("product_detail.out_of_stock")}
+      <View className="mb-4">
+        <ThemedText className="text-sm mb-3" style={{ color: "#9E9E9E" }}>
+          {t(`brands.${product.brand.toLowerCase()}`)}
         </ThemedText>
+
+        {product.description && (
+          <View className="mb-4 p-3 rounded-xl" style={{ backgroundColor: colors.card }}>
+            <ThemedText className="text-sm leading-5" style={{ color: colors.mediumGray }}>
+              {product.description.length > 120
+                ? `${product.description.substring(0, 120)}...`
+                : product.description}
+            </ThemedText>
+          </View>
+        )}
+
+        <TouchableOpacity
+          className="flex-row items-center self-start"
+          onPress={() => {
+            bottomSheetRef.current?.present();
+          }}
+        >
+          <Ionicons name="information-circle-outline" size={18} color={colors.tint} />
+          <ThemedText className="text-sm ml-1.5 font-medium" style={{ color: colors.tint }}>
+            Ürün Detayları
+          </ThemedText>
+          <Ionicons name="chevron-forward" size={16} color={colors.tint} className="ml-1" />
+        </TouchableOpacity>
       </View>
 
-      <View className="flex-row items-center mb-2.5">
-        <Ionicons name="grid-outline" size={20} color={colors.text} />
-        <ThemedText className="text-sm leading-6 ml-2">
-          {t("product_detail.category", { category: product.category })}
-        </ThemedText>
-      </View>
+      {product.stock < 10 && product.stock > 0 && (
+        <View className="flex-row items-center mb-2.5">
+          <Ionicons name="cube-outline" size={20} color={colors.text} />
+          <ThemedText className="text-sm leading-6 ml-2">
+            {t("product_detail.stock_available", { count: product.stock })}
+          </ThemedText>
+        </View>
+      )}
+
+      {product.stock === 0 && (
+        <View className="flex-row items-center mb-2.5">
+          <Ionicons name="cube-outline" size={20} color={colors.text} />
+          <ThemedText className="text-sm leading-6 ml-2">
+            {t("product_detail.out_of_stock")}
+          </ThemedText>
+        </View>
+      )}
 
       {/* Quantity Selector */}
       {product.stock > 0 && (
@@ -80,7 +108,7 @@ export function ProductInfo({
             className="text-sm font-medium mb-2"
             style={{ color: colors.text }}
           >
-            {t("product_detail.quantity")}
+Miktar
           </ThemedText>
           <View
             className="flex-row items-center rounded-2xl border-2 overflow-hidden self-start"
@@ -147,6 +175,47 @@ export function ProductInfo({
           </View>
         </View>
       )}
+
+      <CustomBottomSheet
+        ref={bottomSheetRef}
+        title="Ürün Detayları"
+      >
+        <View className="p-4">
+          <ThemedText className="text-base leading-6">
+            {product.description || "Bu ürün için henüz detaylı açıklama bulunmamaktadır."}
+          </ThemedText>
+
+          <View className="mt-6">
+            <ThemedText className="text-lg font-semibold mb-3">
+              Ürün Özellikleri
+            </ThemedText>
+
+            <View className="space-y-3">
+              <View className="flex-row justify-between py-2 border-b" style={{ borderBottomColor: colors.borderColor }}>
+                <ThemedText className="text-sm" style={{ color: colors.mediumGray }}>Marka</ThemedText>
+                <ThemedText className="text-sm font-medium">{t(`brands.${product.brand.toLowerCase()}`)}</ThemedText>
+              </View>
+
+              <View className="flex-row justify-between py-2 border-b" style={{ borderBottomColor: colors.borderColor }}>
+                <ThemedText className="text-sm" style={{ color: colors.mediumGray }}>Kategori</ThemedText>
+                <ThemedText className="text-sm font-medium">{product.category}</ThemedText>
+              </View>
+
+              <View className="flex-row justify-between py-2 border-b" style={{ borderBottomColor: colors.borderColor }}>
+                <ThemedText className="text-sm" style={{ color: colors.mediumGray }}>Fiyat</ThemedText>
+                <ThemedText className="text-sm font-medium">{formatPrice(product.price, product.currency)}</ThemedText>
+              </View>
+
+              <View className="flex-row justify-between py-2">
+                <ThemedText className="text-sm" style={{ color: colors.mediumGray }}>Stok Durumu</ThemedText>
+                <ThemedText className="text-sm font-medium">
+                  {product.stock > 0 ? `${product.stock} adet` : "Stokta yok"}
+                </ThemedText>
+              </View>
+            </View>
+          </View>
+        </View>
+      </CustomBottomSheet>
     </ThemedView>
   );
 }

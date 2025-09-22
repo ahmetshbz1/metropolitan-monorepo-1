@@ -12,6 +12,7 @@ export interface Product {
   brand: string;
   size?: string;
   currency?: string;
+  description?: string;
 }
 
 export interface Category {

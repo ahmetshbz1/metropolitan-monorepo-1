@@ -185,6 +185,7 @@ const main = async () => {
             languageCode: lang,
             name: langData.name,
             fullName: langData.full_name,
+            description: langData.description || null,
           });
         }
       }
