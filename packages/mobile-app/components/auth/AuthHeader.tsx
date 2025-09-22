@@ -20,7 +20,7 @@ export const AuthHeader = ({ title, subtitle, style, minimal }: AuthHeaderProps)
 
   if (minimal) {
     return (
-      <View className="px-6" style={style}>
+      <View style={style}>
         <Text
           className="text-2xl font-semibold mb-2"
           style={{ color: themeColors.text }}

@@ -73,7 +73,7 @@ const UserInfoScreen = () => {
       keyboardShouldPersistTaps: "handled" as const,
       showsVerticalScrollIndicator: false,
       contentContainerStyle: {
-        paddingHorizontal: 24,
+        paddingHorizontal: 20,
         paddingTop: 20,
         paddingBottom: 20,
       },
@@ -109,7 +109,7 @@ const UserInfoScreen = () => {
         />
 
         {/* Form Content */}
-        <View style={{ gap: 24 }}>
+        <View style={{ gap: 16 }}>
           {/* Personal Information Section */}
           <PersonalInfoSection
             firstName={firstName}

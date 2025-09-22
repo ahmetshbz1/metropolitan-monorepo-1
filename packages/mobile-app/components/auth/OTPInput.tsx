@@ -1,8 +1,10 @@
 //  "OTPInput.tsx"
 //  metropolitan app
 //  Created by Ahmet on 02.07.2025.
+//  Redesigned on 23.09.2025 for modern minimalist experience
 
 import Colors from "@/constants/Colors";
+import { zincColors } from "@/constants/colors/zincColors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useHaptics } from "@/hooks/useHaptics";
 import React, { useEffect, useRef } from "react";
@@ -31,6 +33,7 @@ const Digit = ({
   isError: boolean;
 }) => {
   const colorScheme = useColorScheme() ?? "light";
+  const isDark = colorScheme === "dark";
   const themeColors = Colors[colorScheme];
 
   const translateY = useSharedValue(digit ? 0 : 20);
@@ -51,18 +54,19 @@ const Digit = ({
     }
   }, [digit, translateY, opacity]);
 
-  const borderColor = isError
-    ? themeColors.danger
-    : isFocused
-      ? themeColors.tint
-      : themeColors.border;
+  const getBorderColor = () => {
+    if (isError) return "#ef4444";
+    if (isFocused) return themeColors.tint;
+    return isDark ? zincColors[700] : zincColors[300];
+  };
 
   return (
     <View
-      className="w-14 h-16 rounded-xl border justify-center items-center overflow-hidden"
+      className="w-16 h-16 rounded-2xl justify-center items-center overflow-hidden"
       style={{
-        borderColor: borderColor,
-        backgroundColor: themeColors.backgroundSecondary,
+        borderWidth: isFocused || isError ? 2 : 1,
+        borderColor: getBorderColor(),
+        backgroundColor: isDark ? zincColors[900] : zincColors[100],
       }}
     >
       <Animated.Text
@@ -111,7 +115,7 @@ export const OTPInput = ({
         withTiming(0, { duration: 50 })
       );
     }
-    
+
     // Önceki error state'ini güncelle
     prevErrorRef.current = isError;
   }, [isError, shakeTranslateX, triggerHaptic]);
@@ -119,7 +123,7 @@ export const OTPInput = ({
   return (
     <Animated.View style={shakeStyle}>
       <TouchableOpacity
-        className="flex-row justify-center gap-3"
+        className="flex-row justify-center gap-2"
         onPress={() => inputRef.current?.focus()}
       >
         {Array.from({ length: codeLength }).map((_, index) => (

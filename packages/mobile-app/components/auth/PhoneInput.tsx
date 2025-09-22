@@ -1,11 +1,12 @@
 //  "PhoneInput.tsx"
 //  metropolitan app
 //  Created by Ahmet on 14.06.2025.
+//  Redesigned on 23.09.2025 for modern minimalist experience
 
 import React, { forwardRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Text, TextInput, View } from "react-native";
-
+import { zincColors } from "@/constants/colors/zincColors";
 import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { PHONE_INPUT_CONFIG } from "@/utils/phoneFormatters";
@@ -35,68 +36,66 @@ export const PhoneInput = forwardRef<TextInput, PhoneInputProps>(
   ) => {
     const { t } = useTranslation();
     const colorScheme = useColorScheme() ?? "light";
+    const isDark = colorScheme === "dark";
     const themeColors = Colors[colorScheme];
 
     return (
       <>
         <Text
-          className="mb-1 pl-2.5 text-base font-medium opacity-80"
-          style={{ color: themeColors.text }}
+          className="mb-2 text-sm font-medium"
+          style={{ color: themeColors.text, opacity: 0.7 }}
         >
           {t("phone_login.phone_number_label")}
         </Text>
         <View
-          className="h-14 flex-row items-center rounded-xl px-4"
+          className="h-14 flex-row items-center rounded-2xl"
           style={{
-            backgroundColor:
-              colorScheme === "light"
-                ? themeColors.card
-                : themeColors.backgroundSecondary,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.1,
-            shadowRadius: 3,
-            elevation: 2,
+            backgroundColor: isDark ? zincColors[900] : zincColors[100],
           }}
         >
-          <Text
-            className="text-lg font-semibold"
-            style={{ color: themeColors.text }}
-          >
-            +
-          </Text>
-          <TextInput
-            style={{
-              paddingHorizontal: 4,
-              fontSize: 17,
-              color: themeColors.text,
-              width: 60,
-            }}
-            placeholderTextColor={themeColors.mediumGray}
-            keyboardType="numeric"
-            value={countryCode}
-            onChangeText={onCountryCodeChange}
-            maxLength={PHONE_INPUT_CONFIG.maxCountryCodeLength}
-            onFocus={onCountryCodeFocus}
-            onBlur={onCountryCodeBlur}
-            selection={countryCodeSelection}
-          />
+          <View className="flex-row items-center px-4">
+            <Text
+              className="text-base font-medium mr-1"
+              style={{ color: themeColors.text }}
+            >
+              +
+            </Text>
+            <TextInput
+              style={{
+                fontSize: 16,
+                color: themeColors.text,
+                width: 50,
+                fontWeight: "500",
+              }}
+              placeholderTextColor={isDark ? zincColors[500] : zincColors[400]}
+              keyboardType="numeric"
+              value={countryCode}
+              onChangeText={onCountryCodeChange}
+              maxLength={PHONE_INPUT_CONFIG.maxCountryCodeLength}
+              onFocus={onCountryCodeFocus}
+              onBlur={onCountryCodeBlur}
+              selection={countryCodeSelection}
+            />
+          </View>
+
           <View
             style={{
               width: 1,
-              height: "60%",
-              backgroundColor: themeColors.border,
-              marginHorizontal: 8,
+              height: "50%",
+              backgroundColor: isDark ? zincColors[700] : zincColors[300],
             }}
           />
+
           <TextInput
             style={{
               flex: 1,
-              fontSize: 17,
+              fontSize: 16,
               color: themeColors.text,
+              paddingHorizontal: 16,
+              height: "100%",
             }}
             placeholder={PHONE_INPUT_CONFIG.placeholder}
-            placeholderTextColor={themeColors.mediumGray}
+            placeholderTextColor={isDark ? zincColors[500] : zincColors[400]}
             keyboardType="phone-pad"
             value={phoneNumber}
             onChangeText={onPhoneNumberChange}
@@ -110,4 +109,5 @@ export const PhoneInput = forwardRef<TextInput, PhoneInputProps>(
     );
   }
 );
+
 PhoneInput.displayName = "PhoneInput";
