@@ -44,44 +44,109 @@ export function ProductInfo({
   }
 
   return (
-    <ThemedView className="p-5 rounded-t-2xl -mt-5">
-      <View className="flex-row justify-between items-center mb-4">
-        <ThemedText className="text-2xl font-bold leading-8">
-          {product.name}
-        </ThemedText>
-        <ThemedText className="text-3xl font-bold leading-9">
-          {formatPrice(product.price, product.currency)}
-        </ThemedText>
-      </View>
-
-      <View className="mb-4">
-        <ThemedText className="text-sm mb-3" style={{ color: "#9E9E9E" }}>
-          {t(`brands.${product.brand.toLowerCase()}`)}
-        </ThemedText>
-
-        {product.description && (
-          <View className="mb-4 p-3 rounded-xl" style={{ backgroundColor: colors.card }}>
-            <ThemedText className="text-sm leading-5" style={{ color: colors.mediumGray }}>
-              {product.description.length > 120
-                ? `${product.description.substring(0, 120)}...`
-                : product.description}
-            </ThemedText>
-          </View>
-        )}
-
-        <TouchableOpacity
-          className="flex-row items-center self-start"
-          onPress={() => {
-            bottomSheetRef.current?.present();
-          }}
-        >
-          <Ionicons name="information-circle-outline" size={18} color={colors.tint} />
-          <ThemedText className="text-sm ml-1.5 font-medium" style={{ color: colors.tint }}>
-            {t("product_detail.product_details")}
+    <ThemedView className="p-3 rounded-t-2xl mt-1">
+      <View className="flex-row justify-between mb-4">
+        <View className="flex-1 mr-4">
+          <ThemedText style={{ fontSize: 26, fontWeight: 'bold', lineHeight: 32 }}>
+            {product.name}
           </ThemedText>
-          <Ionicons name="chevron-forward" size={16} color={colors.tint} className="ml-1" />
-        </TouchableOpacity>
+          <ThemedText className="text-sm mt-1" style={{ color: "#9E9E9E" }}>
+            {t(`brands.${product.brand.toLowerCase()}`)}
+          </ThemedText>
+
+          <TouchableOpacity
+            className="flex-row items-center self-start mt-2"
+            onPress={() => {
+              bottomSheetRef.current?.present();
+            }}
+          >
+            <Ionicons name="information-circle-outline" size={18} color={colors.tint} />
+            <ThemedText className="text-sm ml-1.5 font-medium" style={{ color: colors.tint }}>
+              {t("product_detail.product_details")}
+            </ThemedText>
+            <Ionicons name="chevron-forward" size={16} color={colors.tint} className="ml-1" />
+          </TouchableOpacity>
+        </View>
+        <View className="items-end">
+          <ThemedText style={{ fontSize: 26, fontWeight: 'bold', lineHeight: 32, color: colors.primary }}>
+            {formatPrice(product.price, product.currency)}
+          </ThemedText>
+
+          {/* Quantity Selector - Fiyatın altında */}
+          {product.stock > 0 && (
+            <View
+              className="flex-row items-center rounded-lg border overflow-hidden mt-2"
+              style={{
+                borderColor: colors.borderColor,
+                backgroundColor: colors.card,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.1,
+                shadowRadius: 4,
+                elevation: 3,
+              }}
+            >
+              <HapticIconButton
+                className="w-9 h-9 items-center justify-center"
+                onPress={() => onUpdateQuantity(-1)}
+                hapticType="light"
+                disabled={numericQuantity <= 1}
+              >
+                <Ionicons
+                  name="remove"
+                  size={16}
+                  color={numericQuantity <= 1 ? colors.mediumGray : colors.text}
+                />
+              </HapticIconButton>
+              <TextInput
+                className="text-base font-bold text-center"
+                style={{
+                  color: colors.text,
+                  minWidth: 40,
+                  height: "100%",
+                  textAlignVertical: "center",
+                  paddingVertical: 0,
+                  includeFontPadding: false,
+                  lineHeight: 20,
+                  borderLeftWidth: 1,
+                  borderRightWidth: 1,
+                  borderColor: colors.borderColor,
+                }}
+                value={quantity}
+                onChangeText={onQuantityChange}
+                onBlur={onQuantityBlur}
+                keyboardType="numeric"
+                selectTextOnFocus
+                returnKeyType="done"
+                contextMenuHidden
+                maxLength={3}
+              />
+              <HapticIconButton
+                className="w-9 h-9 items-center justify-center"
+                onPress={() => onUpdateQuantity(1)}
+                hapticType="light"
+                disabled={numericQuantity >= product.stock}
+              >
+                <Ionicons
+                  name="add"
+                  size={16}
+                  color={numericQuantity >= product.stock ? colors.mediumGray : colors.text}
+                />
+              </HapticIconButton>
+            </View>
+          )}
+        </View>
       </View>
+
+      {product.description && (
+        <View className="mb-4 p-3 rounded-xl" style={{ backgroundColor: colors.card }}>
+          <ThemedText className="text-sm leading-5" style={{ color: colors.mediumGray }}>
+            {product.description.length > 120
+              ? `${product.description.substring(0, 120)}...`
+              : product.description}
+          </ThemedText>
+        </View>
+      )}
 
       {product.stock < 10 && product.stock > 0 && (
         <View className="flex-row items-center mb-2.5">
@@ -101,119 +166,14 @@ export function ProductInfo({
         </View>
       )}
 
-      {/* Quantity Selector */}
-      {product.stock > 0 && (
-        <View className="mt-4">
-          <ThemedText
-            className="text-sm font-medium mb-2"
-            style={{ color: colors.text }}
-          >
-Miktar
-          </ThemedText>
-          <View
-            className="flex-row items-center rounded-2xl border-2 overflow-hidden self-start"
-            style={{
-              borderColor: colors.borderColor,
-              backgroundColor: colors.card,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.1,
-              shadowRadius: 4,
-              elevation: 3,
-            }}
-          >
-            <HapticIconButton
-              className="w-12 h-12 items-center justify-center"
-              onPress={() => onUpdateQuantity(-1)}
-              hapticType="light"
-              disabled={numericQuantity <= 1}
-            >
-              <Ionicons
-                name="remove"
-                size={20}
-                color={numericQuantity <= 1 ? colors.mediumGray : colors.text}
-              />
-            </HapticIconButton>
-            <TextInput
-              className="text-lg font-bold text-center"
-              style={{
-                color: colors.text,
-                minWidth: 50,
-                height: "100%",
-                textAlignVertical: "center",
-                paddingVertical: 0,
-                includeFontPadding: false,
-                lineHeight: 20,
-                borderLeftWidth: 1,
-                borderRightWidth: 1,
-                borderColor: colors.borderColor,
-                backgroundColor: colors.card,
-              }}
-              value={quantity}
-              onChangeText={onQuantityChange}
-              onBlur={onQuantityBlur}
-              keyboardType="number-pad"
-              maxLength={3}
-              selectTextOnFocus
-            />
-            <HapticIconButton
-              className="w-12 h-12 items-center justify-center"
-              onPress={() => onUpdateQuantity(1)}
-              hapticType="light"
-              disabled={numericQuantity >= product.stock}
-            >
-              <Ionicons
-                name="add"
-                size={20}
-                color={
-                  numericQuantity >= product.stock
-                    ? colors.mediumGray
-                    : colors.text
-                }
-              />
-            </HapticIconButton>
-          </View>
-        </View>
-      )}
-
       <CustomBottomSheet
         ref={bottomSheetRef}
         title={t("product_detail.product_details_sheet_title")}
       >
         <View className="p-4">
           <ThemedText className="text-base leading-6">
-            {product.description || "Bu ürün için henüz detaylı açıklama bulunmamaktadır."}
+            {product.description || t("product_detail.info.no_description")}
           </ThemedText>
-
-          <View className="mt-6">
-            <ThemedText className="text-lg font-semibold mb-3">
-              Ürün Özellikleri
-            </ThemedText>
-
-            <View className="space-y-3">
-              <View className="flex-row justify-between py-2 border-b" style={{ borderBottomColor: colors.borderColor }}>
-                <ThemedText className="text-sm" style={{ color: colors.mediumGray }}>Marka</ThemedText>
-                <ThemedText className="text-sm font-medium">{t(`brands.${product.brand.toLowerCase()}`)}</ThemedText>
-              </View>
-
-              <View className="flex-row justify-between py-2 border-b" style={{ borderBottomColor: colors.borderColor }}>
-                <ThemedText className="text-sm" style={{ color: colors.mediumGray }}>Kategori</ThemedText>
-                <ThemedText className="text-sm font-medium">{product.category}</ThemedText>
-              </View>
-
-              <View className="flex-row justify-between py-2 border-b" style={{ borderBottomColor: colors.borderColor }}>
-                <ThemedText className="text-sm" style={{ color: colors.mediumGray }}>Fiyat</ThemedText>
-                <ThemedText className="text-sm font-medium">{formatPrice(product.price, product.currency)}</ThemedText>
-              </View>
-
-              <View className="flex-row justify-between py-2">
-                <ThemedText className="text-sm" style={{ color: colors.mediumGray }}>Stok Durumu</ThemedText>
-                <ThemedText className="text-sm font-medium">
-                  {product.stock > 0 ? `${product.stock} adet` : "Stokta yok"}
-                </ThemedText>
-              </View>
-            </View>
-          </View>
         </View>
       </CustomBottomSheet>
     </ThemedView>
