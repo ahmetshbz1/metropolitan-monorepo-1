@@ -7,7 +7,7 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Alert, Text, View } from "react-native";
 
-import { HapticButton } from "@/components/HapticButton";
+import { BaseButton } from "@/components/base/BaseButton";
 import Colors from "@/constants/Colors";
 import { useCart } from "@/context/CartContext";
 import { FullOrderPayload, OrderItem, useOrders } from "@/context/OrderContext";
@@ -43,7 +43,7 @@ export function ActionsSection({
     }
   };
 
-  const handleRepeatOrder = () => {
+  const handleRepeatOrder = async () => {
     orderData.items.forEach((item: OrderItem) => {
       addToCart(item.product.id, item.quantity);
     });
@@ -89,65 +89,48 @@ export function ActionsSection({
   );
 
   return (
-    <View className="gap-2.5">
-      <View className="flex-row gap-2.5">
-        <HapticButton
-          onPress={handleRepeatOrder}
-          className="flex-1 flex-row items-center justify-center p-3 rounded-lg"
-          style={{
-            backgroundColor: colors.cardBackground,
-            borderWidth: 1,
-            borderColor: colors.tint,
-          }}
-        >
-          <Ionicons name="repeat" size={20} color={colors.tint} />
-          <Text
-            className="text-sm font-semibold ml-2.5"
-            style={{ color: colors.tint }}
-          >
-            {t("order_detail.actions.repeat_order")}
-          </Text>
-        </HapticButton>
+    <View className="gap-3">
+      <View className="flex-row gap-3">
+        <View className="flex-1">
+          <BaseButton
+            variant="outlined"
+            size="small"
+            title={t("order_detail.actions.repeat_order")}
+            onPress={handleRepeatOrder}
+            fullWidth
+            icon={<Ionicons name="repeat" size={18} color={colors.tint} />}
+          />
+        </View>
         {canDownloadInvoice && (
-          <HapticButton
-            onPress={handleDownloadInvoice}
-            className="flex-1 flex-row items-center justify-center p-3 rounded-lg"
-            style={{ backgroundColor: colors.tint }}
-          >
-            <Ionicons name="download-outline" size={20} color={"white"} />
-            <Text
-              className="text-sm font-semibold ml-2.5"
-              style={{ color: "white" }}
-            >
-              {t("order_detail.actions.download_invoice")}
-            </Text>
-          </HapticButton>
+          <View className="flex-1">
+            <BaseButton
+              variant="primary"
+              size="small"
+              title={t("order_detail.actions.download_invoice")}
+              onPress={handleDownloadInvoice}
+              fullWidth
+              icon={<Ionicons name="download-outline" size={18} color="white" />}
+            />
+          </View>
         )}
       </View>
-      <HapticButton
+      <BaseButton
+        variant="ghost"
+        size="small"
+        title={t("order_detail.actions.request_help")}
         onPress={onPressHelp}
-        className="flex-row items-center justify-center p-3 rounded-lg"
-        style={{ backgroundColor: colors.background }}
-      >
-        <Ionicons
-          name="help-circle-outline"
-          size={20}
-          color={colors.darkGray}
-        />
-        <Text
-          className="text-sm font-medium ml-2.5"
-          style={{ color: colors.darkGray }}
-        >
-          {t("order_detail.actions.request_help")}
-        </Text>
-      </HapticButton>
+        fullWidth
+        icon={<Ionicons name="help-circle-outline" size={18} color={colors.mediumGray} />}
+      />
       {canBeCancelled && (
-        <HapticButton
+        <BaseButton
+          variant="primary"
+          size="small"
           title={t("order_detail.cancel_order")}
           onPress={handleCancel}
-          isLoading={loading}
+          loading={loading}
           disabled={loading}
-          hapticType="warning"
+          fullWidth
           style={{ backgroundColor: "#D70040" }}
         />
       )}
