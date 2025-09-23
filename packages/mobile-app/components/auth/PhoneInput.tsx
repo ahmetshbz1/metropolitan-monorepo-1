@@ -45,13 +45,13 @@ export const PhoneInput = forwardRef<TextInput, PhoneInputProps>(
     return (
       <>
         <Text
-          className="mb-2 text-sm font-medium"
-          style={{ color: themeColors.text, opacity: 0.7 }}
+          className="text-sm font-medium opacity-80 mb-1"
+          style={{ color: themeColors.text }}
         >
           {t("phone_login.phone_number_label")}
         </Text>
-        <View className="flex-row" style={{ gap: 8 }}>
-          <View style={{ width: 80 }}>
+        <View className="flex-row" style={{ gap: 12 }}>
+          <View style={{ width: 90 }}>
             <BaseInput
               ref={countryCodeRef}
               size="small"

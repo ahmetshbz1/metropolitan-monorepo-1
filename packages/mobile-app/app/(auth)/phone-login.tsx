@@ -71,7 +71,7 @@ const PhoneLoginScreen = () => {
           style={{ paddingVertical: PHONE_LOGIN_LAYOUT.headerPadding }}
           minimal
         />
-        <View className="flex-1 justify-center pt-4">
+        <View className="flex-1 justify-center">
           <PhoneInput
             ref={phoneInputRef}
             phoneNumber={phoneNumber}
@@ -85,7 +85,7 @@ const PhoneLoginScreen = () => {
         </View>
       </KeyboardAwareScrollView>
       <KeyboardStickyView>
-        <View className="px-6 py-4" style={stickyViewStyle}>
+        <View className="px-5 py-4" style={stickyViewStyle}>
           <SendCodeButton
             loading={loading}
             disabled={isButtonDisabled}
