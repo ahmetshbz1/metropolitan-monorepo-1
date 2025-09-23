@@ -16,15 +16,21 @@ export const getPaymentMethodName = (
       return t("payment_methods.card.title");
     case "bank_transfer":
       return t("payment_methods.bank_transfer.title");
+    case "apple_pay":
+      return "Apple Pay";
+    case "google_pay":
+      return "Google Pay";
+    case "blik":
+      return "BLIK";
     case "visa":
-      return "Visa Kartı";
+      return "Visa";
     case "mastercard":
-      return "Mastercard Kartı";
+      return "Mastercard";
     case "maestro":
-      return "Maestro Kartı";
+      return "Maestro";
     default:
-      // Fallback için card type olarak kullan
-      return `${cardTypeOrPaymentType} Kartı`;
+      // Fallback - capitalize first letter
+      return cardTypeOrPaymentType.charAt(0).toUpperCase() + cardTypeOrPaymentType.slice(1);
   }
 };
 

@@ -8,6 +8,7 @@ import type { ThemeColors, ColorScheme } from "@/types/theme";
 export type ButtonVariant =
   | "primary"
   | "secondary"
+  | "outlined"
   | "danger"
   | "success"
   | "ghost"
@@ -32,6 +33,12 @@ export const getVariantStyle = (variant: ButtonVariant, isDisabled: boolean, col
       return {
         backgroundColor: "transparent",
         borderWidth: 2,
+        borderColor: isDisabled ? colors.mutedForeground : colors.primary,
+      };
+    case "outlined":
+      return {
+        backgroundColor: "transparent",
+        borderWidth: 1,
         borderColor: isDisabled ? colors.mutedForeground : colors.primary,
       };
     case "danger":
@@ -66,6 +73,7 @@ export const getVariantStyle = (variant: ButtonVariant, isDisabled: boolean, col
 export const getTextColor = (variant: ButtonVariant, isDisabled: boolean, colors: ThemeColors, colorScheme: ColorScheme) => {
   if (isDisabled) {
     return variant === "secondary" ||
+      variant === "outlined" ||
       variant === "text" ||
       variant === "ghost"
       ? colors.mutedForeground
@@ -78,6 +86,7 @@ export const getTextColor = (variant: ButtonVariant, isDisabled: boolean, colors
     case "success":
       return colors.primaryForeground;
     case "secondary":
+    case "outlined":
     case "ghost":
     case "text":
       return colors.primary;

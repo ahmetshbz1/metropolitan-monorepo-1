@@ -35,6 +35,7 @@ export interface BaseButtonProps
   onPress?: (event?: GestureResponderEvent) => void;
   textStyle?: TextStyle;
   fullWidth?: boolean;
+  icon?: React.ReactNode;
 }
 
 export const BaseButton: React.FC<BaseButtonProps> = ({
@@ -49,6 +50,7 @@ export const BaseButton: React.FC<BaseButtonProps> = ({
   style,
   textStyle,
   fullWidth = false,
+  icon,
   ...props
 }) => {
   const { colors } = useTheme();
@@ -68,7 +70,12 @@ export const BaseButton: React.FC<BaseButtonProps> = ({
   const content = loading ? (
     <ActivityIndicator color={textColor} size="small" />
   ) : (
-    children || <Text style={[buttonTextStyle, textStyle]}>{title}</Text>
+    children || (
+      <>
+        {icon && <>{icon}</>}
+        {title && <Text style={[buttonTextStyle, textStyle, icon && { marginLeft: 8 }]}>{title}</Text>}
+      </>
+    )
   );
 
   return (

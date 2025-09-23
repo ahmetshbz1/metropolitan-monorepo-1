@@ -1,11 +1,11 @@
 //  "ReorderButton.tsx"
 //  metropolitan app
 //  Created by Ahmet on 25.06.2025.
+//  Updated on 23.09.2025 for better visibility
 
-import { ThemedText } from "@/components/ThemedText";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { TouchableOpacity } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 interface ReorderButtonProps {
   onPress: () => void;
@@ -22,15 +22,23 @@ export const ReorderButton: React.FC<ReorderButtonProps> = ({
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      className="flex-row items-center gap-2 p-2 -m-2"
     >
-      <Ionicons name="repeat" size={18} color={colors.tint} />
-      <ThemedText
-        style={{ color: colors.tint }}
-        className="font-semibold text-base"
+      <View
+        className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-lg"
+        style={{
+          backgroundColor: colors.tint + '10',
+          borderWidth: 1,
+          borderColor: colors.tint
+        }}
       >
-        {t("order_detail.reorder.button_text")}
-      </ThemedText>
+        <Ionicons name="repeat" size={16} color={colors.tint} />
+        <Text
+          className="font-semibold text-sm"
+          style={{ color: colors.tint }}
+        >
+          {t("order_detail.reorder.button_text")}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 };
