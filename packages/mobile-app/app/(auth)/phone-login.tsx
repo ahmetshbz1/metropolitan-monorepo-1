@@ -11,6 +11,7 @@ import {
 } from "react-native-keyboard-controller";
 
 import { AuthHeader } from "@/components/auth/AuthHeader";
+import { AuthProgressIndicator } from "@/components/auth/AuthProgressIndicator";
 import { PhoneInput } from "@/components/auth/PhoneInput";
 import { SendCodeButton } from "@/components/auth/SendCodeButton";
 import { ThemedView } from "@/components/ThemedView";
@@ -51,8 +52,12 @@ const PhoneLoginScreen = () => {
 
   return (
     <ThemedView className="flex-1">
+      <AuthProgressIndicator currentStep={1} />
       <KeyboardAwareScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingHorizontal: 20
+        }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="always"
         disableScrollOnKeyboardHide
@@ -66,7 +71,7 @@ const PhoneLoginScreen = () => {
           style={{ paddingVertical: PHONE_LOGIN_LAYOUT.headerPadding }}
           minimal
         />
-        <View className="flex-1 justify-center px-6 pt-4">
+        <View className="flex-1 justify-center pt-4">
           <PhoneInput
             ref={phoneInputRef}
             phoneNumber={phoneNumber}

@@ -2,6 +2,7 @@
 //  metropolitan app
 //  Created by Ahmet on 04.07.2025.
 
+import { AuthProgressIndicator } from "@/components/auth/AuthProgressIndicator";
 import { OTPScreenContent } from "@/components/auth/OTPScreenContent";
 import { BaseButton } from "@/components/base/BaseButton";
 import { ThemedView } from "@/components/ThemedView";
@@ -49,8 +50,12 @@ const OTPScreen = () => {
 
   return (
     <ThemedView className="flex-1">
+      <AuthProgressIndicator currentStep={2} />
       <KeyboardAwareScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingHorizontal: 20
+        }}
         keyboardShouldPersistTaps="always"
         disableScrollOnKeyboardHide
         // @ts-ignore

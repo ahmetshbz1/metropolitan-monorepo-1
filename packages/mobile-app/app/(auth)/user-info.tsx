@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ThemedView } from "@/components/ThemedView";
 import { AuthHeader } from "@/components/auth/AuthHeader";
+import { AuthProgressIndicator } from "@/components/auth/AuthProgressIndicator";
 import { BaseButton } from "@/components/base/BaseButton";
 import { BusinessInfoSection } from "@/components/user-info/BusinessInfoSection";
 import { PersonalInfoSection } from "@/components/user-info/PersonalInfoSection";
@@ -99,6 +100,7 @@ const UserInfoScreen = () => {
 
   return (
     <ThemedView className="flex-1">
+      <AuthProgressIndicator currentStep={3} />
       <KeyboardAwareScrollView {...keyboardConfig}>
         {/* Header Section */}
         <AuthHeader
