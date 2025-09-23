@@ -46,15 +46,15 @@ function BusinessInfoSectionComponent(props: BusinessInfoSectionProps) {
   const [_isNipInputFocused, setIsNipInputFocused] = useState(false);
 
   return (
-    <View className="mb-6">
+    <View style={{ gap: 12 }}>
       <Text
-        className="text-lg font-semibold mb-4 opacity-90"
+        className="text-sm font-medium opacity-80 mb-1"
         style={{ color: themeColors.text }}
       >
         {t("user_info.business_info_section") || "İş Bilgileri"}
       </Text>
 
-      <View className="mb-4">
+      <View>
         <NipInput
           nip={nip}
           setNip={setNip}

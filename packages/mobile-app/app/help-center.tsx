@@ -1,6 +1,7 @@
 //  "help-center.tsx"
 //  metropolitan app
 //  Created by Ahmet on 17.06.2025.
+//  Updated on 23.09.2025 to use proper BaseInput
 
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "expo-router";
@@ -99,30 +100,28 @@ export default function HelpCenterScreen() {
         <ThemedText className="text-2xl font-bold text-center mb-5">
           {t("help_center.header")}
         </ThemedText>
-        <View className="flex-row items-center mb-6">
+
+        <View className="mb-6" style={{ position: 'relative' }}>
           <Ionicons
             name="search"
             size={20}
             color={colors.mediumGray}
-            style={{ position: "absolute", left: 15, zIndex: 1 }}
+            style={{
+              position: "absolute",
+              left: 12,
+              top: 12,
+              zIndex: 1
+            }}
           />
           <BaseInput
             size="small"
-            style={{
-              flex: 1,
-              height: 44,
-              borderRadius: 12,
-              paddingLeft: 38,
-              paddingRight: 20,
-              backgroundColor: colors.lightGray,
-              color: colors.text,
-              textAlignVertical: "center",
-              paddingVertical: 0,
-              includeFontPadding: false,
-              lineHeight: 18,
-            }}
+            variant="default"
             placeholder={t("help_center.search_placeholder")}
             placeholderTextColor={colors.mediumGray}
+            inputStyle={{
+              paddingLeft: 40,
+            }}
+            fullWidth
           />
         </View>
 

@@ -54,9 +54,9 @@ export const BaseInput = forwardRef<RNTextInput, BaseInputProps>(
       InputSize,
       { height?: number; fontSize: number; padding: number }
     > = {
-      small: { height: 48, fontSize: 15, padding: 14 },
-      medium: { height: 56, fontSize: 16, padding: 16 },
-      large: { height: 64, fontSize: 18, padding: 20 },
+      small: { height: 44, fontSize: 15, padding: 12 },
+      medium: { height: 52, fontSize: 16, padding: 14 },
+      large: { height: 60, fontSize: 18, padding: 18 },
     };
 
     const getVariantStyle = (): ViewStyle => {
