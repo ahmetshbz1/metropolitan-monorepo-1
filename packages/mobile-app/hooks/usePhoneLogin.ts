@@ -40,9 +40,11 @@ export const usePhoneLogin = () => {
   };
 
   const handleCountryCodeFocus = () => {
+    // +48 için imleç +48'den sonra olacak şekilde ayarla
+    // +1 ekliyoruz çünkü value'da + işareti de var
     setCountryCodeSelection({
-      start: countryCode.length,
-      end: countryCode.length,
+      start: countryCode.length + 1,
+      end: countryCode.length + 1,
     });
   };
 
