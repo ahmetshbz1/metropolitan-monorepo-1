@@ -898,7 +898,13 @@
     "email_notifications_desc": "E-posta ile bilgilendirmeler",
     "error": "Hata",
     "notification_update_failed": "Bildirim tercihleri güncellenemedi",
-    "guest_notification_warning": "Bildirim tercihlerinizi kaydetmek için giriş yapın"
+    "guest_notification_warning": "Bildirim tercihlerinizi kaydetmek için giriş yapın",
+    "clear_cache_title": "Önbelleği Temizle",
+    "clear_cache_message": "Tüm önbellek dosyaları ve geçici veriler silinecek. Bu işlem geri alınamaz.",
+    "clear_cache_confirm": "Temizle",
+    "success": "Başarılı",
+    "clear_cache_success": "Önbellek başarıyla temizlendi",
+    "clear_cache_error": "Önbellek temizlenirken bir hata oluştu"
   },
   "support": {
     "title": "Destek",

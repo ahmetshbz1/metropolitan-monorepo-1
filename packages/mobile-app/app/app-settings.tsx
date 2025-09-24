@@ -11,7 +11,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, Switch, View } from "react-native";
+import { ScrollView, Switch, View, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { HapticButton } from "@/components/HapticButton";
@@ -19,6 +19,9 @@ import { useRouter } from "expo-router";
 import ContextMenu from "react-native-context-menu-view";
 import NotificationPreferencesSheet, { NotificationPreferencesSheetRef } from "@/components/NotificationPreferencesSheet";
 import { useRef } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as FileSystem from "expo-file-system";
+import { useToast } from "@/hooks/useToast";
 
 export default function AppSettingsScreen() {
   const { t, i18n } = useTranslation();
@@ -30,6 +33,7 @@ export default function AppSettingsScreen() {
   const { toggleTheme } = useAppColorScheme();
   const { settings, updateSettings } = useUserSettings();
   const notificationSheetRef = useRef<NotificationPreferencesSheetRef>(null);
+  const { showToast } = useToast();
 
   // Header title'ı dinamik olarak ayarla
   useLayoutEffect(() => {
@@ -50,6 +54,55 @@ export default function AppSettingsScreen() {
   ];
 
   const currentLanguage = languages.find(l => l.code === i18n.language) || languages[0];
+
+  const clearCache = async () => {
+    Alert.alert(
+      t("app_settings.clear_cache_title"),
+      t("app_settings.clear_cache_message"),
+      [
+        {
+          text: t("common.cancel"),
+          style: "cancel",
+        },
+        {
+          text: t("app_settings.clear_cache_confirm"),
+          style: "destructive",
+          onPress: async () => {
+            try {
+              // Clear AsyncStorage
+              await AsyncStorage.clear();
+
+              // Clear image cache directory
+              const cacheDirectory = FileSystem.cacheDirectory;
+              if (cacheDirectory) {
+                const cacheFiles = await FileSystem.readDirectoryAsync(cacheDirectory);
+                await Promise.all(
+                  cacheFiles.map(file =>
+                    FileSystem.deleteAsync(`${cacheDirectory}${file}`, { idempotent: true })
+                  )
+                );
+              }
+
+              // Clear document directory temporary files
+              const documentDirectory = FileSystem.documentDirectory;
+              if (documentDirectory) {
+                const tempDir = `${documentDirectory}temp/`;
+                const exists = await FileSystem.getInfoAsync(tempDir);
+                if (exists.exists) {
+                  await FileSystem.deleteAsync(tempDir, { idempotent: true });
+                }
+              }
+
+              showToast(t("app_settings.clear_cache_success"), "success");
+            } catch (error) {
+              console.error("Error clearing cache:", error);
+              showToast(t("app_settings.clear_cache_error"), "error");
+            }
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <ThemedView className="flex-1">
@@ -313,9 +366,7 @@ export default function AppSettingsScreen() {
             }}
           >
             <HapticButton
-              onPress={() => {
-                // Clear cache logic here
-              }}
+              onPress={clearCache}
               activeOpacity={0.7}
               style={{
                 flexDirection: "row",

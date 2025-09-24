@@ -866,7 +866,13 @@
     "email_notifications_desc": "Email updates",
     "error": "Error",
     "notification_update_failed": "Failed to update notification preferences",
-    "guest_notification_warning": "Login to save your notification preferences"
+    "guest_notification_warning": "Login to save your notification preferences",
+    "clear_cache_title": "Clear Cache",
+    "clear_cache_message": "All cache files and temporary data will be deleted. This action cannot be undone.",
+    "clear_cache_confirm": "Clear",
+    "success": "Success",
+    "clear_cache_success": "Cache cleared successfully",
+    "clear_cache_error": "An error occurred while clearing cache"
   },
   "support": {
     "title": "Support",

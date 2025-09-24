@@ -3,7 +3,7 @@
 // Notification preferences bottom sheet component
 
 import React, { useEffect, useState, forwardRef, useImperativeHandle, useRef } from "react";
-import { View, Switch, Alert } from "react-native";
+import { View, Switch } from "react-native";
 import { BottomSheetModal, BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
 import { ThemedText } from "@/components/ThemedText";
@@ -82,18 +82,12 @@ const NotificationPreferencesSheet = forwardRef<
       if (!response.data.success) {
         // Revert on failure
         setPreferences(preferences);
-        Alert.alert(
-          t("app_settings.error"),
-          t("app_settings.notification_update_failed")
-        );
+        console.error("Failed to update notification preferences");
       }
     } catch (error) {
       // Revert on error
       setPreferences(preferences);
-      Alert.alert(
-        t("app_settings.error"),
-        t("app_settings.notification_update_failed")
-      );
+      console.error("Failed to update notification preferences:", error);
     }
   };
 

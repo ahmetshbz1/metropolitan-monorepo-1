@@ -5,6 +5,7 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import { Animated, Text, View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface ToastProps {
   message: string;
@@ -14,13 +15,14 @@ interface ToastProps {
   visible: boolean;
 }
 
-export function Toast({ 
-  message, 
-  type = 'info', 
-  duration = 3000, 
+export function Toast({
+  message,
+  type = 'info',
+  duration = 3000,
   onClose,
-  visible 
+  visible
 }: ToastProps) {
+  const insets = useSafeAreaInsets();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(-100)).current;
 
@@ -117,7 +119,7 @@ export function Toast({
     <Animated.View
       style={{
         position: 'absolute',
-        top: 60,
+        top: insets.top + 10,
         left: 16,
         right: 16,
         opacity: fadeAnim,
