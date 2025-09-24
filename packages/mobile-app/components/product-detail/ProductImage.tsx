@@ -35,7 +35,7 @@ export function ProductImage({ product }: ProductImageProps) {
           message: `${product.name} - ${t("product_detail.share.check_out_this_product")}`,
           title: product.name,
         });
-        triggerHaptic("light");
+        triggerHaptic();
       } catch (error) {
         console.error("Error sharing:", error);
       }
@@ -79,7 +79,6 @@ export function ProductImage({ product }: ProductImageProps) {
           backgroundColor: colors.cardBackground,
           borderRadius: 17,
         }}
-        hapticType="light"
       >
         <Ionicons name="share-outline" size={22} color={colors.darkGray} />
       </HapticIconButton>

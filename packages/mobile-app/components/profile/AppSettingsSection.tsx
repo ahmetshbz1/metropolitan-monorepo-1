@@ -38,7 +38,7 @@ export function AppSettingsSection({
   const { triggerHaptic } = useHaptics();
 
   const handleLanguageChange = async (lang: "tr" | "en" | "pl") => {
-    triggerHaptic("success");
+    triggerHaptic();
     await changeLanguage(lang);
   };
 

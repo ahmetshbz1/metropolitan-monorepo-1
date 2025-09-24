@@ -106,7 +106,6 @@ export const FavoriteButton: React.FC<FavoriteButtonProps> = ({
         shadowRadius: 6,
         elevation: 3,
       }}
-      hapticType="light"
     >
       <Ionicons
         name={isProductFavorite ? "heart" : "heart-outline"}

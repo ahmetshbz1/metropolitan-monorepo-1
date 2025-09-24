@@ -47,7 +47,7 @@ export function ActionsSection({
     orderData.items.forEach((item: OrderItem) => {
       addToCart(item.product.id, item.quantity);
     });
-    triggerHaptic("success");
+    triggerHaptic();
     router.push("/(tabs)/cart");
   };
 

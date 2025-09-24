@@ -89,7 +89,6 @@ export function ProductInfo({
               <HapticIconButton
                 className="w-9 h-9 items-center justify-center"
                 onPress={() => onUpdateQuantity(-1)}
-                hapticType="light"
                 disabled={numericQuantity <= 1}
               >
                 <Ionicons
@@ -124,7 +123,6 @@ export function ProductInfo({
               <HapticIconButton
                 className="w-9 h-9 items-center justify-center"
                 onPress={() => onUpdateQuantity(1)}
-                hapticType="light"
                 disabled={numericQuantity >= product.stock}
               >
                 <Ionicons

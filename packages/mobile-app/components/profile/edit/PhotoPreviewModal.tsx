@@ -64,7 +64,6 @@ export function PhotoPreviewModal({
           }}
         >
           <HapticIconButton
-            hapticType="medium"
             onPress={onEdit}
             style={{
               backgroundColor: "rgba(255,255,255,0.12)",
@@ -82,7 +81,6 @@ export function PhotoPreviewModal({
             <Ionicons name="pencil" size={24} color="#fff" />
           </HapticIconButton>
           <HapticIconButton
-            hapticType="light"
             onPress={onClose}
             style={{
               backgroundColor: "rgba(255,255,255,0.12)",

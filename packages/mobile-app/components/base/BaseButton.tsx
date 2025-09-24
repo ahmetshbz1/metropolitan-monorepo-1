@@ -13,7 +13,7 @@ import {
   useColorScheme,
 } from "react-native";
 
-import { HapticType, useHaptics } from "@/hooks/useHaptics";
+import { useHaptics } from "@/hooks/useHaptics";
 import { useTheme } from "@/hooks/useTheme";
 import { buttonSizeConfig, ButtonSize } from "./config/buttonConfig";
 import {
@@ -28,7 +28,6 @@ export interface BaseButtonProps
   extends Omit<TouchableOpacityProps, "onPress"> {
   variant?: ButtonVariant;
   size?: ButtonSize;
-  hapticType?: HapticType;
   children?: React.ReactNode;
   title?: string;
   loading?: boolean;
@@ -41,7 +40,6 @@ export interface BaseButtonProps
 export const BaseButton: React.FC<BaseButtonProps> = ({
   variant = "primary",
   size = "medium",
-  hapticType = "light",
   onPress,
   children,
   title,
@@ -57,7 +55,7 @@ export const BaseButton: React.FC<BaseButtonProps> = ({
   const { withHapticFeedback } = useHaptics();
   const colorScheme = useColorScheme();
 
-  const handlePress = withHapticFeedback(onPress, hapticType);
+  const handlePress = withHapticFeedback(onPress);
 
   const currentSize = buttonSizeConfig[size];
   const isDisabled = disabled || loading;

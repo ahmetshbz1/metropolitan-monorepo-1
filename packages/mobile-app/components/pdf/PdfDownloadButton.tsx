@@ -30,7 +30,6 @@ export const PdfDownloadButton: React.FC<PdfDownloadButtonProps> = ({
         onPress={onPress}
         isLoading={downloading}
         disabled={downloading}
-        hapticType="medium"
         className="w-14 h-14 rounded-full justify-center items-center"
         style={{
           backgroundColor: colors.tint,

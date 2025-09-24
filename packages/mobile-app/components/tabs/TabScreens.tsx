@@ -58,7 +58,6 @@ export const TabScreens = ({
             <View style={{ flexDirection: "row", marginRight: 4 }}>
               <HapticIconButton
                 onPress={handleNotification}
-                hapticType="light"
                 style={{ padding: 8 }}
               >
                 <Ionicons
@@ -99,7 +98,6 @@ export const TabScreens = ({
               />
               <HapticIconButton
                 onPress={handleNotification}
-                hapticType="light"
                 style={{ padding: 8 }}
               >
                 <Ionicons

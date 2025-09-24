@@ -43,7 +43,7 @@ export const useSearchInput = ({
   };
 
   const handleSearchPress = () => {
-    triggerHaptic("light");
+    triggerHaptic();
     setIsSearchMode(true);
     Animated.timing(animatedWidth, {
       toValue: 1,
@@ -55,7 +55,7 @@ export const useSearchInput = ({
   };
 
   const handleCancel = () => {
-    triggerHaptic("medium");
+    triggerHaptic();
     setLocalValue("");
     onSearchChange("");
     setIsSearchMode(false);
@@ -67,7 +67,7 @@ export const useSearchInput = ({
   };
 
   const handleInputClear = () => {
-    triggerHaptic("light");
+    triggerHaptic();
     setLocalValue("");
     onSearchChange("");
   };

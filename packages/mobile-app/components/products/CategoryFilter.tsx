@@ -25,7 +25,7 @@ export function CategoryFilter({
   const { t } = useTranslation();
 
   const handleCategoryPress = (slug: string | null) => {
-    triggerHaptic("light");
+    triggerHaptic();
     onCategoryPress(slug === "all" ? null : slug);
   };
 

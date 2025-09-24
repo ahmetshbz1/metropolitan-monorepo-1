@@ -91,7 +91,6 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
           <HapticIconButton
             onPress={handleToggleFavorite}
             className="absolute top-1 right-3 w-8 h-8 justify-center items-center z-10"
-            hapticType="light"
           >
             <Ionicons
               name={isProductFavorite ? "heart" : "heart-outline"}

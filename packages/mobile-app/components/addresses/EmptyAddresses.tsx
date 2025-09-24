@@ -30,7 +30,6 @@ export const EmptyAddresses = () => {
         variant="primary"
         size="small"
         title={t("addresses.empty.add_button")}
-        hapticType="medium"
         onPress={() => {
           router.push("/add-address");
         }}

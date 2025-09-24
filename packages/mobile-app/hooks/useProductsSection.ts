@@ -28,7 +28,7 @@ export const useProductsSection = (items: OrderItem[]) => {
   };
 
   const handleReorder = async () => {
-    triggerHaptic("medium");
+    triggerHaptic();
     if (!items || items.length === 0) return;
 
     try {

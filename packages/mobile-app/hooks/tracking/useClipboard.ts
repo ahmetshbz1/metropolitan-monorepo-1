@@ -13,7 +13,7 @@ export const useClipboard = () => {
   const copyToClipboard = async (text: string) => {
     try {
       await Clipboard.setStringAsync(text);
-      triggerHaptic("light");
+      triggerHaptic();
 
       // Kopyalandı feedback'i göster
       setCopied(true);

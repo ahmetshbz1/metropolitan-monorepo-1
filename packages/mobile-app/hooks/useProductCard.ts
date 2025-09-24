@@ -38,7 +38,7 @@ export const useProductCard = (product: Product) => {
     e.preventDefault();
     e.stopPropagation();
 
-    triggerHaptic("light");
+    triggerHaptic();
     
     try {
       await addToCart(product.id, 1);

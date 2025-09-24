@@ -81,7 +81,7 @@ export function HelpContent({
   const { t } = useTranslation();
 
   const handleContactPress = (type: "email" | "phone") => {
-    triggerHaptic("light");
+    triggerHaptic();
     if (type === "email") {
       Linking.openURL(`mailto:${supportEmail}`);
     } else {

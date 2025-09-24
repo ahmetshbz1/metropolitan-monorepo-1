@@ -85,7 +85,6 @@ export const CartItemContent: React.FC<CartItemContentProps> = ({
               <HapticIconButton
                 className="w-9 h-9 items-center justify-center"
                 onPress={onDecrement}
-                hapticType="light"
                 disabled={item.quantity === 1}
               >
                 <Ionicons
@@ -102,7 +101,6 @@ export const CartItemContent: React.FC<CartItemContentProps> = ({
               <HapticIconButton
                 className="w-9 h-9 items-center justify-center"
                 onPress={onIncrement}
-                hapticType="light"
               >
                 <Ionicons name="add" size={22} color={colors.text} />
               </HapticIconButton>

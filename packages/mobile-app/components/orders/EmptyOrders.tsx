@@ -35,7 +35,6 @@ export function EmptyOrders() {
             variant="primary"
             size="small"
             title={t("orders.guest_empty.button")}
-            hapticType="medium"
             style={{ paddingHorizontal: 24, borderRadius: 12 }}
           />
         </Link>
@@ -55,7 +54,6 @@ export function EmptyOrders() {
           variant="primary"
           size="small"
           title={t("orders.empty.button")}
-          hapticType="medium"
           style={{ paddingHorizontal: 24, borderRadius: 12 }}
         />
       </Link>

@@ -106,7 +106,7 @@ export const OTPInput = ({
   useEffect(() => {
     // Sadece error state false'dan true'ya geçtiğinde titret
     if (isError && !prevErrorRef.current) {
-      triggerHaptic("error", true);
+      triggerHaptic(true);
       shakeTranslateX.value = withSequence(
         withTiming(-10, { duration: 50 }),
         withTiming(10, { duration: 50 }),

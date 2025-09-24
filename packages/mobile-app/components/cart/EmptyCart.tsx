@@ -26,7 +26,6 @@ export function EmptyCart() {
           variant="primary"
           size="small"
           title={t("cart.empty.button")}
-          hapticType="medium"
           style={{ paddingHorizontal: 24, borderRadius: 12 }}
         />
       </Link>

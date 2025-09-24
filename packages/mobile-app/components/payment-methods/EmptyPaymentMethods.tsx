@@ -30,7 +30,6 @@ export const EmptyPaymentMethods = () => {
         variant="primary"
         size="small"
         title={t("payment_methods.empty.add_button")}
-        hapticType="medium"
         onPress={() => {
           // Checkout payment sayfasına yönlendir (add-payment-method artık yok)
           router.push("/checkout/payment");

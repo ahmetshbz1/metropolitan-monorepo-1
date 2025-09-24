@@ -39,7 +39,7 @@ export function useNotifications(): UseNotificationsReturn {
 
   // Tüm bildirimleri okundu olarak işaretle
   const markAllAsRead = () => {
-    triggerHaptic("success");
+    triggerHaptic();
     setNotifications((prev) =>
       prev.map((notification) => ({ ...notification, isRead: true }))
     );
@@ -56,7 +56,7 @@ export function useNotifications(): UseNotificationsReturn {
           text: t("common.delete"),
           style: "destructive",
           onPress: () => {
-            triggerHaptic("warning");
+            triggerHaptic();
             setNotifications((prev) =>
               prev.filter((n) => n.id !== notificationId)
             );
@@ -68,7 +68,7 @@ export function useNotifications(): UseNotificationsReturn {
 
   // Tüm bildirimleri sil
   const deleteAllNotifications = () => {
-    triggerHaptic("warning");
+    triggerHaptic();
     Alert.alert(
       t("notifications.delete_all_confirm_title"),
       t("notifications.delete_all_confirm_message"),

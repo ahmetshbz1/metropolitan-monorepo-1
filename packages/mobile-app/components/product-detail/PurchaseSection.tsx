@@ -80,7 +80,7 @@ export function PurchaseSection({
       await addToCart(product.id, numQuantity);
 
       // Başarılı ekleme/güncelleme sonrası hafif titreşim
-      triggerHaptic("light", true);
+      triggerHaptic(true);
 
       if (!cartItem) {
         // Yeni ekleme ise geçici olarak "Sepete Eklendi" göster
@@ -144,7 +144,6 @@ export function PurchaseSection({
         <BaseButton
           variant="success"
           size="small"
-          hapticType="medium"
           onPress={() => {
             setIsNavigating(true);
             // Kısa bir delay ile navigation'ı simüle et
@@ -166,7 +165,6 @@ export function PurchaseSection({
           variant={isAdded ? "success" : "primary"}
           size="small"
           onPress={handleAddToCart}
-          hapticType={isAdded ? "success" : "medium"}
           disabled={product.stock === 0 || numericQuantity === 0 || isLoading}
           loading={isLoading}
           fullWidth

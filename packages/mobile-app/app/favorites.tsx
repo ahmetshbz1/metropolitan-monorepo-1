@@ -44,7 +44,6 @@ const EmptyFavorites = () => {
         size="small"
         title={t("favorites.empty.browse_button")}
         onPress={() => router.push("/(tabs)/products")}
-        hapticType="light"
         style={{ paddingHorizontal: 24 }}
       />
     </View>

@@ -59,7 +59,6 @@ export function AccountSection() {
         {actions.map((action) => (
           <HapticButton
             key={action.route}
-            hapticType="light"
             onPress={() => router.push(action.route)}
             activeOpacity={0.85}
             accessibilityRole="button"
@@ -78,7 +77,7 @@ export function AccountSection() {
             }}
           >
             <Ionicons
-              name={action.icon}
+              name={action.icon as any}
               size={28}
               color={colors.tint}
               style={{ marginBottom: 6 }}

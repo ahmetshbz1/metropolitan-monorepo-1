@@ -65,7 +65,7 @@ export default function OrderConfirmationScreen() {
 
   const handleCopyToClipboard = (value: string, label: string) => {
     Clipboard.setStringAsync(value);
-    triggerHaptic("success");
+    triggerHaptic();
     setCopiedItem(label);
     setTimeout(() => {
       setCopiedItem(null);

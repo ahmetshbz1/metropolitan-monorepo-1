@@ -60,7 +60,6 @@ export function SettingsItem({
       <HapticButton
         className="flex-row items-center justify-between py-3 px-0 rounded-none"
         style={{ backgroundColor: "transparent" }}
-        hapticType="light"
         onPress={onPress}
       >
         {content}

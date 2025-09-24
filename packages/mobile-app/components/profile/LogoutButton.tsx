@@ -39,7 +39,6 @@ export function LogoutButton() {
       className="flex-row items-center justify-center mx-5 mt-5 p-4 rounded-2xl"
       style={{ backgroundColor: colors.danger + "10" }}
       onPress={handleLogout}
-      hapticType="warning"
       accessibilityRole="button"
       accessibilityLabel={t("profile.logout")}
     >

@@ -11,12 +11,11 @@ import {
   TouchableOpacityProps,
 } from "react-native";
 
-import { HapticType, useHaptics } from "@/hooks/useHaptics";
+import { useHaptics } from "@/hooks/useHaptics";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
 export interface HapticButtonProps
   extends Omit<TouchableOpacityProps, "onPress"> {
-  hapticType?: HapticType;
   children?: React.ReactNode;
   title?: string;
   isLoading?: boolean;
@@ -25,7 +24,6 @@ export interface HapticButtonProps
 }
 
 export function HapticButton({
-  hapticType = "light",
   onPress,
   children,
   title,
@@ -38,7 +36,7 @@ export function HapticButton({
   const { withHapticFeedback } = useHaptics();
   const backgroundColor = useThemeColor({}, "tint");
 
-  const handlePress = withHapticFeedback(onPress, hapticType);
+  const handlePress = withHapticFeedback(onPress);
 
   const content = isLoading ? (
     <ActivityIndicator color="#FFFFFF" />
@@ -83,7 +81,6 @@ export interface HapticIconButtonProps extends HapticButtonProps {
 }
 
 export function HapticIconButton({
-  hapticType = "light",
   onPress,
   children,
   style,
@@ -92,7 +89,7 @@ export function HapticIconButton({
   ...props
 }: HapticIconButtonProps) {
   const { withHapticFeedback } = useHaptics();
-  const handlePress = withHapticFeedback(onPress, hapticType);
+  const handlePress = withHapticFeedback(onPress);
 
   return (
     <TouchableOpacity

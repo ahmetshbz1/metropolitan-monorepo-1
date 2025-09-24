@@ -74,7 +74,6 @@ export function CartSummary({
         onPress={onCheckout}
         loading={isCheckingOut}
         disabled={isCheckingOut}
-        hapticType="success"
         fullWidth
       />
     </ThemedView>

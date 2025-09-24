@@ -73,7 +73,6 @@ const CustomBottomSheet = forwardRef<Ref, Props>(({ title, children }, ref) => {
           </ThemedText>
           <HapticIconButton
             onPress={handleClose}
-            hapticType="light"
             className="p-1.5"
           >
             <Ionicons name="close-circle" size={26} color={colors.darkGray} />
