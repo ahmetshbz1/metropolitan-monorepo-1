@@ -15,11 +15,7 @@ import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 interface SupportSectionProps {
-  handlePresentModal: (
-    title: string,
-    content: ReactNode,
-    snapPoints?: string[]
-  ) => void;
+  handlePresentModal: (title: string, content: ReactNode) => void;
 }
 
 export function SupportSection({ handlePresentModal }: SupportSectionProps) {

@@ -20,8 +20,6 @@ import { ThemedText } from "./ThemedText";
 
 type Ref = BottomSheetModal;
 
-// const HEADER_HEIGHT = 80; // Approximate height of the handle and header
-
 export interface Props {
   title: string;
   children: React.ReactNode;
@@ -30,16 +28,10 @@ export interface Props {
 const CustomBottomSheet = forwardRef<Ref, Props>(({ title, children }, ref) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
-  // const [contentHeight, setContentHeight] = useState(0);
   const { bottom: safeAreaBottom } = useSafeAreaInsets();
 
   // Set a maximum snap point, enableDynamicSizing will adjust to content.
   const snapPoints = useMemo(() => ["90%"], []);
-
-  // const handleContentLayout = useCallback((event: LayoutChangeEvent) => {
-  //   const { height } = event.nativeEvent.layout;
-  //   setContentHeight(height);
-  // }, []);
 
   const handleClose = useCallback(() => {
     if (ref && "current" in ref) {

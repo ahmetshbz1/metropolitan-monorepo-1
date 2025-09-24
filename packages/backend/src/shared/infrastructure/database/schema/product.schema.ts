@@ -41,6 +41,14 @@ export const products = pgTable("products", {
   price: decimal("price", { precision: 10, scale: 2 }),
   currency: text("currency").notNull().default("PLN"),
   stock: integer("stock").default(0),
+  // Ürün detay bilgileri
+  allergens: text("allergens"), // Alerjen maddeler listesi
+  nutritionalValues: text("nutritional_values"), // JSON string olarak besin değerleri
+  netQuantity: text("net_quantity"), // Net miktar (örn: 500g, 1L)
+  expiryDate: timestamp("expiry_date"), // Son kullanma tarihi
+  storageConditions: text("storage_conditions"), // Saklama koşulları
+  manufacturerInfo: text("manufacturer_info"), // JSON string olarak üretici bilgileri
+  originCountry: text("origin_country"), // Menşe ülkesi
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

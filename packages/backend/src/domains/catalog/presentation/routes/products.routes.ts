@@ -67,6 +67,15 @@ export const productRoutes = createApp().group("/products", (app) =>
             stock: products.stock,
             categorySlug: categories.slug,
             brand: products.brand,
+            size: products.size,
+            // Yeni eklenen alanlar
+            allergens: products.allergens,
+            nutritionalValues: products.nutritionalValues,
+            netQuantity: products.netQuantity,
+            expiryDate: products.expiryDate,
+            storageConditions: products.storageConditions,
+            manufacturerInfo: products.manufacturerInfo,
+            originCountry: products.originCountry,
           })
           .from(products)
           .leftJoin(
@@ -88,6 +97,15 @@ export const productRoutes = createApp().group("/products", (app) =>
           stock: p.stock ?? 0,
           category: p.categorySlug,
           brand: p.brand || "Yayla", // Use brand from DB, fallback just in case
+          size: p.size || undefined,
+          // Yeni eklenen alanlar
+          allergens: p.allergens || undefined,
+          nutritionalValues: p.nutritionalValues ? JSON.parse(p.nutritionalValues) : undefined,
+          netQuantity: p.netQuantity || undefined,
+          expiryDate: p.expiryDate || undefined,
+          storageConditions: p.storageConditions || undefined,
+          manufacturerInfo: p.manufacturerInfo ? JSON.parse(p.manufacturerInfo) : undefined,
+          originCountry: p.originCountry || undefined,
         }));
 
         return { success: true, data: formattedProducts };

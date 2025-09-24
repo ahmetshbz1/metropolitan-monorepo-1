@@ -141,7 +141,8 @@ const main = async () => {
     for (const productCode in productsData) {
       const productData =
         productsData[productCode as keyof typeof productsData];
-      const categoryId = categoryMap.get(productData.tr.kategori);
+      const categoryName = productData.tr.kategori; // categoryName değişkenini tanımla
+      const categoryId = categoryMap.get(categoryName);
 
       if (!categoryId) {
         console.warn(
@@ -161,6 +162,44 @@ const main = async () => {
       const isZeroStock = productCodes[zeroStockIndex] === productCode;
       const stock = isZeroStock ? 0 : Math.floor(Math.random() * 200) + 10;
 
+      // Örnek detay verileri oluştur
+      const sampleAllergens = [
+        "Süt ve süt ürünleri içerir",
+        "Gluten içerebilir",
+        "Yumurta içerebilir",
+        "Soya içerebilir",
+        "Fındık ve fıstık içerebilir"
+      ];
+
+      const sampleNutritionalValues = {
+        energy: `${Math.floor(Math.random() * 300) + 100} kcal`,
+        fat: `${(Math.random() * 20 + 1).toFixed(1)}g`,
+        saturatedFat: `${(Math.random() * 10 + 0.5).toFixed(1)}g`,
+        carbohydrates: `${(Math.random() * 50 + 5).toFixed(1)}g`,
+        sugar: `${(Math.random() * 15 + 1).toFixed(1)}g`,
+        protein: `${(Math.random() * 20 + 2).toFixed(1)}g`,
+        salt: `${(Math.random() * 2 + 0.1).toFixed(2)}g`
+      };
+
+      const sampleStorageConditions = [
+        "Buzdolabında +4°C'de saklanmalıdır",
+        "Serin ve kuru yerde saklanmalıdır",
+        "Güneş ışığından korunmalıdır",
+        "Açıldıktan sonra 3 gün içinde tüketilmelidir"
+      ];
+
+      const sampleManufacturerInfo = {
+        name: "Yayla Gıda A.Ş.",
+        address: "Organize Sanayi Bölgesi 1. Cadde No:15 Bolu/Türkiye",
+        phone: "+90 374 215 10 00",
+        email: "info@yayla.com.tr"
+      };
+
+      // Kategoriye göre özel alanlar
+      const isPerishable = categoryName === "SÜT ÜRÜNLERİ" || categoryName === "ET ÜRÜNLERİ";
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + (isPerishable ? 30 : 365));
+
       const [newProduct] = await db
         .insert(products)
         .values({
@@ -172,6 +211,16 @@ const main = async () => {
           price: price,
           currency: "PLN",
           stock: stock,
+          // Yeni eklenen alanlar
+          allergens: categoryName === "SÜT ÜRÜNLERİ" ? sampleAllergens[0] :
+                    categoryName === "UNLU MAMÜLLER" ? sampleAllergens[1] :
+                    Math.random() > 0.5 ? sampleAllergens[Math.floor(Math.random() * sampleAllergens.length)] : null,
+          nutritionalValues: JSON.stringify(sampleNutritionalValues),
+          netQuantity: productData.tr.size || `${Math.floor(Math.random() * 500) + 100}g`,
+          expiryDate: expiryDate,
+          storageConditions: isPerishable ? sampleStorageConditions[0] : sampleStorageConditions[1],
+          manufacturerInfo: JSON.stringify(sampleManufacturerInfo),
+          originCountry: "Türkiye"
         })
         .returning({ id: products.id });
       if (!newProduct)
