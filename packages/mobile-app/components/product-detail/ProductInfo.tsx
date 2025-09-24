@@ -169,50 +169,56 @@ export function ProductInfo({
         title={t("product_detail.product_details_sheet_title")}
       >
         <View className="p-4">
-          {/* Genel Bilgiler */}
-          <View className="mb-6">
-            <View className="flex-row items-center mb-3">
-              <Ionicons name="information-circle" size={24} color={colors.tint} />
-              <ThemedText className="text-lg font-bold ml-2">
+          {/* Genel Bilgiler Tablosu */}
+          <View className="mb-5 rounded-xl overflow-hidden" style={{ backgroundColor: colors.card }}>
+            <View className="flex-row items-center px-4 py-3" style={{ backgroundColor: colors.tint + '15' }}>
+              <Ionicons name="information-circle" size={20} color={colors.tint} />
+              <ThemedText className="text-base font-bold ml-2">
                 {t("product_detail.info.general")}
               </ThemedText>
             </View>
 
             {product.description && (
-              <View className="mb-3 p-3 rounded-lg" style={{ backgroundColor: colors.card }}>
-                <ThemedText className="text-sm font-semibold mb-1" style={{ color: colors.mediumGray }}>
-                  {t("product_detail.info.description")}
-                </ThemedText>
-                <ThemedText className="text-sm leading-5">
-                  {product.description}
-                </ThemedText>
-              </View>
+              <>
+                <View className="flex-row px-4 py-3" style={{ borderBottomWidth: 0.5, borderBottomColor: colors.borderColor }}>
+                  <ThemedText className="text-sm" style={{ color: colors.mediumGray, width: 100 }}>
+                    {t("product_detail.info.description")}
+                  </ThemedText>
+                  <ThemedText className="text-sm flex-1 ml-3">
+                    {product.description}
+                  </ThemedText>
+                </View>
+              </>
             )}
 
             {product.netQuantity && (
-              <View className="mb-3 p-3 rounded-lg" style={{ backgroundColor: colors.card }}>
-                <ThemedText className="text-sm font-semibold mb-1" style={{ color: colors.mediumGray }}>
+              <View className="flex-row px-4 py-3" style={{ borderBottomWidth: 0.5, borderBottomColor: colors.borderColor }}>
+                <ThemedText className="text-sm" style={{ color: colors.mediumGray, width: 100 }}>
                   {t("product_detail.info.net_quantity")}
                 </ThemedText>
-                <ThemedText className="text-sm">{product.netQuantity}</ThemedText>
+                <ThemedText className="text-sm font-semibold flex-1 ml-3">
+                  {product.netQuantity}
+                </ThemedText>
               </View>
             )}
 
             {product.originCountry && (
-              <View className="mb-3 p-3 rounded-lg" style={{ backgroundColor: colors.card }}>
-                <ThemedText className="text-sm font-semibold mb-1" style={{ color: colors.mediumGray }}>
+              <View className="flex-row px-4 py-3" style={{ borderBottomWidth: 0.5, borderBottomColor: colors.borderColor }}>
+                <ThemedText className="text-sm" style={{ color: colors.mediumGray, width: 100 }}>
                   {t("product_detail.info.origin_country")}
                 </ThemedText>
-                <ThemedText className="text-sm">{product.originCountry}</ThemedText>
+                <ThemedText className="text-sm font-semibold flex-1 ml-3">
+                  {product.originCountry}
+                </ThemedText>
               </View>
             )}
 
             {product.expiryDate && (
-              <View className="mb-3 p-3 rounded-lg" style={{ backgroundColor: colors.card }}>
-                <ThemedText className="text-sm font-semibold mb-1" style={{ color: colors.mediumGray }}>
+              <View className="flex-row px-4 py-3">
+                <ThemedText className="text-sm" style={{ color: colors.mediumGray, width: 100 }}>
                   {t("product_detail.info.expiry_date")}
                 </ThemedText>
-                <ThemedText className="text-sm">
+                <ThemedText className="text-sm font-semibold flex-1 ml-3">
                   {new Date(product.expiryDate).toLocaleDateString('tr-TR')}
                 </ThemedText>
               </View>
@@ -221,125 +227,138 @@ export function ProductInfo({
 
           {/* Alerjen Bilgileri */}
           {product.allergens && (
-            <View className="mb-6">
-              <View className="flex-row items-center mb-3">
-                <Ionicons name="warning" size={24} color={colors.warning || '#FFA500'} />
-                <ThemedText className="text-lg font-bold ml-2">
+            <View className="mb-5 rounded-xl overflow-hidden" style={{ backgroundColor: '#FFF5E6', borderWidth: 1, borderColor: '#FFA500' }}>
+              <View className="flex-row items-center px-4 py-3" style={{ backgroundColor: '#FFA50025' }}>
+                <Ionicons name="warning" size={20} color="#FFA500" />
+                <ThemedText className="text-base font-bold ml-2" style={{ color: '#333333' }}>
                   {t("product_detail.info.allergens")}
                 </ThemedText>
               </View>
-              <View className="p-3 rounded-lg border" style={{ backgroundColor: '#FFF5E6', borderColor: '#FFA500' }}>
-                <ThemedText className="text-sm">{product.allergens}</ThemedText>
+              <View className="px-4 py-3">
+                <ThemedText className="text-sm" style={{ color: '#333333' }}>{product.allergens}</ThemedText>
               </View>
             </View>
           )}
 
-          {/* Besin Değerleri */}
+          {/* Besin Değerleri Tablosu */}
           {product.nutritionalValues && (
-            <View className="mb-6">
-              <View className="flex-row items-center mb-3">
-                <Ionicons name="nutrition" size={24} color={colors.tint} />
-                <ThemedText className="text-lg font-bold ml-2">
+            <View className="mb-5 rounded-xl overflow-hidden" style={{ backgroundColor: colors.card }}>
+              <View className="flex-row items-center px-4 py-3" style={{ backgroundColor: colors.tint + '15' }}>
+                <Ionicons name="nutrition" size={20} color={colors.tint} />
+                <ThemedText className="text-base font-bold ml-2">
                   {t("product_detail.info.nutritional_values")}
                 </ThemedText>
-              </View>
-              <View className="p-3 rounded-lg" style={{ backgroundColor: colors.card }}>
-                <ThemedText className="text-xs mb-2" style={{ color: colors.mediumGray }}>
+                <ThemedText className="text-xs ml-auto" style={{ color: colors.mediumGray }}>
                   {t("product_detail.info.per_100g")}
                 </ThemedText>
-                {product.nutritionalValues.energy && (
-                  <View className="flex-row justify-between py-2 border-b" style={{ borderBottomColor: colors.borderColor }}>
-                    <ThemedText className="text-sm">{t("product_detail.info.energy")}</ThemedText>
-                    <ThemedText className="text-sm font-medium">{product.nutritionalValues.energy}</ThemedText>
-                  </View>
-                )}
-                {product.nutritionalValues.fat && (
-                  <View className="flex-row justify-between py-2 border-b" style={{ borderBottomColor: colors.borderColor }}>
-                    <ThemedText className="text-sm">{t("product_detail.info.fat")}</ThemedText>
-                    <ThemedText className="text-sm font-medium">{product.nutritionalValues.fat}</ThemedText>
-                  </View>
-                )}
-                {product.nutritionalValues.saturatedFat && (
-                  <View className="flex-row justify-between py-2 border-b" style={{ borderBottomColor: colors.borderColor }}>
-                    <ThemedText className="text-sm ml-4">{t("product_detail.info.saturated_fat")}</ThemedText>
-                    <ThemedText className="text-sm font-medium">{product.nutritionalValues.saturatedFat}</ThemedText>
-                  </View>
-                )}
-                {product.nutritionalValues.carbohydrates && (
-                  <View className="flex-row justify-between py-2 border-b" style={{ borderBottomColor: colors.borderColor }}>
-                    <ThemedText className="text-sm">{t("product_detail.info.carbohydrates")}</ThemedText>
-                    <ThemedText className="text-sm font-medium">{product.nutritionalValues.carbohydrates}</ThemedText>
-                  </View>
-                )}
-                {product.nutritionalValues.sugar && (
-                  <View className="flex-row justify-between py-2 border-b" style={{ borderBottomColor: colors.borderColor }}>
-                    <ThemedText className="text-sm ml-4">{t("product_detail.info.sugar")}</ThemedText>
-                    <ThemedText className="text-sm font-medium">{product.nutritionalValues.sugar}</ThemedText>
-                  </View>
-                )}
-                {product.nutritionalValues.protein && (
-                  <View className="flex-row justify-between py-2 border-b" style={{ borderBottomColor: colors.borderColor }}>
-                    <ThemedText className="text-sm">{t("product_detail.info.protein")}</ThemedText>
-                    <ThemedText className="text-sm font-medium">{product.nutritionalValues.protein}</ThemedText>
-                  </View>
-                )}
-                {product.nutritionalValues.salt && (
-                  <View className="flex-row justify-between py-2" style={{ borderBottomColor: colors.borderColor }}>
-                    <ThemedText className="text-sm">{t("product_detail.info.salt")}</ThemedText>
-                    <ThemedText className="text-sm font-medium">{product.nutritionalValues.salt}</ThemedText>
-                  </View>
-                )}
               </View>
+
+              {product.nutritionalValues.energy && (
+                <View className="flex-row justify-between px-4 py-3" style={{ borderBottomWidth: 0.5, borderBottomColor: colors.borderColor }}>
+                  <ThemedText className="text-sm">{t("product_detail.info.energy")}</ThemedText>
+                  <ThemedText className="text-sm font-bold">{product.nutritionalValues.energy}</ThemedText>
+                </View>
+              )}
+              {product.nutritionalValues.fat && (
+                <View className="flex-row justify-between px-4 py-3" style={{ borderBottomWidth: 0.5, borderBottomColor: colors.borderColor }}>
+                  <ThemedText className="text-sm">{t("product_detail.info.fat")}</ThemedText>
+                  <ThemedText className="text-sm font-semibold">{product.nutritionalValues.fat}</ThemedText>
+                </View>
+              )}
+              {product.nutritionalValues.saturatedFat && (
+                <View className="flex-row justify-between px-4 py-2.5 pl-8" style={{ borderBottomWidth: 0.5, borderBottomColor: colors.borderColor, backgroundColor: colorScheme === 'dark' ? '#2A2A2A' : colors.background }}>
+                  <ThemedText className="text-xs" style={{ color: colors.mediumGray }}>{t("product_detail.info.saturated_fat")}</ThemedText>
+                  <ThemedText className="text-xs">{product.nutritionalValues.saturatedFat}</ThemedText>
+                </View>
+              )}
+              {product.nutritionalValues.carbohydrates && (
+                <View className="flex-row justify-between px-4 py-3" style={{ borderBottomWidth: 0.5, borderBottomColor: colors.borderColor }}>
+                  <ThemedText className="text-sm">{t("product_detail.info.carbohydrates")}</ThemedText>
+                  <ThemedText className="text-sm font-semibold">{product.nutritionalValues.carbohydrates}</ThemedText>
+                </View>
+              )}
+              {product.nutritionalValues.sugar && (
+                <View className="flex-row justify-between px-4 py-2.5 pl-8" style={{ borderBottomWidth: 0.5, borderBottomColor: colors.borderColor, backgroundColor: colorScheme === 'dark' ? '#2A2A2A' : colors.background }}>
+                  <ThemedText className="text-xs" style={{ color: colors.mediumGray }}>{t("product_detail.info.sugar")}</ThemedText>
+                  <ThemedText className="text-xs">{product.nutritionalValues.sugar}</ThemedText>
+                </View>
+              )}
+              {product.nutritionalValues.protein && (
+                <View className="flex-row justify-between px-4 py-3" style={{ borderBottomWidth: 0.5, borderBottomColor: colors.borderColor }}>
+                  <ThemedText className="text-sm">{t("product_detail.info.protein")}</ThemedText>
+                  <ThemedText className="text-sm font-semibold">{product.nutritionalValues.protein}</ThemedText>
+                </View>
+              )}
+              {product.nutritionalValues.salt && (
+                <View className="flex-row justify-between px-4 py-3">
+                  <ThemedText className="text-sm">{t("product_detail.info.salt")}</ThemedText>
+                  <ThemedText className="text-sm font-semibold">{product.nutritionalValues.salt}</ThemedText>
+                </View>
+              )}
             </View>
           )}
 
           {/* Saklama Koşulları */}
           {product.storageConditions && (
-            <View className="mb-6">
-              <View className="flex-row items-center mb-3">
-                <Ionicons name="snow" size={24} color={colors.tint} />
-                <ThemedText className="text-lg font-bold ml-2">
+            <View className="mb-5 rounded-xl overflow-hidden" style={{ backgroundColor: colors.card }}>
+              <View className="flex-row items-center px-4 py-3" style={{ backgroundColor: colors.tint + '15' }}>
+                <Ionicons name="snow" size={20} color={colors.tint} />
+                <ThemedText className="text-base font-bold ml-2">
                   {t("product_detail.info.storage")}
                 </ThemedText>
               </View>
-              <View className="p-3 rounded-lg" style={{ backgroundColor: colors.card }}>
-                <ThemedText className="text-sm">{product.storageConditions}</ThemedText>
+              <View className="px-4 py-3">
+                <ThemedText className="text-sm leading-5">{product.storageConditions}</ThemedText>
               </View>
             </View>
           )}
 
-          {/* Üretici Bilgileri */}
+          {/* Üretici Bilgileri Tablosu */}
           {product.manufacturerInfo && (
-            <View className="mb-6">
-              <View className="flex-row items-center mb-3">
-                <Ionicons name="business" size={24} color={colors.tint} />
-                <ThemedText className="text-lg font-bold ml-2">
+            <View className="mb-5 rounded-xl overflow-hidden" style={{ backgroundColor: colors.card }}>
+              <View className="flex-row items-center px-4 py-3" style={{ backgroundColor: colors.tint + '15' }}>
+                <Ionicons name="business" size={20} color={colors.tint} />
+                <ThemedText className="text-base font-bold ml-2">
                   {t("product_detail.info.manufacturer")}
                 </ThemedText>
               </View>
-              <View className="p-3 rounded-lg" style={{ backgroundColor: colors.card }}>
-                {product.manufacturerInfo.name && (
-                  <ThemedText className="text-sm font-semibold mb-1">{product.manufacturerInfo.name}</ThemedText>
-                )}
-                {product.manufacturerInfo.address && (
-                  <ThemedText className="text-sm" style={{ color: colors.mediumGray }}>
-                    {product.manufacturerInfo.address}
-                  </ThemedText>
-                )}
+
+              {product.manufacturerInfo.name && (
+                <View className="px-4 py-3" style={{ borderBottomWidth: 0.5, borderBottomColor: colors.borderColor }}>
+                  <ThemedText className="text-xs mb-1" style={{ color: colors.mediumGray }}>Firma Adı</ThemedText>
+                  <ThemedText className="text-sm font-semibold">{product.manufacturerInfo.name}</ThemedText>
+                </View>
+              )}
+
+              {product.manufacturerInfo.address && (
+                <View className="px-4 py-3" style={{ borderBottomWidth: 0.5, borderBottomColor: colors.borderColor }}>
+                  <ThemedText className="text-xs mb-1" style={{ color: colors.mediumGray }}>Adres</ThemedText>
+                  <ThemedText className="text-sm">{product.manufacturerInfo.address}</ThemedText>
+                </View>
+              )}
+
+              <View className="flex-row">
                 {product.manufacturerInfo.phone && (
-                  <View className="flex-row items-center mt-2">
-                    <Ionicons name="call-outline" size={16} color={colors.mediumGray} />
-                    <ThemedText className="text-sm ml-2" style={{ color: colors.mediumGray }}>
-                      {product.manufacturerInfo.phone}
-                    </ThemedText>
+                  <View className="flex-1 px-4 py-3" style={{ borderRightWidth: 0.5, borderRightColor: colors.borderColor }}>
+                    <ThemedText className="text-xs mb-1" style={{ color: colors.mediumGray }}>Telefon</ThemedText>
+                    <View className="flex-row items-center">
+                      <Ionicons name="call-outline" size={14} color={colors.tint} />
+                      <ThemedText className="text-sm ml-1.5" style={{ color: colors.tint }}>
+                        {product.manufacturerInfo.phone}
+                      </ThemedText>
+                    </View>
                   </View>
                 )}
+
                 {product.manufacturerInfo.email && (
-                  <View className="flex-row items-center mt-1">
-                    <Ionicons name="mail-outline" size={16} color={colors.mediumGray} />
-                    <ThemedText className="text-sm ml-2" style={{ color: colors.mediumGray }}>
-                      {product.manufacturerInfo.email}
-                    </ThemedText>
+                  <View className="flex-1 px-4 py-3">
+                    <ThemedText className="text-xs mb-1" style={{ color: colors.mediumGray }}>E-posta</ThemedText>
+                    <View className="flex-row items-center">
+                      <Ionicons name="mail-outline" size={14} color={colors.tint} />
+                      <ThemedText className="text-sm ml-1.5" style={{ color: colors.tint }}>
+                        {product.manufacturerInfo.email}
+                      </ThemedText>
+                    </View>
                   </View>
                 )}
               </View>
