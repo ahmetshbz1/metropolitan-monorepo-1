@@ -8,24 +8,23 @@ import { t } from "elysia";
 
 import { users } from "../../../../shared/infrastructure/database/schema";
 import { createApp } from "../../../../shared/infrastructure/web/app";
-import { authGuard } from "../../../identity/presentation/routes/auth-guards";
+import { authTokenGuard } from "../../../identity/presentation/routes/auth-guards";
 
 export const notificationPreferencesRoutes = createApp()
   .use(logger({ level: "info" }))
-  .use(authGuard)
+  .use(authTokenGuard)
   .group("/user/notification-preferences", (app) =>
     app
       // Get notification preferences
       .get(
         "/",
-        async ({ jwt, bearer, db }) => {
-          const payload = await jwt.verify(bearer!);
-          if (!payload || !payload.userId) {
+        async ({ profile, db }) => {
+          if (!profile || !profile.userId) {
             return { success: false, message: "Unauthorized" };
           }
 
           const user = await db.query.users.findFirst({
-            where: eq(users.id, payload.userId as string),
+            where: eq(users.id, profile.userId),
             columns: {
               smsNotifications: true,
               pushNotifications: true,
@@ -51,9 +50,8 @@ export const notificationPreferencesRoutes = createApp()
       // Update notification preferences
       .put(
         "/",
-        async ({ body, jwt, bearer, db, log }) => {
-          const payload = await jwt.verify(bearer!);
-          if (!payload || !payload.userId) {
+        async ({ body, profile, db, log }) => {
+          if (!profile || !profile.userId) {
             return { success: false, message: "Unauthorized" };
           }
 
@@ -65,10 +63,10 @@ export const notificationPreferencesRoutes = createApp()
               emailNotifications: body.email,
               updatedAt: new Date(),
             })
-            .where(eq(users.id, payload.userId as string));
+            .where(eq(users.id, profile.userId));
 
           log.info(
-            { userId: payload.userId, preferences: body },
+            { userId: profile.userId, preferences: body },
             "Notification preferences updated"
           );
 

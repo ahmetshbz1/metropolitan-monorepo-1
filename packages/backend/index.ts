@@ -19,6 +19,7 @@ import { productRoutes } from "./src/domains/catalog/presentation/routes/product
 import { contentRoutes } from "./src/domains/content/presentation/routes/content.routes";
 import { guestRoutes } from "./src/domains/content/presentation/routes/guest.routes";
 import { authRoutes } from "./src/domains/identity/presentation/routes/auth.routes";
+import { changePhoneRoutes } from "./src/domains/identity/presentation/routes/change-phone.routes";
 import { invoicesRoutes } from "./src/domains/order/presentation/routes/invoices.routes";
 import { ordersRoutes } from "./src/domains/order/presentation/routes/orders.routes";
 import { stripeWebhookRoutes } from "./src/domains/payment/presentation/routes/stripe-webhook.routes";
@@ -117,6 +118,7 @@ export const app = new Elysia()
     app
       // Identity Domain
       .use(authRoutes)
+      .use(changePhoneRoutes)
 
       // User Domain (grouped under /users prefix)
       .group("/users", (userApp) =>

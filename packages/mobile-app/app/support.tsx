@@ -2,17 +2,17 @@
 // metropolitan app
 // Support page
 
+import { HapticButton } from "@/components/HapticButton";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import React, { useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Linking, ScrollView, View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { HapticButton } from "@/components/HapticButton";
 
 export default function SupportScreen() {
   const { t } = useTranslation();
@@ -35,7 +35,10 @@ export default function SupportScreen() {
       subtitle: "+48 600 790 035",
       icon: "whatsapp" as const,
       color: "#25D366",
-      action: () => Linking.openURL("whatsapp://send?phone=48600790035"),
+      action: () =>
+        Linking.openURL(
+          `whatsapp://send?phone=48600790035&text=${encodeURIComponent(t("support.whatsapp_message"))}`
+        ),
     },
     {
       id: "phone",
@@ -52,6 +55,42 @@ export default function SupportScreen() {
       icon: "email" as const,
       color: colors.primary,
       action: () => Linking.openURL("mailto:info@metropolitanfg.pl"),
+    },
+  ];
+
+  const socialMethods = [
+    {
+      id: "instagram",
+      title: t("support.instagram"),
+      subtitle: "@metropolitanfg",
+      icon: "instagram" as const,
+      color: "#E4405F",
+      action: () => Linking.openURL("https://instagram.com/metropolitanfg"),
+    },
+    {
+      id: "facebook",
+      title: t("support.facebook"),
+      subtitle: "Metropolitan Food Group",
+      icon: "facebook" as const,
+      color: "#1877F2",
+      action: () => Linking.openURL("https://facebook.com/metropolitanfg"),
+    },
+    {
+      id: "twitter",
+      title: t("support.twitter"),
+      subtitle: "@metropolitanfg",
+      icon: "twitter" as const,
+      color: "#1DA1F2",
+      action: () => Linking.openURL("https://twitter.com/metropolitanfg"),
+    },
+    {
+      id: "linkedin",
+      title: t("support.linkedin"),
+      subtitle: "Metropolitan Food Group",
+      icon: "linkedin" as const,
+      color: "#0A66C2",
+      action: () =>
+        Linking.openURL("https://linkedin.com/company/metropolitanfg"),
     },
   ];
 
@@ -159,6 +198,66 @@ export default function SupportScreen() {
           </View>
         </View>
 
+        {/* Social Media Section */}
+        <View className="px-4 mb-6">
+          <ThemedText className="text-sm font-semibold mb-3 opacity-60 uppercase">
+            {t("support.social_section")}
+          </ThemedText>
+          <View
+            style={{
+              backgroundColor: colors.card,
+              borderRadius: 18,
+              overflow: "hidden",
+            }}
+          >
+            {socialMethods.map((method, index) => (
+              <HapticButton
+                key={method.id}
+                onPress={method.action}
+                activeOpacity={0.7}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  padding: 16,
+                  borderBottomWidth: index < socialMethods.length - 1 ? 1 : 0,
+                  borderBottomColor: colors.border,
+                }}
+              >
+                <View
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    backgroundColor: method.color + "20",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginRight: 12,
+                  }}
+                >
+                  <MaterialCommunityIcons
+                    name={method.icon as any}
+                    size={22}
+                    color={method.color}
+                  />
+                </View>
+                <View className="flex-1">
+                  <ThemedText className="text-base font-medium">
+                    {method.title}
+                  </ThemedText>
+                  <ThemedText className="text-xs opacity-60 mt-1">
+                    {method.subtitle}
+                  </ThemedText>
+                </View>
+                <Ionicons
+                  name="chevron-forward"
+                  size={20}
+                  color={colors.mediumGray}
+                />
+              </HapticButton>
+            ))}
+          </View>
+        </View>
+
         {/* FAQ Section */}
         <View className="px-4 mb-6">
           <ThemedText className="text-sm font-semibold mb-3 opacity-60 uppercase">
@@ -194,9 +293,7 @@ export default function SupportScreen() {
                   </View>
                   <Ionicons
                     name={
-                      expandedFaq === item.id
-                        ? "chevron-up"
-                        : "chevron-down"
+                      expandedFaq === item.id ? "chevron-up" : "chevron-down"
                     }
                     size={20}
                     color={colors.mediumGray}
@@ -207,8 +304,7 @@ export default function SupportScreen() {
                     style={{
                       paddingHorizontal: 16,
                       paddingBottom: 16,
-                      borderBottomWidth:
-                        index < faqItems.length - 1 ? 1 : 0,
+                      borderBottomWidth: index < faqItems.length - 1 ? 1 : 0,
                       borderBottomColor: colors.border,
                     }}
                   >

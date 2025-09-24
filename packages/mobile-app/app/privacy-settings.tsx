@@ -5,20 +5,19 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Colors from "@/constants/Colors";
+import { useAuth } from "@/context/AuthContext";
+import { api } from "@/core/api";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useToast } from "@/hooks/useToast";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import React, { useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, Switch, View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useToast } from "@/hooks/useToast";
-import { api } from "@/core/api";
-import { useAuth } from "@/context/AuthContext";
 
 interface PrivacySettings {
   shareDataWithPartners: boolean;
-  personalizedAds: boolean;
   analyticsData: boolean;
   marketingEmails: boolean;
 }
@@ -33,10 +32,9 @@ export default function PrivacySettingsScreen() {
   const { isAuthenticated } = useAuth();
 
   const [settings, setSettings] = useState<PrivacySettings>({
-    shareDataWithPartners: false,
-    personalizedAds: true,
-    analyticsData: true,
-    marketingEmails: false,
+    shareDataWithPartners: true, // Kullanıcı gizlilik politikasını kabul etmişse veri paylaşımını da kabul etmiş sayılır
+    analyticsData: true, // Analiz verileri varsayılan olarak açık
+    marketingEmails: false, // Pazarlama e-postaları kullanıcının seçimine bağlı
   });
   const [loading, setLoading] = useState(false);
 
@@ -45,6 +43,37 @@ export default function PrivacySettingsScreen() {
       headerTitle: t("privacy_settings.title"),
     });
   }, [navigation, t]);
+
+  // Kullanıcının mevcut gizlilik tercihlerini yükle
+  React.useEffect(() => {
+    const loadUserPrivacySettings = async () => {
+      if (!isAuthenticated) return;
+
+      try {
+        // Backend'den kullanıcının mevcut tercihlerini al
+        // Bu endpoint henüz implementasyonda yoksa default değerlerle çalış
+        const response = await api.get("/users/me/profile");
+        const userData = response.data;
+
+        // Backend'deki verilerden gizlilik tercihlerini çıkar
+        if (userData) {
+          setSettings({
+            shareDataWithPartners: userData.privacyAcceptedAt ? true : false,
+            analyticsData: userData.privacyAcceptedAt ? true : false,
+            marketingEmails: userData.marketingConsent || false,
+          });
+        }
+      } catch (error) {
+        console.log(
+          "Privacy settings yüklenemedi, default değerler kullanılıyor:",
+          error
+        );
+        // Hata durumunda default değerleri koru
+      }
+    };
+
+    loadUserPrivacySettings();
+  }, [isAuthenticated]);
 
   const updateSetting = async (key: keyof PrivacySettings, value: boolean) => {
     const newSettings = { ...settings, [key]: value };
@@ -67,13 +96,6 @@ export default function PrivacySettingsScreen() {
       subtitle: t("privacy_settings.data_sharing_desc"),
       key: "shareDataWithPartners" as const,
       value: settings.shareDataWithPartners,
-    },
-    {
-      icon: "megaphone-outline",
-      title: t("privacy_settings.personalized_ads"),
-      subtitle: t("privacy_settings.personalized_ads_desc"),
-      key: "personalizedAds" as const,
-      value: settings.personalizedAds,
     },
     {
       icon: "analytics-outline",

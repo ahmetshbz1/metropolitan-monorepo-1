@@ -2,19 +2,19 @@
 // metropolitan app
 // Account settings page
 
+import { HapticButton } from "@/components/HapticButton";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Colors from "@/constants/Colors";
 import { useAuth } from "@/context/AuthContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, ScrollView, TouchableOpacity, View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { HapticButton } from "@/components/HapticButton";
 
 export default function AccountSettingsScreen() {
   const { t } = useTranslation();
@@ -33,23 +33,10 @@ export default function AccountSettingsScreen() {
   }, [navigation, t]);
 
   const handleDeleteAccount = () => {
-    Alert.alert(
-      t("delete_account.confirm_title"),
-      t("delete_account.confirm_message"),
-      [
-        {
-          text: t("common.cancel"),
-          style: "cancel",
-        },
-        {
-          text: t("delete_account.confirm_button"),
-          style: "destructive",
-          onPress: () => {
-            router.push("/(auth)/delete-account");
-          },
-        },
-      ]
-    );
+    // Direkt delete-account sayfasına yönlendir
+    // Bu sayfa zaten tüm güvenlik kontrollerini ve uyarıları içeriyor
+    console.log("Navigating to delete-account page");
+    router.push("/delete-account");
   };
 
   const settingsItems = [
@@ -125,10 +112,11 @@ export default function AccountSettingsScreen() {
               </View>
               <View className="flex-1">
                 <ThemedText className="text-lg font-semibold">
-                  {user?.firstName || t("account_settings.guest_user")} {user?.lastName || ""}
+                  {user?.firstName || t("account_settings.guest_user")}{" "}
+                  {user?.lastName || ""}
                 </ThemedText>
                 <ThemedText className="text-sm opacity-70">
-                  {user?.phoneNumber || t("account_settings.no_phone")}
+                  {user?.phone || t("account_settings.no_phone")}
                 </ThemedText>
                 {user?.email && (
                   <ThemedText className="text-sm opacity-70">

@@ -2,11 +2,11 @@
 //  metropolitan app
 //  Created by Ahmet on 09.06.2025.
 
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RefreshControl, ScrollView, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
 
 import { HapticButton } from "@/components/HapticButton";
 import { LogoutButton } from "@/components/profile/LogoutButton";
@@ -111,13 +111,6 @@ export default function ProfileScreen() {
           route: "/support",
           showChevron: true,
         },
-        {
-          id: "contact",
-          title: t("profile.contact_us"),
-          icon: "mail-outline",
-          route: "/support",
-          showChevron: true,
-        },
       ],
     },
     {
@@ -161,7 +154,9 @@ export default function ProfileScreen() {
           width: 36,
           height: 36,
           borderRadius: 18,
-          backgroundColor: item.danger ? colors.error + "15" : colors.primary + "15",
+          backgroundColor: item.danger
+            ? colors.error + "15"
+            : colors.primary + "15",
           alignItems: "center",
           justifyContent: "center",
           marginRight: 12,
@@ -189,11 +184,7 @@ export default function ProfileScreen() {
         )}
       </View>
       {item.showChevron && (
-        <Ionicons
-          name="chevron-forward"
-          size={20}
-          color={colors.mediumGray}
-        />
+        <Ionicons name="chevron-forward" size={20} color={colors.mediumGray} />
       )}
     </HapticButton>
   );

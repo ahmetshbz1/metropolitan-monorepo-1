@@ -29,6 +29,9 @@ export const users = pgTable(
       onDelete: "set null",
     }),
     phoneNumber: text("phone_number").notNull(),
+    phoneNumberVerified: boolean("phone_number_verified").default(false).notNull(),
+    phoneNumberChangedAt: timestamp("phone_number_changed_at"),
+    previousPhoneNumber: text("previous_phone_number"),
     firstName: text("first_name"),
     lastName: text("last_name"),
     email: text("email").unique(),
@@ -66,6 +69,23 @@ export const addresses = pgTable("addresses", {
   country: text("country").notNull(),
   isDefaultDelivery: boolean("is_default_delivery").default(false).notNull(),
   isDefaultBilling: boolean("is_default_billing").default(false).notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Telefon numarası değişiklik talepleri tablosu
+export const phoneChangeRequests = pgTable("phone_change_requests", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  currentPhone: text("current_phone").notNull(),
+  newPhone: text("new_phone"),
+  sessionId: text("session_id").notNull(),
+  newSessionId: text("new_session_id"),
+  step: text("step").notNull(), // current_verified, otp_sent, completed
+  expiresAt: timestamp("expires_at").notNull(),
+  completedAt: timestamp("completed_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

@@ -2,33 +2,45 @@
 // metropolitan backend
 // Authentication guards and utilities
 
+import { Elysia } from "elysia";
+import { jwt } from "@elysiajs/jwt";
 import { isTokenBlacklisted } from "../../../../shared/infrastructure/database/redis";
 
 /**
  * Auth token verification guard
  * Checks JWT token validity and blacklist status
  */
-export const authTokenGuard = {
-  async beforeHandle({ jwt, headers, error }: any) {
-    const token = headers.authorization?.replace("Bearer ", "");
-    if (!token) {
-      return error(401, "Unauthorized");
-    }
+export const authTokenGuard = (app: Elysia) =>
+  app
+    .use(jwt({ name: "jwt", secret: process.env.JWT_SECRET! }))
+    .derive(async ({ jwt, headers }) => {
+      const token = headers.authorization?.replace("Bearer ", "");
+      if (!token) return { profile: null };
 
-    const profile = (await jwt.verify(token)) as {
-      userId: string;
-      exp: number;
-    };
-    
-    if (!profile) {
-      return error(401, "Unauthorized");
-    }
+      try {
+        const isBlacklisted = await isTokenBlacklisted(token);
+        if (isBlacklisted) return { profile: null };
 
-    if (await isTokenBlacklisted(token)) {
-      return error(401, "Token is blacklisted. Please log in again.");
-    }
-  },
-};
+        const profile = (await jwt.verify(token)) as
+          | { userId: string; exp: number }
+          | false;
+        if (!profile) {
+          return { profile: null };
+        }
+
+        return { profile };
+      } catch (_error) {
+        // Token geçersiz veya süresi dolmuş
+        return { profile: null };
+      }
+    })
+    .guard({
+      beforeHandle: ({ profile, error }) => {
+        if (!profile) {
+          return error(401, "Unauthorized");
+        }
+      },
+    });
 
 /**
  * Extract token from authorization header

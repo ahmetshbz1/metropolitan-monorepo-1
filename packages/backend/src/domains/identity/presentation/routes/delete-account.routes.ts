@@ -9,27 +9,26 @@ import { t } from "elysia";
 import { users } from "../../../../shared/infrastructure/database/schema";
 import { createApp } from "../../../../shared/infrastructure/web/app";
 import { createOtp, verifyOtp } from "../../application/use-cases/otp.service";
-import { authGuard, phoneNumberSchema } from "./auth-guards";
+import { authTokenGuard, phoneNumberSchema } from "./auth-guards";
 
 export const deleteAccountRoutes = createApp()
   .use(logger({ level: "info" }))
-  .use(authGuard)
+  .use(authTokenGuard)
   .group("/auth/account", (app) =>
     app
       // Send OTP for account deletion
       .post(
         "/delete/send-otp",
-        async ({ body, jwt, bearer, log, db }) => {
+        async ({ body, profile, log, db }) => {
           // Get current user
-          const payload = await jwt.verify(bearer!);
-          if (!payload || !payload.userId) {
+          if (!profile || !profile.userId) {
             return { success: false, message: "Unauthorized" };
           }
 
           // Get user from database
           const user = await db.query.users.findFirst({
             where: and(
-              eq(users.id, payload.userId as string),
+              eq(users.id, profile.userId),
               isNull(users.deletedAt)
             ),
           });
@@ -62,17 +61,16 @@ export const deleteAccountRoutes = createApp()
       // Verify OTP and soft delete account
       .post(
         "/delete/verify-otp",
-        async ({ body, jwt, bearer, log, db }) => {
+        async ({ body, profile, log, db }) => {
           // Get current user
-          const payload = await jwt.verify(bearer!);
-          if (!payload || !payload.userId) {
+          if (!profile || !profile.userId) {
             return { success: false, message: "Unauthorized" };
           }
 
           // Get user from database
           const user = await db.query.users.findFirst({
             where: and(
-              eq(users.id, payload.userId as string),
+              eq(users.id, profile.userId),
               isNull(users.deletedAt)
             ),
           });

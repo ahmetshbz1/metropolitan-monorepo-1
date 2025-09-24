@@ -98,20 +98,7 @@ export default function SecuritySettingsScreen() {
   };
 
   const handleChangePhone = () => {
-    Alert.alert(
-      t("security_settings.change_phone_title"),
-      t("security_settings.change_phone_message"),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("common.continue"),
-          onPress: () => {
-            // TODO: Navigate to change phone screen
-            showToast(t("general.feature_soon"), "info");
-          },
-        },
-      ]
-    );
+    router.push("/change-phone");
   };
 
   const handleEndSession = (sessionId: string) => {
@@ -212,7 +199,7 @@ export default function SecuritySettingsScreen() {
                   {t("security_settings.change_phone")}
                 </ThemedText>
                 <ThemedText className="text-xs opacity-60 mt-1">
-                  {user?.phoneNumber || t("security_settings.no_phone")}
+                  {user?.phone || t("security_settings.no_phone")}
                 </ThemedText>
               </View>
               <Ionicons

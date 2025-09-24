@@ -56,7 +56,7 @@ export const PhoneInput = forwardRef<TextInput, PhoneInputProps>(
               ref={countryCodeRef}
               size="small"
               variant="default"
-              placeholder="+90"
+              placeholder="+48"
               placeholderTextColor={themeColors.mediumGray}
               value={`+${countryCode}`}
               onChangeText={(text) => {
