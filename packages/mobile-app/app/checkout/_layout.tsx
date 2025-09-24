@@ -2,11 +2,9 @@
 //  metropolitan app
 //  Created by Ahmet on 03.07.2025.
 
-import { Ionicons } from "@expo/vector-icons";
-import { Stack, useRouter } from "expo-router";
+import { Stack } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, TouchableOpacity } from "react-native";
 
 import { ThemedView } from "@/components/ThemedView";
 import Colors from "@/constants/Colors";
@@ -21,20 +19,6 @@ function CheckoutLayoutContent() {
   const { t } = useTranslation();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
-  const router = useRouter();
-
-  const CustomHeaderBackButton = () => (
-    <TouchableOpacity
-      onPress={() => router.back()}
-      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-    >
-      <Ionicons
-        name={Platform.OS === "ios" ? "chevron-back" : "arrow-back"}
-        size={Platform.OS === "ios" ? 28 : 24}
-        color={colors.text}
-      />
-    </TouchableOpacity>
-  );
 
   return (
     <ThemedView className="flex-1">
@@ -51,7 +35,6 @@ function CheckoutLayoutContent() {
             color: colors.text,
           },
           headerTitleAlign: "center",
-          headerLeft: CustomHeaderBackButton,
         }}
       >
         <Stack.Screen
