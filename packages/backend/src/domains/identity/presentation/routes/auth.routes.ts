@@ -5,6 +5,8 @@
 
 import { createApp } from "../../../../shared/infrastructure/web/app";
 
+import { cleanupRoutes } from "./cleanup.routes";
+import { deleteAccountRoutes } from "./delete-account.routes";
 import { guestMigrationRoutes } from "./guest-migration.routes";
 import { logoutRoutes } from "./logout.routes";
 import { otpRoutes } from "./otp.routes";
@@ -19,4 +21,8 @@ export const authRoutes = createApp()
   // Mount guest data migration routes
   .use(guestMigrationRoutes)
   // Mount logout routes (includes auth guard)
-  .use(logoutRoutes);
+  .use(logoutRoutes)
+  // Mount account deletion routes (includes auth guard)
+  .use(deleteAccountRoutes)
+  // Mount cleanup routes (for cron jobs)
+  .use(cleanupRoutes);

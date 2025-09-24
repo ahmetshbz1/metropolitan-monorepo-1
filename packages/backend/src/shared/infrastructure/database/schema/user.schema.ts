@@ -39,6 +39,7 @@ export const users = pgTable(
     privacyAcceptedAt: timestamp("privacy_accepted_at"),
     marketingConsentAt: timestamp("marketing_consent_at"),
     marketingConsent: boolean("marketing_consent").default(false).notNull(),
+    deletedAt: timestamp("deleted_at"), // Soft delete için
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },

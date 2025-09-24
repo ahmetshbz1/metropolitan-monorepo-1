@@ -3,7 +3,7 @@
 // OTP operations routes (send and verify)
 
 import { logger } from "@bogeychan/elysia-logger";
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNotNull } from "drizzle-orm";
 import { t } from "elysia";
 
 import { users } from "../../../../shared/infrastructure/database/schema";
@@ -45,13 +45,32 @@ export const otpRoutes = createApp()
           );
           
           if (await verifyOtp(body.phoneNumber, body.otpCode)) {
-            // Find or create user
+            // First check for soft-deleted user
             let user = await db.query.users.findFirst({
               where: and(
                 eq(users.phoneNumber, body.phoneNumber),
                 eq(users.userType, body.userType)
               ),
             });
+
+            // If user exists but is soft-deleted, reactivate
+            if (user && user.deletedAt) {
+              log.info(
+                `Reactivating soft-deleted account for ${body.phoneNumber}`
+              );
+              await db
+                .update(users)
+                .set({
+                  deletedAt: null,
+                  updatedAt: new Date(),
+                })
+                .where(eq(users.id, user.id));
+
+              // Refresh user data
+              user = await db.query.users.findFirst({
+                where: eq(users.id, user.id),
+              });
+            }
 
             if (!user) {
               log.info(

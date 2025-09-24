@@ -16,7 +16,7 @@ import { IoniconsName } from "@/types/ionicons.types";
 const actions: {
   icon: IoniconsName;
   labelKey: string;
-  route: "/favorites" | "/addresses" | "/notifications";
+  route: "/favorites" | "/addresses" | "/notifications" | "/account-settings";
 }[] = [
   {
     icon: "heart-outline",
@@ -32,6 +32,11 @@ const actions: {
     icon: "notifications-outline",
     labelKey: "profile.notifications",
     route: "/notifications" as const,
+  },
+  {
+    icon: "settings-outline",
+    labelKey: "profile.account_settings",
+    route: "/account-settings" as const,
   },
 ];
 
@@ -50,46 +55,93 @@ export function AccountSection() {
       </View>
       <View
         style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
+          flexDirection: "column",
           gap: 12,
           marginHorizontal: 16,
         }}
       >
-        {actions.map((action) => (
-          <HapticButton
-            key={action.route}
-            onPress={() => router.push(action.route)}
-            activeOpacity={0.85}
-            accessibilityRole="button"
-            accessibilityLabel={t(action.labelKey)}
-            style={{
-              flex: 1,
-              alignItems: "center",
-              paddingVertical: 18,
-              backgroundColor: colors.card,
-              borderRadius: 18,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.08,
-              shadowRadius: 4,
-              elevation: 2,
-            }}
-          >
-            <Ionicons
-              name={action.icon as any}
-              size={28}
-              color={colors.tint}
-              style={{ marginBottom: 6 }}
-            />
-            <ThemedText
-              className="text-xs font-medium"
-              style={{ color: colors.text, textAlign: "center" }}
+        <View
+          style={{
+            flexDirection: "row",
+            gap: 12,
+          }}
+        >
+          {actions.slice(0, 2).map((action) => (
+            <HapticButton
+              key={action.route}
+              onPress={() => router.push(action.route)}
+              activeOpacity={0.85}
+              accessibilityRole="button"
+              accessibilityLabel={t(action.labelKey)}
+              style={{
+                flex: 1,
+                alignItems: "center",
+                paddingVertical: 18,
+                backgroundColor: colors.card,
+                borderRadius: 18,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.08,
+                shadowRadius: 4,
+                elevation: 2,
+              }}
             >
-              {t(action.labelKey)}
-            </ThemedText>
-          </HapticButton>
-        ))}
+              <Ionicons
+                name={action.icon as any}
+                size={28}
+                color={colors.tint}
+                style={{ marginBottom: 6 }}
+              />
+              <ThemedText
+                className="text-xs font-medium"
+                style={{ color: colors.text, textAlign: "center" }}
+              >
+                {t(action.labelKey)}
+              </ThemedText>
+            </HapticButton>
+          ))}
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+            gap: 12,
+          }}
+        >
+          {actions.slice(2, 4).map((action) => (
+            <HapticButton
+              key={action.route}
+              onPress={() => router.push(action.route)}
+              activeOpacity={0.85}
+              accessibilityRole="button"
+              accessibilityLabel={t(action.labelKey)}
+              style={{
+                flex: 1,
+                alignItems: "center",
+                paddingVertical: 18,
+                backgroundColor: colors.card,
+                borderRadius: 18,
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.08,
+                shadowRadius: 4,
+                elevation: 2,
+              }}
+            >
+              <Ionicons
+                name={action.icon as any}
+                size={28}
+                color={colors.tint}
+                style={{ marginBottom: 6 }}
+              />
+              <ThemedText
+                className="text-xs font-medium"
+                style={{ color: colors.text, textAlign: "center" }}
+              >
+                {t(action.labelKey)}
+              </ThemedText>
+            </HapticButton>
+          ))}
+        </View>
       </View>
     </View>
   );
