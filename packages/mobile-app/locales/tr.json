@@ -965,6 +965,8 @@
     "security_desc": "Güvenlik ayarlarını yapılandırın",
     "general": "Genel",
     "danger_zone": "Tehlikeli Bölge",
+    "export_data": "Verilerimi İndir",
+    "export_data_desc": "Hesap verilerinizi indirin",
     "delete_account_desc": "Hesabınızı kalıcı olarak silin",
     "guest_user": "Misafir Kullanıcı",
     "no_phone": "Telefon numarası yok"
@@ -1067,5 +1069,34 @@
     "info_1": "Hesabınız geçici olarak silinecek",
     "info_2": "20 gün içinde giriş yaparak hesabınızı kurtarabilirsiniz",
     "info_3": "20 gün sonra tüm verileriniz kalıcı olarak silinecek"
+  },
+  "export_data": {
+    "title": "Verilerimi İndir",
+    "info_title": "Veri Dışa Aktarma",
+    "info_desc": "Hesabınıza ait tüm verileri güvenli bir şekilde indirin. Verileriniz JSON formatında size sunulacaktır.",
+    "included_data": "İndirilen Veriler",
+    "data_profile": "Profil bilgileri (ad, soyad, e-posta)",
+    "data_orders": "Sipariş geçmişi ve faturaları",
+    "data_addresses": "Kayıtlı adresleriniz",
+    "data_preferences": "Tercihler ve ayarlarınız",
+    "export_methods": "Dışa Aktarma Yöntemleri",
+    "email_option": "E-posta ile Gönder",
+    "email_option_desc": "Verileriniz e-posta adresinize güvenli link ile gönderilir",
+    "download_option": "Direkt İndir",
+    "download_option_desc": "Verilerinizi hemen ZIP dosyası olarak indirin",
+    "start_export": "Dışa Aktarmayı Başlat",
+    "email_success": "Verileriniz e-posta adresinize gönderildi",
+    "download_success": "Verileriniz başarıyla indirildi",
+    "downloading": "Verileriniz indiriliyor...",
+    "download_failed": "Dosya indirme işlemi başarısız oldu",
+    "save_file": "Dosyayı Kaydet",
+    "sharing_not_available": "Dosya paylaşımı bu cihazda kullanılamıyor",
+    "file_password": "Dosya Şifresi",
+    "file_password_desc": "Dosyanız güvenlik için şifrelendi. Aşağıdaki şifreyi kullanarak açabilirsiniz:",
+    "copy_password": "Şifreyi Kopyala",
+    "password_copied": "Şifre kopyalandı",
+    "open_file": "Aç",
+    "file_saved": "Dosya başarıyla kaydedildi",
+    "export_error": "Veri dışa aktarımı sırasında bir hata oluştu"
   }
 }

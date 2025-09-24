@@ -9,6 +9,7 @@ export * from "./application/use-cases/profile-update.service";
 // Profile types artık shared package'dan gelir
 // export * from "./domain/entities/profile.types";
 export * from "./presentation/routes/address.routes";
+export * from "./presentation/routes/data-export.routes";
 export * from "./presentation/routes/notification-preferences.routes";
 export * from "./presentation/routes/profile.routes";
 

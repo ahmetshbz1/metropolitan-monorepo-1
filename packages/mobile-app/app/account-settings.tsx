@@ -65,6 +65,12 @@ export default function AccountSettingsScreen() {
 
   const dangerZoneItems = [
     {
+      icon: "download-outline" as const,
+      title: t("account_settings.export_data"),
+      subtitle: t("account_settings.export_data_desc"),
+      onPress: () => router.push("/export-data"),
+    },
+    {
       icon: "trash-outline" as const,
       title: t("delete_account.title"),
       subtitle: t("account_settings.delete_account_desc"),
