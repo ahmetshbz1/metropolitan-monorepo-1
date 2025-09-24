@@ -69,8 +69,18 @@ export default function AppSettingsScreen() {
           style: "destructive",
           onPress: async () => {
             try {
-              // Clear AsyncStorage
-              await AsyncStorage.clear();
+              // AsyncStorage'dan sadece cache ile ilgili verileri temizle
+              // Auth ile ilgili key'leri koru: user_data, guest_id, is_guest
+              const allKeys = await AsyncStorage.getAllKeys();
+              const keysToRemove = allKeys.filter(key =>
+                !key.includes('user_data') &&
+                !key.includes('guest_id') &&
+                !key.includes('is_guest')
+              );
+
+              if (keysToRemove.length > 0) {
+                await AsyncStorage.multiRemove(keysToRemove);
+              }
 
               // Clear image cache directory
               const cacheDirectory = FileSystem.cacheDirectory;
