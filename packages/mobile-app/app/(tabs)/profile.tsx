@@ -140,7 +140,7 @@ export default function ProfileScreen() {
         }
       }}
       activeOpacity={0.7}
-      debounceDelay={800} // Navigation için daha uzun debounce
+      debounceDelay={500} // Navigation için debounce
       style={{
         flexDirection: "row",
         alignItems: "center",
@@ -282,7 +282,7 @@ export default function ProfileScreen() {
               className="flex-row items-center justify-center mx-5 mt-5 p-4 rounded-2xl"
               style={{ backgroundColor: colors.primary + "10" }}
               onPress={() => safeRouter.push("/(auth)/")}
-              debounceDelay={800} // Navigation için daha uzun debounce
+              debounceDelay={500} // Navigation için debounce
               accessibilityRole="button"
               accessibilityLabel={t("profile.login")}
             >

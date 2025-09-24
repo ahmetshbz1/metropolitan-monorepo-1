@@ -158,7 +158,7 @@ export default function PrivacySettingsScreen() {
               <HapticButton
                 className="mt-3"
                 onPress={() => safeRouter.push("/(auth)/")}
-                debounceDelay={800} // Navigation için daha uzun debounce
+                debounceDelay={500} // Navigation için debounce
                 style={{
                   backgroundColor: colors.primary,
                   paddingHorizontal: 16,

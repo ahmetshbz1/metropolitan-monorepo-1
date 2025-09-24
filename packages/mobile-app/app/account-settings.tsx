@@ -165,7 +165,7 @@ export default function AccountSettingsScreen() {
                 key={item.title}
                 onPress={item.onPress}
                 activeOpacity={0.7}
-                debounceDelay={800} // Navigation için daha uzun debounce
+                debounceDelay={500} // Navigation için debounce
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
@@ -225,7 +225,7 @@ export default function AccountSettingsScreen() {
                 key={item.title}
                 onPress={item.onPress}
                 activeOpacity={0.7}
-                debounceDelay={800} // Navigation için daha uzun debounce
+                debounceDelay={500} // Navigation için debounce
                 style={{
                   flexDirection: "row",
                   alignItems: "center",

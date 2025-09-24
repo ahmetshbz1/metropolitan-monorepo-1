@@ -188,7 +188,7 @@ export default function SecuritySettingsScreen() {
               <HapticButton
                 className="mt-3"
                 onPress={() => safeRouter.push("/(auth)/")}
-                debounceDelay={800} // Navigation için daha uzun debounce
+                debounceDelay={500} // Navigation için debounce
                 style={{
                   backgroundColor: colors.primary,
                   paddingHorizontal: 16,
@@ -222,7 +222,7 @@ export default function SecuritySettingsScreen() {
               <HapticButton
                 onPress={handleChangePhone}
                 activeOpacity={0.7}
-                debounceDelay={800} // Navigation için daha uzun debounce
+                debounceDelay={500} // Navigation için debounce
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
