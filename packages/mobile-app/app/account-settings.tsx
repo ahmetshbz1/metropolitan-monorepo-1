@@ -36,7 +36,6 @@ export default function AccountSettingsScreen() {
   const handleDeleteAccount = () => {
     // Direkt delete-account sayfasına yönlendir
     // Bu sayfa zaten tüm güvenlik kontrollerini ve uyarıları içeriyor
-    console.log("Navigating to delete-account page");
     router.push("/delete-account");
   };
 

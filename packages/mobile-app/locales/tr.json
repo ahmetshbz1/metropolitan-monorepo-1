@@ -133,6 +133,8 @@
     "first_name": "Ad",
     "first_name_placeholder": "Adınızı girin",
     "last_name": "Soyad",
+    "guest_title": "Misafir Kullanıcı",
+    "guest_message": "Profil bilgilerinizi düzenlemek için giriş yapmanız gerekiyor. Giriş yaparak tüm özelliklerden yararlanabilirsiniz.",
     "last_name_placeholder": "Soyadınızı girin",
     "email": "E-posta",
     "email_placeholder": "E-posta adresinizi girin",
@@ -957,7 +959,7 @@
     "phone": "Telefon",
     "get_directions": "Yol Tarifi Al",
     "notice_title": "Yasal Uyarı",
-    "notice_desc": "Bu uygulamadaki tüm içerik ve materyaller Metropolitan Ticaret A.Ş.'ye aittir ve telif hakkı ile korunmaktadır."
+    "notice_desc": "Bu uygulamadaki tüm içerik ve materyaller Metropolitan Food Group Sp. z o.o.'ya aittir ve telif hakkı ile korunmaktadır."
   },
   "account_settings": {
     "edit_profile": "Profili Düzenle",
@@ -986,7 +988,9 @@
     "info_title": "Gizliliğiniz Bizim İçin Önemli",
     "info_desc": "Verileriniz güvenle saklanır ve sadece hizmet kalitesini artırmak için kullanılır. İstediğiniz zaman tercihlerinizi değiştirebilirsiniz.",
     "guest_title": "Misafir Kullanıcı",
-    "guest_warning": "Gizlilik tercihlerinizi kaydetmek için giriş yapın"
+    "guest_warning": "Gizlilik tercihlerinizi kaydetmek için giriş yapın",
+    "settings_updated": "Gizlilik ayarları güncellendi",
+    "update_failed": "Gizlilik ayarları güncellenemedi"
   },
   "security_settings": {
     "title": "Güvenlik",

@@ -140,12 +140,9 @@ const DeleteAccountScreen = () => {
 
     const fullPhoneNumber = `+${countryCode}${phoneNumber}`;
 
-    // Debug: telefon numarası karşılaştırması
-    console.log("Girilen numara:", fullPhoneNumber);
-    console.log("Kullanıcı numarası:", user?.phoneNumber);
-
-    // Telefon numarası kontrolü
-    if (user?.phoneNumber && fullPhoneNumber !== user.phoneNumber) {
+    // Telefon numarası kontrolü - güvenlik için normalize edilmiş karşılaştırma
+    const normalizePhone = (phone: string) => phone.replace(/[\s\-\(\)]/g, '');
+    if (user?.phoneNumber && normalizePhone(fullPhoneNumber) !== normalizePhone(user.phoneNumber)) {
       setError(t("delete_account.phone_mismatch"));
       return;
     }

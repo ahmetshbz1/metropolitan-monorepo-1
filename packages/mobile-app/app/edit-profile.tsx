@@ -3,7 +3,8 @@
 //  Created by Ahmet on 05.07.2025.
 //  Modified by Ahmet on 15.07.2025.
 
-import { useNavigation } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation, useRouter } from "expo-router";
 import React, { useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
@@ -13,12 +14,15 @@ import {
 } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { HapticButton } from "@/components/HapticButton";
+import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { BaseButton } from "@/components/base/BaseButton";
 import { PhotoPreviewModal } from "@/components/profile/edit/PhotoPreviewModal";
 import { ProfileForm } from "@/components/profile/edit/ProfileForm";
 import { ProfilePhoto } from "@/components/profile/edit/ProfilePhoto";
 import Colors from "@/constants/Colors";
+import { useAuth } from "@/context/AuthContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useImagePicker } from "@/hooks/useImagePicker";
 import { useProfileForm } from "@/hooks/useProfileForm";
@@ -27,9 +31,11 @@ import { useToast } from "@/hooks/useToast";
 export default function EditProfileScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const router = useRouter();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
   const safeAreaInsets = useSafeAreaInsets();
+  const { isGuest } = useAuth();
 
   // Header title'ı dinamik olarak ayarla
   useLayoutEffect(() => {
@@ -81,54 +87,109 @@ export default function EditProfileScreen() {
         bottomOffset={200}
         extraKeyboardSpace={50}
       >
-        <ProfilePhoto
-          photoLoading={photoLoading}
-          onChoosePhoto={handleChoosePhoto}
-          onPreview={() => setPhotoPreviewVisible(true)}
-        />
-        <ProfileForm
-          firstName={firstName}
-          setFirstName={setFirstName}
-          lastName={lastName}
-          setLastName={setLastName}
-          email={email}
-          setEmail={setEmail}
-          emailBlurred={emailBlurred}
-          setEmailBlurred={setEmailBlurred}
-        />
+        {/* Guest Warning */}
+        {isGuest && (
+          <View className="mb-6">
+            <View
+              style={{
+                padding: 16,
+                backgroundColor: colors.warning + "10",
+                borderRadius: 18,
+                borderWidth: 1,
+                borderColor: colors.warning + "20",
+              }}
+            >
+              <View className="flex-row items-center mb-2">
+                <Ionicons
+                  name="information-circle"
+                  size={24}
+                  color={colors.warning}
+                />
+                <ThemedText className="text-base font-semibold ml-2">
+                  {t("edit_profile.guest_title")}
+                </ThemedText>
+              </View>
+              <ThemedText className="text-sm opacity-70">
+                {t("edit_profile.guest_message")}
+              </ThemedText>
+              <HapticButton
+                className="mt-3"
+                onPress={() => router.push("/(auth)/")}
+                style={{
+                  backgroundColor: colors.primary,
+                  paddingHorizontal: 16,
+                  paddingVertical: 10,
+                  borderRadius: 12,
+                  alignSelf: "flex-start",
+                }}
+              >
+                <ThemedText
+                  className="text-sm font-medium"
+                  style={{ color: "white" }}
+                >
+                  {t("profile.login")}
+                </ThemedText>
+              </HapticButton>
+            </View>
+          </View>
+        )}
+
+        {/* Profile Content - Only show if not guest */}
+        {!isGuest && (
+          <>
+            <ProfilePhoto
+              photoLoading={photoLoading}
+              onChoosePhoto={handleChoosePhoto}
+              onPreview={() => setPhotoPreviewVisible(true)}
+            />
+            <ProfileForm
+              firstName={firstName}
+              setFirstName={setFirstName}
+              lastName={lastName}
+              setLastName={setLastName}
+              email={email}
+              setEmail={setEmail}
+              emailBlurred={emailBlurred}
+              setEmailBlurred={setEmailBlurred}
+            />
+          </>
+        )}
       </KeyboardAwareScrollView>
 
-      <KeyboardStickyView>
-        <View
-          className="p-5"
-          style={{
-            backgroundColor: colors.background,
-            paddingBottom: safeAreaInsets.bottom || 20,
-          }}
-        >
-          <BaseButton
-            variant="primary"
-            size="small"
-            title={t("edit_profile.save_button")}
-            onPress={async () => {
-              try {
-                const result = await handleSave();
-                if (result?.success) {
-                  showToast(result.message, "success");
-                }
-              } catch (error: any) {
-                showToast(
-                  error.message || t("edit_profile.error_message"),
-                  "error"
-                );
-              }
+      {/* Save Button - Only show if not guest */}
+      {!isGuest && (
+        <KeyboardStickyView>
+          <View
+            className="p-5"
+            style={{
+              backgroundColor: colors.background,
+              paddingBottom: safeAreaInsets.bottom || 20,
             }}
-            loading={loading}
-            disabled={isSaveDisabled}
-            fullWidth
-          />
-        </View>
-      </KeyboardStickyView>
+          >
+            <BaseButton
+              variant="primary"
+              size="small"
+              title={t("edit_profile.save_button")}
+              onPress={async () => {
+                try {
+                  const result = await handleSave();
+                  if (result?.success) {
+                    showToast(result.message, "success");
+                  }
+                } catch (error: any) {
+                  showToast(
+                    error.message || t("edit_profile.error_message"),
+                    "error"
+                  );
+                }
+              }}
+              loading={loading}
+              disabled={isSaveDisabled}
+              fullWidth
+            />
+          </View>
+        </KeyboardStickyView>
+      )}
     </ThemedView>
   );
 }

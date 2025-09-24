@@ -345,7 +345,7 @@ export default function LegalScreen() {
               </ThemedText>
             </View>
             <ThemedText className="text-sm opacity-70">
-              Bu uygulamadaki tüm içerik ve materyaller Metropolitan Food Group Sp. z o.o.'ya aittir ve telif hakkı ile korunmaktadır.
+              {t("legal.notice_desc")}
             </ThemedText>
           </View>
         </View>

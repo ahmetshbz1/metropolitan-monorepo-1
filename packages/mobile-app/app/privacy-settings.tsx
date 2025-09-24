@@ -14,7 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, Switch, View } from "react-native";
+import { ScrollView, Switch, View, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { HapticButton } from "@/components/HapticButton";
 
@@ -83,11 +83,16 @@ export default function PrivacySettingsScreen() {
     setSettings(newSettings);
 
     if (isAuthenticated) {
+      setLoading(true);
       try {
         await api.put("/users/user/privacy-settings", newSettings);
+        showToast(t("privacy_settings.settings_updated"), "success");
       } catch (error) {
         console.error("Failed to update privacy settings:", error);
         setSettings(settings); // Revert on error
+        showToast(t("privacy_settings.update_failed"), "error");
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -213,13 +218,17 @@ export default function PrivacySettingsScreen() {
                     {item.subtitle}
                   </ThemedText>
                 </View>
-                <Switch
-                  value={item.value}
-                  onValueChange={(value) => updateSetting(item.key, value)}
-                  trackColor={{ false: colors.border, true: colors.primary }}
-                  thumbColor={colors.card}
-                  disabled={loading}
-                />
+                {loading ? (
+                  <ActivityIndicator size="small" color={colors.primary} />
+                ) : (
+                  <Switch
+                    value={item.value}
+                    onValueChange={(value) => updateSetting(item.key, value)}
+                    trackColor={{ false: colors.border, true: colors.primary }}
+                    thumbColor={colors.card}
+                    disabled={loading}
+                  />
+                )}
               </View>
             ))}
           </View>

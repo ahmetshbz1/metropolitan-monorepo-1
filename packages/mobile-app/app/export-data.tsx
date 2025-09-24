@@ -78,9 +78,6 @@ export default function ExportDataScreen() {
       });
 
       if (response.data.success && response.data.downloadUrl) {
-        console.log("Download URL from backend:", response.data.downloadUrl); // Debug için
-        console.log("File password:", response.data.password); // Debug için
-
         // Şifreyi state'e kaydet
         if (response.data.password) {
           setFilePassword(response.data.password);
@@ -116,8 +113,6 @@ export default function ExportDataScreen() {
       const response = await api.get(downloadPath, {
         responseType: "arraybuffer", // Binary data için
       });
-
-      console.log("Downloaded file size:", response.data.byteLength); // Debug için
 
       // Binary data'yı base64'e çevir ve dosyaya yaz
       const base64Data = btoa(
@@ -163,9 +158,6 @@ export default function ExportDataScreen() {
         // Token'ı URL'den çıkar
         const urlParts = downloadedFileUri.split("?token=");
         const token = urlParts.length > 1 ? urlParts[1] : "dummy-token";
-
-        console.log("Backend filename:", backendFileName); // Debug
-        console.log("Token:", token); // Debug
 
         router.push({
           pathname: "/file-viewer",

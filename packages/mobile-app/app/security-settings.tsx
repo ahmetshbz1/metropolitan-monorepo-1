@@ -9,7 +9,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useLayoutEffect, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, Switch, View, Alert } from "react-native";
+import { ScrollView, Switch, View, Alert, ActivityIndicator } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { HapticButton } from "@/components/HapticButton";
@@ -86,6 +86,7 @@ export default function SecuritySettingsScreen() {
     setSettings(newSettings);
 
     if (isAuthenticated) {
+      setLoading(true);
       try {
         await api.put("/users/user/security-settings", newSettings);
         showToast(t("security_settings.settings_updated"), "success");
@@ -93,6 +94,8 @@ export default function SecuritySettingsScreen() {
         console.error("Failed to update security settings:", error);
         setSettings(settings); // Revert on error
         showToast(t("security_settings.update_failed"), "error");
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -307,13 +310,17 @@ export default function SecuritySettingsScreen() {
                     {item.subtitle}
                   </ThemedText>
                 </View>
-                <Switch
-                  value={item.value}
-                  onValueChange={(value) => updateSetting(item.key, value)}
-                  trackColor={{ false: colors.border, true: colors.primary }}
-                  thumbColor={colors.card}
-                  disabled={loading || item.key === 'twoFactorEnabled'}
-                />
+                {loading && item.value !== settings[item.key] ? (
+                  <ActivityIndicator size="small" color={colors.primary} />
+                ) : (
+                  <Switch
+                    value={item.value}
+                    onValueChange={(value) => updateSetting(item.key, value)}
+                    trackColor={{ false: colors.border, true: colors.primary }}
+                    thumbColor={colors.card}
+                    disabled={loading || item.key === 'twoFactorEnabled'}
+                  />
+                )}
               </View>
             ))}
           </View>
