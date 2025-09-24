@@ -79,7 +79,7 @@ const CustomBottomSheet = forwardRef<Ref, Props>(({ title, children }, ref) => {
     <BottomSheetModal
       ref={ref}
       snapPoints={snapPoints}
-      enableDynamicSizing
+      enableDynamicSizing={false} // Dinamik boyutlandırmayı kapat, sadece snapPoints kullan
       enableDismissOnClose
       backdropComponent={renderBackdrop}
       handleComponent={renderHandle}
