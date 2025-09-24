@@ -122,6 +122,16 @@ export const dataExportRoutes = createApp()
           return { success: false, message: "Invalid request" };
         }
 
+        // SECURITY: Check if file belongs to authenticated user
+        if (!fileName.includes(profile.userId)) {
+          log.warn(
+            { userId: profile.userId, fileName, attemptedAccess: true },
+            `Unauthorized file access attempt`
+          );
+          set.status = 403;
+          return { success: false, message: "Access denied" };
+        }
+
         const filePath = path.join(
           process.cwd(),
           "uploads",
