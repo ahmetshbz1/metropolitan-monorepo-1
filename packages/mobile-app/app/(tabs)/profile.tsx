@@ -4,10 +4,10 @@
 
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RefreshControl, ScrollView, View } from "react-native";
+import { useNavigationProtection } from "@/hooks/useNavigationProtection";
 
 import { HapticButton } from "@/components/HapticButton";
 import { LogoutButton } from "@/components/profile/LogoutButton";
@@ -36,7 +36,7 @@ type ProfileMenuSection = {
 
 export default function ProfileScreen() {
   const { t } = useTranslation();
-  const router = useRouter();
+  const safeRouter = useNavigationProtection();
   const { refreshUserProfile, user, isGuest } = useAuth();
   const { paddingBottom } = useTabBarHeight();
   const colorScheme = useColorScheme() ?? "light";
@@ -134,12 +134,13 @@ export default function ProfileScreen() {
       key={item.id}
       onPress={() => {
         if (item.route) {
-          router.push(item.route as any);
+          safeRouter.push(item.route as any);
         } else if (item.action) {
           item.action();
         }
       }}
       activeOpacity={0.7}
+      debounceDelay={800} // Navigation için daha uzun debounce
       style={{
         flexDirection: "row",
         alignItems: "center",
@@ -280,7 +281,8 @@ export default function ProfileScreen() {
             <HapticButton
               className="flex-row items-center justify-center mx-5 mt-5 p-4 rounded-2xl"
               style={{ backgroundColor: colors.primary + "10" }}
-              onPress={() => router.push("/(auth)/")}
+              onPress={() => safeRouter.push("/(auth)/")}
+              debounceDelay={800} // Navigation için daha uzun debounce
               accessibilityRole="button"
               accessibilityLabel={t("profile.login")}
             >

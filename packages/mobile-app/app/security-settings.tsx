@@ -16,7 +16,7 @@ import { HapticButton } from "@/components/HapticButton";
 import { useToast } from "@/hooks/useToast";
 import { api } from "@/core/api";
 import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "expo-router";
+import { useNavigationProtection } from "@/hooks/useNavigationProtection";
 
 interface SecuritySettings {
   twoFactorEnabled: boolean;
@@ -35,7 +35,7 @@ interface LoginSession {
 export default function SecuritySettingsScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const router = useRouter();
+  const safeRouter = useNavigationProtection();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
@@ -101,7 +101,7 @@ export default function SecuritySettingsScreen() {
   };
 
   const handleChangePhone = () => {
-    router.push("/change-phone");
+    safeRouter.push("/change-phone");
   };
 
   const handleEndSession = (sessionId: string) => {
@@ -187,7 +187,8 @@ export default function SecuritySettingsScreen() {
               </ThemedText>
               <HapticButton
                 className="mt-3"
-                onPress={() => router.push("/(auth)/")}
+                onPress={() => safeRouter.push("/(auth)/")}
+                debounceDelay={800} // Navigation için daha uzun debounce
                 style={{
                   backgroundColor: colors.primary,
                   paddingHorizontal: 16,
@@ -221,6 +222,7 @@ export default function SecuritySettingsScreen() {
               <HapticButton
                 onPress={handleChangePhone}
                 activeOpacity={0.7}
+                debounceDelay={800} // Navigation için daha uzun debounce
                 style={{
                   flexDirection: "row",
                   alignItems: "center",

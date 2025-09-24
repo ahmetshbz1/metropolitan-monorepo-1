@@ -11,12 +11,12 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { useToast } from "@/hooks/useToast";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { useRouter } from "expo-router";
 import React, { useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, Switch, View, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { HapticButton } from "@/components/HapticButton";
+import { useNavigationProtection } from "@/hooks/useNavigationProtection";
 
 interface PrivacySettings {
   shareDataWithPartners: boolean;
@@ -27,7 +27,7 @@ interface PrivacySettings {
 export default function PrivacySettingsScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
-  const router = useRouter();
+  const safeRouter = useNavigationProtection();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
@@ -157,7 +157,8 @@ export default function PrivacySettingsScreen() {
               </ThemedText>
               <HapticButton
                 className="mt-3"
-                onPress={() => router.push("/(auth)/")}
+                onPress={() => safeRouter.push("/(auth)/")}
+                debounceDelay={800} // Navigation için daha uzun debounce
                 style={{
                   backgroundColor: colors.primary,
                   paddingHorizontal: 16,

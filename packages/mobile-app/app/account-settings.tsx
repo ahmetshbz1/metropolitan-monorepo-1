@@ -8,9 +8,9 @@ import { ThemedView } from "@/components/ThemedView";
 import Colors from "@/constants/Colors";
 import { useAuth } from "@/context/AuthContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useNavigationProtection } from "@/hooks/useNavigationProtection";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { useRouter } from "expo-router";
 import { Image } from "expo-image";
 import React, { useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -19,7 +19,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function AccountSettingsScreen() {
   const { t } = useTranslation();
-  const router = useRouter();
+  const safeRouter = useNavigationProtection();
   const navigation = useNavigation();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
@@ -36,7 +36,7 @@ export default function AccountSettingsScreen() {
   const handleDeleteAccount = () => {
     // Direkt delete-account sayfasına yönlendir
     // Bu sayfa zaten tüm güvenlik kontrollerini ve uyarıları içeriyor
-    router.push("/delete-account");
+    safeRouter.push("/delete-account");
   };
 
   const settingsItems = [
@@ -44,21 +44,21 @@ export default function AccountSettingsScreen() {
       icon: "person-outline" as const,
       title: t("account_settings.edit_profile"),
       subtitle: t("account_settings.edit_profile_desc"),
-      onPress: () => router.push("/edit-profile"),
+      onPress: () => safeRouter.push("/edit-profile"),
       showChevron: true,
     },
     {
       icon: "lock-closed-outline" as const,
       title: t("account_settings.privacy"),
       subtitle: t("account_settings.privacy_desc"),
-      onPress: () => router.push("/privacy-settings"),
+      onPress: () => safeRouter.push("/privacy-settings"),
       showChevron: true,
     },
     {
       icon: "shield-checkmark-outline" as const,
       title: t("account_settings.security"),
       subtitle: t("account_settings.security_desc"),
-      onPress: () => router.push("/security-settings"),
+      onPress: () => safeRouter.push("/security-settings"),
       showChevron: true,
     },
   ];
@@ -68,7 +68,7 @@ export default function AccountSettingsScreen() {
       icon: "download-outline" as const,
       title: t("account_settings.export_data"),
       subtitle: t("account_settings.export_data_desc"),
-      onPress: () => router.push("/export-data"),
+      onPress: () => safeRouter.push("/export-data"),
     },
     {
       icon: "trash-outline" as const,
@@ -165,6 +165,7 @@ export default function AccountSettingsScreen() {
                 key={item.title}
                 onPress={item.onPress}
                 activeOpacity={0.7}
+                debounceDelay={800} // Navigation için daha uzun debounce
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
@@ -224,6 +225,7 @@ export default function AccountSettingsScreen() {
                 key={item.title}
                 onPress={item.onPress}
                 activeOpacity={0.7}
+                debounceDelay={800} // Navigation için daha uzun debounce
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
