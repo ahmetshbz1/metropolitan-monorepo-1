@@ -47,17 +47,17 @@ export default function LegalWebViewScreen() {
     <ThemedView className="flex-1">
       <Stack.Screen
         options={{
-          title: title || "Legal Document",
+          title: title || t("legal.title"),
         }}
       />
       {error ? (
         <View className="flex-1 justify-center items-center px-4">
           <Ionicons name="alert-circle" size={48} color={colors.destructive} />
           <ThemedText className="text-center mt-4 text-base">
-            Sayfa yüklenirken hata oluştu.
+            {t("common.page_load_error")}
           </ThemedText>
           <ThemedText className="text-center mt-2 text-sm" style={{ color: colors.mediumGray }}>
-            İnternet bağlantınızı kontrol edin ve tekrar deneyin.
+            {t("common.connection_error")}
           </ThemedText>
           <TouchableOpacity
             onPress={() => {
@@ -68,7 +68,7 @@ export default function LegalWebViewScreen() {
             style={{ backgroundColor: colors.tint }}
           >
             <ThemedText className="text-white font-medium">
-              Tekrar Dene
+              {t("common.retry")}
             </ThemedText>
           </TouchableOpacity>
         </View>
@@ -78,7 +78,7 @@ export default function LegalWebViewScreen() {
             <View className="absolute inset-0 justify-center items-center z-10">
               <ActivityIndicator size="large" color={colors.tint} />
               <ThemedText className="mt-4" style={{ color: colors.mediumGray }}>
-                Yükleniyor...
+                {t("common.loading")}
               </ThemedText>
             </View>
           )}

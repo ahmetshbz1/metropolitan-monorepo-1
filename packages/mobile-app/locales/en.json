@@ -676,7 +676,11 @@
     "info": "Info",
     "change": "Change",
     "clear": "Clear",
-    "back": "Back"
+    "continue": "Continue",
+    "back": "Back",
+    "page_load_error": "Page failed to load",
+    "connection_error": "Check your internet connection and try again",
+    "retry": "Try Again"
   },
   "general": {
     "under_construction": "Under Construction",

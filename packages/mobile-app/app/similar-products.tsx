@@ -22,7 +22,7 @@ export default function SimilarProductsScreen() {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: t("product_detail.similar_products_page_title", "Benzer Ürünler"),
+      headerTitle: t("product_detail.similar_products_page_title"),
     });
   }, [navigation, t]);
 

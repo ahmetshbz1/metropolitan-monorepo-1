@@ -32,7 +32,6 @@ const AuthLayout = () => {
         headerStyle,
         headerTitleStyle,
         headerTintColor: themeColors.text,
-        headerBackTitle: "",
         headerBackButtonDisplayMode: "minimal",
       }}
     >

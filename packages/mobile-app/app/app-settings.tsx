@@ -9,23 +9,20 @@ import { useAppColorScheme } from "@/context/ColorSchemeContext";
 import { useUserSettings } from "@/context/UserSettings";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useLayoutEffect } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, Switch, View, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { HapticButton } from "@/components/HapticButton";
-import { useRouter } from "expo-router";
 import ContextMenu from "react-native-context-menu-view";
 import NotificationPreferencesSheet, { NotificationPreferencesSheetRef } from "@/components/NotificationPreferencesSheet";
-import { useRef } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from "expo-file-system";
 import { useToast } from "@/hooks/useToast";
 
 export default function AppSettingsScreen() {
   const { t, i18n } = useTranslation();
-  const router = useRouter();
   const navigation = useNavigation();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
@@ -38,13 +35,12 @@ export default function AppSettingsScreen() {
   // Header title'ı dinamik olarak ayarla
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: t("profile.app_settings"),
+      headerTitle: t("app_settings.title"),
     });
   }, [navigation, t]);
 
   const handleLanguageChange = (lang: string) => {
     i18n.changeLanguage(lang);
-    updateSettings({ language: lang });
   };
 
   const languages = [

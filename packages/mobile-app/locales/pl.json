@@ -670,7 +670,11 @@
     "info": "Informacja",
     "change": "Zmień",
     "clear": "Wyczyść",
-    "back": "Wstecz"
+    "continue": "Kontynuuj",
+    "back": "Wstecz",
+    "page_load_error": "Błąd podczas ładowania strony",
+    "connection_error": "Sprawdź połączenie internetowe i spróbuj ponownie",
+    "retry": "Spróbuj ponownie"
   },
   "general": {
     "under_construction": "W budowie",
@@ -830,5 +834,26 @@
         "subtitle": "Przelew / Transfer"
       }
     }
+  },
+  "legal": {
+    "title": "Prawne",
+    "documents_section": "Dokumenty prawne",
+    "terms_of_service": "Warunki użytkowania",
+    "terms_of_service_subtitle": "Warunki użytkowania serwisu",
+    "privacy_policy": "Polityka prywatności",
+    "privacy_policy_subtitle": "Ochrona i wykorzystanie danych osobowych",
+    "contact": "Kontakt",
+    "information_section": "Informacje o firmie"
+  },
+  "app_settings": {
+    "title": "Ustawienia aplikacji",
+    "appearance": "Wygląd",
+    "dark_mode": "Tryb ciemny",
+    "dark_mode_desc": "Zmniejsza zmęczenie oczu",
+    "language": "Język",
+    "language_desc": "Wybierz język aplikacji",
+    "interaction": "Interakcja",
+    "haptic_feedback": "Wibracje",
+    "haptic_feedback_desc": "Wibracje przy dotknięciu"
   }
 }

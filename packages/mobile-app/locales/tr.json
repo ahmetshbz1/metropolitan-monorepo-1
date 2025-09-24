@@ -727,7 +727,10 @@
     "change": "Değiştir",
     "clear": "Temizle",
     "continue": "Devam Et",
-    "back": "Geri"
+    "back": "Geri",
+    "page_load_error": "Sayfa yüklenirken hata oluştu",
+    "connection_error": "İnternet bağlantınızı kontrol edin ve tekrar deneyin",
+    "retry": "Tekrar Dene"
   },
   "general": {
     "under_construction": "Yapım aşamasında",
@@ -883,6 +886,7 @@
     }
   },
   "app_settings": {
+    "title": "Uygulama Ayarları",
     "appearance": "Görünüm",
     "dark_mode": "Karanlık Mod",
     "dark_mode_desc": "Göz yorgunluğunu azaltır",
