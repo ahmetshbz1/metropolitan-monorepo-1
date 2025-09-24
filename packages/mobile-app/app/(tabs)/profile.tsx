@@ -3,6 +3,7 @@
 //  Created by Ahmet on 09.06.2025.
 
 import { Ionicons } from "@expo/vector-icons";
+import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -232,19 +233,33 @@ export default function ProfileScreen() {
         {/* User Info Header */}
         <View className="px-4 mb-6">
           <View className="flex-row items-center">
-            <View
-              style={{
-                width: 64,
-                height: 64,
-                borderRadius: 32,
-                backgroundColor: colors.primary + "20",
-                alignItems: "center",
-                justifyContent: "center",
-                marginRight: 12,
-              }}
-            >
-              <Ionicons name="person" size={32} color={colors.primary} />
-            </View>
+            {user?.profilePicture ? (
+              <Image
+                source={user.profilePicture}
+                style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: 32,
+                  marginRight: 12,
+                }}
+                contentFit="cover"
+                accessibilityLabel="Profil fotoğrafı"
+              />
+            ) : (
+              <View
+                style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: 32,
+                  backgroundColor: colors.primary + "20",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginRight: 12,
+                }}
+              >
+                <Ionicons name="person" size={32} color={colors.primary} />
+              </View>
+            )}
             <View className="flex-1">
               <ThemedText className="text-xl font-bold">
                 {user?.firstName || t("profile.guest")} {user?.lastName || ""}

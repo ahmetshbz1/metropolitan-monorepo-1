@@ -11,6 +11,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
+import { Image } from "expo-image";
 import React, { useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, View } from "react-native";
@@ -103,19 +104,33 @@ export default function AccountSettingsScreen() {
             }}
           >
             <View className="flex-row items-center">
-              <View
-                style={{
-                  width: 60,
-                  height: 60,
-                  borderRadius: 30,
-                  backgroundColor: colors.primary + "20",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginRight: 12,
-                }}
-              >
-                <Ionicons name="person" size={28} color={colors.primary} />
-              </View>
+              {user?.profilePicture ? (
+                <Image
+                  source={user.profilePicture}
+                  style={{
+                    width: 60,
+                    height: 60,
+                    borderRadius: 30,
+                    marginRight: 12,
+                  }}
+                  contentFit="cover"
+                  accessibilityLabel="Profil fotoğrafı"
+                />
+              ) : (
+                <View
+                  style={{
+                    width: 60,
+                    height: 60,
+                    borderRadius: 30,
+                    backgroundColor: colors.primary + "20",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginRight: 12,
+                  }}
+                >
+                  <Ionicons name="person" size={28} color={colors.primary} />
+                </View>
+              )}
               <View className="flex-1">
                 <ThemedText className="text-lg font-semibold">
                   {user?.firstName || t("account_settings.guest_user")}{" "}
