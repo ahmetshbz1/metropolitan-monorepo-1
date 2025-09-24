@@ -1120,6 +1120,9 @@
     "content_copied": "İçerik kopyalandı",
     "invalid_json": "Geçersiz JSON formatı",
     "data_preview": "Veri Önizleme",
-    "user_data": "Kullanıcı Verileri"
+    "user_data": "Kullanıcı Verileri",
+    "share_content": "Paylaş",
+    "sharing_failed": "Paylaşım başarısız oldu",
+    "file_created": "Dosya oluşturuldu"
   }
 }

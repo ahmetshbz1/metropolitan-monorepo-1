@@ -15,7 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import React, { useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import {
   KeyboardAwareScrollView,
   KeyboardStickyView,
@@ -248,9 +248,9 @@ export default function FileViewerScreen() {
                             backgroundColor: themeColors.primary,
                           }}
                         >
-                          <ThemedText className="text-white text-sm font-medium">
+                          <Text className="text-white text-sm font-medium">
                             {t("file_viewer.view_content")}
-                          </ThemedText>
+                          </Text>
                         </HapticButton>
                       )}
                     </View>

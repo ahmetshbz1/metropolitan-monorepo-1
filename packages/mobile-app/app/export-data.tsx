@@ -17,7 +17,7 @@ import * as FileSystem from "expo-file-system";
 import { useNavigation, useRouter } from "expo-router";
 import React, { useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
+import { Text, View } from "react-native";
 import {
   KeyboardAwareScrollView,
   KeyboardStickyView,
@@ -403,9 +403,9 @@ export default function ExportDataScreen() {
                 }}
               >
                 <Ionicons name="folder-open-outline" size={16} color="white" />
-                <ThemedText className="text-white text-sm font-medium ml-1">
+                <Text className="text-white text-sm font-medium ml-1">
                   {t("export_data.open_file")}
-                </ThemedText>
+                </Text>
               </HapticButton>
             )}
           </View>

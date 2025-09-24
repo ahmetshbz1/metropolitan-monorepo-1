@@ -2,7 +2,6 @@
 // metropolitan app
 // JSON content viewer with syntax highlighting
 
-import { HapticButton } from "@/components/HapticButton";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Colors from "@/constants/Colors";
@@ -10,7 +9,9 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { useToast } from "@/hooks/useToast";
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
+import * as FileSystem from "expo-file-system";
 import { useLocalSearchParams, useNavigation } from "expo-router";
+import * as Sharing from "expo-sharing";
 import React, { useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, Text, View } from "react-native";
@@ -41,6 +42,37 @@ export default function JsonViewerScreen() {
       showToast(t("json_viewer.content_copied"), "success", 2000);
     } catch (error) {
       showToast("Kopyalama başarısız", "error");
+    }
+  };
+
+  const shareContent = async () => {
+    try {
+      // JSON dosyası oluştur
+      const timestamp = new Date().getTime();
+      const fileName = `kullanici_verileri_${timestamp}.json`;
+      const fileUri = `${FileSystem.documentDirectory}${fileName}`;
+
+      // JSON içeriğini güzelleştir ve dosyaya yaz
+      const formattedJson = JSON.stringify(JSON.parse(content), null, 2);
+      await FileSystem.writeAsStringAsync(fileUri, formattedJson, {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+
+      // Paylaşım modalını aç
+      const isAvailable = await Sharing.isAvailableAsync();
+      if (isAvailable) {
+        await Sharing.shareAsync(fileUri, {
+          mimeType: "application/json",
+          dialogTitle: t("json_viewer.share_content"),
+          UTI: "public.json",
+        });
+        showToast(t("json_viewer.file_created"), "success", 2000);
+      } else {
+        showToast(t("json_viewer.sharing_failed"), "error");
+      }
+    } catch (error) {
+      console.error("Share error:", error);
+      showToast(t("json_viewer.sharing_failed"), "error");
     }
   };
 
@@ -161,18 +193,23 @@ export default function JsonViewerScreen() {
           </ThemedText>
         </View>
 
-        <HapticButton
-          onPress={copyContent}
-          className="flex-row items-center px-4 py-2 rounded-lg"
-          style={{
-            backgroundColor: themeColors.primary,
-          }}
-        >
-          <Ionicons name="copy-outline" size={16} color="white" />
-          <ThemedText className="text-white text-sm font-medium ml-2">
-            {t("json_viewer.copy_content")}
-          </ThemedText>
-        </HapticButton>
+        <View className="flex-row items-center space-x-4">
+          <Ionicons
+            name="copy-outline"
+            size={22}
+            color={themeColors.primary}
+            onPress={copyContent}
+            style={{ padding: 4 }}
+          />
+
+          <Ionicons
+            name="share-outline"
+            size={22}
+            color={themeColors.success || "#10B981"}
+            onPress={shareContent}
+            style={{ padding: 4 }}
+          />
+        </View>
       </View>
 
       {/* JSON Content */}
