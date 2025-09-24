@@ -27,6 +27,11 @@ export default function LegalWebViewScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
 
+  const handleLoadStart = () => {
+    setLoading(true);
+    setError(false);
+  };
+
   const handleLoadEnd = () => {
     setLoading(false);
   };
@@ -56,7 +61,7 @@ export default function LegalWebViewScreen() {
           <TouchableOpacity
             onPress={() => {
               setError(false);
-              setLoading(true);
+              setLoading(false);
             }}
             className="mt-4 px-6 py-3 rounded-lg"
             style={{ backgroundColor: colors.tint }}
@@ -80,10 +85,11 @@ export default function LegalWebViewScreen() {
           {url && (
             <WebView
               source={{ uri: url }}
+              onLoadStart={handleLoadStart}
               onLoadEnd={handleLoadEnd}
               onError={handleError}
               style={{ flex: 1 }}
-              startInLoadingState={true}
+              startInLoadingState={false}
               scalesPageToFit={true}
               showsVerticalScrollIndicator={false}
               showsHorizontalScrollIndicator={false}
