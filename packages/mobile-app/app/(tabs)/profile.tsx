@@ -37,7 +37,7 @@ type ProfileMenuSection = {
 export default function ProfileScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { refreshUserProfile, user } = useAuth();
+  const { refreshUserProfile, user, isGuest } = useAuth();
   const { paddingBottom } = useTabBarHeight();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
@@ -274,9 +274,27 @@ export default function ProfileScreen() {
         {/* Menu Sections */}
         {sections.map(renderSection)}
 
-        {/* Logout Button */}
+        {/* Login/Logout Button */}
         <View className="mb-4">
-          <LogoutButton />
+          {isGuest ? (
+            <HapticButton
+              className="flex-row items-center justify-center mx-5 mt-5 p-4 rounded-2xl"
+              style={{ backgroundColor: colors.primary + "10" }}
+              onPress={() => router.push("/(auth)/")}
+              accessibilityRole="button"
+              accessibilityLabel={t("profile.login")}
+            >
+              <Ionicons name="log-in-outline" size={22} color={colors.primary} />
+              <ThemedText
+                className="font-semibold ml-2.5"
+                style={{ color: colors.primary }}
+              >
+                {t("profile.login")}
+              </ThemedText>
+            </HapticButton>
+          ) : (
+            <LogoutButton />
+          )}
         </View>
 
         {/* Version Info */}

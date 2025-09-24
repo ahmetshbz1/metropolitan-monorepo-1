@@ -23,7 +23,7 @@ export default function AccountSettingsScreen() {
   const navigation = useNavigation();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
-  const { user } = useAuth();
+  const { user, isGuest } = useAuth();
   const insets = useSafeAreaInsets();
 
   // Header title'ı dinamik olarak ayarla
@@ -64,7 +64,7 @@ export default function AccountSettingsScreen() {
     },
   ];
 
-  const dangerZoneItems = [
+  const dangerZoneItems = isGuest ? [] : [
     {
       icon: "download-outline" as const,
       title: t("account_settings.export_data"),
@@ -207,19 +207,20 @@ export default function AccountSettingsScreen() {
           </View>
         </View>
 
-        {/* Danger Zone */}
-        <View className="px-4 mb-6">
-          <ThemedText className="text-sm font-semibold mb-3 opacity-60 uppercase">
-            {t("account_settings.danger_zone")}
-          </ThemedText>
-          <View
-            style={{
-              backgroundColor: colors.card,
-              borderRadius: 18,
-              overflow: "hidden",
-            }}
-          >
-            {dangerZoneItems.map((item, index) => (
+        {/* Danger Zone - Only show if not guest */}
+        {!isGuest && dangerZoneItems.length > 0 && (
+          <View className="px-4 mb-6">
+            <ThemedText className="text-sm font-semibold mb-3 opacity-60 uppercase">
+              {t("account_settings.danger_zone")}
+            </ThemedText>
+            <View
+              style={{
+                backgroundColor: colors.card,
+                borderRadius: 18,
+                overflow: "hidden",
+              }}
+            >
+              {dangerZoneItems.map((item, index) => (
               <HapticButton
                 key={item.title}
                 onPress={item.onPress}
@@ -263,8 +264,9 @@ export default function AccountSettingsScreen() {
                 />
               </HapticButton>
             ))}
+            </View>
           </View>
-        </View>
+        )}
       </ScrollView>
     </ThemedView>
   );

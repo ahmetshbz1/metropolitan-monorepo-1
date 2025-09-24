@@ -11,10 +11,12 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { useToast } from "@/hooks/useToast";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import React, { useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, Switch, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { HapticButton } from "@/components/HapticButton";
 
 interface PrivacySettings {
   shareDataWithPartners: boolean;
@@ -25,11 +27,12 @@ interface PrivacySettings {
 export default function PrivacySettingsScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const router = useRouter();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const { showToast } = useToast();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isGuest } = useAuth();
 
   const [settings, setSettings] = useState<PrivacySettings>({
     shareDataWithPartners: true, // Kullanıcı gizlilik politikasını kabul etmişse veri paylaşımını da kabul etmiş sayılır
@@ -122,6 +125,50 @@ export default function PrivacySettingsScreen() {
           paddingBottom: insets.bottom + 16,
         }}
       >
+        {/* Guest Warning */}
+        {isGuest && (
+          <View className="px-4 mb-6">
+            <View
+              style={{
+                padding: 16,
+                backgroundColor: colors.warning + "10",
+                borderRadius: 18,
+                borderWidth: 1,
+                borderColor: colors.warning + "20",
+              }}
+            >
+              <View className="flex-row items-center mb-2">
+                <Ionicons
+                  name="information-circle"
+                  size={24}
+                  color={colors.warning}
+                />
+                <ThemedText className="text-base font-semibold ml-2">
+                  {t("privacy_settings.guest_title")}
+                </ThemedText>
+              </View>
+              <ThemedText className="text-sm opacity-70">
+                {t("privacy_settings.guest_warning")}
+              </ThemedText>
+              <HapticButton
+                className="mt-3"
+                onPress={() => router.push("/(auth)/")}
+                style={{
+                  backgroundColor: colors.primary,
+                  paddingHorizontal: 16,
+                  paddingVertical: 10,
+                  borderRadius: 12,
+                  alignSelf: "flex-start",
+                }}
+              >
+                <ThemedText className="text-sm font-medium" style={{ color: "white" }}>
+                  {t("profile.login")}
+                </ThemedText>
+              </HapticButton>
+            </View>
+          </View>
+        )}
+
         {/* Privacy Settings */}
         <View className="px-4 mb-6">
           <ThemedText className="text-sm font-semibold mb-3 opacity-60 uppercase">
@@ -208,21 +255,6 @@ export default function PrivacySettingsScreen() {
           </View>
         </View>
 
-        {!isAuthenticated && (
-          <View className="px-4 mb-6">
-            <View
-              style={{
-                padding: 12,
-                backgroundColor: colors.warning + "20",
-                borderRadius: 8,
-              }}
-            >
-              <ThemedText className="text-sm text-center">
-                {t("privacy_settings.guest_warning")}
-              </ThemedText>
-            </View>
-          </View>
-        )}
       </ScrollView>
     </ThemedView>
   );

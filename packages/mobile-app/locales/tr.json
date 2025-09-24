@@ -42,6 +42,7 @@
     "logout_confirm_message": "Çıkış yapmak istediğinizden emin misiniz?",
     "logout_confirm_cancel": "Vazgeç",
     "logout_confirm_confirm": "Çıkış Yap",
+    "login": "Giriş Yap",
     "security": "Güvenlik ve Gizlilik",
     "contact": {
       "info_text": "Herhangi bir konuda yardıma ihtiyacınız varsa, aşağıdaki kanallardan bize ulaşabilirsiniz.",
@@ -984,6 +985,7 @@
     "marketing_emails_desc": "Kampanya ve indirimlerden haberdar ol",
     "info_title": "Gizliliğiniz Bizim İçin Önemli",
     "info_desc": "Verileriniz güvenle saklanır ve sadece hizmet kalitesini artırmak için kullanılır. İstediğiniz zaman tercihlerinizi değiştirebilirsiniz.",
+    "guest_title": "Misafir Kullanıcı",
     "guest_warning": "Gizlilik tercihlerinizi kaydetmek için giriş yapın"
   },
   "security_settings": {
@@ -1011,6 +1013,8 @@
     "security_tip_title": "Güvenlik İpucu",
     "security_tip_desc": "Hesabınızı güvende tutmak için düzenli olarak aktif oturumlarınızı kontrol edin ve tanımadığınız cihazları sonlandırın.",
     "guest_warning": "Güvenlik ayarlarını kullanmak için giriş yapın",
+    "guest_title": "Misafir Kullanıcı",
+    "guest_message": "Güvenlik ayarlarına erişmek için lütfen giriş yapın",
     "settings_updated": "Güvenlik ayarları güncellendi",
     "update_failed": "Güvenlik ayarları güncellenemedi"
   },

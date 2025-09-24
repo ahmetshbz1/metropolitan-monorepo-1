@@ -40,7 +40,7 @@ export default function SecuritySettingsScreen() {
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const { showToast } = useToast();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, isGuest } = useAuth();
 
   const [settings, setSettings] = useState<SecuritySettings>({
     twoFactorEnabled: false,
@@ -157,30 +157,75 @@ export default function SecuritySettingsScreen() {
           paddingBottom: insets.bottom + 16,
         }}
       >
-        {/* Account Security */}
-        <View className="px-4 mb-6">
-          <ThemedText className="text-sm font-semibold mb-3 opacity-60 uppercase">
-            {t("security_settings.account_security")}
-          </ThemedText>
-          <View
-            style={{
-              backgroundColor: colors.card,
-              borderRadius: 18,
-              overflow: "hidden",
-            }}
-          >
-            {/* Change Phone Number */}
-            <HapticButton
-              onPress={handleChangePhone}
-              activeOpacity={0.7}
+        {/* Guest Warning */}
+        {isGuest && (
+          <View className="px-4 mb-6">
+            <View
               style={{
-                flexDirection: "row",
-                alignItems: "center",
                 padding: 16,
-                borderBottomWidth: 1,
-                borderBottomColor: colors.border,
+                backgroundColor: colors.warning + "10",
+                borderRadius: 18,
+                borderWidth: 1,
+                borderColor: colors.warning + "20",
               }}
             >
+              <View className="flex-row items-center mb-2">
+                <Ionicons
+                  name="information-circle"
+                  size={24}
+                  color={colors.warning}
+                />
+                <ThemedText className="text-base font-semibold ml-2">
+                  {t("security_settings.guest_title")}
+                </ThemedText>
+              </View>
+              <ThemedText className="text-sm opacity-70">
+                {t("security_settings.guest_message")}
+              </ThemedText>
+              <HapticButton
+                className="mt-3"
+                onPress={() => router.push("/(auth)/")}
+                style={{
+                  backgroundColor: colors.primary,
+                  paddingHorizontal: 16,
+                  paddingVertical: 10,
+                  borderRadius: 12,
+                  alignSelf: "flex-start",
+                }}
+              >
+                <ThemedText className="text-sm font-medium" style={{ color: "white" }}>
+                  {t("profile.login")}
+                </ThemedText>
+              </HapticButton>
+            </View>
+          </View>
+        )}
+
+        {/* Account Security - Only show if not guest */}
+        {!isGuest && (
+          <View className="px-4 mb-6">
+            <ThemedText className="text-sm font-semibold mb-3 opacity-60 uppercase">
+              {t("security_settings.account_security")}
+            </ThemedText>
+            <View
+              style={{
+                backgroundColor: colors.card,
+                borderRadius: 18,
+                overflow: "hidden",
+              }}
+            >
+              {/* Change Phone Number */}
+              <HapticButton
+                onPress={handleChangePhone}
+                activeOpacity={0.7}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  padding: 16,
+                  borderBottomWidth: 1,
+                  borderBottomColor: colors.border,
+                }}
+              >
               <View
                 style={{
                   width: 40,
@@ -273,6 +318,7 @@ export default function SecuritySettingsScreen() {
             ))}
           </View>
         </View>
+        )}
 
         {/* Active Sessions */}
         {isAuthenticated && sessions.length > 0 && (
