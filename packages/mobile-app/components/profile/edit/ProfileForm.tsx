@@ -90,22 +90,6 @@ export function ProfileForm({
             : undefined}
         />
       </View>
-
-      <View>
-        <ThemedText className="text-sm mb-2 font-medium opacity-80">
-          {t("edit_profile.phone_number")}
-        </ThemedText>
-        <BaseInput
-          value={user?.phone || ""}
-          editable={false}
-          disabled
-          size="small"
-          variant="default"
-          placeholder={t("edit_profile.phone_number_placeholder")}
-          placeholderTextColor={colors.mediumGray}
-          keyboardType="phone-pad"
-        />
-      </View>
     </View>
   );
 }
