@@ -1098,5 +1098,20 @@
     "open_file": "Aç",
     "file_saved": "Dosya başarıyla kaydedildi",
     "export_error": "Veri dışa aktarımı sırasında bir hata oluştu"
+  },
+  "file_viewer": {
+    "title": "Dosya Görüntüleyici",
+    "file_name": "Dosya Adı",
+    "enter_password": "Şifre Girin",
+    "password_placeholder": "ZIP dosyası şifresini girin",
+    "unlock": "Kilidi Aç",
+    "unlocking": "Dosya açılıyor...",
+    "wrong_password": "Yanlış şifre",
+    "files_in_archive": "Arşivdeki Dosyalar",
+    "file_size": "Boyut",
+    "view_content": "İçeriği Görüntüle",
+    "download_file": "Dosyayı İndir",
+    "no_files": "Arşivde dosya bulunamadı",
+    "extraction_failed": "Dosya çıkarma işlemi başarısız oldu"
   }
 }

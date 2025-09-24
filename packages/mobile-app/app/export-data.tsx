@@ -12,10 +12,9 @@ import { api } from "@/core/api";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useToast } from "@/hooks/useToast";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
 import * as Clipboard from "expo-clipboard";
 import * as FileSystem from "expo-file-system";
-import * as Sharing from "expo-sharing";
+import { useNavigation, useRouter } from "expo-router";
 import React, { useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
@@ -28,6 +27,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function ExportDataScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const router = useRouter();
   const colorScheme = useColorScheme() ?? "light";
   const themeColors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
@@ -101,8 +101,11 @@ export default function ExportDataScreen() {
 
   const downloadAndSaveFile = async (downloadPath: string) => {
     try {
-      // Dosya adını oluştur
-      const fileName = `verilerim_${new Date().getTime()}.zip`;
+      // Backend'den gelen dosya adını kullan
+      const urlMatch = downloadPath.match(/\/users\/download-export\/([^?]+)/);
+      const fileName = urlMatch
+        ? urlMatch[1]
+        : `verilerim_${new Date().getTime()}.zip`;
       const fileUri = `${FileSystem.documentDirectory}${fileName}`;
 
       // Dosyayı indir
@@ -148,21 +151,34 @@ export default function ExportDataScreen() {
   };
 
   const openDownloadedFile = async () => {
-    if (downloadedFileUri) {
+    if (downloadedFileUri && filePassword) {
       try {
-        const isAvailable = await Sharing.isAvailableAsync();
-        if (isAvailable) {
-          await Sharing.shareAsync(downloadedFileUri, {
-            mimeType: "application/zip",
-            dialogTitle: t("export_data.save_file"),
-            UTI: "public.zip-archive",
-          });
-        } else {
-          showToast(t("export_data.sharing_not_available"), "error");
-        }
+        // Backend'den gelen download URL'inden dosya adını çıkar
+        // downloadUrl format: /users/download-export/FILENAME?token=TOKEN
+        const urlMatch = downloadedFileUri.match(
+          /\/users\/download-export\/([^?]+)/
+        );
+        const backendFileName = urlMatch ? urlMatch[1] : "export.zip";
+
+        // Token'ı URL'den çıkar
+        const urlParts = downloadedFileUri.split("?token=");
+        const token = urlParts.length > 1 ? urlParts[1] : "dummy-token";
+
+        console.log("Backend filename:", backendFileName); // Debug
+        console.log("Token:", token); // Debug
+
+        router.push({
+          pathname: "/file-viewer",
+          params: {
+            fileUri: downloadedFileUri,
+            fileName: backendFileName, // Backend'den gelen orijinal dosya adı
+            password: filePassword,
+            token: token,
+          },
+        });
       } catch (error) {
-        console.error("File sharing error:", error);
-        showToast(t("export_data.sharing_not_available"), "error");
+        console.error("File viewer navigation error:", error);
+        showToast("Dosya görüntüleyici açılamadı", "error");
       }
     }
   };

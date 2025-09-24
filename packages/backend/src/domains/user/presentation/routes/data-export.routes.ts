@@ -175,4 +175,136 @@ export const dataExportRoutes = createApp()
         token: t.String(),
       }),
     }
+  )
+
+  // Extract and view ZIP contents
+  .post(
+    "/view-export/:fileName",
+    async ({ params, body, profile, log, set }) => {
+      if (!profile?.userId) {
+        set.status = 401;
+        return { success: false, message: "Unauthorized" };
+      }
+
+      try {
+        const { fileName } = params;
+        const { password, token } = body;
+
+        // Validate inputs
+        if (!token || !fileName || !password) {
+          set.status = 400;
+          return { success: false, message: "Invalid request" };
+        }
+
+        // SECURITY: Check if file belongs to authenticated user
+        if (!fileName.includes(profile.userId)) {
+          log.warn(
+            { userId: profile.userId, fileName, attemptedAccess: true },
+            `Unauthorized file access attempt`
+          );
+          set.status = 403;
+          return { success: false, message: "Access denied" };
+        }
+
+        const filePath = path.join(
+          process.cwd(),
+          "uploads",
+          "exports",
+          fileName
+        );
+
+        // Check if file exists
+        if (!fs.existsSync(filePath)) {
+          set.status = 404;
+          return { success: false, message: "File not found" };
+        }
+
+        // Extract ZIP with password
+        const tempDir = path.join(
+          process.cwd(),
+          "uploads",
+          "temp",
+          `extract_${Date.now()}`
+        );
+
+        try {
+          // Create temp directory
+          if (!fs.existsSync(tempDir)) {
+            fs.mkdirSync(tempDir, { recursive: true });
+          }
+
+          // Extract ZIP with system unzip command
+          const { exec } = require("child_process");
+          const { promisify } = require("util");
+          const execAsync = promisify(exec);
+          const command = `unzip -P ${password} "${filePath}" -d "${tempDir}"`;
+
+          await execAsync(command);
+
+          // Read extracted files
+          const files = fs.readdirSync(tempDir);
+          const fileContents: any[] = [];
+
+          for (const file of files) {
+            const extractedFilePath = path.join(tempDir, file);
+            const stats = fs.statSync(extractedFilePath);
+
+            let content = null;
+            if (file.endsWith(".json") && stats.size < 1024 * 1024) {
+              // Max 1MB
+              content = JSON.parse(fs.readFileSync(extractedFilePath, "utf8"));
+            }
+
+            fileContents.push({
+              name: file,
+              size: stats.size,
+              content: content,
+              type: file.split(".").pop() || "unknown",
+            });
+          }
+
+          log.info(
+            { userId: profile.userId, fileName, filesExtracted: files.length },
+            `ZIP contents extracted successfully`
+          );
+
+          return {
+            success: true,
+            files: fileContents,
+            totalFiles: files.length,
+          };
+        } catch (extractError) {
+          log.warn(
+            { userId: profile.userId, fileName, error: extractError.message },
+            `ZIP extraction failed - likely wrong password`
+          );
+          set.status = 400;
+          return {
+            success: false,
+            message: "Wrong password or corrupted file",
+          };
+        } finally {
+          // Clean up temp directory
+          if (fs.existsSync(tempDir)) {
+            fs.rmSync(tempDir, { recursive: true, force: true });
+          }
+        }
+      } catch (error) {
+        log.error(
+          { userId: profile.userId, error: error.message },
+          `ZIP view failed`
+        );
+        set.status = 500;
+        return { success: false, message: "Failed to extract ZIP" };
+      }
+    },
+    {
+      params: t.Object({
+        fileName: t.String(),
+      }),
+      body: t.Object({
+        password: t.String(),
+        token: t.String(),
+      }),
+    }
   );
