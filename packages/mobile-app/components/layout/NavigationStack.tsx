@@ -11,6 +11,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { Platform } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import {
   DYNAMIC_SCREEN_CONFIGS,
@@ -23,6 +24,7 @@ import { useAppNavigation } from "@/hooks/useAppNavigation";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 export const NavigationStack: React.FC = () => {
+  const { t } = useTranslation();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
 
@@ -42,7 +44,6 @@ export const NavigationStack: React.FC = () => {
       ...LAYOUT_CONFIG.headerTitleStyle,
       color: colors.text,
     },
-    headerBackTitle: LAYOUT_CONFIG.headerOptions.backTitle,
     headerBackButtonDisplayMode:
       LAYOUT_CONFIG.headerOptions.backButtonDisplayMode,
   };

@@ -31,8 +31,6 @@
     "light_mode": "Light Mode",
     "communication_preferences": "Communication Preferences",
     "support_section_title": "Support",
-    "help_center": "Help Center",
-    "contact_us": "Contact Us",
     "faq": {
       "title": "FAQ",
       "content": "Frequently asked questions and answers will be listed here. For example: How do I return my order?"
@@ -68,9 +66,7 @@
     },
     "header_edit": "Edit",
     "legal_section_title": "Legal Documents",
-    "privacy_policy": "Privacy Policy",
     "privacy_policy_subtitle": "Protection and use of your personal data",
-    "terms_of_service": "Terms of Service",
     "terms_of_service_subtitle": "Service usage terms and conditions"
   },
   "languages": {
@@ -291,6 +287,7 @@
     "CART_UPDATE_ERROR": "An unexpected error occurred while updating the item. Please try again."
   },
   "tabs": {
+    "title": "Main Menu",
     "home": "Home",
     "products": "Products",
     "cart": {
@@ -526,7 +523,6 @@
     "same_billing_address": "Billing address is the same as delivery address",
     "add_new_address": "Add New Address",
     "continue_to_payment": "Continue to Payment",
-    "payment_methods": "Payment Methods",
     "payment_method": "Payment Method",
     "payment_screen_title": "Payment Methods",
     "secure_payment": "Secure Payment",
@@ -605,7 +601,6 @@
     "product_details_sheet_title": "Product Details",
     "in_stock": "In stock",
     "out_of_stock": "Out of stock",
-    "low_stock": "Last {{count}} items",
     "info": {
       "price": "{{price}}",
       "unit": "/ {{unit}}",
@@ -631,9 +626,7 @@
       "generic_error_message": "An error occurred while adding to cart. Please try again."
     },
     "add_to_cart": "Add to Cart",
-    "stock_available": "Stock: {{count}} available",
-    "category": "Category: {{category}}",
-    "out_of_stock": "Out of stock"
+    "stock_available": "Stock: {{count}} available"
   },
   "app_bar": {
     "search_placeholder": "Search..."
@@ -682,7 +675,8 @@
     "warning": "Warning",
     "info": "Info",
     "change": "Change",
-    "clear": "Clear"
+    "clear": "Clear",
+    "back": "Back"
   },
   "general": {
     "under_construction": "Under Construction",
@@ -783,65 +777,6 @@
     "apple_pay_error": "Apple Pay payment failed",
     "google_pay_error": "Google Pay payment failed",
     "client_secret_missing": "Payment secret is missing"
-  },
-  "checkout": {
-    "steps": {
-      "address": "Address",
-      "payment": "Payment",
-      "summary": "Summary"
-    },
-    "bank_transfer_title": "Bank Transfer",
-    "delivery_address": "Delivery Address",
-    "add_new_address": "Add New Address",
-    "same_billing_address": "My billing address is the same as the delivery address",
-    "billing_address": "Billing Address",
-    "continue_to_payment": "Continue to Payment",
-    "payment_screen_title": "Select Payment Method",
-    "continue_to_summary": "Continue to Summary",
-    "secure_payment": "Secure Payment",
-    "secure_payment_desc": "All your payment transactions are protected by an SSL certificate.",
-    "more_payment_methods_soon": "More payment methods will be added soon.",
-    "bank_transfer_success": "Order Confirmed",
-    "bank_transfer_success_desc": "As a corporate customer, your order has been automatically confirmed. Invoice will be sent to your email address.",
-    "payment_method": "Payment Method",
-    "order_summary": "Order Summary",
-    "order_notes": "Order Notes",
-    "order_notes_placeholder": "Add any special instructions for your order here...",
-    "agree_terms": "I agree to the terms of service and privacy policy",
-    "missing_fields": "Please fill in all required fields",
-    "payment_success": "Payment Successful",
-    "payment_success_desc": "Your payment has been processed successfully!",
-    "payment_failed": "Payment Failed",
-    "payment_error": "An error occurred during payment",
-    "order_creation_failed": "Failed to create order",
-    "view_bank_details_prompt": "Tap to view bank details",
-    "no_payment_method_selected": "No payment method selected",
-    "subtotal": "Subtotal",
-    "items": "items",
-    "shipping": "Shipping",
-    "free": "Free",
-    "total": "Total",
-    "complete_order": "Complete Order",
-    "confirm_and_proceed": "Confirm and Proceed",
-    "payment_methods": {
-      "card": {
-        "title": "Credit / Debit Card",
-        "subtitle": "Visa, Mastercard, Maestro"
-      },
-      "blik": {
-        "subtitle": "Mobile payment (6-digit code)"
-      },
-      "apple_pay": {
-        "subtitle": "Fast payment with Touch ID, Face ID"
-      },
-      "google_pay": {
-        "subtitle": "Secure mobile payment"
-      },
-      "bank_transfer": {
-        "title": "Bank Transfer",
-        "subtitle": "Wire transfer / EFT"
-      }
-    }
   },
   "app_settings": {
     "appearance": "Appearance",

@@ -54,6 +54,7 @@ export const TabScreens = ({
           title: t("tabs.home"),
           headerShown: true,
           headerTitle: t("tabs.home"),
+          headerBackTitle: t("tabs.home"),
           headerRight: () => (
             <View style={{ flexDirection: "row", marginRight: 4 }}>
               <HapticIconButton
@@ -83,6 +84,7 @@ export const TabScreens = ({
           title: t("tabs.products"),
           headerShown: true,
           headerTitle: t("tabs.products"),
+          headerBackTitle: t("tabs.products"),
           headerRight: () => (
             <View
               style={{
@@ -113,6 +115,7 @@ export const TabScreens = ({
           title: t("tabs.cart.title"),
           headerShown: true,
           headerTitle: t("tabs.cart.title"),
+          headerBackTitle: t("tabs.cart.title"),
           headerRight:
             cartItemCount > 0
               ? () => (
@@ -144,6 +147,7 @@ export const TabScreens = ({
           title: t("tabs.orders"),
           headerShown: true,
           headerTitle: t("tabs.orders"),
+          headerBackTitle: t("tabs.orders"),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               size={24}
@@ -159,6 +163,7 @@ export const TabScreens = ({
           title: t("tabs.profile"),
           headerShown: true,
           headerTitle: t("tabs.profile"),
+          headerBackTitle: t("tabs.profile"),
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               size={24}

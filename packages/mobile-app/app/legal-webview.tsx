@@ -9,6 +9,7 @@ import { WebView } from "react-native-webview";
 import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
 import { Stack } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -20,6 +21,7 @@ export default function LegalWebViewScreen() {
     url: string;
     title: string;
   }>();
+  const { t } = useTranslation();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -46,7 +48,6 @@ export default function LegalWebViewScreen() {
       <Stack.Screen
         options={{
           title: title || "Legal Document",
-          headerBackTitle: "Geri",
         }}
       />
       {error ? (

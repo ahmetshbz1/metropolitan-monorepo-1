@@ -43,7 +43,6 @@ export const DYNAMIC_SCREEN_CONFIGS: ScreenConfig[] = [
     options: ({ route }: RouteProps) => ({
       headerShown: true,
       headerTitle: "", // Dinamik olarak ayarlanacak
-      headerBackTitle: "",
       headerStyle: {
         backgroundColor: undefined, // colors.background - dinamik olarak ayarlanacak
       },
@@ -59,7 +58,6 @@ export const STATIC_SCREEN_CONFIGS: ScreenConfig[] = [
     options: {
       headerShown: true,
       headerTitle: "", // i18n ile dinamik olarak ayarlanacak - add_address.title
-      headerBackTitle: "",
     },
   },
   {
@@ -67,7 +65,6 @@ export const STATIC_SCREEN_CONFIGS: ScreenConfig[] = [
     options: {
       headerShown: true,
       headerTitle: "", // i18n ile dinamik olarak ayarlanacak - edit_address.title
-      headerBackTitle: "",
     },
   },
   {
@@ -75,7 +72,6 @@ export const STATIC_SCREEN_CONFIGS: ScreenConfig[] = [
     options: {
       headerShown: true,
       headerTitle: "", // i18n ile dinamik olarak ayarlanacak - addresses.title
-      headerBackTitle: "",
     },
   },
   {
@@ -83,7 +79,6 @@ export const STATIC_SCREEN_CONFIGS: ScreenConfig[] = [
     options: {
       headerShown: true,
       headerTitle: "", // i18n ile dinamik olarak ayarlanacak - edit_profile.title
-      headerBackTitle: "",
     },
   },
   {
@@ -91,7 +86,6 @@ export const STATIC_SCREEN_CONFIGS: ScreenConfig[] = [
     options: {
       headerShown: true,
       headerTitle: "", // i18n ile dinamik olarak ayarlanacak - favorites.title
-      headerBackTitle: "",
     },
   },
   {
@@ -99,7 +93,6 @@ export const STATIC_SCREEN_CONFIGS: ScreenConfig[] = [
     options: {
       headerShown: true,
       headerTitle: "", // i18n ile dinamik olarak ayarlanacak - help_center.title
-      headerBackTitle: "",
     },
   },
   {
@@ -107,7 +100,6 @@ export const STATIC_SCREEN_CONFIGS: ScreenConfig[] = [
     options: {
       headerShown: true,
       headerTitle: "", // i18n ile dinamik olarak ayarlanacak - faq.title
-      headerBackTitle: "",
     },
   },
   {
@@ -115,7 +107,6 @@ export const STATIC_SCREEN_CONFIGS: ScreenConfig[] = [
     options: {
       headerShown: true,
       headerTitle: "", // i18n ile dinamik olarak ayarlanacak - order_detail.title
-      headerBackTitle: "",
     },
   },
   {
@@ -123,7 +114,6 @@ export const STATIC_SCREEN_CONFIGS: ScreenConfig[] = [
     options: {
       headerShown: true,
       headerTitle: "", // i18n ile dinamik olarak ayarlanacak - sipariş takibi
-      headerBackTitle: "",
     },
   },
   {
@@ -131,7 +121,6 @@ export const STATIC_SCREEN_CONFIGS: ScreenConfig[] = [
     options: {
       headerShown: true,
       headerTitle: "", // i18n ile dinamik olarak ayarlanacak
-      headerBackTitle: "",
     },
   },
 ];
@@ -144,8 +133,7 @@ export const LAYOUT_CONFIG = {
   },
   headerOptions: {
     shadowVisible: false,
-    backTitle: "", // iOS'ta geri butonunda yazı olmasın
-    backButtonDisplayMode: "minimal" as const, // iOS'ta sadece ok işareti göster
+    backButtonDisplayMode: "default" as const, // iOS'ta metin de göster
   },
   headerTitleStyle: {
     fontWeight: "600" as const,

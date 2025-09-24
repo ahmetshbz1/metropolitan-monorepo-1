@@ -276,6 +276,7 @@
     "CART_UPDATE_ERROR": "Wystąpił nieoczekiwany błąd podczas aktualizacji produktu. Spróbuj ponownie."
   },
   "tabs": {
+    "title": "Menu główne",
     "home": "Główna",
     "products": "Produkty",
     "cart": {
@@ -668,7 +669,8 @@
     "warning": "Ostrzeżenie",
     "info": "Informacja",
     "change": "Zmień",
-    "clear": "Wyczyść"
+    "clear": "Wyczyść",
+    "back": "Wstecz"
   },
   "general": {
     "under_construction": "W budowie",

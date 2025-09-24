@@ -287,6 +287,7 @@
     "CART_UPDATE_ERROR": "Ürün güncellenirken beklenmedik bir hata oluştu. Lütfen tekrar deneyin."
   },
   "tabs": {
+    "title": "Ana Menü",
     "home": "Anasayfa",
     "cart": {
       "title": "Sepetim",
@@ -725,7 +726,8 @@
     "info": "Bilgi",
     "change": "Değiştir",
     "clear": "Temizle",
-    "continue": "Devam Et"
+    "continue": "Devam Et",
+    "back": "Geri"
   },
   "general": {
     "under_construction": "Yapım aşamasında",
