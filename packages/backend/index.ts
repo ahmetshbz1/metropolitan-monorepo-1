@@ -25,6 +25,7 @@ import { stripeWebhookRoutes } from "./src/domains/payment/presentation/routes/s
 import { cartRoutes } from "./src/domains/shopping/presentation/routes/cart.routes";
 import { favoritesRoutes } from "./src/domains/shopping/presentation/routes/favorites.routes";
 import { addressRoutes } from "./src/domains/user/presentation/routes/address.routes";
+import { notificationPreferencesRoutes } from "./src/domains/user/presentation/routes/notification-preferences.routes";
 import { profileRoutes } from "./src/domains/user/presentation/routes/profile.routes";
 import { healthRoutes } from "./src/shared/application/common/health.routes";
 import { utilsRoutes } from "./src/shared/application/common/utils.routes";
@@ -119,7 +120,11 @@ export const app = new Elysia()
 
       // User Domain (grouped under /users prefix)
       .group("/users", (userApp) =>
-        userApp.use(profileRoutes).use(addressRoutes).use(favoritesRoutes)
+        userApp
+          .use(profileRoutes)
+          .use(addressRoutes)
+          .use(favoritesRoutes)
+          .use(notificationPreferencesRoutes)
       )
 
       // Cart routes (directly under /api for /me/cart)

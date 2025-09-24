@@ -889,7 +889,16 @@
     "notification_preferences_desc": "Bildirim ayarlarını yönetin",
     "storage": "Depolama",
     "clear_cache": "Önbelleği Temizle",
-    "clear_cache_desc": "Geçici dosyaları temizle"
+    "clear_cache_desc": "Geçici dosyaları temizle",
+    "sms_notifications": "SMS Bildirimleri",
+    "sms_notifications_desc": "Sipariş ve kampanya SMS'leri",
+    "push_notifications": "Anlık Bildirimler",
+    "push_notifications_desc": "Uygulama bildirimleri",
+    "email_notifications": "E-posta Bildirimleri",
+    "email_notifications_desc": "E-posta ile bilgilendirmeler",
+    "error": "Hata",
+    "notification_update_failed": "Bildirim tercihleri güncellenemedi",
+    "guest_notification_warning": "Bildirim tercihlerinizi kaydetmek için giriş yapın"
   },
   "support": {
     "title": "Destek",

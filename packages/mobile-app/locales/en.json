@@ -857,7 +857,16 @@
     "notification_preferences_desc": "Manage notification settings",
     "storage": "Storage",
     "clear_cache": "Clear Cache",
-    "clear_cache_desc": "Clear temporary files"
+    "clear_cache_desc": "Clear temporary files",
+    "sms_notifications": "SMS Notifications",
+    "sms_notifications_desc": "Order and campaign SMS messages",
+    "push_notifications": "Push Notifications",
+    "push_notifications_desc": "App notifications",
+    "email_notifications": "Email Notifications",
+    "email_notifications_desc": "Email updates",
+    "error": "Error",
+    "notification_update_failed": "Failed to update notification preferences",
+    "guest_notification_warning": "Login to save your notification preferences"
   },
   "support": {
     "title": "Support",

@@ -17,6 +17,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { HapticButton } from "@/components/HapticButton";
 import { useRouter } from "expo-router";
 import ContextMenu from "react-native-context-menu-view";
+import NotificationPreferencesSheet, { NotificationPreferencesSheetRef } from "@/components/NotificationPreferencesSheet";
+import { useRef } from "react";
 
 export default function AppSettingsScreen() {
   const { t, i18n } = useTranslation();
@@ -27,6 +29,7 @@ export default function AppSettingsScreen() {
   const insets = useSafeAreaInsets();
   const { toggleTheme } = useAppColorScheme();
   const { settings, updateSettings } = useUserSettings();
+  const notificationSheetRef = useRef<NotificationPreferencesSheetRef>(null);
 
   // Header title'ı dinamik olarak ayarla
   useLayoutEffect(() => {
@@ -255,7 +258,7 @@ export default function AppSettingsScreen() {
             }}
           >
             <HapticButton
-              onPress={() => router.push("/notification-settings")}
+              onPress={() => notificationSheetRef.current?.present()}
               activeOpacity={0.7}
               style={{
                 flexDirection: "row",
@@ -354,6 +357,7 @@ export default function AppSettingsScreen() {
           </View>
         </View>
       </ScrollView>
+      <NotificationPreferencesSheet ref={notificationSheetRef} />
     </ThemedView>
   );
 }
