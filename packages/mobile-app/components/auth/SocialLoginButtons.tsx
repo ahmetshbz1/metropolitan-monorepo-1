@@ -4,12 +4,12 @@
 
 import React from "react";
 import { Platform, Text, TouchableOpacity, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import Svg, { Path } from "react-native-svg";
 import { useTranslation } from "react-i18next";
 
-const GoogleIcon = ({ size }: { size: number }) => (
-  <Svg height={size} width={size} viewBox="0 0 24 24">
+const GoogleIcon = () => (
+  <Svg height={26} width={26} viewBox="0 0 24 24">
     <Path
       d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
       fill="#4285F4"
@@ -85,7 +85,7 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
             elevation: 3,
           }}
         >
-          <GoogleIcon size={28} />
+          <GoogleIcon />
         </TouchableOpacity>
         <TouchableOpacity
           className="rounded-full w-14 h-14 items-center justify-center shadow-sm"
@@ -98,7 +98,7 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
             elevation: 3,
           }}
         >
-          <Ionicons name="logo-facebook" size={28} color={"#1877F2"} />
+          <MaterialCommunityIcons name="facebook" size={28} color="#1877F2" />
         </TouchableOpacity>
       </View>
     </View>
