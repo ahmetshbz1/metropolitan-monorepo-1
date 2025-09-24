@@ -19,6 +19,15 @@ export interface ManufacturerInfo {
   email?: string;
 }
 
+export interface ProductBadges {
+  halal?: boolean;
+  vegetarian?: boolean;
+  vegan?: boolean;
+  glutenFree?: boolean;
+  organic?: boolean;
+  lactoseFree?: boolean;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -38,6 +47,7 @@ export interface Product {
   storageConditions?: string; // Saklama koşulları
   manufacturerInfo?: ManufacturerInfo; // Üretici bilgileri
   originCountry?: string; // Menşe ülkesi
+  badges?: ProductBadges; // Ürün sertifikaları ve özellikleri
 }
 
 export interface Category {

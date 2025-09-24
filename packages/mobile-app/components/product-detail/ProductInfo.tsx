@@ -169,6 +169,62 @@ export function ProductInfo({
         title={t("product_detail.product_details_sheet_title")}
       >
         <View className="p-4">
+          {/* Sertifika Badge'leri */}
+          {product.badges && Object.values(product.badges).some(v => v) && (
+            <View className="mb-5">
+              <View className="flex-row flex-wrap gap-2">
+                {product.badges.halal && (
+                  <View className="flex-row items-center px-3 py-2 rounded-full" style={{ backgroundColor: '#00A86B20' }}>
+                    <View className="w-2 h-2 rounded-full mr-2" style={{ backgroundColor: '#00A86B' }} />
+                    <ThemedText className="text-xs font-semibold" style={{ color: '#00A86B' }}>
+                      Helal
+                    </ThemedText>
+                  </View>
+                )}
+                {product.badges.vegetarian && (
+                  <View className="flex-row items-center px-3 py-2 rounded-full" style={{ backgroundColor: '#32CD3220' }}>
+                    <View className="w-2 h-2 rounded-full mr-2" style={{ backgroundColor: '#32CD32' }} />
+                    <ThemedText className="text-xs font-semibold" style={{ color: '#32CD32' }}>
+                      Vejetaryan
+                    </ThemedText>
+                  </View>
+                )}
+                {product.badges.vegan && (
+                  <View className="flex-row items-center px-3 py-2 rounded-full" style={{ backgroundColor: '#228B2220' }}>
+                    <View className="w-2 h-2 rounded-full mr-2" style={{ backgroundColor: '#228B22' }} />
+                    <ThemedText className="text-xs font-semibold" style={{ color: '#228B22' }}>
+                      Vegan
+                    </ThemedText>
+                  </View>
+                )}
+                {product.badges.glutenFree && (
+                  <View className="flex-row items-center px-3 py-2 rounded-full" style={{ backgroundColor: '#FFB52E20' }}>
+                    <View className="w-2 h-2 rounded-full mr-2" style={{ backgroundColor: '#FFB52E' }} />
+                    <ThemedText className="text-xs font-semibold" style={{ color: '#FFB52E' }}>
+                      Glutensiz
+                    </ThemedText>
+                  </View>
+                )}
+                {product.badges.organic && (
+                  <View className="flex-row items-center px-3 py-2 rounded-full" style={{ backgroundColor: '#8B451320' }}>
+                    <View className="w-2 h-2 rounded-full mr-2" style={{ backgroundColor: '#8B4513' }} />
+                    <ThemedText className="text-xs font-semibold" style={{ color: '#8B4513' }}>
+                      Organik
+                    </ThemedText>
+                  </View>
+                )}
+                {product.badges.lactoseFree && (
+                  <View className="flex-row items-center px-3 py-2 rounded-full" style={{ backgroundColor: '#6495ED20' }}>
+                    <View className="w-2 h-2 rounded-full mr-2" style={{ backgroundColor: '#6495ED' }} />
+                    <ThemedText className="text-xs font-semibold" style={{ color: '#6495ED' }}>
+                      Laktozsuz
+                    </ThemedText>
+                  </View>
+                )}
+              </View>
+            </View>
+          )}
+
           {/* Genel Bilgiler Tablosu */}
           <View className="mb-5 rounded-xl overflow-hidden" style={{ backgroundColor: colors.card }}>
             <View className="flex-row items-center px-4 py-3" style={{ backgroundColor: colors.tint + '15' }}>

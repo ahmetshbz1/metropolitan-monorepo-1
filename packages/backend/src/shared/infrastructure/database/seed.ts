@@ -200,6 +200,16 @@ const main = async () => {
       const expiryDate = new Date();
       expiryDate.setDate(expiryDate.getDate() + (isPerishable ? 30 : 365));
 
+      // Badge'leri belirle
+      const sampleBadges = {
+        halal: Math.random() > 0.3, // %70 şans helal
+        vegetarian: categoryName !== "ET ÜRÜNLERİ", // Et ürünleri dışında vejetaryan
+        vegan: categoryName === "BAKLİYAT" || (categoryName !== "ET ÜRÜNLERİ" && categoryName !== "SÜT ÜRÜNLERİ" && Math.random() > 0.7),
+        glutenFree: categoryName !== "UNLU MAMÜLLER", // Unlu mamüller dışında glutensiz
+        organic: Math.random() > 0.6, // %40 şans organik
+        lactoseFree: categoryName !== "SÜT ÜRÜNLERİ" // Süt ürünleri dışında laktozsuz
+      };
+
       const [newProduct] = await db
         .insert(products)
         .values({
@@ -220,7 +230,8 @@ const main = async () => {
           expiryDate: expiryDate,
           storageConditions: isPerishable ? sampleStorageConditions[0] : sampleStorageConditions[1],
           manufacturerInfo: JSON.stringify(sampleManufacturerInfo),
-          originCountry: "Türkiye"
+          originCountry: "Türkiye",
+          badges: JSON.stringify(sampleBadges)
         })
         .returning({ id: products.id });
       if (!newProduct)

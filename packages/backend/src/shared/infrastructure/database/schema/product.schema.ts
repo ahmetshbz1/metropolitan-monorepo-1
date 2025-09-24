@@ -49,6 +49,7 @@ export const products = pgTable("products", {
   storageConditions: text("storage_conditions"), // Saklama koşulları
   manufacturerInfo: text("manufacturer_info"), // JSON string olarak üretici bilgileri
   originCountry: text("origin_country"), // Menşe ülkesi
+  badges: text("badges"), // JSON string olarak badge bilgileri (halal, vegan, vs.)
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

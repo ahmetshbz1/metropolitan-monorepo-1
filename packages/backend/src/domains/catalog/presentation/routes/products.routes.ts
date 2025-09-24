@@ -76,6 +76,7 @@ export const productRoutes = createApp().group("/products", (app) =>
             storageConditions: products.storageConditions,
             manufacturerInfo: products.manufacturerInfo,
             originCountry: products.originCountry,
+            badges: products.badges,
           })
           .from(products)
           .leftJoin(
@@ -106,6 +107,7 @@ export const productRoutes = createApp().group("/products", (app) =>
           storageConditions: p.storageConditions || undefined,
           manufacturerInfo: p.manufacturerInfo ? JSON.parse(p.manufacturerInfo) : undefined,
           originCountry: p.originCountry || undefined,
+          badges: p.badges ? JSON.parse(p.badges) : undefined,
         }));
 
         return { success: true, data: formattedProducts };
