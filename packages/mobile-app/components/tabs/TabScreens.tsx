@@ -96,16 +96,6 @@ export const TabScreens = ({
                 initialValue={searchQuery}
                 placeholder="Ürün ara..."
               />
-              <HapticIconButton
-                onPress={handleNotification}
-                style={{ padding: 8 }}
-              >
-                <Ionicons
-                  name="notifications-outline"
-                  size={24}
-                  color={colors.text}
-                />
-              </HapticIconButton>
             </View>
           ),
           tabBarIcon: ({ color, focused }) => (
