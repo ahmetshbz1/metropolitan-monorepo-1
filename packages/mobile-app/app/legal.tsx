@@ -10,7 +10,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, View } from "react-native";
+import { ScrollView, View, Linking, Platform } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { HapticButton } from "@/components/HapticButton";
@@ -34,6 +34,28 @@ export default function LegalScreen() {
   const handleWebViewPress = (urlPath: string, title: string) => {
     const url = `https://metropolitanfg.pl/${urlPath}?lang=${currentLang}`;
     router.push(`/legal-webview?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`);
+  };
+
+  const handleGetDirections = () => {
+    const address = "Aleja Krakowska 44, 05-090 Janki, Warsaw, Poland";
+    const encodedAddress = encodeURIComponent(address);
+
+    const scheme = Platform.select({
+      ios: 'maps:0,0?q=',
+      android: 'geo:0,0?q='
+    });
+
+    const url = Platform.select({
+      ios: `${scheme}${encodedAddress}`,
+      android: `${scheme}${encodedAddress}`
+    });
+
+    if (url) {
+      Linking.openURL(url).catch(err => {
+        // Fallback to Google Maps web URL
+        Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`);
+      });
+    }
   };
 
   const legalItems = [
@@ -62,7 +84,7 @@ export default function LegalScreen() {
 
   const companyInfo = {
     name: "Metropolitan Food Group Sp. z o.o.",
-    address: "ul. Przykładowa 123\n00-001 Warszawa, Polska",
+    address: "ul. Aleja Krakowska 44\n05-090 Janki, Warsaw",
     nip: "NIP: 123 456 78 90",
     krs: "KRS: 0000317933",
     regon: "REGON: 123456789",
@@ -151,9 +173,30 @@ export default function LegalScreen() {
               <ThemedText className="text-lg font-bold mb-2">
                 {companyInfo.name}
               </ThemedText>
-              <ThemedText className="text-sm opacity-70 mb-1">
-                {companyInfo.address}
-              </ThemedText>
+              <View className="flex-row items-center justify-between">
+                <ThemedText className="text-sm opacity-70 flex-1 mr-2">
+                  {companyInfo.address}
+                </ThemedText>
+                <HapticButton
+                  onPress={handleGetDirections}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    backgroundColor: colors.primary + "15",
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
+                    borderRadius: 12,
+                  }}
+                >
+                  <Ionicons name="navigate" size={16} color={colors.primary} />
+                  <ThemedText
+                    className="text-xs font-medium ml-1"
+                    style={{ color: colors.primary }}
+                  >
+                    {t("legal.get_directions")}
+                  </ThemedText>
+                </HapticButton>
+              </View>
             </View>
 
             <View className="space-y-3">

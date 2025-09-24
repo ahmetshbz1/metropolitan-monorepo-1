@@ -915,6 +915,7 @@
     "whatsapp_message": "Merhaba, Metropolitan Food Group hakkında yardım almak istiyorum.",
     "call_us": "Bizi Arayın",
     "email": "E-posta",
+    "address": "Adres",
     "social_section": "Sosyal Medya",
     "instagram": "Instagram",
     "facebook": "Facebook",
@@ -953,6 +954,7 @@
     "trade_register": "Ticaret Sicil",
     "email": "E-posta",
     "phone": "Telefon",
+    "get_directions": "Yol Tarifi Al",
     "notice_title": "Yasal Uyarı",
     "notice_desc": "Bu uygulamadaki tüm içerik ve materyaller Metropolitan Ticaret A.Ş.'ye aittir ve telif hakkı ile korunmaktadır."
   },

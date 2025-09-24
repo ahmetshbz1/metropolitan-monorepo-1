@@ -11,7 +11,7 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import React, { useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Linking, ScrollView, View } from "react-native";
+import { Linking, ScrollView, View, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function SupportScreen() {
@@ -27,6 +27,28 @@ export default function SupportScreen() {
       headerTitle: t("support.title"),
     });
   }, [navigation, t]);
+
+  const handleGetDirections = () => {
+    const address = "Aleja Krakowska 44, 05-090 Janki, Warsaw, Poland";
+    const encodedAddress = encodeURIComponent(address);
+
+    const scheme = Platform.select({
+      ios: 'maps:0,0?q=',
+      android: 'geo:0,0?q='
+    });
+
+    const url = Platform.select({
+      ios: `${scheme}${encodedAddress}`,
+      android: `${scheme}${encodedAddress}`
+    });
+
+    if (url) {
+      Linking.openURL(url).catch(err => {
+        // Fallback to Google Maps web URL
+        Linking.openURL(`https://www.google.com/maps/search/?api=1&query=${encodedAddress}`);
+      });
+    }
+  };
 
   const contactMethods = [
     {
@@ -55,6 +77,14 @@ export default function SupportScreen() {
       icon: "email" as const,
       color: colors.primary,
       action: () => Linking.openURL("mailto:info@metropolitanfg.pl"),
+    },
+    {
+      id: "address",
+      title: t("support.address"),
+      subtitle: "Aleja Krakowska 44, 05-090 Janki",
+      icon: "location" as const,
+      color: colors.primary,
+      action: handleGetDirections,
     },
   ];
 
@@ -176,6 +206,8 @@ export default function SupportScreen() {
                     />
                   ) : method.icon === "phone" ? (
                     <Ionicons name="call" size={20} color={method.color} />
+                  ) : method.icon === "location" ? (
+                    <Ionicons name="location" size={20} color={method.color} />
                   ) : (
                     <Ionicons name="mail" size={20} color={method.color} />
                   )}
