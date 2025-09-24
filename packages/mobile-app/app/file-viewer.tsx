@@ -12,10 +12,10 @@ import { api } from "@/core/api";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useToast } from "@/hooks/useToast";
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams, useNavigation } from "expo-router";
+import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import React, { useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, ScrollView, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import {
   KeyboardAwareScrollView,
   KeyboardStickyView,
@@ -31,6 +31,7 @@ interface ArchiveFile {
 export default function FileViewerScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const router = useRouter();
   const colorScheme = useColorScheme() ?? "light";
   const themeColors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
@@ -109,12 +110,14 @@ export default function FileViewerScreen() {
       return;
     }
 
-    Alert.alert(
-      file.name,
-      file.content,
-      [{ text: "Tamam", style: "default" }],
-      { cancelable: true }
-    );
+    // JSON viewer sayfasına yönlendir
+    router.push({
+      pathname: "/json-viewer",
+      params: {
+        fileName: file.name,
+        content: file.content,
+      },
+    });
   };
 
   const formatFileSize = (bytes: number): string => {

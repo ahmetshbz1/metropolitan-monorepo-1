@@ -1113,5 +1113,13 @@
     "download_file": "Dosyayı İndir",
     "no_files": "Arşivde dosya bulunamadı",
     "extraction_failed": "Dosya çıkarma işlemi başarısız oldu"
+  },
+  "json_viewer": {
+    "title": "İçerik Önizleme",
+    "copy_content": "İçeriği Kopyala",
+    "content_copied": "İçerik kopyalandı",
+    "invalid_json": "Geçersiz JSON formatı",
+    "data_preview": "Veri Önizleme",
+    "user_data": "Kullanıcı Verileri"
   }
 }
