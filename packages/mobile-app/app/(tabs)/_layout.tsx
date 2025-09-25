@@ -65,7 +65,6 @@ export default function TabLayout() {
 
     navigation.setOptions({
       title: title,
-      headerBackTitle: title,
     });
   }, [navigation, route, t, i18n.language]);
 
