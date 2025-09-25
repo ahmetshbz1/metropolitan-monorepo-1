@@ -17,12 +17,13 @@ export const invoicesRoutes = createApp()
       // Fatura PDF'ini indir
       .get(
         "/:orderId/download",
-        async ({ params, profile, error, set }) => {
+        async ({ params, profile, set }) => {
           try {
             const { orderId } = params;
 
             if (!profile) {
-              return error(401, "Unauthorized");
+              set.status = 401;
+              return { success: false, message: "Unauthorized" };
             }
 
             const userId = profile?.sub || profile?.userId;
@@ -42,7 +43,8 @@ export const invoicesRoutes = createApp()
           } catch (err) {
             const message =
               err instanceof Error ? err.message : "Fatura oluşturulamadı";
-            return error(500, message);
+            set.status = 500;
+            return { success: false, message };
           }
         },
         {
@@ -55,12 +57,13 @@ export const invoicesRoutes = createApp()
       // Fatura verilerini JSON olarak getir (önizleme için)
       .get(
         "/:orderId/data",
-        async ({ params, profile, error }) => {
+        async ({ params, profile, set }) => {
           try {
             const { orderId } = params;
 
             if (!profile) {
-              return error(401, "Unauthorized");
+              set.status = 401;
+              return { success: false, message: "Unauthorized" };
             }
 
             const userId = profile?.sub || profile?.userId;
@@ -76,7 +79,8 @@ export const invoicesRoutes = createApp()
           } catch (err) {
             const message =
               err instanceof Error ? err.message : "Fatura verileri alınamadı";
-            return error(404, message);
+            set.status = 404;
+            return { success: false, message };
           }
         },
         {
