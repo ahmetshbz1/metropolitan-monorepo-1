@@ -716,6 +716,13 @@
     "category": "Kategori: {{category}}",
     "out_of_stock": "Stokta yok"
   },
+  "product_card": {
+    "add_to_cart": "Sepete Ekle",
+    "add_to_favorites": "Favorilere Ekle",
+    "remove_from_favorites": "Favorilerden Çıkar",
+    "share": "Paylaş",
+    "view_details": "Detayları Görüntüle"
+  },
   "common": {
     "ok": "Tamam",
     "cancel": "İptal",

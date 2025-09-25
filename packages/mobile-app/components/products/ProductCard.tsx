@@ -7,9 +7,12 @@ import { Product } from "@/context/ProductContext";
 import { useProductCard } from "@/hooks/useProductCard";
 import { useHaptics } from "@/hooks/useHaptics";
 import { Ionicons } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import React, { useRef } from "react";
-import { TouchableOpacity, View, Animated } from "react-native";
+import { TouchableOpacity, View, Animated, Share, Alert } from "react-native";
+import { useTranslation } from "react-i18next";
+import ContextMenu from "react-native-context-menu-view";
+import * as Haptics from "expo-haptics";
 import { HapticIconButton } from "../HapticButton";
 import { ProductCardContent } from "./ProductCardContent";
 import { ProductCardImage } from "./ProductCardImage";
@@ -44,6 +47,8 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
     handleToggleFavorite,
   } = useProductCard(product);
   const { triggerHaptic } = useHaptics();
+  const { t } = useTranslation();
+  const router = useRouter();
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const isHorizontal = variant === "horizontal";
@@ -67,6 +72,62 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
     }).start();
   };
 
+  // Context menu handlers
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: `${product.name} - ${t("product_detail.share.check_out_this_product")}`,
+        title: product.name,
+      });
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch (error) {
+      console.error("Error sharing:", error);
+    }
+  };
+
+  const handleContextMenu = (index: number) => {
+    switch (index) {
+      case 0: // Sepete ekle
+        if (!isOutOfStock) {
+          handleAddToCart();
+        }
+        break;
+      case 1: // Favori ekle/çıkar
+        handleToggleFavorite();
+        break;
+      case 2: // Paylaş
+        handleShare();
+        break;
+      case 3: // Detayları gör
+        router.push(`/product/${product.id}`);
+        break;
+    }
+  };
+
+  const contextMenuActions = [
+    {
+      title: isOutOfStock ? t("product_detail.out_of_stock") : t("product_card.add_to_cart"),
+      systemIcon: "cart",
+      disabled: isOutOfStock,
+      destructive: false,
+    },
+    {
+      title: isProductFavorite ? t("product_card.remove_from_favorites") : t("product_card.add_to_favorites"),
+      systemIcon: isProductFavorite ? "heart.fill" : "heart",
+      destructive: false,
+    },
+    {
+      title: t("product_card.share"),
+      systemIcon: "square.and.arrow.up",
+      destructive: false,
+    },
+    {
+      title: t("product_card.view_details"),
+      systemIcon: "info.circle",
+      destructive: false,
+    },
+  ];
+
   return (
     <Animated.View
       className={isHorizontal ? "mr-3" : "mb-3"}
@@ -75,28 +136,38 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
         { transform: [{ scale: scaleAnim }] }
       ]}
     >
-      <Link
-        href={{
-          pathname: "/product/[id]",
-          params: { id: product.id },
+      <ContextMenu
+        actions={contextMenuActions}
+        onPress={(e) => {
+          handleContextMenu(e.nativeEvent.index);
         }}
-        asChild
+        onPreviewPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        }}
+        previewBackgroundColor={colors.cardBackground}
       >
-        <TouchableOpacity
-          activeOpacity={1}
-          onPressIn={handlePressIn}
-          onPressOut={handlePressOut}
-          className="overflow-hidden rounded-3xl border"
-          style={{
-            backgroundColor: colors.cardBackground,
-            borderColor: colors.border,
-            shadowColor: colorScheme === "dark" ? "#000" : colors.tint,
-            shadowOffset: { width: 0, height: 6 },
-            shadowOpacity: colorScheme === "dark" ? 0.3 : 0.12,
-            shadowRadius: 12,
-            elevation: 6,
+        <Link
+          href={{
+            pathname: "/product/[id]",
+            params: { id: product.id },
           }}
+          asChild
         >
+          <TouchableOpacity
+            activeOpacity={1}
+            onPressIn={handlePressIn}
+            onPressOut={handlePressOut}
+            className="overflow-hidden rounded-3xl border"
+            style={{
+              backgroundColor: colors.cardBackground,
+              borderColor: colors.border,
+              shadowColor: colorScheme === "dark" ? "#000" : colors.tint,
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: colorScheme === "dark" ? 0.3 : 0.12,
+              shadowRadius: 12,
+              elevation: 6,
+            }}
+          >
 
           <ProductCardImage
             product={product}
@@ -127,6 +198,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
           </HapticIconButton>
         </TouchableOpacity>
       </Link>
+      </ContextMenu>
     </Animated.View>
   );
 });
