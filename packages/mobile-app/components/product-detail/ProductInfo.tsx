@@ -25,7 +25,6 @@ interface ProductInfoProps {
   onUpdateQuantity: (amount: number) => void;
 }
 
-// Memo optimized component
 export const ProductInfo = memo<ProductInfoProps>(function ProductInfo({
   product,
   quantity,
@@ -428,13 +427,5 @@ export const ProductInfo = memo<ProductInfoProps>(function ProductInfo({
         </View>
       </CustomBottomSheet>
     </ThemedView>
-  );
-}, (prevProps, nextProps) => {
-  // Optimize memo comparison - shallow comparison for props
-  return (
-    prevProps.product?.id === nextProps.product?.id &&
-    prevProps.product?.stock === nextProps.product?.stock &&
-    prevProps.product?.price === nextProps.product?.price &&
-    prevProps.quantity === nextProps.quantity
   );
 });

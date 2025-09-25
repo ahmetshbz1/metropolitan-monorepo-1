@@ -6,7 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React, { memo, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Dimensions, Share, View, InteractionManager } from "react-native";
+import { Dimensions, Share, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 
 import { HapticIconButton } from "@/components/HapticButton";
@@ -16,56 +16,46 @@ import { Product } from "@/context/ProductContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useHaptics } from "@/hooks/useHaptics";
 
-// Dimension'ları cache'le - her render'da hesaplanmasın
-const screenDimensions = Dimensions.get("window");
-const { width } = screenDimensions;
+// Dimension'ları static olarak al - hiç değişmeyecek
+const SCREEN_WIDTH = Dimensions.get("window").width;
+const IMAGE_HEIGHT = SCREEN_WIDTH * 0.8;
 
 interface ProductImageProps {
   product: Product | null;
 }
 
-// React.memo ile optimize edilmiş komponent
 export const ProductImage = memo(function ProductImage({ product }: ProductImageProps) {
   const { t } = useTranslation();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
   const { triggerHaptic } = useHaptics();
 
-  // Image boyutları cache'lensin
-  const imageDimensions = useMemo(() => ({
-    width: width,
-    height: width * 0.8,
-  }), []);
-
-  // Share işlemini optimize et - InteractionManager ile
+  // Share handler
   const handleShare = useCallback(async () => {
     if (!product) return;
 
-    // Ağır işlemi interaction sonrasına ertele
-    InteractionManager.runAfterInteractions(async () => {
-      try {
-        await Share.share({
-          message: `${product.name} - ${t("product_detail.share.check_out_this_product")}`,
-          title: product.name,
-        });
-        triggerHaptic();
-      } catch (error) {
-        console.error("Error sharing:", error);
-      }
-    });
+    try {
+      await Share.share({
+        message: `${product.name} - ${t("product_detail.share.check_out_this_product")}`,
+        title: product.name,
+      });
+      triggerHaptic();
+    } catch (error) {
+      console.error("Error sharing:", error);
+    }
   }, [product, t, triggerHaptic]);
 
   return (
     <Animated.View
       className="items-center justify-center bg-white p-5"
-      style={[imageDimensions]}
-      entering={FadeIn.duration(300)}
+      style={{ width: SCREEN_WIDTH, height: IMAGE_HEIGHT }}
+      entering={FadeIn.duration(200)}
     >
       <Image
         source={{ uri: product?.image }}
         style={{ width: "100%", height: "100%" }}
         contentFit="contain"
-        transition={400}
+        transition={300}
         placeholder="L6Pj42%M4nWBVZJr00%M_4RjO[M|"
         cachePolicy="memory-disk"
         priority="high"
@@ -96,12 +86,5 @@ export const ProductImage = memo(function ProductImage({ product }: ProductImage
         <Ionicons name="share-outline" size={22} color={colors.darkGray} />
       </HapticIconButton>
     </Animated.View>
-  );
-}, (prevProps, nextProps) => {
-  // Shallow comparison for memo optimization
-  return (
-    prevProps.product?.id === nextProps.product?.id &&
-    prevProps.product?.stock === nextProps.product?.stock &&
-    prevProps.product?.image === nextProps.product?.image
   );
 });

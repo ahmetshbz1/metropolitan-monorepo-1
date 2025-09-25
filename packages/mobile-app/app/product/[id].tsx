@@ -4,6 +4,9 @@
 
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ProductImage } from "@/components/product-detail/ProductImage";
+import { ProductInfo } from "@/components/product-detail/ProductInfo";
+import { PurchaseSection } from "@/components/product-detail/PurchaseSection";
+import { SimilarProducts } from "@/components/product-detail/SimilarProducts";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Colors from "@/constants/Colors";
@@ -11,22 +14,10 @@ import { useCart } from "@/context/CartContext";
 import { useProducts } from "@/context/ProductContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useLocalSearchParams, useNavigation } from "expo-router";
-import { useEffect, useLayoutEffect, useState, Suspense, lazy, startTransition, useMemo, useCallback } from "react";
+import { useEffect, useLayoutEffect, useState, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, Platform, View, InteractionManager } from "react-native";
+import { ActivityIndicator, Platform, View } from "react-native";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
-
-// Lazy load heavy components
-const ProductInfo = lazy(() => import("@/components/product-detail/ProductInfo").then(module => ({ default: module.ProductInfo })));
-const PurchaseSection = lazy(() => import("@/components/product-detail/PurchaseSection").then(module => ({ default: module.PurchaseSection })));
-const SimilarProducts = lazy(() => import("@/components/product-detail/SimilarProducts").then(module => ({ default: module.SimilarProducts })));
-
-// Loading component for Suspense
-const ComponentLoader = () => (
-  <ThemedView className="justify-center items-center p-4">
-    <ActivityIndicator size="small" />
-  </ThemedView>
-);
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -53,56 +44,40 @@ export default function ProductDetailScreen() {
     existingCartItem ? String(existingCartItem.quantity) : "1"
   );
 
-  // Optimize cart quantity updates with startTransition
+  // Update quantity when cart changes
   useEffect(() => {
     const currentCartItem = cartItems.find(
       (item) => item.product.id === product?.id
     );
-
-    // Use startTransition for non-urgent updates
-    startTransition(() => {
-      if (currentCartItem) {
-        setQuantity(String(currentCartItem.quantity));
-      } else {
-        setQuantity("1");
-      }
-    });
+    if (currentCartItem) {
+      setQuantity(String(currentCartItem.quantity));
+    } else {
+      setQuantity("1");
+    }
   }, [cartItems, product?.id]);
 
-  // Optimize quantity change handlers with useCallback
+  // Optimize quantity handlers
   const handleQuantityChange = useCallback((text: string) => {
-    startTransition(() => {
-      setQuantity(text.replace(/[^0-9]/g, ""));
-    });
+    setQuantity(text.replace(/[^0-9]/g, ""));
   }, []);
 
   const handleQuantityBlur = useCallback(() => {
     if (!product) return;
-
-    // Use InteractionManager for heavy computation
-    InteractionManager.runAfterInteractions(() => {
-      const num = parseInt(quantity, 10);
-      startTransition(() => {
-        if (isNaN(num) || num < 1) {
-          setQuantity("1");
-        } else if (num > product.stock) {
-          setQuantity(String(product.stock));
-        }
-      });
-    });
+    const num = parseInt(quantity, 10);
+    if (isNaN(num) || num < 1) {
+      setQuantity("1");
+    } else if (num > product.stock) {
+      setQuantity(String(product.stock));
+    }
   }, [product, quantity]);
 
   const updateQuantity = useCallback((amount: number) => {
     if (!product) return;
-
     const currentQuantity = parseInt(quantity, 10) || 0;
     const newQuantity = currentQuantity + amount;
-
-    startTransition(() => {
-      if (newQuantity >= 1 && newQuantity <= product.stock) {
-        setQuantity(String(newQuantity));
-      }
-    });
+    if (newQuantity >= 1 && newQuantity <= product.stock) {
+      setQuantity(String(newQuantity));
+    }
   }, [product, quantity]);
 
   // İlk render'da geri buton başlığını temizle - güçlendirilmiş versiyon
@@ -158,35 +133,26 @@ export default function ProductDetailScreen() {
             light: "#ffffff",
           }}
         >
-          {/* Suspense boundary for ProductInfo - ağır komponent */}
-          <Suspense fallback={<ComponentLoader />}>
-            <ProductInfo
-              product={product}
-              quantity={quantity}
-              onQuantityChange={handleQuantityChange}
-              onQuantityBlur={handleQuantityBlur}
-              onUpdateQuantity={updateQuantity}
-            />
-          </Suspense>
+          <ProductInfo
+            product={product}
+            quantity={quantity}
+            onQuantityChange={handleQuantityChange}
+            onQuantityBlur={handleQuantityBlur}
+            onUpdateQuantity={updateQuantity}
+          />
 
-          {/* Suspense boundary for SimilarProducts - API heavy */}
-          <Suspense fallback={<ComponentLoader />}>
-            {product && <SimilarProducts currentProduct={product} />}
-          </Suspense>
+          {product && <SimilarProducts currentProduct={product} />}
         </ParallaxScrollView>
 
-        {/* Suspense boundary for PurchaseSection */}
-        <Suspense fallback={<ComponentLoader />}>
-          {product && (
-            <PurchaseSection
-              product={product}
-              quantity={quantity}
-              onQuantityChange={handleQuantityChange}
-              onQuantityBlur={handleQuantityBlur}
-              onUpdateQuantity={updateQuantity}
-            />
-          )}
-        </Suspense>
+        {product && (
+          <PurchaseSection
+            product={product}
+            quantity={quantity}
+            onQuantityChange={handleQuantityChange}
+            onQuantityBlur={handleQuantityBlur}
+            onUpdateQuantity={updateQuantity}
+          />
+        )}
       </KeyboardStickyView>
     </ThemedView>
   );

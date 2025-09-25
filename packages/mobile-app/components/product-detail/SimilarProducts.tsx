@@ -3,7 +3,7 @@
 //  Created by Ahmet on 22.09.2025.
 
 import React, { memo, useMemo, useCallback } from "react";
-import { View, FlatList, Text, TouchableOpacity, InteractionManager } from "react-native";
+import { View, FlatList, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useProducts } from "@/context/ProductContext";
 import { ProductCard } from "@/components/products/ProductCard";
@@ -51,16 +51,13 @@ export const SimilarProducts = memo<SimilarProductsProps>(function SimilarProduc
 
   // Navigation işlemini optimize et
   const handleViewAll = useCallback(() => {
-    // Navigation'ı interaction sonrasına ertele
-    InteractionManager.runAfterInteractions(() => {
-      router.push({
-        pathname: "/similar-products",
-        params: {
-          productId: currentProduct.id,
-          category: currentProduct.category,
-          brand: currentProduct.brand
-        }
-      });
+    router.push({
+      pathname: "/similar-products",
+      params: {
+        productId: currentProduct.id,
+        category: currentProduct.category,
+        brand: currentProduct.brand
+      }
     });
   }, [router, currentProduct.id, currentProduct.category, currentProduct.brand]);
 

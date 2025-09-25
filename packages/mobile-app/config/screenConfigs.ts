@@ -52,6 +52,9 @@ export const DYNAMIC_SCREEN_CONFIGS: ScreenConfig[] = [
       headerBackTitle: "",
       headerBackTitleVisible: false,
       headerBackButtonDisplayMode: "minimal" as const,
+      // Performance optimization
+      presentation: Platform.OS === "ios" ? "card" : "transparentModal" as const,
+      animation: "slide_from_right" as const,
       // iOS-specific ek ayarlar
       ...Platform.select({
         ios: {
