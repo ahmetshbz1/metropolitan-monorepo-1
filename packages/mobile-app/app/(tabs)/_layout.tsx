@@ -3,8 +3,7 @@
 //  Created by Ahmet on 04.07.2025.
 
 import { useContext, useMemo, useLayoutEffect } from "react";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
+import { useNavigation, useRoute, getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 
 import { useTabScreenOptions } from "@/components/tabs/TabScreenOptions";
@@ -19,7 +18,7 @@ export default function TabLayout() {
   const cartItemCount = cartItems.length;
   const navigation = useNavigation();
   const route = useRoute();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const {
     scrollToTop,
@@ -66,8 +65,9 @@ export default function TabLayout() {
 
     navigation.setOptions({
       title: title,
+      headerBackTitle: title,
     });
-  }, [navigation, route, t]);
+  }, [navigation, route, t, i18n.language]);
 
   return (
     <ProductsSearchProvider>
@@ -77,6 +77,7 @@ export default function TabLayout() {
         unregisterScrollHandler={unregisterScrollHandler}
       >
         <TabScreens
+          key={i18n.language}
           cartItemCount={cartItemCount}
           handleClearCart={handleClearCart}
           handleNotification={handleNotification}

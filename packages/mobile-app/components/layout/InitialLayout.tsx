@@ -7,6 +7,7 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
 import { View } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { NavigationStack } from "./NavigationStack";
 
@@ -15,6 +16,7 @@ export const InitialLayout: React.FC = () => {
     // ... add your fonts here
   });
   const colorScheme = useColorScheme();
+  const { i18n } = useTranslation();
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
@@ -37,7 +39,7 @@ export const InitialLayout: React.FC = () => {
       className={colorScheme === "dark" ? "flex-1 dark vars" : "flex-1 vars"}
       style={{ flex: 1 }}
     >
-      <NavigationStack />
+      <NavigationStack key={i18n.language} />
     </View>
   );
 };
