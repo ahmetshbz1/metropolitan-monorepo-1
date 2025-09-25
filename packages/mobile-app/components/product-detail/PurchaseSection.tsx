@@ -3,9 +3,9 @@
 //  Created by Ahmet on 13.06.2025.
 
 import { useRouter } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, memo, useCallback, startTransition } from "react";
 import { useTranslation } from "react-i18next";
-import { Text } from "react-native";
+import { Text, InteractionManager } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BaseButton } from "@/components/base/BaseButton";
@@ -26,13 +26,14 @@ interface PurchaseSectionProps {
   onUpdateQuantity: (amount: number) => void;
 }
 
-export function PurchaseSection({
+// Memo optimized component
+export const PurchaseSection = memo<PurchaseSectionProps>(function PurchaseSection({
   product,
   quantity,
   onQuantityChange,
   onQuantityBlur,
   onUpdateQuantity,
-}: PurchaseSectionProps) {
+}) {
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
@@ -58,8 +59,11 @@ export function PurchaseSection({
     };
   }, []);
 
-  const handleAddToCart = async () => {
-    setIsLoading(true);
+  // Optimize addToCart with useCallback and InteractionManager
+  const handleAddToCart = useCallback(async () => {
+    startTransition(() => {
+      setIsLoading(true);
+    });
 
     try {
       const numQuantity = parseInt(quantity, 10) || 1;
@@ -77,46 +81,52 @@ export function PurchaseSection({
         throw new Error("Stock limit exceeded");
       }
 
-      await addToCart(product.id, numQuantity);
+      // Move heavy cart operation to after interactions
+      await InteractionManager.runAfterInteractions(async () => {
+        await addToCart(product.id, numQuantity);
 
-      // Başarılı ekleme/güncelleme sonrası hafif titreşim
-      triggerHaptic(true);
+        // Başarılı ekleme/güncelleme sonrası hafif titreşim
+        triggerHaptic(true);
 
-      if (!cartItem) {
-        // Yeni ekleme ise geçici olarak "Sepete Eklendi" göster
-        setIsAdded(true);
+        if (!cartItem) {
+          // Use startTransition for UI state updates
+          startTransition(() => {
+            setIsAdded(true);
 
-        // Önceki timeout'u temizle
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
+            // Önceki timeout'u temizle
+            if (timeoutRef.current) {
+              clearTimeout(timeoutRef.current);
+            }
+
+            // Yeni timeout oluştur
+            timeoutRef.current = setTimeout(() => {
+              startTransition(() => {
+                setIsAdded(false);
+                timeoutRef.current = null;
+              });
+            }, 2000);
+          });
         }
-
-        // Yeni timeout oluştur
-        timeoutRef.current = setTimeout(() => {
-          setIsAdded(false);
-          timeoutRef.current = null;
-        }, 2000);
-      }
+      });
     } catch (error) {
       console.error("Sepete ekleme hatası:", error);
       const structuredError = error as StructuredError;
 
       // useCartState'ten gelen structured error'ı handle et
       if (structuredError.key) {
-        // Structured error message'ı direkt kullan (zaten çevrilmiş)
         showToast(structuredError.message, "error");
       } else if (structuredError.code === "AUTH_REQUIRED") {
-        // Auth error'ı handle et
         showToast(structuredError.message, "warning");
       } else {
-        // Generic error
         showToast(t("product_detail.purchase.generic_error_message"), "error");
       }
       throw error;
     } finally {
-      setIsLoading(false);
+      startTransition(() => {
+        setIsLoading(false);
+      });
     }
-  };
+  }, [quantity, cartItems, product.id, product.stock, addToCart, triggerHaptic, showToast, t]);
 
 
 
@@ -182,4 +192,11 @@ export function PurchaseSection({
       )}
     </ThemedView>
   );
-}
+}, (prevProps, nextProps) => {
+  // Optimize memo comparison
+  return (
+    prevProps.product.id === nextProps.product.id &&
+    prevProps.product.stock === nextProps.product.stock &&
+    prevProps.quantity === nextProps.quantity
+  );
+});

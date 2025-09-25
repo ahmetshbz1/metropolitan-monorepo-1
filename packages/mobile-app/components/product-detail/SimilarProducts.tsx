@@ -2,8 +2,8 @@
 //  metropolitan app
 //  Created by Ahmet on 22.09.2025.
 
-import React, { useMemo } from "react";
-import { View, FlatList, Text, TouchableOpacity } from "react-native";
+import React, { memo, useMemo, useCallback } from "react";
+import { View, FlatList, Text, TouchableOpacity, InteractionManager } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useProducts } from "@/context/ProductContext";
 import { ProductCard } from "@/components/products/ProductCard";
@@ -16,14 +16,18 @@ interface SimilarProductsProps {
   currentProduct: Product;
 }
 
-export const SimilarProducts: React.FC<SimilarProductsProps> = ({
+// Memo optimized component
+export const SimilarProducts = memo<SimilarProductsProps>(function SimilarProducts({
   currentProduct,
-}) => {
+}) {
   const { products } = useProducts();
   const { t } = useTranslation();
   const router = useRouter();
 
+  // Benzer ürünleri daha akıllıca filtreleme - multiple dependency memoization
   const similarProducts = useMemo(() => {
+    if (!products?.length || !currentProduct) return [];
+
     return products
       .filter(
         (p) =>
@@ -32,16 +36,33 @@ export const SimilarProducts: React.FC<SimilarProductsProps> = ({
           (p.category === currentProduct.category ||
             p.brand === currentProduct.brand)
       )
-      .slice(0, 6); // Gerçekten benzer ürünleri göster
-  }, [products, currentProduct]);
+      .slice(0, 6); // İlk 6 ürün
+  }, [products, currentProduct.id, currentProduct.category, currentProduct.brand]);
 
+  // Early return optimization
   if (similarProducts.length === 0) {
     return null;
   }
 
-  const renderItem = ({ item }: { item: Product }) => (
+  // Render function'ı cache'le
+  const renderItem = useCallback(({ item }: { item: Product }) => (
     <ProductCard product={item} />
-  );
+  ), []);
+
+  // Navigation işlemini optimize et
+  const handleViewAll = useCallback(() => {
+    // Navigation'ı interaction sonrasına ertele
+    InteractionManager.runAfterInteractions(() => {
+      router.push({
+        pathname: "/similar-products",
+        params: {
+          productId: currentProduct.id,
+          category: currentProduct.category,
+          brand: currentProduct.brand
+        }
+      });
+    });
+  }, [router, currentProduct.id, currentProduct.category, currentProduct.brand]);
 
   return (
     <View className="mt-0 mb-4">
@@ -50,16 +71,7 @@ export const SimilarProducts: React.FC<SimilarProductsProps> = ({
           {t("product_detail.similar_products", "Benzer Ürünler")}
         </ThemedText>
         <TouchableOpacity
-          onPress={() => {
-            router.push({
-              pathname: "/similar-products",
-              params: {
-                productId: currentProduct.id,
-                category: currentProduct.category,
-                brand: currentProduct.brand
-              }
-            });
-          }}
+          onPress={handleViewAll}
           className="flex-row items-center"
         >
           <ThemedText className="text-sm font-medium mr-1" style={{ color: "#9E9E9E" }}>
@@ -81,7 +93,19 @@ export const SimilarProducts: React.FC<SimilarProductsProps> = ({
         columnWrapperStyle={{
           gap: 8,
         }}
+        // Performance optimizations
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={6}
+        updateCellsBatchingPeriod={50}
+        initialNumToRender={6}
       />
     </View>
   );
-};
+}, (prevProps, nextProps) => {
+  // Optimize memo comparison
+  return (
+    prevProps.currentProduct.id === nextProps.currentProduct.id &&
+    prevProps.currentProduct.category === nextProps.currentProduct.category &&
+    prevProps.currentProduct.brand === nextProps.currentProduct.brand
+  );
+});

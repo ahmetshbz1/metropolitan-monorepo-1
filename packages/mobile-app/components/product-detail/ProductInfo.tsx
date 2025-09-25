@@ -3,7 +3,7 @@
 //  Created by Ahmet on 15.06.2025.
 
 import { Ionicons } from "@expo/vector-icons";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, memo, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { TextInput, View, TouchableOpacity, ScrollView } from "react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
@@ -25,22 +25,24 @@ interface ProductInfoProps {
   onUpdateQuantity: (amount: number) => void;
 }
 
-export function ProductInfo({
+// Memo optimized component
+export const ProductInfo = memo<ProductInfoProps>(function ProductInfo({
   product,
   quantity,
   onQuantityChange,
   onQuantityBlur,
   onUpdateQuantity,
-}: ProductInfoProps) {
+}) {
   const { t } = useTranslation();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
-  const numericQuantity = parseInt(quantity, 10) || 0;
+  // Memoize numeric quantity calculation
+  const numericQuantity = useMemo(() => parseInt(quantity, 10) || 0, [quantity]);
 
   if (!product) {
-    return null; // or a loading indicator
+    return null;
   }
 
   return (
@@ -427,4 +429,12 @@ export function ProductInfo({
       </CustomBottomSheet>
     </ThemedView>
   );
-}
+}, (prevProps, nextProps) => {
+  // Optimize memo comparison - shallow comparison for props
+  return (
+    prevProps.product?.id === nextProps.product?.id &&
+    prevProps.product?.stock === nextProps.product?.stock &&
+    prevProps.product?.price === nextProps.product?.price &&
+    prevProps.quantity === nextProps.quantity
+  );
+});

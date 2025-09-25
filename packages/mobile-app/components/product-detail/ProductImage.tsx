@@ -4,9 +4,9 @@
 
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import React from "react";
+import React, { memo, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Dimensions, Share, View } from "react-native";
+import { Dimensions, Share, View, InteractionManager } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 
 import { HapticIconButton } from "@/components/HapticButton";
@@ -16,20 +16,33 @@ import { Product } from "@/context/ProductContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useHaptics } from "@/hooks/useHaptics";
 
-const { width } = Dimensions.get("window");
+// Dimension'ları cache'le - her render'da hesaplanmasın
+const screenDimensions = Dimensions.get("window");
+const { width } = screenDimensions;
 
 interface ProductImageProps {
   product: Product | null;
 }
 
-export function ProductImage({ product }: ProductImageProps) {
+// React.memo ile optimize edilmiş komponent
+export const ProductImage = memo(function ProductImage({ product }: ProductImageProps) {
   const { t } = useTranslation();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
   const { triggerHaptic } = useHaptics();
 
-  const handleShare = async () => {
-    if (product) {
+  // Image boyutları cache'lensin
+  const imageDimensions = useMemo(() => ({
+    width: width,
+    height: width * 0.8,
+  }), []);
+
+  // Share işlemini optimize et - InteractionManager ile
+  const handleShare = useCallback(async () => {
+    if (!product) return;
+
+    // Ağır işlemi interaction sonrasına ertele
+    InteractionManager.runAfterInteractions(async () => {
       try {
         await Share.share({
           message: `${product.name} - ${t("product_detail.share.check_out_this_product")}`,
@@ -39,16 +52,13 @@ export function ProductImage({ product }: ProductImageProps) {
       } catch (error) {
         console.error("Error sharing:", error);
       }
-    }
-  };
+    });
+  }, [product, t, triggerHaptic]);
 
   return (
     <Animated.View
       className="items-center justify-center bg-white p-5"
-      style={{
-        width: width,
-        height: width * 0.8,
-      }}
+      style={[imageDimensions]}
       entering={FadeIn.duration(300)}
     >
       <Image
@@ -56,6 +66,9 @@ export function ProductImage({ product }: ProductImageProps) {
         style={{ width: "100%", height: "100%" }}
         contentFit="contain"
         transition={400}
+        placeholder="L6Pj42%M4nWBVZJr00%M_4RjO[M|"
+        cachePolicy="memory-disk"
+        priority="high"
       />
       {product && product.stock <= 5 && (
         <View
@@ -84,4 +97,11 @@ export function ProductImage({ product }: ProductImageProps) {
       </HapticIconButton>
     </Animated.View>
   );
-}
+}, (prevProps, nextProps) => {
+  // Shallow comparison for memo optimization
+  return (
+    prevProps.product?.id === nextProps.product?.id &&
+    prevProps.product?.stock === nextProps.product?.stock &&
+    prevProps.product?.image === nextProps.product?.image
+  );
+});
