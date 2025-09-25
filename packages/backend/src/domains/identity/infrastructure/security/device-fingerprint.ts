@@ -215,17 +215,42 @@ export async function updateSessionActivity(
  * Invalidate all user sessions (for security events)
  */
 export async function invalidateAllUserSessions(userId: string): Promise<void> {
-  // Find all device sessions for user
-  const pattern = `device_session:${userId}:*`;
-  const keys = await redis.keys(pattern);
+  const keysToDelete: string[] = [];
 
-  if (keys.length > 0) {
-    // Delete all sessions
-    await redis.del(...(keys as string[]));
+  // 1. Find all device sessions
+  const devicePattern = `device_session:${userId}:*`;
+  const deviceKeys = await redis.keys(devicePattern);
+  keysToDelete.push(...(deviceKeys as string[]));
+
+  // 2. Find all refresh tokens
+  const refreshPattern = `refresh_token:${userId}:*`;
+  const refreshKeys = await redis.keys(refreshPattern);
+  keysToDelete.push(...(refreshKeys as string[]));
+
+  // 3. Find all session lookups - scan ALL and filter
+  const sessionPattern = `session:*`;
+  const allSessionKeys = await redis.keys(sessionPattern);
+
+  for (const sessionKey of allSessionKeys as string[]) {
+    try {
+      const sessionData = await redis.get(sessionKey);
+      if (sessionData) {
+        const data = JSON.parse(sessionData as string);
+        if (data.userId === userId) {
+          keysToDelete.push(sessionKey);
+        }
+      }
+    } catch (error) {
+      // Session corrupted, delete it anyway to be safe
+      keysToDelete.push(sessionKey);
+    }
   }
 
-  // Log security event
-  console.warn(`[SECURITY] All sessions invalidated for user: ${userId}`);
+  // Delete all keys at once
+  if (keysToDelete.length > 0) {
+    await redis.del(...keysToDelete);
+    console.warn(`[SECURITY] All sessions invalidated for user: ${userId} (${keysToDelete.length} keys deleted)`);
+  }
 }
 
 /**
