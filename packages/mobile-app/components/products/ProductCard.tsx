@@ -5,11 +5,10 @@
 import { ThemedText } from "@/components/ThemedText";
 import { Product } from "@/context/ProductContext";
 import { useProductCard } from "@/hooks/useProductCard";
-import { useHaptics } from "@/hooks/useHaptics";
 import { Ionicons } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
-import React, { useRef } from "react";
-import { TouchableOpacity, View, Animated, Share, Alert } from "react-native";
+import React from "react";
+import { TouchableOpacity, View, Share } from "react-native";
 import { useTranslation } from "react-i18next";
 import ContextMenu from "react-native-context-menu-view";
 import * as Haptics from "expo-haptics";
@@ -46,31 +45,10 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
     handleAddToCart,
     handleToggleFavorite,
   } = useProductCard(product);
-  const { triggerHaptic } = useHaptics();
   const { t } = useTranslation();
   const router = useRouter();
-  const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const isHorizontal = variant === "horizontal";
-
-  const handlePressIn = () => {
-    triggerHaptic();
-    Animated.spring(scaleAnim, {
-      toValue: 0.95,
-      useNativeDriver: true,
-      speed: 20,
-      bounciness: 0,
-    }).start();
-  };
-
-  const handlePressOut = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-      speed: 20,
-      bounciness: 0,
-    }).start();
-  };
 
   // Context menu handlers
   const handleShare = async () => {
@@ -129,12 +107,9 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
   ];
 
   return (
-    <Animated.View
+    <View
       className={isHorizontal ? "mr-3" : "mb-3"}
-      style={[
-        isHorizontal ? { width: 180 } : { flex: 1/3 },
-        { transform: [{ scale: scaleAnim }] }
-      ]}
+      style={isHorizontal ? { width: 180 } : { flex: 1/3 }}
     >
       <ContextMenu
         actions={contextMenuActions}
@@ -154,9 +129,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
           asChild
         >
           <TouchableOpacity
-            activeOpacity={1}
-            onPressIn={handlePressIn}
-            onPressOut={handlePressOut}
+            activeOpacity={0.85}
             className="overflow-hidden rounded-3xl border"
             style={{
               backgroundColor: colors.cardBackground,
@@ -199,6 +172,6 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
         </TouchableOpacity>
       </Link>
       </ContextMenu>
-    </Animated.View>
+    </View>
   );
 });

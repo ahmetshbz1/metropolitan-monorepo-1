@@ -107,7 +107,16 @@ function ProductSectionComponent({ title, products }: ProductSectionProps) {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingHorizontal: 6 }}
         onScroll={handleScroll}
-        scrollEventThrottle={16}
+        scrollEventThrottle={32}
+        decelerationRate="fast"
+        snapToInterval={183}
+        snapToAlignment="start"
+        pagingEnabled={false}
+        removeClippedSubviews={true}
+        initialNumToRender={3}
+        maxToRenderPerBatch={3}
+        updateCellsBatchingPeriod={50}
+        windowSize={5}
       />
     </View>
   );
