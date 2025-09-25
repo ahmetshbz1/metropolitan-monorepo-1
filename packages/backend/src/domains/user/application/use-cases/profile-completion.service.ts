@@ -12,11 +12,22 @@ import { AddressManagementService } from "./address-management.service";
 import { CompanyManagementService } from "./company-management.service";
 import { NipVerificationService } from "./nip-verification.service";
 import { UserProfileOperationsService } from "./user-profile-operations.service";
+import {
+  generateDeviceFingerprint,
+  generateSessionId,
+  generateJTI,
+  extractDeviceInfo,
+  storeDeviceSession,
+  storeRefreshToken,
+} from "../../../identity/infrastructure/security/device-fingerprint";
 
 interface ProfileCompletionResponse {
   success: boolean;
   message: string;
-  token?: string;
+  token?: string; // Backward compatibility
+  accessToken?: string;
+  refreshToken?: string;
+  expiresIn?: number;
 }
 
 /**
@@ -64,7 +75,8 @@ export class ProfileCompletionService {
   static async completeProfile(
     phoneNumber: string,
     profileData: CompleteProfileRequest,
-    jwt: any
+    jwt: any,
+    headers?: any
   ): Promise<ProfileCompletionResponse> {
     // 1. Validate terms and privacy policy acceptance
     UserProfileOperationsService.validateTermsAcceptance(profileData.termsAccepted);
@@ -119,16 +131,73 @@ export class ProfileCompletionService {
       );
     }
 
-    // 5. Generate login token
-    const token = await jwt.sign({
-      userId: updatedUser.id,
-      exp: Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60, // 7 days
+    // 5. Generate enhanced tokens with device fingerprinting
+    let deviceInfo = {};
+    let deviceId = "unknown";
+    let sessionId = generateSessionId();
+    let ipAddress = "unknown";
+
+    if (headers) {
+      deviceInfo = extractDeviceInfo(headers);
+      deviceId = generateDeviceFingerprint(deviceInfo, headers);
+      ipAddress = headers["x-forwarded-for"] || headers["x-real-ip"] || "unknown";
+    }
+
+    const accessJTI = generateJTI();
+    const refreshJTI = generateJTI();
+
+    // Access token (15 minutes)
+    const accessTokenPayload = {
+      sub: updatedUser.id,
+      type: "access",
+      sessionId,
+      deviceId,
+      jti: accessJTI,
+      aud: "mobile-app",
+      iss: "metropolitan-api",
+      exp: Math.floor(Date.now() / 1000) + 15 * 60, // 15 minutes
+    };
+
+    console.log("Creating access token with payload:", { userId: updatedUser.id, type: "access" });
+    const accessToken = await jwt.sign(accessTokenPayload);
+
+    // Refresh token (30 days)
+    const refreshToken = await jwt.sign({
+      sub: updatedUser.id,
+      type: "refresh",
+      sessionId,
+      deviceId,
+      jti: refreshJTI,
+      aud: "mobile-app",
+      iss: "metropolitan-api",
+      exp: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60, // 30 days
     });
+
+    // Store device session and refresh token in Redis
+    if (headers) {
+      await storeDeviceSession(
+        updatedUser.id,
+        deviceId,
+        sessionId,
+        deviceInfo,
+        ipAddress
+      );
+      await storeRefreshToken(
+        updatedUser.id,
+        refreshToken,
+        deviceId,
+        sessionId,
+        refreshJTI
+      );
+    }
 
     return {
       success: true,
       message: "Profil başarıyla tamamlandı.",
-      token,
+      token: accessToken, // Backward compatibility
+      accessToken,
+      refreshToken,
+      expiresIn: 900, // 15 minutes in seconds
     };
   }
 

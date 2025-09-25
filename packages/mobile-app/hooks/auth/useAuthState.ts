@@ -8,7 +8,9 @@ import { loadAuthState } from "@/context/auth/storage";
 
 export interface AuthState {
   user: User | null;
-  token: string | null;
+  token: string | null; // For backward compatibility
+  accessToken: string | null;
+  refreshToken: string | null;
   registrationToken: string | null;
   isGuest: boolean;
   guestId: string | null;
@@ -19,6 +21,8 @@ export interface AuthState {
 export const useAuthState = () => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [registrationToken, setRegistrationToken] = useState<string | null>(null);
   const [isGuest, setIsGuest] = useState<boolean>(false);
   const [guestId, setGuestId] = useState<string | null>(null);
@@ -35,6 +39,7 @@ export const useAuthState = () => {
 
         if (authState.token) {
           setToken(authState.token);
+          setAccessToken(authState.token); // Use same token for access token
         }
 
         if (authState.user) {
@@ -66,6 +71,8 @@ export const useAuthState = () => {
     // State
     user,
     token,
+    accessToken,
+    refreshToken,
     registrationToken,
     isGuest,
     guestId,
@@ -74,6 +81,8 @@ export const useAuthState = () => {
     // State setters
     setUser,
     setToken,
+    setAccessToken,
+    setRefreshToken,
     setRegistrationToken,
     setIsGuest,
     setGuestId,

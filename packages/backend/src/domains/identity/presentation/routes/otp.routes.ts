@@ -3,12 +3,29 @@
 // OTP operations routes (send and verify)
 
 import { logger } from "@bogeychan/elysia-logger";
-import { and, eq, isNotNull } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { t } from "elysia";
 
 import { users } from "../../../../shared/infrastructure/database/schema";
+import {
+  createRateLimiter,
+  rateLimitConfigs,
+} from "../../../../shared/infrastructure/middleware/rate-limit";
 import { createApp } from "../../../../shared/infrastructure/web/app";
-import { createOtp, verifyOtp, createRegistrationOtp, verifyRegistrationOtp, createLoginOtp, verifyLoginOtp } from "../../application/use-cases/otp.service";
+import {
+  createLoginOtp,
+  createRegistrationOtp,
+  verifyLoginOtp,
+  verifyRegistrationOtp,
+} from "../../application/use-cases/otp.service";
+import {
+  extractDeviceInfo,
+  generateDeviceFingerprint,
+  generateJTI,
+  generateSessionId,
+  storeDeviceSession,
+  storeRefreshToken,
+} from "../../infrastructure/security/device-fingerprint";
 import { getLanguageFromHeader } from "../../infrastructure/templates/sms-templates";
 
 import { phoneNumberSchema, userTypeEnum } from "./auth-guards";
@@ -17,12 +34,13 @@ export const otpRoutes = createApp()
   .use(logger({ level: "info" }))
   .group("/auth", (app) =>
     app
-      // Send OTP endpoint
+      // Send OTP endpoint with rate limiting
+      .use(createRateLimiter(rateLimitConfigs.otpSend))
       .post(
         "/send-otp",
         async ({ body, headers, log, db }) => {
           // Get user's preferred language from Accept-Language header
-          const language = getLanguageFromHeader(headers['accept-language']);
+          const language = getLanguageFromHeader(headers["accept-language"]);
 
           // Check if this is a new registration or login
           const existingUser = await db.query.users.findFirst({
@@ -46,8 +64,8 @@ export const otpRoutes = createApp()
             {
               phoneNumber: body.phoneNumber,
               userType: body.userType,
-              action: isNewUser ? 'register' : 'login',
-              language
+              action: isNewUser ? "register" : "login",
+              language,
             },
             `OTP sent successfully`
           );
@@ -55,7 +73,7 @@ export const otpRoutes = createApp()
           return {
             success: true,
             message: "OTP sent successfully",
-            isNewUser // Frontend may need this info
+            isNewUser, // Frontend may need this info
           };
         },
         {
@@ -65,11 +83,12 @@ export const otpRoutes = createApp()
           }),
         }
       )
-      
-      // Verify OTP endpoint
+
+      // Verify OTP endpoint with rate limiting
+      .use(createRateLimiter(rateLimitConfigs.otpVerify))
       .post(
         "/verify-otp",
-        async ({ body, jwt, log, db }) => {
+        async ({ body, headers, jwt, log, db }) => {
           log.info(
             { phoneNumber: body.phoneNumber, userType: body.userType },
             `Attempting to verify OTP`
@@ -137,14 +156,73 @@ export const otpRoutes = createApp()
               };
             }
 
+            // Extract device info for fingerprinting
+            const deviceInfo = extractDeviceInfo(headers);
+            const deviceId = generateDeviceFingerprint(deviceInfo, headers);
+            const sessionId = generateSessionId();
+            const ipAddress =
+              headers["x-forwarded-for"] || headers["x-real-ip"];
+
             // Check if profile is complete
             if (user.firstName) {
-              // Profile complete, issue full login token
-              const token = await jwt.sign({
-                userId: user.id,
-                exp: Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60, // 7 days
+              // Profile complete, issue enhanced tokens
+              const accessJTI = generateJTI();
+              const refreshJTI = generateJTI();
+
+              // Access token (15 minutes)
+              const accessToken = await jwt.sign({
+                sub: user.id,
+                type: "access",
+                sessionId,
+                deviceId,
+                jti: accessJTI,
+                aud: "mobile-app",
+                iss: "metropolitan-api",
+                exp: Math.floor(Date.now() / 1000) + 15 * 60, // 15 minutes
               });
-              return { success: true, message: "Login successful.", token };
+
+              // Refresh token (30 days)
+              const refreshToken = await jwt.sign({
+                sub: user.id,
+                type: "refresh",
+                sessionId,
+                deviceId,
+                jti: refreshJTI,
+                aud: "mobile-app",
+                iss: "metropolitan-api",
+                exp: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60, // 30 days
+              });
+
+              // Store device session and refresh token
+              await storeDeviceSession(
+                user.id,
+                deviceId,
+                sessionId,
+                deviceInfo,
+                ipAddress
+              );
+              await storeRefreshToken(
+                user.id,
+                refreshToken,
+                deviceId,
+                sessionId,
+                refreshJTI
+              );
+
+              log.info({
+                userId: user.id,
+                deviceId,
+                sessionId,
+                message: "Login successful with enhanced security",
+              });
+
+              return {
+                success: true,
+                message: "Login successful.",
+                accessToken,
+                refreshToken,
+                expiresIn: 900, // 15 minutes in seconds
+              };
             }
 
             // Profile incomplete, issue registration token
@@ -161,7 +239,7 @@ export const otpRoutes = createApp()
               registrationToken,
             };
           }
-          
+
           return { success: false, message: "Invalid or expired OTP code." };
         },
         {

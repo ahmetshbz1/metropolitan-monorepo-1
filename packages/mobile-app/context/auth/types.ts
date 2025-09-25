@@ -17,7 +17,9 @@ export interface MobileUser extends User {
 
 export type AuthContextType = {
   user: MobileUser | null;
-  token: string | null;
+  token: string | null; // Access token for backward compatibility
+  accessToken: string | null;
+  refreshToken: string | null;
   registrationToken: string | null;
   isGuest: boolean;
   guestId: string | null;

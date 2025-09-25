@@ -30,6 +30,8 @@ export const verifyOTP = async (
   message: string;
   isNewUser: boolean;
   token?: string;
+  accessToken?: string;
+  refreshToken?: string;
   registrationToken?: string;
 }> => {
   try {
@@ -41,13 +43,15 @@ export const verifyOTP = async (
     const data = response.data;
 
     if (data.success) {
-      // Mevcut kullanıcı - final auth token döner
-      if (data.token) {
+      // Mevcut kullanıcı - auth tokens döner
+      if (data.accessToken || data.token) {
         return {
           success: true,
           message: data.message,
           isNewUser: false,
-          token: data.token,
+          token: data.token || data.accessToken, // Backward compatibility
+          accessToken: data.accessToken,
+          refreshToken: data.refreshToken,
         };
       }
       // Yeni kullanıcı - geçici registration token döner

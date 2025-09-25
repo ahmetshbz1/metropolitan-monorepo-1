@@ -75,14 +75,25 @@ export const securityHeaders = () => new Elysia({ name: 'securityHeaders' }).onB
     if (envConfig.NODE_ENV === 'production') {
       set.headers['Content-Security-Policy'] =
         "default-src 'self'; " +
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; " +
+        "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; " +
         "style-src 'self' 'unsafe-inline'; " +
         "img-src 'self' data: https:; " +
         "font-src 'self' data:; " +
-        "connect-src 'self' https://api.stripe.com https://*.sentry.io; " +
-        "frame-ancestors 'none';";
+        "connect-src 'self' https://api.stripe.com https://*.sentry.io wss:; " +
+        "frame-ancestors 'none'; " +
+        "object-src 'none'; " +
+        "media-src 'self'; " +
+        "frame-src 'none';";
 
-      // Strict Transport Security
-      set.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains; preload';
+      // Strict Transport Security (2 years + subdomains + preload)
+      set.headers['Strict-Transport-Security'] = 'max-age=63072000; includeSubDomains; preload';
+
+      // Permissions Policy (disable unnecessary features)
+      set.headers['Permissions-Policy'] =
+        'geolocation=(), microphone=(), camera=(), payment=(self), usb=()';
     }
+
+    // Additional security headers for all environments
+    set.headers['X-Download-Options'] = 'noopen';
+    set.headers['X-Permitted-Cross-Domain-Policies'] = 'none';
 });

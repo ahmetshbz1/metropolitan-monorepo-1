@@ -17,6 +17,8 @@ export const useAuthHook = () => {
   const {
     user,
     token,
+    accessToken,
+    refreshToken,
     registrationToken,
     isGuest,
     guestId,
@@ -24,6 +26,8 @@ export const useAuthHook = () => {
     loading,
     setUser,
     setToken,
+    setAccessToken,
+    setRefreshToken,
     setRegistrationToken,
     setIsGuest,
     setGuestId,
@@ -48,6 +52,8 @@ export const useAuthHook = () => {
     phoneNumber,
     setUser,
     setToken,
+    setAccessToken,
+    setRefreshToken,
     setRegistrationToken,
     setIsGuest,
     setGuestId,
@@ -59,12 +65,14 @@ export const useAuthHook = () => {
     // State
     user,
     token,
+    accessToken,
+    refreshToken,
     registrationToken,
     isGuest,
     guestId,
     phoneNumber,
     loading,
-    isAuthenticated: !!(user && token),
+    isAuthenticated: !!(user && (token || accessToken)),
 
     // Actions
     sendOTP,

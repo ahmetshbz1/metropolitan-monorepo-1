@@ -23,21 +23,12 @@ export interface RegistrationTokenPayload {
 // Açık rotalar - Kayıt token'ı gerekli
 const publicProfileRoutes = createApp().post(
   "/complete-profile",
-  async ({
-    jwt,
-    body,
-    headers,
-    error,
-  }: {
-    jwt: any;
-    body: CompleteProfileRequest;
-    headers: any;
-    error: any;
-  }) => {
+  async ({ jwt, body, headers, set }) => {
     try {
       const registrationToken = headers.authorization?.replace("Bearer ", "");
       if (!registrationToken) {
-        return error(401, "Registration token is required.");
+        set.status = 401;
+        return { success: false, message: "Registration token is required." };
       }
 
       // Kayıt token'ı için JWT doğrulama
@@ -46,21 +37,24 @@ const publicProfileRoutes = createApp().post(
         | false;
 
       if (!payload || payload.sub !== "registration") {
-        return error(401, "Invalid registration token.");
+        set.status = 401;
+        return { success: false, message: "Invalid registration token." };
       }
 
       // Profil tamamlama service'i çağır
       const result = await ProfileCompletionService.completeProfile(
         payload.phoneNumber,
         body,
-        jwt
+        jwt,
+        headers
       );
 
       return result;
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Profile completion failed";
-      return error(400, message);
+      set.status = 400;
+      return { success: false, message };
     }
   },
   {
@@ -89,10 +83,11 @@ const protectedProfileRoutes = createApp()
   .use(isAuthenticated)
 
   // Kullanıcı profilini getir
-  .get("/me", async ({ profile, error }) => {
+  .get("/me", async ({ profile, set }) => {
     try {
       if (!profile) {
-        return error(401, "Unauthorized");
+        set.status = 401;
+        return { success: false, message: "Unauthorized" };
       }
 
       const result = await ProfileUpdateService.getUserProfile(profile.userId);
@@ -100,25 +95,19 @@ const protectedProfileRoutes = createApp()
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Failed to get profile";
-      return error(404, message);
+      set.status = 404;
+      return { success: false, message };
     }
   })
 
   // Kullanıcı profilini güncelle
   .put(
     "/me",
-    async ({
-      profile,
-      body,
-      error,
-    }: {
-      profile: any;
-      body: UpdateProfileRequest;
-      error: any;
-    }) => {
+    async ({ profile, body, set }) => {
       try {
         if (!profile) {
-          return error(401, "Unauthorized");
+          set.status = 401;
+          return { success: false, message: "Unauthorized" };
         }
 
         const result = await ProfileUpdateService.updateUserProfile(
@@ -129,7 +118,8 @@ const protectedProfileRoutes = createApp()
       } catch (err) {
         const message =
           err instanceof Error ? err.message : "Failed to update profile";
-        return error(400, message);
+        set.status = 400;
+        return { success: false, message };
       }
     },
     {
@@ -144,14 +134,16 @@ const protectedProfileRoutes = createApp()
   // Profil fotoğrafı yükle
   .post(
     "/me/profile-photo",
-    async ({ profile, body, error }) => {
+    async ({ profile, body, set }) => {
       try {
         if (!profile) {
-          return error(401, "Unauthorized");
+          set.status = 401;
+          return { success: false, message: "Unauthorized" };
         }
 
         if (!body.photo) {
-          return error(400, "No photo uploaded.");
+          set.status = 400;
+          return { success: false, message: "No photo uploaded." };
         }
 
         const photoUrl = await ProfilePhotoService.uploadProfilePhoto(
@@ -167,7 +159,8 @@ const protectedProfileRoutes = createApp()
       } catch (err) {
         const message =
           err instanceof Error ? err.message : "Failed to upload photo";
-        return error(500, message);
+        set.status = 500;
+        return { success: false, message };
       }
     },
     {

@@ -31,7 +31,7 @@ export const processUserData = (userData: BackendUserResponse): User => {
 export const completeProfile = async (
   userData: CompleteProfileInput,
   registrationToken: string
-): Promise<{ success: boolean; message: string; token?: string }> => {
+): Promise<{ success: boolean; message: string; token?: string; accessToken?: string; refreshToken?: string }> => {
   try {
     const response = await api.post(
       "/users/complete-profile",
@@ -53,11 +53,13 @@ export const completeProfile = async (
     );
     const data = response.data;
 
-    if (data.success && data.token) {
+    if (data.success && (data.token || data.accessToken)) {
       return {
         success: true,
         message: data.message,
-        token: data.token,
+        token: data.token || data.accessToken, // Backward compatibility
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
       };
     } else {
       return {

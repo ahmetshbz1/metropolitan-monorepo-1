@@ -8,24 +8,69 @@ import { User } from "./types";
 
 // Storage anahtarları
 const STORAGE_KEYS = {
-  AUTH_TOKEN: "auth_token",
+  ACCESS_TOKEN: "access_token",
+  REFRESH_TOKEN: "refresh_token",
+  AUTH_TOKEN: "auth_token", // Backwards compatibility
   USER_DATA: "user_data",
   GUEST_ID: "guest_id",
   IS_GUEST: "is_guest",
 } as const;
 
-// Token işlemleri
+// Enhanced token storage with access/refresh token support
 export const tokenStorage = {
+  // Access token methods
+  async saveAccessToken(token: string): Promise<void> {
+    await SecureStore.setItemAsync(STORAGE_KEYS.ACCESS_TOKEN, token);
+  },
+
+  async getAccessToken(): Promise<string | null> {
+    return await SecureStore.getItemAsync(STORAGE_KEYS.ACCESS_TOKEN);
+  },
+
+  async removeAccessToken(): Promise<void> {
+    await SecureStore.deleteItemAsync(STORAGE_KEYS.ACCESS_TOKEN);
+  },
+
+  // Refresh token methods
+  async saveRefreshToken(token: string): Promise<void> {
+    await SecureStore.setItemAsync(STORAGE_KEYS.REFRESH_TOKEN, token);
+  },
+
+  async getRefreshToken(): Promise<string | null> {
+    return await SecureStore.getItemAsync(STORAGE_KEYS.REFRESH_TOKEN);
+  },
+
+  async removeRefreshToken(): Promise<void> {
+    await SecureStore.deleteItemAsync(STORAGE_KEYS.REFRESH_TOKEN);
+  },
+
+  // Save both tokens
+  async saveTokens(accessToken: string, refreshToken: string): Promise<void> {
+    await Promise.all([
+      this.saveAccessToken(accessToken),
+      this.saveRefreshToken(refreshToken),
+    ]);
+  },
+
+  // Legacy methods for backward compatibility
   async save(token: string): Promise<void> {
-    await SecureStore.setItemAsync(STORAGE_KEYS.AUTH_TOKEN, token);
+    await this.saveAccessToken(token);
   },
 
   async get(): Promise<string | null> {
+    // Try access token first, then fall back to legacy token
+    const accessToken = await this.getAccessToken();
+    if (accessToken) return accessToken;
+
     return await SecureStore.getItemAsync(STORAGE_KEYS.AUTH_TOKEN);
   },
 
   async remove(): Promise<void> {
-    await SecureStore.deleteItemAsync(STORAGE_KEYS.AUTH_TOKEN);
+    await Promise.all([
+      this.removeAccessToken(),
+      this.removeRefreshToken(),
+      SecureStore.deleteItemAsync(STORAGE_KEYS.AUTH_TOKEN),
+    ]);
   },
 };
 

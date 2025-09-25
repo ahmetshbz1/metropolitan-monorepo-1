@@ -12,6 +12,8 @@ import { useAuthHook } from "./auth/useAuthHook";
 const AuthContext = createContext<AuthContextType>({
   user: null,
   token: null,
+  accessToken: null,
+  refreshToken: null,
   registrationToken: null,
   isGuest: false,
   guestId: null,
@@ -50,11 +52,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     [
       authHookValues.user,
       authHookValues.token,
+      authHookValues.accessToken,
+      authHookValues.refreshToken,
       authHookValues.registrationToken,
       authHookValues.isGuest,
       authHookValues.guestId,
       authHookValues.phoneNumber,
       authHookValues.loading,
+      authHookValues.sendOTP,
+      authHookValues.verifyOTP,
+      authHookValues.completeProfile,
+      authHookValues.logout,
+      authHookValues.loginAsGuest,
+      authHookValues.updateUserProfile,
+      authHookValues.uploadProfilePhoto,
+      authHookValues.refreshUserProfile,
     ]
   );
 

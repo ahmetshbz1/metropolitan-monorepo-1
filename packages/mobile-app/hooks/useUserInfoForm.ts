@@ -13,6 +13,7 @@ import { useAuth } from "@/context/AuthContext";
 import { api } from "@/core/api";
 import type { NipResponse } from "@metropolitan/shared";
 import { isValidEmail } from "@/utils/validation";
+import { useToast } from "@/hooks/useToast";
 
 interface UseUserInfoFormReturn {
   // values
@@ -46,7 +47,8 @@ interface UseUserInfoFormReturn {
 
 export function useUserInfoForm(isB2B: boolean): UseUserInfoFormReturn {
   const { t } = useTranslation();
-  const { completeProfile } = useAuth();
+  const { completeProfile, registrationToken } = useAuth();
+  const { showToast } = useToast();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -147,6 +149,13 @@ export function useUserInfoForm(isB2B: boolean): UseUserInfoFormReturn {
 
   const handleSave = async () => {
     if (!isFormValid) return;
+
+    if (!registrationToken) {
+      console.error("No registration token available");
+      showToast("Kayıt token'ı bulunamadı. Lütfen tekrar giriş yapın.", "error");
+      return;
+    }
+
     setIsSaving(true);
     const result = await completeProfile({
       firstName: firstName.trim(),
@@ -160,7 +169,7 @@ export function useUserInfoForm(isB2B: boolean): UseUserInfoFormReturn {
     });
     setIsSaving(false);
     if (!result.success) {
-      alert(result.message);
+      showToast(result.message, "error");
     }
   };
 

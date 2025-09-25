@@ -3,7 +3,7 @@
 //  Created by Ahmet on 08.07.2025.
 
 import axios from "axios";
-import * as SecureStore from "expo-secure-store";
+import { setupInterceptors } from "./api-interceptors";
 
 // Environment variables'dan API URL'sini al
 const getApiBaseUrl = (): string => {
@@ -34,23 +34,7 @@ const api = axios.create({
   },
 });
 
-api.interceptors.request.use(
-  async (config) => {
-    // If the Authorization header is already set, don't override it.
-    // This allows request-specific tokens (like registrationToken) to be used.
-    if (config.headers.Authorization) {
-      return config;
-    }
-
-    const token = await SecureStore.getItemAsync("auth_token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+// Setup enhanced interceptors with refresh token support and device fingerprinting
+setupInterceptors(api);
 
 export { api };

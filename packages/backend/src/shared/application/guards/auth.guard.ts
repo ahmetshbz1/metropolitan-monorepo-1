@@ -18,12 +18,26 @@ export const isAuthenticated = (app: Elysia) =>
         const isBlacklisted = await isTokenBlacklisted(token);
         if (isBlacklisted) return { profile: null };
 
-        const profile = (await jwt.verify(token)) as
-          | { userId: string; exp: number }
-          | false;
-        if (!profile) {
+        const decoded = (await jwt.verify(token)) as any;
+        if (!decoded) {
+          console.log("Token verification failed - no decoded payload");
           return { profile: null };
         }
+
+        // Support both 'sub' (standard JWT) and 'userId' (legacy) fields
+        const userId = decoded.sub || decoded.userId;
+        if (!userId) {
+          console.log("Token missing userId/sub field:", decoded);
+          return { profile: null };
+        }
+
+        const profile = {
+          userId,
+          exp: decoded.exp,
+          type: decoded.type,
+          sessionId: decoded.sessionId,
+          deviceId: decoded.deviceId,
+        };
 
         return { profile };
       } catch (_error) {

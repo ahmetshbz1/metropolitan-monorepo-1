@@ -20,6 +20,7 @@ import { contentRoutes } from "./src/domains/content/presentation/routes/content
 import { guestRoutes } from "./src/domains/content/presentation/routes/guest.routes";
 import { authRoutes } from "./src/domains/identity/presentation/routes/auth.routes";
 import { changePhoneRoutes } from "./src/domains/identity/presentation/routes/change-phone.routes";
+import { refreshTokenRoutes } from "./src/domains/identity/presentation/routes/refresh-token.routes";
 import { invoicesRoutes } from "./src/domains/order/presentation/routes/invoices.routes";
 import { ordersRoutes } from "./src/domains/order/presentation/routes/orders.routes";
 import { stripeWebhookRoutes } from "./src/domains/payment/presentation/routes/stripe-webhook.routes";
@@ -27,6 +28,7 @@ import { cartRoutes } from "./src/domains/shopping/presentation/routes/cart.rout
 import { favoritesRoutes } from "./src/domains/shopping/presentation/routes/favorites.routes";
 import { addressRoutes } from "./src/domains/user/presentation/routes/address.routes";
 import { dataExportRoutes } from "./src/domains/user/presentation/routes/data-export.routes";
+import { gdprComplianceRoutes } from "./src/domains/user/presentation/routes/gdpr-compliance.routes";
 import { notificationPreferencesRoutes } from "./src/domains/user/presentation/routes/notification-preferences.routes";
 import { profileRoutes } from "./src/domains/user/presentation/routes/profile.routes";
 import { healthRoutes } from "./src/shared/application/common/health.routes";
@@ -129,6 +131,7 @@ export const app = new Elysia()
       // Identity Domain
       .use(authRoutes)
       .use(changePhoneRoutes)
+      .use(refreshTokenRoutes)
 
       // User Domain (grouped under /users prefix)
       .group("/users", (userApp) =>
@@ -138,6 +141,7 @@ export const app = new Elysia()
           .use(favoritesRoutes)
           .use(notificationPreferencesRoutes)
           .use(dataExportRoutes)
+          .use(gdprComplianceRoutes)
       )
 
       // Cart routes (directly under /api for /me/cart)

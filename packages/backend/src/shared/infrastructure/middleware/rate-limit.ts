@@ -28,11 +28,23 @@ export const rateLimitConfigs = {
     windowMs: 15 * 60 * 1000, // 15 minutes
     message: "Too many authentication attempts. Please try again later.",
   },
-  // OTP endpoints
-  otp: {
+  // OTP send endpoints - prevent SMS bombing
+  otpSend: {
     max: 3,
-    windowMs: 5 * 60 * 1000, // 5 minutes
-    message: "Too many OTP requests. Please wait before trying again.",
+    windowMs: 60 * 1000, // 1 minute - max 3 OTP per minute
+    message: "Too many OTP requests. Please wait 1 minute before trying again.",
+  },
+  // OTP verify endpoints - prevent brute force
+  otpVerify: {
+    max: 3,
+    windowMs: 5 * 60 * 1000, // 5 minutes - max 3 attempts
+    message: "Too many verification attempts. Please wait 5 minutes.",
+  },
+  // Refresh token endpoint
+  refreshToken: {
+    max: 10,
+    windowMs: 5 * 60 * 1000, // 5 minutes - 10 refresh attempts
+    message: "Too many token refresh attempts. Please try again later.",
   },
   // Order creation
   orderCreation: {
