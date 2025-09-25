@@ -121,6 +121,25 @@ export async function storeDeviceSession(
   deviceInfo: DeviceInfo,
   ipAddress?: string
 ): Promise<void> {
+  // First check if there's an existing session for this device
+  const existingKey = `device_session:${userId}:${deviceId}`;
+  const existingSessionData = await redis.get(existingKey);
+
+  // If there's an existing session, clean up its session lookup key
+  if (existingSessionData) {
+    try {
+      const existingSession: SessionInfo = JSON.parse(existingSessionData as string);
+      if (existingSession.sessionId && existingSession.sessionId !== sessionId) {
+        // Delete the old session lookup key
+        const oldSessionKey = `session:${existingSession.sessionId}`;
+        await redis.del(oldSessionKey);
+      }
+    } catch (error) {
+      // Ignore parsing errors for corrupted sessions
+      console.error(`Failed to parse existing session for cleanup: ${error}`);
+    }
+  }
+
   const session: SessionInfo = {
     userId,
     deviceId,
@@ -133,8 +152,7 @@ export async function storeDeviceSession(
   };
 
   // Store with 30-day TTL
-  const key = `device_session:${userId}:${deviceId}`;
-  await redis.setex(key, 30 * 24 * 60 * 60, JSON.stringify(session));
+  await redis.setex(existingKey, 30 * 24 * 60 * 60, JSON.stringify(session));
 
   // Also store session lookup key
   const sessionKey = `session:${sessionId}`;
@@ -267,6 +285,27 @@ export async function storeRefreshToken(
   sessionId: string,
   jti: string
 ): Promise<void> {
+  // Clean up old refresh tokens for this device
+  const pattern = `refresh_token:${userId}:*`;
+  const existingKeys = await redis.keys(pattern);
+
+  // Check and delete old refresh tokens for the same device
+  for (const existingKey of existingKeys as string[]) {
+    try {
+      const existingData = await redis.get(existingKey);
+      if (existingData) {
+        const parsed = JSON.parse(existingData as string);
+        // Delete old refresh tokens for the same device
+        if (parsed.deviceId === deviceId && existingKey !== `refresh_token:${userId}:${jti}`) {
+          await redis.del(existingKey);
+        }
+      }
+    } catch (error) {
+      // Ignore parsing errors
+      console.error(`Failed to parse refresh token for cleanup: ${error}`);
+    }
+  }
+
   const key = `refresh_token:${userId}:${jti}`;
   const data = {
     token: refreshToken,

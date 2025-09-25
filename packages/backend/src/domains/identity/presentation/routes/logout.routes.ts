@@ -6,6 +6,10 @@ import { logger } from "@bogeychan/elysia-logger";
 
 import { blacklistToken } from "../../../../shared/infrastructure/database/redis";
 import { createApp } from "../../../../shared/infrastructure/web/app";
+import {
+  invalidateSession,
+  removeAllUserRefreshTokens
+} from "../../infrastructure/security/device-fingerprint";
 
 import { authTokenGuard, extractToken } from "./auth-guards";
 
@@ -20,10 +24,13 @@ export const logoutRoutes = createApp()
         if (!token) {
           return error(401, "No token provided");
         }
-        
+
         const profile = (await jwt.verify(token)) as {
           userId: string;
+          sub?: string;
           exp: number;
+          sessionId?: string;
+          deviceId?: string;
         };
 
         if (!profile || typeof profile.exp !== "number") {
@@ -31,13 +38,33 @@ export const logoutRoutes = createApp()
           return { success: false, message: "Invalid token." };
         }
 
-        // Calculate remaining TTL and blacklist token
-        const expiresIn = profile.exp - Math.floor(Date.now() / 1000);
-        if (expiresIn > 0) {
-          await blacklistToken(token, expiresIn);
+        const userId = profile.sub || profile.userId;
+        if (!userId) {
+          return { success: false, message: "Invalid token - no user ID." };
         }
 
-        log.info({ userId: profile.userId }, `User logged out successfully`);
+        // Clear all Redis data for proper logout
+        try {
+          // 1. Invalidate the current session if available
+          if (profile.sessionId) {
+            await invalidateSession(profile.sessionId);
+          }
+
+          // 2. Remove all user refresh tokens
+          await removeAllUserRefreshTokens(userId);
+
+          // 3. Calculate remaining TTL and blacklist current access token
+          const expiresIn = profile.exp - Math.floor(Date.now() / 1000);
+          if (expiresIn > 0) {
+            await blacklistToken(token, expiresIn);
+          }
+
+          log.info({ userId }, `User logged out and all sessions cleared successfully`);
+        } catch (error) {
+          log.error({ userId, error }, `Failed to clear Redis data during logout`);
+          // Don't fail the logout if Redis cleanup partially fails
+        }
+
         return { success: true, message: "Logged out successfully." };
       })
   );
