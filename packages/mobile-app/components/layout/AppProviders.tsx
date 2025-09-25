@@ -8,11 +8,13 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
+import ErrorBoundary from "@/components/error/ErrorBoundary";
 import { AddressProvider } from "@/context/AddressContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import { ColorSchemeProvider } from "@/context/ColorSchemeContext";
 import { FavoritesProvider } from "@/context/FavoritesContext";
+import { NetworkProvider } from "@/context/NetworkContext";
 import { OrderProvider } from "@/context/OrderContext";
 import { PaymentMethodProvider } from "@/context/PaymentMethodContext";
 import { ProductProvider } from "@/context/ProductContext";
@@ -26,34 +28,38 @@ interface AppProvidersProps {
 
 export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
   return (
-    <KeyboardProvider>
-      <GestureHandlerRootView className="flex-1">
-        <ToastProvider>
-          <UserSettingsProvider>
-            <ColorSchemeProvider>
-              <BottomSheetModalProvider>
-                <AuthProvider>
-                  <ProductProvider>
-                    <AddressProvider>
-                      <PaymentMethodProvider>
-                        <CartProvider>
-                          <FavoritesProvider>
-                            <OrderProvider>
-                              <StripeProviderWrapper>
-                                <SafeAreaProvider>{children}</SafeAreaProvider>
-                              </StripeProviderWrapper>
-                            </OrderProvider>
-                          </FavoritesProvider>
-                        </CartProvider>
-                      </PaymentMethodProvider>
-                    </AddressProvider>
-                  </ProductProvider>
-                </AuthProvider>
-              </BottomSheetModalProvider>
-            </ColorSchemeProvider>
-          </UserSettingsProvider>
-        </ToastProvider>
-      </GestureHandlerRootView>
-    </KeyboardProvider>
+    <ErrorBoundary>
+      <NetworkProvider>
+        <KeyboardProvider>
+          <GestureHandlerRootView className="flex-1">
+            <ToastProvider>
+              <UserSettingsProvider>
+                <ColorSchemeProvider>
+                  <BottomSheetModalProvider>
+                    <AuthProvider>
+                    <ProductProvider>
+                      <AddressProvider>
+                        <PaymentMethodProvider>
+                          <CartProvider>
+                            <FavoritesProvider>
+                              <OrderProvider>
+                                <StripeProviderWrapper>
+                                  <SafeAreaProvider>{children}</SafeAreaProvider>
+                                </StripeProviderWrapper>
+                              </OrderProvider>
+                            </FavoritesProvider>
+                          </CartProvider>
+                        </PaymentMethodProvider>
+                      </AddressProvider>
+                    </ProductProvider>
+                  </AuthProvider>
+                </BottomSheetModalProvider>
+              </ColorSchemeProvider>
+            </UserSettingsProvider>
+          </ToastProvider>
+        </GestureHandlerRootView>
+      </KeyboardProvider>
+      </NetworkProvider>
+    </ErrorBoundary>
   );
 };

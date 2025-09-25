@@ -34,9 +34,15 @@ import { utilsRoutes } from "./src/shared/application/common/utils.routes";
 import { db } from "./src/shared/infrastructure/database/connection";
 import { compressionPlugin } from "./src/shared/infrastructure/middleware/compression";
 import { initializeSentry } from "./src/shared/infrastructure/monitoring/sentry.config";
+import { setupGlobalErrorHandlers } from "./src/shared/infrastructure/middleware/global-error-handler";
+import { corsConfig, securityHeaders } from "./src/shared/infrastructure/middleware/cors";
+import { createRateLimiter, rateLimitConfigs } from "./src/shared/infrastructure/middleware/rate-limit";
 
 // Initialize Sentry monitoring
 initializeSentry();
+
+// Setup global error handlers for production stability
+setupGlobalErrorHandlers();
 
 const stream = pretty({
   colorize: true,
@@ -57,6 +63,9 @@ const getGitCommitHash = () => {
 const commitHash = getGitCommitHash();
 
 export const app = new Elysia()
+  .use(corsConfig()) // CORS configuration
+  .use(securityHeaders()) // Security headers
+  .use(createRateLimiter(rateLimitConfigs.default)) // Rate limiting
   .use(compressionPlugin) // Add compression before logging
   .use(
     logger({
