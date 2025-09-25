@@ -3,7 +3,7 @@
 //  Created by Ahmet on 03.07.2025.
 
 import { CartContext } from "@/context/CartContext";
-import { router } from "expo-router";
+import { useNavigationProtection } from "@/hooks/useNavigationProtection";
 import { useContext, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Platform } from "react-native";
@@ -14,6 +14,7 @@ export const useTabLayout = () => {
   const insets = useSafeAreaInsets();
   const { clearCart } = useContext(CartContext);
   const scrollHandlers = useRef<Record<string, () => void>>({});
+  const { push: safePush } = useNavigationProtection({ debounceTime: 700 });
 
   const scrollToTop = (routeName: string) => {
     const handler = scrollHandlers.current[routeName];
@@ -49,7 +50,7 @@ export const useTabLayout = () => {
   };
 
   const handleNotification = () => {
-    router.push("/notifications");
+    safePush("/notifications");
   };
 
   const getTabBarHeight = () => {
