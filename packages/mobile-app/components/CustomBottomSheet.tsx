@@ -23,15 +23,16 @@ type Ref = BottomSheetModal;
 export interface Props {
   title: string;
   children: React.ReactNode;
+  snapPoints?: string[];
 }
 
-const CustomBottomSheet = forwardRef<Ref, Props>(({ title, children }, ref) => {
+const CustomBottomSheet = forwardRef<Ref, Props>(({ title, children, snapPoints: customSnapPoints }, ref) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
   const { bottom: safeAreaBottom } = useSafeAreaInsets();
 
   // Set a maximum snap point, enableDynamicSizing will adjust to content.
-  const snapPoints = useMemo(() => ["90%"], []);
+  const snapPoints = useMemo(() => customSnapPoints || ["90%"], [customSnapPoints]);
 
   const handleClose = useCallback(() => {
     if (ref && "current" in ref) {

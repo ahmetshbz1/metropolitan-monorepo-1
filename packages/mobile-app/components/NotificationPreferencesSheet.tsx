@@ -203,6 +203,7 @@ const NotificationPreferencesSheet = forwardRef<
     <CustomBottomSheet
       ref={bottomSheetRef}
       title={t("app_settings.notification_preferences")}
+      snapPoints={["40%"]}
     >
       {content}
     </CustomBottomSheet>
