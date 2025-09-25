@@ -784,6 +784,10 @@
   },
   "app_settings": {
     "appearance": "Appearance",
+    "theme": "Theme",
+    "theme_system": "System",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
     "dark_mode": "Dark Mode",
     "dark_mode_desc": "Reduces eye strain",
     "language": "Language",

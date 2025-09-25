@@ -23,16 +23,7 @@
     "privacy_policy": "Gizlilik Politikası",
     "legal": "Yasal",
     "legal_desc": "Kullanım koşulları, gizlilik ve şirket bilgileri",
-    "app_settings_section_title": "Uygulama Ayarları",
-    "app_theme": "Uygulama Teması",
-    "app_language": "Uygulama Dili",
-    "haptics": "Dokunsal Geribildirim",
-    "dark_mode": "Karanlık Mod",
-    "light_mode": "Aydınlık Mod",
     "communication_preferences": "İletişim Tercihleri",
-    "support_section_title": "Destek",
-    "help_center": "Yardım Merkezi",
-    "contact_us": "Bize Ulaşın",
     "faq": {
       "title": "Sıkça Sorulan Sorular",
       "content": "Sıkça sorulan sorular ve cevapları burada yer alacak. Örneğin: Siparişimi nasıl iade ederim?"
@@ -610,9 +601,6 @@
       "success_message": "Adres başarıyla eklendi!"
     }
   },
-  "app_settings": {
-    "title": "Uygulama Ayarları"
-  },
   "brands": {
     "yayla": "Yayla"
   },
@@ -888,6 +876,10 @@
   "app_settings": {
     "title": "Uygulama Ayarları",
     "appearance": "Görünüm",
+    "theme": "Tema",
+    "theme_system": "Sistem",
+    "theme_light": "Açık",
+    "theme_dark": "Koyu",
     "dark_mode": "Karanlık Mod",
     "dark_mode_desc": "Göz yorgunluğunu azaltır",
     "language": "Dil",

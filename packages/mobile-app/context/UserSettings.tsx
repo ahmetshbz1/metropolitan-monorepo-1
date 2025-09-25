@@ -7,7 +7,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 // Ayarlar tipi
 export type UserSettings = {
-  theme: "light" | "dark";
+  theme: "light" | "dark" | "system";
   hapticsEnabled: boolean;
   notificationsEnabled: boolean;
   notificationSoundsEnabled: boolean;
@@ -23,7 +23,7 @@ type UserSettingsContextType = {
 
 // Varsayılan ayarlar
 const DEFAULT_SETTINGS: UserSettings = {
-  theme: "light",
+  theme: "system",
   hapticsEnabled: true,
   notificationsEnabled: true,
   notificationSoundsEnabled: true,

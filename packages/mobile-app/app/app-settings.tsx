@@ -12,7 +12,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useLayoutEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, Switch, View, Alert } from "react-native";
+import { ScrollView, View, Alert, Switch } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { HapticButton } from "@/components/HapticButton";
@@ -28,7 +28,7 @@ export default function AppSettingsScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
-  const { toggleTheme } = useAppColorScheme();
+  const { setTheme, currentThemeSetting } = useAppColorScheme();
   const { settings, updateSettings } = useUserSettings();
   const notificationSheetRef = useRef<NotificationPreferencesSheetRef>(null);
   const { showToast } = useToast();
@@ -49,6 +49,14 @@ export default function AppSettingsScreen() {
     { code: "en", name: "English" },
     { code: "pl", name: "Polski" },
   ];
+
+  const themes = [
+    { code: "system", name: t("app_settings.theme_system"), icon: "phone-portrait-outline" },
+    { code: "light", name: t("app_settings.theme_light"), icon: "sunny-outline" },
+    { code: "dark", name: t("app_settings.theme_dark"), icon: "moon-outline" },
+  ];
+
+  const currentTheme = themes.find(t => t.code === currentThemeSetting) || themes[0];
 
   const currentLanguage = languages.find(l => l.code === i18n.language) || languages[0];
 
@@ -132,48 +140,59 @@ export default function AppSettingsScreen() {
               overflow: "hidden",
             }}
           >
-            {/* Dark Mode Toggle */}
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                padding: 16,
-                borderBottomWidth: 1,
-                borderBottomColor: colors.border,
+            {/* Theme Selector */}
+            <ContextMenu
+              dropdownMenuMode
+              actions={themes.map(theme => ({
+                title: theme.name,
+                selected: currentThemeSetting === theme.code,
+              }))}
+              onPress={(e) => {
+                const selectedTheme = themes[e.nativeEvent.index];
+                setTheme(selectedTheme.code as "light" | "dark" | "system");
               }}
             >
               <View
                 style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
-                  backgroundColor: colors.primary + "15",
+                  flexDirection: "row",
                   alignItems: "center",
-                  justifyContent: "center",
-                  marginRight: 12,
+                  padding: 16,
+                  borderBottomWidth: 1,
+                  borderBottomColor: colors.border,
                 }}
               >
+                <View
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    backgroundColor: colors.primary + "15",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginRight: 12,
+                  }}
+                >
+                  <Ionicons
+                    name={currentTheme.icon as any}
+                    size={20}
+                    color={colors.primary}
+                  />
+                </View>
+                <View className="flex-1">
+                  <ThemedText className="text-base font-medium">
+                    {t("app_settings.theme")}
+                  </ThemedText>
+                  <ThemedText className="text-xs opacity-60 mt-1">
+                    {currentTheme.name}
+                  </ThemedText>
+                </View>
                 <Ionicons
-                  name={colorScheme === "dark" ? "moon" : "sunny"}
+                  name="chevron-forward"
                   size={20}
-                  color={colors.primary}
+                  color={colors.mediumGray}
                 />
               </View>
-              <View className="flex-1">
-                <ThemedText className="text-base font-medium">
-                  {t("app_settings.dark_mode")}
-                </ThemedText>
-                <ThemedText className="text-xs opacity-60 mt-1">
-                  {t("app_settings.dark_mode_desc")}
-                </ThemedText>
-              </View>
-              <Switch
-                value={colorScheme === "dark"}
-                onValueChange={toggleTheme}
-                trackColor={{ false: colors.border, true: colors.primary }}
-                thumbColor={colors.card}
-              />
-            </View>
+            </ContextMenu>
 
             {/* Language Selector */}
             <View

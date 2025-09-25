@@ -848,6 +848,10 @@
   "app_settings": {
     "title": "Ustawienia aplikacji",
     "appearance": "Wygląd",
+    "theme": "Motyw",
+    "theme_system": "Systemowy",
+    "theme_light": "Jasny",
+    "theme_dark": "Ciemny",
     "dark_mode": "Tryb ciemny",
     "dark_mode_desc": "Zmniejsza zmęczenie oczu",
     "language": "Język",
