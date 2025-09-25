@@ -17,18 +17,20 @@ export const dataExportRoutes = createApp()
   .post(
     "/export-data",
     async ({ body, profile, log }) => {
-      if (!profile?.userId) {
+      // Extract userId from JWT structure
+      const userId = profile?.sub || profile?.userId;
+      if (!profile || !userId) {
         return { success: false, message: "Unauthorized" };
       }
 
       try {
         const result = await DataExportService.exportUserData(
-          profile.userId,
+          userId,
           body.method
         );
 
         log.info(
-          { userId: profile.userId, method: body.method },
+          { userId: userId, method: body.method },
           `Data export requested`
         );
 
@@ -45,7 +47,7 @@ export const dataExportRoutes = createApp()
         };
       } catch (error) {
         log.error(
-          { userId: profile.userId, error: error.message },
+          { userId: userId, error: error.message },
           `Data export failed`
         );
         return {
@@ -65,14 +67,16 @@ export const dataExportRoutes = createApp()
   .get(
     "/export-status/:requestId",
     async ({ params, profile, log }) => {
-      if (!profile?.userId) {
+      // Extract userId from JWT structure
+      const userId = profile?.sub || profile?.userId;
+      if (!profile || !userId) {
         return { success: false, message: "Unauthorized" };
       }
 
       try {
         const status = await DataExportService.getExportStatus(
           params.requestId,
-          profile.userId
+          userId
         );
 
         return {
@@ -84,7 +88,7 @@ export const dataExportRoutes = createApp()
       } catch (error) {
         log.error(
           {
-            userId: profile.userId,
+            userId: userId,
             requestId: params.requestId,
             error: error.message,
           },
@@ -107,7 +111,9 @@ export const dataExportRoutes = createApp()
   .get(
     "/download-export/:fileName",
     async ({ params, query, profile, log, set }) => {
-      if (!profile?.userId) {
+      // Extract userId from JWT structure
+      const userId = profile?.sub || profile?.userId;
+      if (!profile || !userId) {
         set.status = 401;
         return { success: false, message: "Unauthorized" };
       }
@@ -123,9 +129,9 @@ export const dataExportRoutes = createApp()
         }
 
         // SECURITY: Check if file belongs to authenticated user
-        if (!fileName.includes(profile.userId)) {
+        if (!fileName.includes(userId)) {
           log.warn(
-            { userId: profile.userId, fileName, attemptedAccess: true },
+            { userId: userId, fileName, attemptedAccess: true },
             `Unauthorized file access attempt`
           );
           set.status = 403;
@@ -153,14 +159,14 @@ export const dataExportRoutes = createApp()
           `attachment; filename="${fileName}"`;
 
         log.info(
-          { userId: profile.userId, fileName },
+          { userId: userId, fileName },
           `File downloaded successfully`
         );
 
         return fileContent;
       } catch (error) {
         log.error(
-          { userId: profile.userId, error: error.message },
+          { userId: userId, error: error.message },
           `File download failed`
         );
         set.status = 500;
@@ -181,7 +187,9 @@ export const dataExportRoutes = createApp()
   .post(
     "/view-export/:fileName",
     async ({ params, body, profile, log, set }) => {
-      if (!profile?.userId) {
+      // Extract userId from JWT structure
+      const userId = profile?.sub || profile?.userId;
+      if (!profile || !userId) {
         set.status = 401;
         return { success: false, message: "Unauthorized" };
       }
@@ -197,9 +205,9 @@ export const dataExportRoutes = createApp()
         }
 
         // SECURITY: Check if file belongs to authenticated user
-        if (!fileName.includes(profile.userId)) {
+        if (!fileName.includes(userId)) {
           log.warn(
-            { userId: profile.userId, fileName, attemptedAccess: true },
+            { userId: userId, fileName, attemptedAccess: true },
             `Unauthorized file access attempt`
           );
           set.status = 403;
@@ -264,7 +272,7 @@ export const dataExportRoutes = createApp()
           }
 
           log.info(
-            { userId: profile.userId, fileName, filesExtracted: files.length },
+            { userId: userId, fileName, filesExtracted: files.length },
             `ZIP contents extracted successfully`
           );
 
@@ -275,7 +283,7 @@ export const dataExportRoutes = createApp()
           };
         } catch (extractError) {
           log.warn(
-            { userId: profile.userId, fileName, error: extractError.message },
+            { userId: userId, fileName, error: extractError.message },
             `ZIP extraction failed - likely wrong password`
           );
           set.status = 400;
@@ -291,7 +299,7 @@ export const dataExportRoutes = createApp()
         }
       } catch (error) {
         log.error(
-          { userId: profile.userId, error: error.message },
+          { userId: userId, error: error.message },
           `ZIP view failed`
         );
         set.status = 500;

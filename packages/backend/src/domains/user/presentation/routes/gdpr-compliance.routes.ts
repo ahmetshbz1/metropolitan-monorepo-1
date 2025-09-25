@@ -50,37 +50,39 @@ export const gdprComplianceRoutes = createApp()
       .get(
         "/my-data",
         async ({ profile, headers, log, db }) => {
-          if (!profile?.userId) {
+          // Extract userId from JWT structure
+          const userId = profile?.sub || profile?.userId;
+          if (!profile || !userId) {
             return { success: false, message: "Unauthorized" };
           }
 
           try {
             // Collect all user data
             const userData = await db.query.users.findFirst({
-              where: eq(users.id, profile.userId),
+              where: eq(users.id, userId),
             });
 
             const userAddresses = await db.query.addresses.findMany({
-              where: eq(addresses.userId, profile.userId),
+              where: eq(addresses.userId, userId),
             });
 
             const userOrders = await db.query.orders.findMany({
-              where: eq(orders.userId, profile.userId),
+              where: eq(orders.userId, userId),
               with: {
                 items: true,
               },
             });
 
             const userCart = await db.query.cartItems.findMany({
-              where: eq(cartItems.userId, profile.userId),
+              where: eq(cartItems.userId, userId),
             });
 
             // Get active sessions
-            const activeSessions = await getUserSessions(profile.userId);
+            const activeSessions = await getUserSessions(userId);
 
             // Log GDPR action
             await logGDPRAction({
-              userId: profile.userId,
+              userId: userId,
               action: "DATA_EXPORT",
               timestamp: new Date(),
               ipAddress: headers["x-forwarded-for"] || headers["x-real-ip"],
@@ -88,7 +90,7 @@ export const gdprComplianceRoutes = createApp()
             });
 
             log.info(
-              { userId: profile.userId },
+              { userId: userId },
               `GDPR data export requested`
             );
 
@@ -110,7 +112,7 @@ export const gdprComplianceRoutes = createApp()
             };
           } catch (error: any) {
             log.error(
-              { userId: profile.userId, error: error.message },
+              { userId: userId, error: error.message },
               `GDPR data export failed`
             );
             return {
@@ -128,7 +130,9 @@ export const gdprComplianceRoutes = createApp()
       .put(
         "/rectify-data",
         async ({ body, profile, headers, log, db }) => {
-          if (!profile?.userId) {
+          // Extract userId from JWT structure
+          const userId = profile?.sub || profile?.userId;
+          if (!profile || !userId) {
             return { success: false, message: "Unauthorized" };
           }
 
@@ -153,11 +157,11 @@ export const gdprComplianceRoutes = createApp()
             await db
               .update(users)
               .set(allowedUpdates)
-              .where(eq(users.id, profile.userId));
+              .where(eq(users.id, userId));
 
             // Log GDPR action
             await logGDPRAction({
-              userId: profile.userId,
+              userId: userId,
               action: "DATA_RECTIFICATION",
               timestamp: new Date(),
               ipAddress: headers["x-forwarded-for"] || headers["x-real-ip"],
@@ -168,7 +172,7 @@ export const gdprComplianceRoutes = createApp()
             });
 
             log.info(
-              { userId: profile.userId, updatedFields: Object.keys(allowedUpdates) },
+              { userId: userId, updatedFields: Object.keys(allowedUpdates) },
               `Personal data rectified (GDPR Article 16)`
             );
 
@@ -178,7 +182,7 @@ export const gdprComplianceRoutes = createApp()
             };
           } catch (error: any) {
             log.error(
-              { userId: profile.userId, error: error.message },
+              { userId: userId, error: error.message },
               `Data rectification failed`
             );
             return {
@@ -200,7 +204,9 @@ export const gdprComplianceRoutes = createApp()
       .post(
         "/withdraw-consent",
         async ({ body, profile, headers, log, db }) => {
-          if (!profile?.userId) {
+          // Extract userId from JWT structure
+          const userId = profile?.sub || profile?.userId;
+          if (!profile || !userId) {
             return { success: false, message: "Unauthorized" };
           }
 
@@ -224,11 +230,11 @@ export const gdprComplianceRoutes = createApp()
             await db
               .update(users)
               .set(consentUpdate)
-              .where(eq(users.id, profile.userId));
+              .where(eq(users.id, userId));
 
             // Log GDPR action
             await logGDPRAction({
-              userId: profile.userId,
+              userId: userId,
               action: "CONSENT_WITHDRAWAL",
               timestamp: new Date(),
               ipAddress: headers["x-forwarded-for"] || headers["x-real-ip"],
@@ -239,7 +245,7 @@ export const gdprComplianceRoutes = createApp()
             });
 
             log.info(
-              { userId: profile.userId, consentType: body.consentType },
+              { userId: userId, consentType: body.consentType },
               `Consent withdrawn (GDPR Article 7)`
             );
 
@@ -249,7 +255,7 @@ export const gdprComplianceRoutes = createApp()
             };
           } catch (error: any) {
             log.error(
-              { userId: profile.userId, error: error.message },
+              { userId: userId, error: error.message },
               `Consent withdrawal failed`
             );
             return {

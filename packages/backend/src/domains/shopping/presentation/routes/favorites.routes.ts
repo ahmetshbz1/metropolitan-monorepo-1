@@ -21,6 +21,7 @@ export const favoritesRoutes = createApp()
       .get(
         "/",
         async ({ db, profile, query, request }) => {
+          const userId = profile?.sub || profile?.userId;
           const lang = query.lang || "tr";
           const userFavorites = await db
             .select({
@@ -43,7 +44,7 @@ export const favoritesRoutes = createApp()
               )
             )
             .innerJoin(categories, eq(products.categoryId, categories.id)) // Join with categories
-            .where(eq(favorites.userId, profile!.userId));
+            .where(eq(favorites.userId, userId));
 
           const baseUrl = new URL(request.url).origin;
 
@@ -69,6 +70,7 @@ export const favoritesRoutes = createApp()
       .post(
         "/",
         async ({ db, profile, body, error }) => {
+          const userId = profile?.sub || profile?.userId;
           const { productId } = body;
 
           // Ürün mevcut mu kontrol et
@@ -83,7 +85,7 @@ export const favoritesRoutes = createApp()
           // Zaten favorilerde mi kontrol et
           const alreadyFavorite = await db.query.favorites.findFirst({
             where: and(
-              eq(favorites.userId, profile!.userId),
+              eq(favorites.userId, userId),
               eq(favorites.productId, productId)
             ),
           });
@@ -93,7 +95,7 @@ export const favoritesRoutes = createApp()
           }
 
           await db.insert(favorites).values({
-            userId: profile!.userId,
+            userId: userId,
             productId: productId,
           });
 
@@ -108,13 +110,14 @@ export const favoritesRoutes = createApp()
       .delete(
         "/:productId",
         async ({ db, profile, params, error }) => {
+          const userId = profile?.sub || profile?.userId;
           const { productId } = params;
 
           const deletedFavorite = await db
             .delete(favorites)
             .where(
               and(
-                eq(favorites.userId, profile!.userId),
+                eq(favorites.userId, userId),
                 eq(favorites.productId, productId)
               )
             )

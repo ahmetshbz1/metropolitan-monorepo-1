@@ -28,10 +28,11 @@ export const createCartApp = () =>
     .resolve(async ({ profile }) => {
       if (!profile) throw new Error("Unauthorized");
 
+      const userId = profile?.sub || profile?.userId;
       const [user] = await db
         .select()
         .from(users)
-        .where(eq(users.id, profile.userId))
+        .where(eq(users.id, userId))
         .limit(1);
 
       if (!user) throw new Error("User not found");

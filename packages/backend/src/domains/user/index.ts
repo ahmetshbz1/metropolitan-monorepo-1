@@ -11,7 +11,9 @@ export * from "./application/use-cases/profile-update.service";
 export * from "./presentation/routes/address.routes";
 export * from "./presentation/routes/data-export.routes";
 export * from "./presentation/routes/notification-preferences.routes";
+export * from "./presentation/routes/privacy-settings.routes";
 export * from "./presentation/routes/profile.routes";
+export * from "./presentation/routes/security-settings.routes";
 
 // Domain Entities & Value Objects would be exported here
 // export * from './domain/entities/user-profile.entity';

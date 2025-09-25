@@ -35,6 +35,7 @@ export const authTokenGuard = (app: Elysia) =>
 
         const profile = {
           userId,
+          sub: decoded.sub, // Include original sub field for compatibility
           exp: decoded.exp,
           type: decoded.type,
           sessionId: decoded.sessionId,

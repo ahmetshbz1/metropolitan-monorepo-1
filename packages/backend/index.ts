@@ -30,7 +30,9 @@ import { addressRoutes } from "./src/domains/user/presentation/routes/address.ro
 import { dataExportRoutes } from "./src/domains/user/presentation/routes/data-export.routes";
 import { gdprComplianceRoutes } from "./src/domains/user/presentation/routes/gdpr-compliance.routes";
 import { notificationPreferencesRoutes } from "./src/domains/user/presentation/routes/notification-preferences.routes";
+import { privacySettingsRoutes } from "./src/domains/user/presentation/routes/privacy-settings.routes";
 import { profileRoutes } from "./src/domains/user/presentation/routes/profile.routes";
+import { securitySettingsRoutes } from "./src/domains/user/presentation/routes/security-settings.routes";
 import { healthRoutes } from "./src/shared/application/common/health.routes";
 import { utilsRoutes } from "./src/shared/application/common/utils.routes";
 import { db } from "./src/shared/infrastructure/database/connection";
@@ -140,6 +142,7 @@ export const app = new Elysia()
           .use(addressRoutes)
           .use(favoritesRoutes)
           .use(notificationPreferencesRoutes)
+          .use(privacySettingsRoutes)
           .use(dataExportRoutes)
           .use(gdprComplianceRoutes)
       )

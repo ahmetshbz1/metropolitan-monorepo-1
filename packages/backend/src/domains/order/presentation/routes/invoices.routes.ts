@@ -25,10 +25,11 @@ export const invoicesRoutes = createApp()
               return error(401, "Unauthorized");
             }
 
+            const userId = profile?.sub || profile?.userId;
             // PDF oluştur
             const pdfBuffer = await InvoiceService.generateInvoicePDF(
               orderId,
-              profile.userId
+              userId
             );
 
             // Response headers'ını ayarla
@@ -62,9 +63,10 @@ export const invoicesRoutes = createApp()
               return error(401, "Unauthorized");
             }
 
+            const userId = profile?.sub || profile?.userId;
             const invoiceData = await InvoiceService.getInvoiceData(
               orderId,
-              profile.userId
+              userId
             );
 
             return {

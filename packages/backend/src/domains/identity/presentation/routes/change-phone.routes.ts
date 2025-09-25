@@ -41,8 +41,9 @@ export const changePhoneRoutes = createApp()
         "/verify-current",
         async ({ body, profile, db, log, set }) => {
           try {
-            // Kullanıcı kimliğini kontrol et
-            if (!profile || !profile.userId) {
+            // Extract userId from JWT structure
+            const userId = profile?.sub || profile?.userId;
+            if (!profile || !userId) {
               set.status = 401;
               return {
                 success: false,
@@ -56,7 +57,7 @@ export const changePhoneRoutes = createApp()
             const user = await db
               .select()
               .from(users)
-              .where(eq(users.id, profile.userId))
+              .where(eq(users.id, userId))
               .limit(1);
 
             if (!user.length) {
@@ -81,7 +82,7 @@ export const changePhoneRoutes = createApp()
 
             // Değişiklik talebini veritabanına kaydet
             await db.insert(phoneChangeRequests).values({
-              userId: profile.userId,
+              userId: userId,
               currentPhone,
               sessionId,
               step: "current_verified",
@@ -90,7 +91,7 @@ export const changePhoneRoutes = createApp()
             });
 
             log.info(
-              { userId: profile.userId },
+              { userId: userId },
               "Phone change request initiated"
             );
 
@@ -120,7 +121,9 @@ export const changePhoneRoutes = createApp()
         "/send-otp",
         async ({ body, profile, headers, db, log, set }) => {
           try {
-            if (!profile || !profile.userId) {
+            // Extract userId from JWT structure
+            const userId = profile?.sub || profile?.userId;
+            if (!profile || !userId) {
               set.status = 401;
               return {
                 success: false,
@@ -137,7 +140,7 @@ export const changePhoneRoutes = createApp()
               .where(
                 and(
                   eq(phoneChangeRequests.sessionId, sessionId),
-                  eq(phoneChangeRequests.userId, profile.userId),
+                  eq(phoneChangeRequests.userId, userId),
                   eq(phoneChangeRequests.step, "current_verified")
                 )
               )
@@ -187,7 +190,7 @@ export const changePhoneRoutes = createApp()
               .where(eq(phoneChangeRequests.sessionId, sessionId));
 
             log.info(
-              { userId: profile.userId, newPhone },
+              { userId: userId, newPhone },
               "Change phone OTP sent"
             );
 
@@ -218,7 +221,9 @@ export const changePhoneRoutes = createApp()
         "/verify-new",
         async ({ body, profile, db, log, set, jwt, headers }) => {
           try {
-            if (!profile || !profile.userId) {
+            // Extract userId from JWT structure
+            const userId = profile?.sub || profile?.userId;
+            if (!profile || !userId) {
               set.status = 401;
               return {
                 success: false,
@@ -236,7 +241,7 @@ export const changePhoneRoutes = createApp()
                 and(
                   eq(phoneChangeRequests.sessionId, currentSessionId),
                   eq(phoneChangeRequests.newSessionId, newSessionId),
-                  eq(phoneChangeRequests.userId, profile.userId),
+                  eq(phoneChangeRequests.userId, userId),
                   eq(phoneChangeRequests.step, "otp_sent")
                 )
               )
@@ -273,7 +278,7 @@ export const changePhoneRoutes = createApp()
                 previousPhoneNumber: request[0].currentPhone,
                 updatedAt: new Date(),
               })
-              .where(eq(users.id, profile.userId));
+              .where(eq(users.id, userId));
 
             // Request'i tamamlandı olarak işaretle
             await db
@@ -298,7 +303,7 @@ export const changePhoneRoutes = createApp()
 
             // Access token (15 dakika)
             const accessToken = await jwt.sign({
-              sub: profile.userId,
+              sub: userId,
               type: "access",
               sessionId,
               deviceId,
@@ -310,7 +315,7 @@ export const changePhoneRoutes = createApp()
 
             // Refresh token (30 gün)
             const refreshToken = await jwt.sign({
-              sub: profile.userId,
+              sub: userId,
               type: "refresh",
               sessionId,
               deviceId,
@@ -322,14 +327,14 @@ export const changePhoneRoutes = createApp()
 
             // Yeni session ve refresh token'ları Redis'e kaydet
             await storeDeviceSession(
-              profile.userId,
+              userId,
               deviceId,
               sessionId,
               deviceInfo,
               ipAddress
             );
             await storeRefreshToken(
-              profile.userId,
+              userId,
               refreshToken,
               deviceId,
               sessionId,
@@ -342,11 +347,11 @@ export const changePhoneRoutes = createApp()
               const keysToDelete: string[] = [];
 
               // Device sessions
-              const devicePattern = `device_session:${profile.userId}:*`;
+              const devicePattern = `device_session:${userId}:*`;
               const deviceKeys = await redis.keys(devicePattern);
 
               // Yeni device session'ı hariç tut
-              const newDeviceKey = `device_session:${profile.userId}:${deviceId}`;
+              const newDeviceKey = `device_session:${userId}:${deviceId}`;
               for (const key of deviceKeys as string[]) {
                 if (key !== newDeviceKey) {
                   keysToDelete.push(key);
@@ -354,11 +359,11 @@ export const changePhoneRoutes = createApp()
               }
 
               // Refresh tokens
-              const refreshPattern = `refresh_token:${profile.userId}:*`;
+              const refreshPattern = `refresh_token:${userId}:*`;
               const refreshKeys = await redis.keys(refreshPattern);
 
               // Yeni refresh token'ı hariç tut
-              const newRefreshKey = `refresh_token:${profile.userId}:${refreshJTI}`;
+              const newRefreshKey = `refresh_token:${userId}:${refreshJTI}`;
               for (const key of refreshKeys as string[]) {
                 if (key !== newRefreshKey) {
                   keysToDelete.push(key);
@@ -375,7 +380,7 @@ export const changePhoneRoutes = createApp()
                     const sessionData = await redis.get(sessionKey);
                     if (sessionData) {
                       const data = JSON.parse(sessionData as string);
-                      if (data.userId === profile.userId) {
+                      if (data.userId === userId) {
                         keysToDelete.push(sessionKey);
                       }
                     }
@@ -389,7 +394,7 @@ export const changePhoneRoutes = createApp()
               if (keysToDelete.length > 0) {
                 await redis.del(...keysToDelete);
                 log.info(
-                  { userId: profile.userId, deletedCount: keysToDelete.length },
+                  { userId: userId, deletedCount: keysToDelete.length },
                   "Old sessions cleared after phone change"
                 );
               }
@@ -400,7 +405,7 @@ export const changePhoneRoutes = createApp()
 
             log.info(
               {
-                userId: profile.userId,
+                userId: userId,
                 newPhone: request[0].newPhone,
                 deviceId,
                 sessionId
@@ -438,7 +443,9 @@ export const changePhoneRoutes = createApp()
         "/resend-otp",
         async ({ body, profile, headers, db, log, set }) => {
           try {
-            if (!profile || !profile.userId) {
+            // Extract userId from JWT structure
+            const userId = profile?.sub || profile?.userId;
+            if (!profile || !userId) {
               set.status = 401;
               return {
                 success: false,
@@ -455,7 +462,7 @@ export const changePhoneRoutes = createApp()
               .where(
                 and(
                   eq(phoneChangeRequests.newSessionId, sessionId),
-                  eq(phoneChangeRequests.userId, profile.userId),
+                  eq(phoneChangeRequests.userId, userId),
                   eq(phoneChangeRequests.step, "otp_sent")
                 )
               )
@@ -484,7 +491,7 @@ export const changePhoneRoutes = createApp()
               .where(eq(phoneChangeRequests.id, request[0].id));
 
             log.info(
-              { userId: profile.userId, phone },
+              { userId: userId, phone },
               "Phone change OTP resent"
             );
 

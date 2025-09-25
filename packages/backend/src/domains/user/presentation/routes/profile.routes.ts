@@ -85,12 +85,13 @@ const protectedProfileRoutes = createApp()
   // Kullanıcı profilini getir
   .get("/me", async ({ profile, set }) => {
     try {
-      if (!profile) {
+      const userId = profile?.sub || profile?.userId;
+      if (!userId) {
         set.status = 401;
         return { success: false, message: "Unauthorized" };
       }
 
-      const result = await ProfileUpdateService.getUserProfile(profile.userId);
+      const result = await ProfileUpdateService.getUserProfile(userId);
       return result;
     } catch (err) {
       const message =
@@ -105,13 +106,14 @@ const protectedProfileRoutes = createApp()
     "/me",
     async ({ profile, body, set }) => {
       try {
-        if (!profile) {
+        const userId = profile?.sub || profile?.userId;
+        if (!userId) {
           set.status = 401;
           return { success: false, message: "Unauthorized" };
         }
 
         const result = await ProfileUpdateService.updateUserProfile(
-          profile.userId,
+          userId,
           body
         );
         return result;
@@ -136,7 +138,8 @@ const protectedProfileRoutes = createApp()
     "/me/profile-photo",
     async ({ profile, body, set }) => {
       try {
-        if (!profile) {
+        const userId = profile?.sub || profile?.userId;
+        if (!userId) {
           set.status = 401;
           return { success: false, message: "Unauthorized" };
         }
@@ -147,7 +150,7 @@ const protectedProfileRoutes = createApp()
         }
 
         const photoUrl = await ProfilePhotoService.uploadProfilePhoto(
-          profile.userId,
+          userId,
           body.photo
         );
 

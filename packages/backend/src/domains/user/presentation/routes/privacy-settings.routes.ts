@@ -1,6 +1,6 @@
-// "notification-preferences.routes.ts"
+// "privacy-settings.routes.ts"
 // metropolitan backend
-// Notification preferences management routes
+// Privacy settings management routes
 
 import { logger } from "@bogeychan/elysia-logger";
 import { eq } from "drizzle-orm";
@@ -10,12 +10,12 @@ import { users } from "../../../../shared/infrastructure/database/schema";
 import { createApp } from "../../../../shared/infrastructure/web/app";
 import { authTokenGuard } from "../../../identity/presentation/routes/auth-guards";
 
-export const notificationPreferencesRoutes = createApp()
+export const privacySettingsRoutes = createApp()
   .use(logger({ level: "info" }))
   .use(authTokenGuard)
-  .group("/user/notification-preferences", (app) =>
+  .group("/user/privacy-settings", (app) =>
     app
-      // Get notification preferences
+      // Get privacy settings
       .get(
         "/",
         async ({ profile, db }) => {
@@ -27,9 +27,8 @@ export const notificationPreferencesRoutes = createApp()
           const user = await db.query.users.findFirst({
             where: eq(users.id, userId),
             columns: {
-              smsNotifications: true,
-              pushNotifications: true,
-              emailNotifications: true,
+              marketingConsent: true,
+              privacyAcceptedAt: true,
             },
           });
 
@@ -39,16 +38,16 @@ export const notificationPreferencesRoutes = createApp()
 
           return {
             success: true,
-            preferences: {
-              sms: user.smsNotifications,
-              push: user.pushNotifications,
-              email: user.emailNotifications,
+            settings: {
+              shareDataWithPartners: user.privacyAcceptedAt ? true : false,
+              analyticsData: user.privacyAcceptedAt ? true : false,
+              marketingEmails: user.marketingConsent,
             },
           };
         }
       )
 
-      // Update notification preferences
+      // Update privacy settings
       .put(
         "/",
         async ({ body, profile, db, log }) => {
@@ -57,31 +56,37 @@ export const notificationPreferencesRoutes = createApp()
             return { success: false, message: "Unauthorized" };
           }
 
+          // Update privacy settings
+          const updateData: any = {
+            marketingConsent: body.marketingEmails,
+            updatedAt: new Date(),
+          };
+
+          // Eğer marketing consent true ise, marketing consent timestamp'ini de güncelle
+          if (body.marketingEmails) {
+            updateData.marketingConsentAt = new Date();
+          }
+
           await db
             .update(users)
-            .set({
-              smsNotifications: body.sms,
-              pushNotifications: body.push,
-              emailNotifications: body.email,
-              updatedAt: new Date(),
-            })
+            .set(updateData)
             .where(eq(users.id, userId));
 
           log.info(
-            { userId, preferences: body },
-            "Notification preferences updated"
+            { userId, settings: body },
+            "Privacy settings updated"
           );
 
           return {
             success: true,
-            message: "Notification preferences updated successfully",
+            message: "Privacy settings updated successfully",
           };
         },
         {
           body: t.Object({
-            sms: t.Boolean(),
-            push: t.Boolean(),
-            email: t.Boolean(),
+            shareDataWithPartners: t.Boolean(),
+            analyticsData: t.Boolean(),
+            marketingEmails: t.Boolean(),
           }),
         }
       )

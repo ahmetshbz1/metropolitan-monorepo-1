@@ -26,15 +26,16 @@ export const deleteAccountRoutes = createApp()
       .post(
         "/delete/send-otp",
         async ({ body, profile, headers, log, db }) => {
-          // Get current user
-          if (!profile || !profile.userId) {
+          // Extract userId from JWT structure
+          const userId = profile?.sub || profile?.userId;
+          if (!profile || !userId) {
             return { success: false, message: "Unauthorized" };
           }
 
           // Get user from database
           const user = await db.query.users.findFirst({
             where: and(
-              eq(users.id, profile.userId),
+              eq(users.id, userId),
               isNull(users.deletedAt)
             ),
           });
@@ -71,15 +72,16 @@ export const deleteAccountRoutes = createApp()
       .post(
         "/delete/verify-otp",
         async ({ body, profile, log, db, headers }) => {
-          // Get current user
-          if (!profile || !profile.userId) {
+          // Extract userId from JWT structure
+          const userId = profile?.sub || profile?.userId;
+          if (!profile || !userId) {
             return { success: false, message: "Unauthorized" };
           }
 
           // Get user from database
           const user = await db.query.users.findFirst({
             where: and(
-              eq(users.id, profile.userId),
+              eq(users.id, userId),
               isNull(users.deletedAt)
             ),
           });

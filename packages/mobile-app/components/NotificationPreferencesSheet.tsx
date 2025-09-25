@@ -8,6 +8,7 @@ import Colors from "@/constants/Colors";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/core/api";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useToast } from "@/hooks/useToast";
 import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import React, {
@@ -42,6 +43,7 @@ const NotificationPreferencesSheet = forwardRef<
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
   const { isAuthenticated } = useAuth();
+  const { showToast } = useToast();
   const [preferences, setPreferences] = useState<NotificationPreferences>({
     sms: true,
     push: true,
@@ -69,6 +71,7 @@ const NotificationPreferencesSheet = forwardRef<
       }
     } catch (error) {
       console.error("Failed to load notification preferences:", error);
+      showToast(t("app_settings.notification_update_failed"), "error");
     }
   };
 
@@ -94,12 +97,15 @@ const NotificationPreferencesSheet = forwardRef<
       if (!response.data.success) {
         // Revert on failure
         setPreferences(preferences);
-        console.error("Failed to update notification preferences");
+        showToast(t("app_settings.notification_update_failed"), "error");
+      } else {
+        showToast(t("app_settings.notification_update_success"), "success");
       }
     } catch (error) {
       // Revert on error
       setPreferences(preferences);
       console.error("Failed to update notification preferences:", error);
+      showToast(t("app_settings.notification_update_failed"), "error");
     }
   };
 
