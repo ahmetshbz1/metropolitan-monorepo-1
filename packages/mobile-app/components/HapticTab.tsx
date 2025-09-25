@@ -12,9 +12,9 @@ export function HapticTab(props: BottomTabBarButtonProps) {
   return (
     <PlatformPressable
       {...props}
-      onPressIn={(ev) => {
+      onPress={(ev) => {
         triggerHaptic();
-        props.onPressIn?.(ev);
+        props.onPress?.(ev);
       }}
     />
   );

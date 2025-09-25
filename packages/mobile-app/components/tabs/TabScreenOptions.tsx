@@ -25,6 +25,7 @@ export const useTabScreenOptions = (
           ? "rgba(255, 255, 255, 0.65)"
           : "rgba(0, 0, 0, 0.65)",
     headerShown: true,
+    animationDuration: 150, // Daha hızlı geçiş animasyonu
     headerStyle: {
       backgroundColor: colors.background,
       shadowColor: "transparent",

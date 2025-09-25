@@ -4,7 +4,7 @@
 
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import React from "react";
+import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity, View } from "react-native";
 
@@ -21,7 +21,7 @@ interface TabScreensProps {
   screenOptions: any;
 }
 
-export const TabScreens = ({
+export const TabScreens = memo(({
   cartItemCount,
   handleClearCart,
   handleNotification,
@@ -34,7 +34,11 @@ export const TabScreens = ({
 
   return (
     <Tabs
-      screenOptions={screenOptions}
+      screenOptions={{
+        ...screenOptions,
+        lazy: false, // Tüm tab'ları önceden yükle
+        animation: "shift", // Daha hızlı animasyon
+      }}
       screenListeners={({ navigation, route }) => ({
         tabPress: () => {
           const currentRoute =
@@ -170,4 +174,4 @@ export const TabScreens = ({
       />
     </Tabs>
   );
-};
+});
