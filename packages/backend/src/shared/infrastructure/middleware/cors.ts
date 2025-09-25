@@ -64,7 +64,7 @@ export const corsConfig = () => {
  * Security headers middleware
  * Adds additional security headers to responses
  */
-export const securityHeaders = () => new Elysia().onBeforeHandle(({ set }) => {
+export const securityHeaders = () => new Elysia({ name: 'securityHeaders' }).onBeforeHandle(({ set }) => {
     // Security headers for all responses
     set.headers['X-Content-Type-Options'] = 'nosniff';
     set.headers['X-Frame-Options'] = 'DENY';

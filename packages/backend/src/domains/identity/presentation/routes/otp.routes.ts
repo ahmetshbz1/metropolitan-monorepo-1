@@ -8,7 +8,8 @@ import { t } from "elysia";
 
 import { users } from "../../../../shared/infrastructure/database/schema";
 import { createApp } from "../../../../shared/infrastructure/web/app";
-import { createOtp, verifyOtp } from "../../application/use-cases/otp.service";
+import { createOtp, verifyOtp, createRegistrationOtp, verifyRegistrationOtp, createLoginOtp, verifyLoginOtp } from "../../application/use-cases/otp.service";
+import { getLanguageFromHeader } from "../../infrastructure/templates/sms-templates";
 
 import { phoneNumberSchema, userTypeEnum } from "./auth-guards";
 
@@ -19,13 +20,43 @@ export const otpRoutes = createApp()
       // Send OTP endpoint
       .post(
         "/send-otp",
-        async ({ body, log }) => {
-          await createOtp(body.phoneNumber);
+        async ({ body, headers, log, db }) => {
+          // Get user's preferred language from Accept-Language header
+          const language = getLanguageFromHeader(headers['accept-language']);
+
+          // Check if this is a new registration or login
+          const existingUser = await db.query.users.findFirst({
+            where: and(
+              eq(users.phoneNumber, body.phoneNumber),
+              eq(users.userType, body.userType)
+            ),
+          });
+
+          // Determine the action type
+          const isNewUser = !existingUser || !existingUser.firstName;
+
+          // Send OTP with appropriate action type and language
+          if (isNewUser) {
+            await createRegistrationOtp(body.phoneNumber, language);
+          } else {
+            await createLoginOtp(body.phoneNumber, language);
+          }
+
           log.info(
-            { phoneNumber: body.phoneNumber, userType: body.userType },
+            {
+              phoneNumber: body.phoneNumber,
+              userType: body.userType,
+              action: isNewUser ? 'register' : 'login',
+              language
+            },
             `OTP sent successfully`
           );
-          return { success: true, message: "OTP sent successfully" };
+
+          return {
+            success: true,
+            message: "OTP sent successfully",
+            isNewUser // Frontend may need this info
+          };
         },
         {
           body: t.Object({
@@ -43,8 +74,21 @@ export const otpRoutes = createApp()
             { phoneNumber: body.phoneNumber, userType: body.userType },
             `Attempting to verify OTP`
           );
-          
-          if (await verifyOtp(body.phoneNumber, body.otpCode)) {
+
+          // Check if user exists to determine action type
+          const existingUser = await db.query.users.findFirst({
+            where: and(
+              eq(users.phoneNumber, body.phoneNumber),
+              eq(users.userType, body.userType)
+            ),
+          });
+
+          const isNewUser = !existingUser || !existingUser.firstName;
+          const verifySuccess = isNewUser
+            ? await verifyRegistrationOtp(body.phoneNumber, body.otpCode)
+            : await verifyLoginOtp(body.phoneNumber, body.otpCode);
+
+          if (verifySuccess) {
             // First check for soft-deleted user
             let user = await db.query.users.findFirst({
               where: and(

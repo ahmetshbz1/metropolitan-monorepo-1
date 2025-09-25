@@ -8,7 +8,8 @@ import { t } from "elysia";
 
 import { users } from "../../../../shared/infrastructure/database/schema";
 import { createApp } from "../../../../shared/infrastructure/web/app";
-import { createOtp, verifyOtp } from "../../application/use-cases/otp.service";
+import { createDeleteAccountOtp, verifyDeleteAccountOtp } from "../../application/use-cases/otp.service";
+import { getLanguageFromHeader } from "../../infrastructure/templates/sms-templates";
 import { authTokenGuard, phoneNumberSchema } from "./auth-guards";
 
 export const deleteAccountRoutes = createApp()
@@ -19,7 +20,7 @@ export const deleteAccountRoutes = createApp()
       // Send OTP for account deletion
       .post(
         "/delete/send-otp",
-        async ({ body, profile, log, db }) => {
+        async ({ body, profile, headers, log, db }) => {
           // Get current user
           if (!profile || !profile.userId) {
             return { success: false, message: "Unauthorized" };
@@ -42,10 +43,13 @@ export const deleteAccountRoutes = createApp()
             return { success: false, message: "Phone number does not match account" };
           }
 
-          // Send OTP
-          await createOtp(body.phoneNumber);
+          // Get user's preferred language from Accept-Language header
+          const language = getLanguageFromHeader(headers['accept-language']);
+
+          // Send OTP with delete_account action
+          await createDeleteAccountOtp(body.phoneNumber, language);
           log.info(
-            { userId: user.id, phoneNumber: body.phoneNumber },
+            { userId: user.id, phoneNumber: body.phoneNumber, language },
             `Account deletion OTP sent`
           );
 
@@ -84,8 +88,8 @@ export const deleteAccountRoutes = createApp()
             return { success: false, message: "Phone number does not match account" };
           }
 
-          // Verify OTP
-          const isValid = await verifyOtp(body.phoneNumber, body.otpCode);
+          // Verify OTP with delete_account action
+          const isValid = await verifyDeleteAccountOtp(body.phoneNumber, body.otpCode);
           if (!isValid) {
             return { success: false, message: "Invalid or expired OTP code" };
           }

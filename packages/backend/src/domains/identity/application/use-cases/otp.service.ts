@@ -1,89 +1,96 @@
 //  "otp.service.ts"
 //  metropolitan backend
 //  Created by Ahmet on 21.06.2025.
+//  Updated to use custom OTP generation with multi-language support
 
-import twilio from "twilio";
+import { createAndSendOtp, verifyOtpCode } from "../../infrastructure/services/otp-manager.service";
+import { SmsAction } from "../../infrastructure/templates/sms-templates";
 
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-const verifyServiceSid = process.env.TWILIO_VERIFY_SERVICE_SID;
-
-// Development bypass kodu - production'da otomatik olarak devre dışı
-const BYPASS_OTP_CODE = "555555";
-const BYPASS_ENABLED = process.env.NODE_ENV === 'development';
-
-if (!accountSid || !authToken || !verifyServiceSid) {
-  throw new Error(
-    "Twilio credentials or Verify Service SID are not set in environment variables"
-  );
+// Map legacy function parameters to new action types
+function getActionType(context?: string): SmsAction {
+  // Try to determine action based on context or default to login
+  if (context?.includes('register')) return 'register';
+  if (context?.includes('delete')) return 'delete_account';
+  if (context?.includes('change')) return 'change_phone';
+  return 'login'; // Default action
 }
 
-const client = twilio(accountSid, authToken);
-
 /**
- * Sends a verification OTP to the user's phone number using Twilio Verify.
- * @param phoneNumber The phone number to send the OTP to (E.164 format).
+ * Sends a verification OTP to the user's phone number.
+ * @param phoneNumber The phone number to send the OTP to.
+ * @param action Optional action context (defaults to 'login')
+ * @param language Optional language preference
  */
-export async function createOtp(phoneNumber: string): Promise<void> {
-  // Geçici bypass: SMS gönderme atla
-  if (BYPASS_ENABLED) {
-    console.log(`BYPASS: OTP for ${phoneNumber} would be ${BYPASS_OTP_CODE}`);
-    return;
+export async function createOtp(
+  phoneNumber: string,
+  action?: SmsAction,
+  language?: string
+): Promise<void> {
+  const smsAction = action || 'login';
+
+  const result = await createAndSendOtp(phoneNumber, smsAction, language);
+
+  if (!result.success) {
+    throw new Error(result.message);
   }
 
-  try {
-    await client.verify.v2
-      .services(verifyServiceSid!)
-      .verifications.create({ to: phoneNumber, channel: "sms" });
-    console.log(`Verification OTP sent to ${phoneNumber}`);
-  } catch (error: any) {
-    console.error(`Failed to send OTP to ${phoneNumber}. Error:`, error);
-    // Twilio hata kodlarını kullanıcı dostu mesajlara çevir
-    if (error.code === 60200) {
-      // Invalid Parameter (often phone number)
-      throw new Error("Geçersiz telefon numarası formatı.");
-    }
-    throw new Error(`Twilio Verify API Error: ${error.message}`);
-  }
+  console.log(`OTP sent to ${phoneNumber} for action: ${smsAction}`);
 }
 
 /**
- * Verifies the provided OTP for a given phone number using Twilio Verify.
- * @param phoneNumber The user's phone number (E.164 format).
+ * Verifies the provided OTP for a given phone number.
+ * @param phoneNumber The user's phone number.
  * @param providedCode The OTP code provided by the user.
+ * @param action Optional action context (defaults to 'login')
  * @returns True if the OTP is valid, false otherwise.
  */
 export async function verifyOtp(
   phoneNumber: string,
-  providedCode: string
+  providedCode: string,
+  action?: SmsAction
 ): Promise<boolean> {
-  // Geçici bypass: sabit kod kontrol et
-  if (BYPASS_ENABLED && providedCode === BYPASS_OTP_CODE) {
-    console.log(`BYPASS: Valid OTP code ${BYPASS_OTP_CODE} for ${phoneNumber}`);
-    return true;
+  const smsAction = action || 'login';
+
+  const result = await verifyOtpCode(phoneNumber, providedCode, smsAction);
+
+  if (!result.success) {
+    console.log(`OTP verification failed for ${phoneNumber}: ${result.message}`);
+    return false;
   }
 
-  try {
-    const verificationCheck = await client.verify.v2
-      .services(verifyServiceSid!)
-      .verificationChecks.create({ to: phoneNumber, code: providedCode });
+  return true;
+}
 
-    console.log(
-      `Verification check for ${phoneNumber} status: ${verificationCheck.status}`
-    );
-    return verificationCheck.status === "approved";
-  } catch (error: any) {
-    console.error(`Failed to verify OTP for ${phoneNumber}. Error:`, error);
-    // Twilio hata kodlarını kullanıcı dostu mesajlara çevir
-    if (error.code === 60202) {
-      // Max check attempts reached
-      return false; // Treat as invalid OTP, but could also throw a specific error
-    }
-    if (error.status === 404) {
-      // Not Found (often means code expired or never existed)
-      return false;
-    }
-    // Diğer hatalar için tekrar fırlat
-    throw new Error(`Twilio Verify API Error: ${error.message}`);
-  }
+// Export new functions for specific actions
+export async function createRegistrationOtp(phoneNumber: string, language?: string): Promise<void> {
+  return createOtp(phoneNumber, 'register', language);
+}
+
+export async function createLoginOtp(phoneNumber: string, language?: string): Promise<void> {
+  return createOtp(phoneNumber, 'login', language);
+}
+
+export async function createDeleteAccountOtp(phoneNumber: string, language?: string): Promise<void> {
+  return createOtp(phoneNumber, 'delete_account', language);
+}
+
+export async function createChangePhoneOtp(phoneNumber: string, language?: string): Promise<void> {
+  return createOtp(phoneNumber, 'change_phone', language);
+}
+
+// Export verification functions for specific actions
+export async function verifyRegistrationOtp(phoneNumber: string, code: string): Promise<boolean> {
+  return verifyOtp(phoneNumber, code, 'register');
+}
+
+export async function verifyLoginOtp(phoneNumber: string, code: string): Promise<boolean> {
+  return verifyOtp(phoneNumber, code, 'login');
+}
+
+export async function verifyDeleteAccountOtp(phoneNumber: string, code: string): Promise<boolean> {
+  return verifyOtp(phoneNumber, code, 'delete_account');
+}
+
+export async function verifyChangePhoneOtp(phoneNumber: string, code: string): Promise<boolean> {
+  return verifyOtp(phoneNumber, code, 'change_phone');
 }

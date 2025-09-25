@@ -6,7 +6,8 @@ import { jwt } from "@elysiajs/jwt";
 import { eq, and } from "drizzle-orm";
 import { db } from "../../../../shared/infrastructure/database/connection";
 import { users, phoneChangeRequests } from "../../../../shared/infrastructure/database/schema";
-import { createOtp, verifyOtp } from "../../application/use-cases/otp.service";
+import { createChangePhoneOtp, verifyChangePhoneOtp } from "../../application/use-cases/otp.service";
+import { getLanguageFromHeader } from "../../infrastructure/templates/sms-templates";
 import { randomBytes } from "crypto";
 import { isTokenBlacklisted } from "../../../../shared/infrastructure/database/redis";
 
@@ -175,8 +176,11 @@ export const changePhoneRoutes = new Elysia({ prefix: "/auth/change-phone" })
           };
         }
 
-        // OTP gönder (Twilio Verify kullanıyor)
-        await createOtp(newPhone);
+        // Get user's preferred language from Accept-Language header
+        const language = getLanguageFromHeader(headers['accept-language']);
+
+        // OTP gönder (change_phone action)
+        await createChangePhoneOtp(newPhone, language);
 
         // Yeni session ID oluştur
         const newSessionId = randomBytes(16).toString("hex");
@@ -270,8 +274,8 @@ export const changePhoneRoutes = new Elysia({ prefix: "/auth/change-phone" })
           };
         }
 
-        // OTP'yi doğrula (Twilio Verify kullanıyor)
-        const isValid = await verifyOtp(request[0].newPhone, otp);
+        // OTP'yi doğrula (change_phone action)
+        const isValid = await verifyChangePhoneOtp(request[0].newPhone, otp);
         if (!isValid) {
           return {
             success: false,
@@ -379,8 +383,11 @@ export const changePhoneRoutes = new Elysia({ prefix: "/auth/change-phone" })
           };
         }
 
-        // Yeni OTP gönder (Twilio Verify kullanıyor)
-        await createOtp(phone);
+        // Get user's preferred language from Accept-Language header
+        const language = getLanguageFromHeader(headers['accept-language']);
+
+        // Yeni OTP gönder (change_phone action)
+        await createChangePhoneOtp(phone, language);
 
         // Son güncelleme zamanını kaydet
         await db
