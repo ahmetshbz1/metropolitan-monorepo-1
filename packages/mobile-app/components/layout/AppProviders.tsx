@@ -34,31 +34,32 @@ export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
           <GestureHandlerRootView className="flex-1">
             <ToastProvider>
               <UserSettingsProvider>
-                <ColorSchemeProvider>
-                  <BottomSheetModalProvider>
-                    <AuthProvider>
-                    <ProductProvider>
-                      <AddressProvider>
-                        <PaymentMethodProvider>
-                          <CartProvider>
-                            <FavoritesProvider>
-                              <OrderProvider>
-                                <StripeProviderWrapper>
-                                  <SafeAreaProvider>{children}</SafeAreaProvider>
-                                </StripeProviderWrapper>
-                              </OrderProvider>
-                            </FavoritesProvider>
-                          </CartProvider>
-                        </PaymentMethodProvider>
-                      </AddressProvider>
-                    </ProductProvider>
-                  </AuthProvider>
-                </BottomSheetModalProvider>
-              </ColorSchemeProvider>
-            </UserSettingsProvider>
-          </ToastProvider>
-        </GestureHandlerRootView>
-      </KeyboardProvider>
+                <AuthProvider>
+                  <ProductProvider>
+                    <AddressProvider>
+                      <PaymentMethodProvider>
+                        <CartProvider>
+                          <FavoritesProvider>
+                            <OrderProvider>
+                              <StripeProviderWrapper>
+                                {/* Move ColorSchemeProvider below data providers to avoid re-rendering them on theme change */}
+                                <ColorSchemeProvider>
+                                  <BottomSheetModalProvider>
+                                    <SafeAreaProvider>{children}</SafeAreaProvider>
+                                  </BottomSheetModalProvider>
+                                </ColorSchemeProvider>
+                              </StripeProviderWrapper>
+                            </OrderProvider>
+                          </FavoritesProvider>
+                        </CartProvider>
+                      </PaymentMethodProvider>
+                    </AddressProvider>
+                  </ProductProvider>
+                </AuthProvider>
+              </UserSettingsProvider>
+            </ToastProvider>
+          </GestureHandlerRootView>
+        </KeyboardProvider>
       </NetworkProvider>
     </ErrorBoundary>
   );

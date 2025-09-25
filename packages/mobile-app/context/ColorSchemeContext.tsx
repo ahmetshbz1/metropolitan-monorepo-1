@@ -8,8 +8,10 @@ import React, {
   useEffect,
   useMemo,
   useState,
+  useCallback,
 } from "react";
-import { ColorSchemeName, useColorScheme as useSystemColorScheme } from "react-native";
+import { ColorSchemeName, useColorScheme as useSystemColorScheme, InteractionManager } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUserSettings } from "./UserSettings";
 
 type ColorSchemeContextType = {
@@ -31,10 +33,12 @@ export const ColorSchemeProvider: React.FC<{ children: React.ReactNode }> = ({
   const { settings, isLoading, updateSettings } = useUserSettings();
   const systemColorScheme = useSystemColorScheme();
   const [colorScheme, setColorScheme] = useState<ColorSchemeName>("light");
+  const [themeSetting, setThemeSetting] = useState<"light" | "dark" | "system">("system");
 
   useEffect(() => {
-    // UserSettings yüklendikten sonra tema değerini ayarla
+    // UserSettings yüklendikten sonra başlangıç tema değerini ayarla
     if (!isLoading) {
+      setThemeSetting(settings.theme);
       if (settings.theme === "system") {
         setColorScheme(systemColorScheme || "light");
       } else {
@@ -45,22 +49,46 @@ export const ColorSchemeProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const isDark = colorScheme === "dark";
 
-  // Tema değiştirme fonksiyonu - optimistik güncelleme yapar
-  const toggleTheme = () => {
-    const newTheme = colorScheme === "light" ? "dark" : "light";
-    setColorScheme(newTheme);
-    updateSettings({ theme: newTheme });
-  };
+  // Persist theme without blocking UI thread
+  const persistTheme = useCallback(
+    async (theme: "light" | "dark" | "system") => {
+      // Persist only to storage to avoid triggering global UserSettings re-render
+      // Do it after interactions to keep UI smooth
+      InteractionManager.runAfterInteractions(async () => {
+        try {
+          const raw = await AsyncStorage.getItem("@user_settings");
+          const json = raw ? JSON.parse(raw) : {};
+          const next = { ...json, theme };
+          await AsyncStorage.setItem("@user_settings", JSON.stringify(next));
+        } catch (e) {
+          // swallow persistence errors
+        }
+      });
+    },
+    []
+  );
 
-  // Yeni setTheme fonksiyonu
-  const setTheme = (theme: "light" | "dark" | "system") => {
-    if (theme === "system") {
-      setColorScheme(systemColorScheme || "light");
-    } else {
-      setColorScheme(theme);
-    }
-    updateSettings({ theme });
-  };
+  // Tema değiştirme fonksiyonu - optimistik güncelleme + arka planda persist
+  const toggleTheme = useCallback(() => {
+    const newTheme = colorScheme === "light" ? "dark" : "light";
+    setThemeSetting(newTheme);
+    setColorScheme(newTheme);
+    persistTheme(newTheme);
+  }, [colorScheme, persistTheme]);
+
+  // Yeni setTheme fonksiyonu - optimistik güncelleme + arka planda persist
+  const setTheme = useCallback(
+    (theme: "light" | "dark" | "system") => {
+      setThemeSetting(theme);
+      if (theme === "system") {
+        setColorScheme(systemColorScheme || "light");
+      } else {
+        setColorScheme(theme);
+      }
+      persistTheme(theme);
+    },
+    [systemColorScheme, persistTheme]
+  );
 
   const contextValue = useMemo(
     () => ({
@@ -69,9 +97,9 @@ export const ColorSchemeProvider: React.FC<{ children: React.ReactNode }> = ({
       setColorScheme,
       toggleTheme,
       setTheme,
-      currentThemeSetting: settings.theme
+      currentThemeSetting: themeSetting,
     }),
-    [colorScheme, isDark, toggleTheme, setTheme, settings.theme]
+    [colorScheme, isDark, themeSetting, toggleTheme, setTheme]
   );
 
   return (

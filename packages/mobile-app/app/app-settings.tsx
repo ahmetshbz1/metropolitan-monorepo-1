@@ -18,7 +18,7 @@ import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import * as FileSystem from "expo-file-system";
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useLayoutEffect, useRef, useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, ScrollView, Switch, View } from "react-native";
 import ContextMenu from "react-native-context-menu-view";
@@ -31,6 +31,7 @@ export default function AppSettingsScreen() {
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const { setTheme, currentThemeSetting } = useAppColorScheme();
+  const [isPending, startTransition] = useTransition();
   const { settings, updateSettings } = useUserSettings();
   const notificationSheetRef = useRef<NotificationPreferencesSheetRef>(null);
   const { showToast } = useToast();
@@ -200,7 +201,9 @@ export default function AppSettingsScreen() {
                 onPress={(e) => {
                   const selectedTheme = themes[e.nativeEvent.index];
                   if (selectedTheme) {
-                    setTheme(selectedTheme.code as "light" | "dark" | "system");
+                    startTransition(() => {
+                      setTheme(selectedTheme.code as "light" | "dark" | "system");
+                    });
                   }
                 }}
               >

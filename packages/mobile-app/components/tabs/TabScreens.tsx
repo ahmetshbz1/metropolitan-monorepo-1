@@ -36,7 +36,8 @@ export const TabScreens = memo(({
     <Tabs
       screenOptions={{
         ...screenOptions,
-        lazy: false, // Tüm tab'ları önceden yükle
+        // Lazy render to avoid mounting all tabs; improves theme toggle performance
+        lazy: true,
         animation: "shift", // Daha hızlı animasyon
       }}
       screenListeners={({ navigation, route }) => ({
