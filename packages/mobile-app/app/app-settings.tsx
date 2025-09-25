@@ -5,6 +5,7 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Colors from "@/constants/Colors";
+import { changeLanguage } from "@/core/i18n";
 import { useAppColorScheme } from "@/context/ColorSchemeContext";
 import { useUserSettings } from "@/context/UserSettings";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -39,8 +40,8 @@ export default function AppSettingsScreen() {
     });
   }, [navigation, t]);
 
-  const handleLanguageChange = (lang: string) => {
-    i18n.changeLanguage(lang);
+  const handleLanguageChange = async (lang: string) => {
+    await changeLanguage(lang as "tr" | "en" | "pl");
   };
 
   const languages = [
