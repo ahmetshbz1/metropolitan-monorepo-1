@@ -7,6 +7,7 @@ import { Product } from "@/context/ProductContext";
 import { useProductCard } from "@/hooks/useProductCard";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useNavigationProtection } from "@/hooks/useNavigationProtection";
 import React from "react";
 import { TouchableOpacity, View, Share } from "react-native";
 import { useTranslation } from "react-i18next";
@@ -47,6 +48,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
   } = useProductCard(product);
   const { t } = useTranslation();
   const router = useRouter();
+  const { push: safePush } = useNavigationProtection({ debounceTime: 700 });
   const suppressNextPressRef = React.useRef(false);
   const pressStartTimeRef = React.useRef<number | null>(null);
   const LONG_PRESS_GUARD_MS = 350; // guard single-tap vs long-press
@@ -81,7 +83,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
         handleShare();
         break;
       case 3: // Detayları gör
-        router.push(`/product/${product.id}`);
+        safePush(`/product/${product.id}`);
         break;
     }
   };
@@ -108,7 +110,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
     }
     // reset timestamp before navigating
     pressStartTimeRef.current = null;
-    router.push(`/product/${product.id}`);
+    safePush(`/product/${product.id}`);
   };
 
   const contextMenuActions = [
