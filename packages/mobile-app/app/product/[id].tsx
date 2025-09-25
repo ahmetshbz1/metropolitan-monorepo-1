@@ -80,6 +80,7 @@ export default function ProductDetailScreen() {
     if (product) {
       navigation.setOptions({
         headerTitle: product.name,
+        headerBackTitle: "", // iOS'ta geri butonunda önceki ekran başlığı gösterilmesini engelle
       });
     }
   }, [navigation, product]);
