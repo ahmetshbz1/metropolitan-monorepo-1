@@ -82,7 +82,7 @@ export default function ChangePhoneScreen() {
     // Tam telefon numarasını oluştur
     const fullCurrentPhone = `+${currentCountryCode}${currentPhone.replace(/\s/g, "")}`;
     const formattedCurrent = fullCurrentPhone.replace(/[^0-9+]/g, "");
-    const userPhone = user?.phone?.replace(/[^0-9+]/g, "");
+    const userPhone = user?.phoneNumber?.replace(/[^0-9+]/g, "");
 
     if (formattedCurrent !== userPhone) {
       showToast(t("change_phone.phone_mismatch"), "error");
@@ -120,7 +120,7 @@ export default function ChangePhoneScreen() {
 
     const fullNewPhone = `+${newCountryCode}${newPhone.replace(/\s/g, "")}`;
     const formattedNew = fullNewPhone.replace(/[^0-9+]/g, "");
-    const userPhone = user?.phone?.replace(/[^0-9+]/g, "");
+    const userPhone = user?.phoneNumber?.replace(/[^0-9+]/g, "");
 
     if (formattedNew === userPhone) {
       showToast(t("change_phone.same_as_current"), "error");

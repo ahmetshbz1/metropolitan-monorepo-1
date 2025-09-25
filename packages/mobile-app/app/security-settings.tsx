@@ -205,7 +205,7 @@ export default function SecuritySettingsScreen() {
                     {t("security_settings.change_phone")}
                   </ThemedText>
                   <ThemedText className="text-xs opacity-60 mt-1">
-                    {user?.phone || t("security_settings.no_phone")}
+                    {user?.phoneNumber || t("security_settings.no_phone")}
                   </ThemedText>
                 </View>
                 <Ionicons
