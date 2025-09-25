@@ -55,7 +55,7 @@ export default function PrivacySettingsScreen() {
       try {
         // Backend'den kullanıcının mevcut tercihlerini al
         // Bu endpoint henüz implementasyonda yoksa default değerlerle çalış
-        const response = await api.get("/users/me/profile");
+        const response = await api.get("/users/me");
         const userData = response.data;
 
         // Backend'deki verilerden gizlilik tercihlerini çıkar
