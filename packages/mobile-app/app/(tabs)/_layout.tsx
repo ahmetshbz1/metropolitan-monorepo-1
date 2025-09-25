@@ -5,6 +5,7 @@
 import { useContext, useMemo, useLayoutEffect } from "react";
 import { useNavigation, useRoute, getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
+import { Platform } from "react-native";
 
 import { useTabScreenOptions } from "@/components/tabs/TabScreenOptions";
 import { TabScreens } from "@/components/tabs/TabScreens";
@@ -65,7 +66,16 @@ export default function TabLayout() {
 
     navigation.setOptions({
       title: title,
-    });
+      // iOS back button title persistence önleme - güçlendirilmiş ayarlar
+      headerBackTitle: "",
+      headerBackTitleVisible: false,
+      headerBackButtonDisplayMode: "minimal" as const,
+      // iOS-specific ek ayarlar
+      ...(Platform.OS === 'ios' && {
+        headerBackTitleStyle: { fontSize: 0 },
+        headerBackButtonMenuEnabled: false,
+      }),
+    } as any);
   }, [navigation, route, t, i18n.language]);
 
   return (

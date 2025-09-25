@@ -14,9 +14,9 @@ import { useCart } from "@/context/CartContext";
 import { useProducts } from "@/context/ProductContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useLocalSearchParams, useNavigation } from "expo-router";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, Platform, View } from "react-native";
 import { KeyboardStickyView } from "react-native-keyboard-controller";
 
 export default function ProductDetailScreen() {
@@ -75,13 +75,28 @@ export default function ProductDetailScreen() {
     }
   };
 
+  // İlk render'da geri buton başlığını temizle - güçlendirilmiş versiyon
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerBackTitle: "", // iOS'ta geri butonunda başlık gösterme
+      headerBackTitleVisible: false, // iOS'ta geri butonunda başlığı tamamen gizle
+      headerBackButtonDisplayMode: "minimal" as const, // Sadece ok göster
+      // iOS-specific ek güvenlik önlemleri
+      ...Platform.select({
+        ios: {
+          headerBackTitleStyle: { fontSize: 0 },
+          headerBackButtonMenuEnabled: false,
+        },
+      }),
+    } as any);
+  }, [navigation]);
+
   // Native header'a ürün adını ekle
   useLayoutEffect(() => {
     if (product) {
       navigation.setOptions({
         headerTitle: product.name,
-        headerBackTitle: "", // iOS'ta geri butonunda önceki ekran başlığı gösterilmesini engelle
-      });
+      } as any);
     }
   }, [navigation, product]);
 

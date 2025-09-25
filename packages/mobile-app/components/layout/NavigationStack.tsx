@@ -31,7 +31,7 @@ export const NavigationStack: React.FC = () => {
   // Navigation logic hook
   useAppNavigation();
 
-  const screenOptions = {
+  const screenOptions: any = {
     headerStyle: {
       backgroundColor: colors.background,
       ...Platform.select({
@@ -44,8 +44,16 @@ export const NavigationStack: React.FC = () => {
       ...LAYOUT_CONFIG.headerTitleStyle,
       color: colors.text,
     },
-    headerBackButtonDisplayMode:
-      LAYOUT_CONFIG.headerOptions.backButtonDisplayMode,
+    // iOS back button title persistence fix
+    headerBackButtonDisplayMode: "minimal", // Sadece ok göster, title gösterme
+    headerBackTitleVisible: false, // iOS'ta geri butonunda önceki ekran başlığını gösterme
+    headerBackTitle: "", // iOS için alternatif ayar - boş string
+    ...Platform.select({
+      ios: {
+        headerBackTitleStyle: { fontSize: 0 }, // iOS için ek güvenlik
+        headerBackButtonMenuEnabled: false, // Long press menüsünü devre dışı bırak
+      },
+    }),
   };
 
   return (

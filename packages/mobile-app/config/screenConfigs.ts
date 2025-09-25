@@ -3,6 +3,7 @@
 //  Created by Ahmet on 08.06.2025.
 
 import type { NativeStackNavigationOptions } from "@react-navigation/native-stack";
+import { Platform } from "react-native";
 
 interface RouteProps {
   route: {
@@ -47,6 +48,17 @@ export const DYNAMIC_SCREEN_CONFIGS: ScreenConfig[] = [
         backgroundColor: undefined, // colors.background - dinamik olarak ayarlanacak
       },
       headerTintColor: undefined, // colors.text - dinamik olarak ayarlanacak
+      // iOS back button title persistence için güçlendirilmiş ayarlar
+      headerBackTitle: "",
+      headerBackTitleVisible: false,
+      headerBackButtonDisplayMode: "minimal" as const,
+      // iOS-specific ek ayarlar
+      ...Platform.select({
+        ios: {
+          headerBackTitleStyle: { fontSize: 0 },
+          headerBackButtonMenuEnabled: false,
+        },
+      }),
       // Header butonları product screen içinde dinamik olarak ayarlanacak
     }),
   },
@@ -133,7 +145,7 @@ export const LAYOUT_CONFIG = {
   },
   headerOptions: {
     shadowVisible: false,
-    backButtonDisplayMode: "default" as const, // iOS'ta metin de göster
+    backButtonDisplayMode: "minimal" as const, // Sadece ok göster, metin gösterme
   },
   headerTitleStyle: {
     fontWeight: "600" as const,
