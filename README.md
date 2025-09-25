@@ -1,48 +1,113 @@
-# Metropolitan Workspace
+# Metropolitan E-commerce Platform
 
-Bu proje, Metropolitan e-ticaret sisteminin tüm bileşenlerini içeren bir monorepo yapısıdır.
+Modern e-commerce platform built with React Native, Expo, and Elysia.js.
 
-## Proje Yapısı
+## 🏗️ Monorepo Architecture
 
-```
-metropolitan-workspace/
-├── packages/
-│   ├── mobile-app/          # React Native mobil uygulama
-│   ├── backend/             # Node.js/TypeScript API
-│   ├── admin-panel/         # Admin paneli (gelecekte)
-│   ├── website/             # Ana website (gelecekte)
-│   └── shared/              # Ortak kod ve tipler
-│       ├── types/           # API tipleri
-│       ├── utils/           # Utility fonksiyonları
-│       ├── constants/       # Sabitler
-│       └── ui/              # Ortak UI bileşenleri
-├── package.json             # Workspace konfigürasyonu
-└── README.md
-```
+**Bun workspaces** monorepo with e-commerce domain focus:
+- **packages/backend**: Elysia.js + Bun API (Domain-Driven Design)
+- **packages/mobile-app**: React Native + Expo mobile application
+- **packages/shared**: TypeScript types, constants, utilities (@metropolitan/shared)
 
-## Kurulum
+## ⚡ Quick Start
 
+### 1. Install Dependencies
 ```bash
-# Tüm paketleri yükle
+# Install all dependencies
 bun run install:all
 
-# Veya tek tek
-cd packages/mobile-app && bun install
+# Or individually
 cd packages/backend && bun install
+cd packages/mobile-app && bun install
 ```
 
-## Geliştirme
+### 2. Environment Setup
+```bash
+# Backend environment
+cd packages/backend
+cp .env.example .env
+# Edit .env with your configuration
+
+# Mobile app environment
+cd packages/mobile-app
+cp .env.example .env
+# Edit .env with your backend API URL
+```
+
+### 3. Database Setup
+```bash
+cd packages/backend
+bun run db:generate
+bun run db:migrate
+bun run db:seed
+```
+
+### 4. Start Development
+```bash
+# Start all services
+bun run dev:all
+
+# Or individually
+bun run dev:backend
+bun run dev:mobile
+```
+
+## 📱 Mobile App Development
 
 ```bash
-# Mobil uygulamayı başlat
-bun run dev:mobile
+cd packages/mobile-app
 
-# Backend'i başlat
-bun run dev:backend
+# Start Expo development server
+bun run start
 
-# İkisini birden başlat
-bun run dev:all
+# Platform specific
+bun run android
+bun run ios
+bun run web
 ```
+
+## 🔧 Backend API Development
+
+```bash
+cd packages/backend
+
+# Hot reload development server
+bun --hot index.ts
+
+# Database operations
+bun run db:generate
+bun run db:migrate
+bun run db:seed
+
+# Testing
+bun run test
+```
+
+## 🎯 Tech Stack
+
+### Backend
+- **Runtime**: Bun (modern JavaScript runtime)
+- **Framework**: Elysia.js (TypeScript-first)
+- **Database**: PostgreSQL + Drizzle ORM
+- **Cache**: Redis
+- **Auth**: JWT + token blacklisting
+- **Payments**: Stripe integration
+- **SMS**: Twilio (OTP)
+
+### Mobile App
+- **Framework**: Expo SDK 53 + React Native 0.79
+- **Router**: Expo Router v5 (file-based routing)
+- **State**: React Context API + custom hooks
+- **Styling**: NativeWind 4.1 (Tailwind CSS for React Native)
+- **API**: Axios + JWT token interceptors
+- **Storage**: Expo SecureStore
+- **Payments**: Stripe React Native
+- **i18n**: react-i18next (TR, EN, PL)
+
+### Shared Package
+- **Types**: Order, Product, User, Cart, Address, Payment
+- **Constants**: API_ENDPOINTS, ORDER_STATUS, ERROR_MESSAGES
+- **Utils**: formatPrice, validatePhone, formatDate
 
 ## Kullanım
 
