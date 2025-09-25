@@ -10,7 +10,12 @@ import { users } from "../../../../shared/infrastructure/database/schema";
 import { createApp } from "../../../../shared/infrastructure/web/app";
 import { createDeleteAccountOtp, verifyDeleteAccountOtp } from "../../application/use-cases/otp.service";
 import { getLanguageFromHeader } from "../../infrastructure/templates/sms-templates";
-import { authTokenGuard, phoneNumberSchema } from "./auth-guards";
+import { authTokenGuard, phoneNumberSchema, extractToken } from "./auth-guards";
+import { blacklistToken } from "../../../../shared/infrastructure/database/redis";
+import {
+  invalidateAllUserSessions,
+  removeAllUserRefreshTokens
+} from "../../infrastructure/security/device-fingerprint";
 
 export const deleteAccountRoutes = createApp()
   .use(logger({ level: "info" }))
@@ -65,7 +70,7 @@ export const deleteAccountRoutes = createApp()
       // Verify OTP and soft delete account
       .post(
         "/delete/verify-otp",
-        async ({ body, profile, log, db }) => {
+        async ({ body, profile, log, db, headers }) => {
           // Get current user
           if (!profile || !profile.userId) {
             return { success: false, message: "Unauthorized" };
@@ -103,10 +108,34 @@ export const deleteAccountRoutes = createApp()
             })
             .where(eq(users.id, user.id));
 
-          log.info(
-            { userId: user.id },
-            `Account soft deleted successfully`
-          );
+          // IMPORTANT: Clear all Redis data for security
+          try {
+            // 1. Invalidate all device sessions
+            await invalidateAllUserSessions(user.id);
+
+            // 2. Remove all refresh tokens
+            await removeAllUserRefreshTokens(user.id);
+
+            // 3. Blacklist current access token
+            const token = extractToken(headers.authorization);
+            if (token && profile.exp) {
+              const expiresIn = profile.exp - Math.floor(Date.now() / 1000);
+              if (expiresIn > 0) {
+                await blacklistToken(token, expiresIn);
+              }
+            }
+
+            log.info(
+              { userId: user.id },
+              `Account soft deleted and all sessions cleared successfully`
+            );
+          } catch (error) {
+            log.error(
+              { userId: user.id, error },
+              `Failed to clear Redis data after account deletion`
+            );
+            // Don't fail the deletion if Redis cleanup fails
+          }
 
           return {
             success: true,

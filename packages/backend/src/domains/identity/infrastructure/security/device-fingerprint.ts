@@ -315,6 +315,19 @@ export async function verifyRefreshToken(
 }
 
 /**
+ * Remove all refresh tokens for a user
+ */
+export async function removeAllUserRefreshTokens(userId: string): Promise<void> {
+  const pattern = `refresh_token:${userId}:*`;
+  const keys = await redis.keys(pattern);
+
+  if (keys.length > 0) {
+    await redis.del(...(keys as string[]));
+    console.log(`[SECURITY] Removed ${keys.length} refresh tokens for user: ${userId}`);
+  }
+}
+
+/**
  * Blacklist JWT by JTI
  */
 export async function blacklistJTI(jti: string, expiresIn: number): Promise<void> {
