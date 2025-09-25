@@ -14,6 +14,7 @@ const STORAGE_KEYS = {
   USER_DATA: "user_data",
   GUEST_ID: "guest_id",
   IS_GUEST: "is_guest",
+  SOCIAL_AUTH_DATA: "social_auth_data",
 } as const;
 
 // Enhanced token storage with access/refresh token support
@@ -112,6 +113,22 @@ export const guestStorage = {
   },
 };
 
+// Social auth data operations
+export const socialAuthStorage = {
+  async save(data: any): Promise<void> {
+    await AsyncStorage.setItem(STORAGE_KEYS.SOCIAL_AUTH_DATA, JSON.stringify(data));
+  },
+
+  async get(): Promise<any | null> {
+    const data = await AsyncStorage.getItem(STORAGE_KEYS.SOCIAL_AUTH_DATA);
+    return data ? JSON.parse(data) : null;
+  },
+
+  async remove(): Promise<void> {
+    await AsyncStorage.removeItem(STORAGE_KEYS.SOCIAL_AUTH_DATA);
+  },
+};
+
 // Tüm auth verilerini temizle
 export const clearAllAuthData = async (): Promise<void> => {
   try {
@@ -119,6 +136,7 @@ export const clearAllAuthData = async (): Promise<void> => {
       tokenStorage.remove(),
       userStorage.remove(),
       guestStorage.clearGuest(),
+      socialAuthStorage.remove(),
     ]);
   } catch (error) {
     console.error("Auth verilerini temizlerken hata oluştu:", error);
@@ -128,11 +146,12 @@ export const clearAllAuthData = async (): Promise<void> => {
 // Auth durumunu yükle
 export const loadAuthState = async () => {
   try {
-    const [token, user, guestId, isGuestFlag] = await Promise.all([
+    const [token, user, guestId, isGuestFlag, socialAuthData] = await Promise.all([
       tokenStorage.get(),
       userStorage.get(),
       guestStorage.getGuestId(),
       guestStorage.isGuest(),
+      socialAuthStorage.get(),
     ]);
 
     return {
@@ -140,6 +159,7 @@ export const loadAuthState = async () => {
       user,
       guestId,
       isGuest: isGuestFlag,
+      socialAuthData,
     };
   } catch (error) {
     console.error("Auth durumu yüklenirken hata oluştu:", error);
@@ -148,6 +168,7 @@ export const loadAuthState = async () => {
       user: null,
       guestId: null,
       isGuest: false,
+      socialAuthData: null,
     };
   }
 };

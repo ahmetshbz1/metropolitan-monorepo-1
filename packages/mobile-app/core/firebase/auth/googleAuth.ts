@@ -10,10 +10,17 @@ const useProxy = Constants.appOwnership === 'expo';
 
 export const signInWithGoogle = async () => {
   try {
+    // Development build'de native client ID, Expo Go'da web client ID
+    const isExpoGo = Constants.appOwnership === 'expo';
+
+    // Native build'de custom scheme, Expo Go'da proxy kullan
     const redirectUri = AuthSession.makeRedirectUri({
-      scheme: 'com.metropolitan.food',
-      useProxy,
+      scheme: isExpoGo ? undefined : 'com.metropolitan.food',
+      useProxy: isExpoGo,
     });
+
+    console.log('Google Sign-In Redirect URI:', redirectUri);
+    console.log('Using Expo Go:', isExpoGo);
 
     const discovery = {
       authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
@@ -21,20 +28,21 @@ export const signInWithGoogle = async () => {
       revocationEndpoint: 'https://oauth2.googleapis.com/revoke',
     };
 
-    const clientId = useProxy
+    // Native build'de iOS client ID, Expo Go'da web client ID
+    const clientId = isExpoGo
       ? process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
       : process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
 
     if (!clientId) {
-      throw new Error('Google Client ID not configured');
+      throw new Error(`Google ${isExpoGo ? 'Web' : 'iOS'} Client ID not configured`);
     }
 
     const request = new AuthSession.AuthRequest({
       clientId,
       scopes: ['openid', 'profile', 'email'],
       redirectUri,
-      responseType: AuthSession.ResponseType.IdToken,
-      usePKCE: false,
+      responseType: AuthSession.ResponseType.Code,
+      usePKCE: true,
       extraParams: {
         access_type: 'offline',
         prompt: 'select_account',
@@ -44,20 +52,52 @@ export const signInWithGoogle = async () => {
     const result = await request.promptAsync(discovery);
 
     if (result.type === 'success') {
-      const { id_token } = result.params;
+      if (!result.params.code) {
+        throw new Error('No authorization code received from Google');
+      }
+
+      console.log('Google Sign-In: Exchanging authorization code for tokens...');
+
+      // Exchange code for tokens
+      const tokenResult = await AuthSession.exchangeCodeAsync(
+        {
+          clientId,
+          code: result.params.code,
+          redirectUri,
+          extraParams: request.codeVerifier
+            ? { code_verifier: request.codeVerifier }
+            : undefined,
+        },
+        discovery
+      );
+
+      console.log('Token Exchange Result:', JSON.stringify(tokenResult, null, 2));
+
+      // Google OAuth 2.0'da idToken farklı key'lerde olabilir
+      const id_token = tokenResult.idToken || tokenResult.id_token;
+      const access_token = tokenResult.accessToken || tokenResult.access_token;
 
       if (!id_token) {
+        console.error('Token result does not contain ID token:', tokenResult);
         throw new Error('No ID token received from Google');
       }
 
-      const credential = GoogleAuthProvider.credential(id_token);
+      const credential = GoogleAuthProvider.credential(id_token, access_token);
       const userCredential = await signInWithCredential(auth, credential);
 
       const user = userCredential.user;
+
+      // Parse first and last name from displayName
+      const nameParts = user.displayName?.split(' ') || [];
+      const firstName = nameParts[0] || null;
+      const lastName = nameParts.slice(1).join(' ') || null;
+
       const userData = {
         uid: user.uid,
         email: user.email,
-        displayName: user.displayName,
+        fullName: user.displayName,
+        firstName: firstName,
+        lastName: lastName,
         photoURL: user.photoURL,
         provider: 'google',
       };

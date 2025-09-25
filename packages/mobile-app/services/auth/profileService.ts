@@ -41,6 +41,7 @@ export const completeProfile = async (
         email: userData.email,
         userType: userData.userType,
         ...(userData.nip ? { nip: userData.nip } : {}),
+        ...(userData.firebaseUid ? { firebaseUid: userData.firebaseUid } : {}),
         termsAccepted: userData.termsAccepted,
         privacyAccepted: userData.privacyAccepted,
         marketingConsent: userData.marketingConsent,

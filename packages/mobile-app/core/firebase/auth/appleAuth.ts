@@ -35,15 +35,23 @@ export const signInWithApple = async () => {
     const userCredential = await signInWithCredential(auth, credential);
 
     const user = userCredential.user;
+    // Apple ilk girişte bilgi verir, sonrakilerde vermez
+    const firstName = appleCredential.fullName?.givenName || null;
+    const lastName = appleCredential.fullName?.familyName || null;
+    const fullName = firstName && lastName
+      ? `${firstName} ${lastName}`.trim()
+      : firstName || lastName || null;
+
     const userData = {
       uid: user.uid,
       email: user.email || appleCredential.email,
-      fullName: appleCredential.fullName
-        ? `${appleCredential.fullName.givenName || ''} ${appleCredential.fullName.familyName || ''}`.trim()
-        : null,
+      fullName: fullName,
+      firstName: firstName,
+      lastName: lastName,
       photoURL: user.photoURL,
       provider: 'apple',
     };
+
 
     return { success: true, user: userData };
   } catch (error: any) {

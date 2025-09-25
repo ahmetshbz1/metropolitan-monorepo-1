@@ -14,7 +14,6 @@ import { AuthHeader } from "@/components/auth/AuthHeader";
 import { AuthProgressIndicator } from "@/components/auth/AuthProgressIndicator";
 import { PhoneInput } from "@/components/auth/PhoneInput";
 import { SendCodeButton } from "@/components/auth/SendCodeButton";
-import { SocialAuthButtons } from "@/components/auth/SocialAuthButtons";
 import { ThemedView } from "@/components/ThemedView";
 import { usePhoneLogin } from "@/hooks/usePhoneLogin";
 import { useToast } from "@/hooks/useToast";
@@ -83,7 +82,6 @@ const PhoneLoginScreen = () => {
             onCountryCodeFocus={handleCountryCodeFocus}
             onCountryCodeBlur={handleCountryCodeBlur}
           />
-          <SocialAuthButtons />
         </View>
       </KeyboardAwareScrollView>
       <KeyboardStickyView>

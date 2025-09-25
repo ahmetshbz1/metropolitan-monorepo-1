@@ -5,7 +5,7 @@
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "expo-router";
-import { startTransition, useCallback, useState } from "react";
+import { startTransition, useCallback, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Keyboard } from "react-native";
 
@@ -47,12 +47,13 @@ interface UseUserInfoFormReturn {
 
 export function useUserInfoForm(isB2B: boolean): UseUserInfoFormReturn {
   const { t } = useTranslation();
-  const { completeProfile, registrationToken } = useAuth();
+  const { completeProfile, registrationToken, socialAuthData } = useAuth();
   const { showToast } = useToast();
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
+  // Auto-fill from social auth data if available
+  const [firstName, setFirstName] = useState(socialAuthData?.firstName || "");
+  const [lastName, setLastName] = useState(socialAuthData?.lastName || "");
+  const [email, setEmail] = useState(socialAuthData?.email || "");
   const [nip, setNip] = useState("");
 
   const [companyData, setCompanyData] = useState<NipResponse | null>(null);
@@ -86,6 +87,21 @@ export function useUserInfoForm(isB2B: boolean): UseUserInfoFormReturn {
       checkAcceptance();
     }, [])
   );
+
+  // Auto-fill form when social auth data changes
+  useEffect(() => {
+    if (socialAuthData) {
+      if (socialAuthData.firstName) {
+        setFirstName(socialAuthData.firstName);
+      }
+      if (socialAuthData.lastName) {
+        setLastName(socialAuthData.lastName);
+      }
+      if (socialAuthData.email) {
+        setEmail(socialAuthData.email);
+      }
+    }
+  }, [socialAuthData]);
 
   const isFormValid = isB2B
     ? firstName.trim() !== "" &&
@@ -166,6 +182,7 @@ export function useUserInfoForm(isB2B: boolean): UseUserInfoFormReturn {
       termsAccepted: termsAccepted,
       privacyAccepted: privacyAccepted,
       marketingConsent: marketingAccepted,
+      ...(socialAuthData?.uid && { firebaseUid: socialAuthData.uid }),
     });
     setIsSaving(false);
     if (!result.success) {

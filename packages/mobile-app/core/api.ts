@@ -38,3 +38,4 @@ const api = axios.create({
 setupInterceptors(api);
 
 export { api };
+export default api;

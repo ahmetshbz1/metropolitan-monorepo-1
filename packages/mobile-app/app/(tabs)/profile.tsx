@@ -6,7 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { RefreshControl, ScrollView, View } from "react-native";
+import { RefreshControl, ScrollView, View, TouchableOpacity } from "react-native";
 import { useNavigationProtection } from "@/hooks/useNavigationProtection";
 
 import { HapticButton } from "@/components/HapticButton";

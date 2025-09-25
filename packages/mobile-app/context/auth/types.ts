@@ -15,6 +15,16 @@ export interface MobileUser extends User {
   userType?: "individual" | "corporate";
 }
 
+export interface SocialAuthData {
+  uid: string;
+  email?: string | null;
+  fullName?: string | null;
+  firstName?: string;
+  lastName?: string;
+  photoURL?: string | null;
+  provider: 'apple' | 'google';
+}
+
 export type AuthContextType = {
   user: MobileUser | null;
   token: string | null; // Access token for backward compatibility
@@ -24,6 +34,7 @@ export type AuthContextType = {
   isGuest: boolean;
   guestId: string | null;
   phoneNumber: string | null;
+  socialAuthData: SocialAuthData | null; // Sosyal giriş bilgileri
   isAuthenticated: boolean;
   sendOTP: (
     phoneNumber: string,

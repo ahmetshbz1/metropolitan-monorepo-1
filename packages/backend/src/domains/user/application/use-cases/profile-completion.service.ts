@@ -116,6 +116,7 @@ export class ProfileCompletionService {
         companyId: companyId,
         privacyAccepted: profileData.privacyAccepted,
         marketingConsent: profileData.marketingConsent,
+        firebaseUid: profileData.firebaseUid,
       }
     );
 

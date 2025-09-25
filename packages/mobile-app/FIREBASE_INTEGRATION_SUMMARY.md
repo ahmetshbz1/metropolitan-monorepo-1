@@ -120,8 +120,43 @@ bunx eas build --profile development --platform android
 4. Push notification backend entegrasyonu
 5. Analytics entegrasyonu (opsiyonel)
 
+## 🔧 Google Sign-In Hatası Çözümü
+
+### Sorun: "unsupported_response_type" Hatası
+Google Sign-In sırasında OAuth 2.0 hatasıyla karşılaşıldı.
+
+### Çözüm Detayları
+1. **OAuth Flow Güncellendi:**
+   - `ResponseType.IdToken` → `ResponseType.Code` değiştirildi
+   - PKCE (Proof Key for Code Exchange) eklendi
+   - Authorization code exchange flow implementasyonu
+
+2. **Client ID Yapılandırması:**
+   - Her zaman Web Client ID kullanılıyor (mobile için de gerekli)
+   - `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` zorunlu
+
+3. **User Data Parsing:**
+   - displayName'den firstName/lastName ayrıştırması
+   - Null safety kontrolleri
+
+### Google Cloud Console Kontrol Listesi
+✅ OAuth 2.0 Web Client ID oluşturuldu mu?
+✅ Authorized redirect URIs eklendi mi?
+   - `com.metropolitan.food://`
+   - `https://auth.expo.io/@your-username/your-app`
+✅ iOS Client ID bundle ID doğru mu? (`com.metropolitan.food`)
+
+### Test Prosedürü
+1. Konsol loglarını açın
+2. Google ile giriş yap'a tıklayın
+3. Redirect URI'yi kontrol edin (konsol logu)
+4. Google hesabı seçin
+5. İzinleri onaylayın
+6. Token exchange başarılı mı kontrol edin
+
 ---
 
 **Entegrasyon Tarihi:** 25 Eylül 2025
+**Son Güncelleme:** 26 Eylül 2025
 **Paket Yöneticisi:** Bun
 **Expo SDK:** 53.0.20

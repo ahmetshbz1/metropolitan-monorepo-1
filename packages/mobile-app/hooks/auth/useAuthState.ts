@@ -3,7 +3,7 @@
 //  Created by Ahmet on 27.07.2025.
 
 import { useEffect, useState } from "react";
-import { User } from "@/context/auth/types";
+import { User, SocialAuthData } from "@/context/auth/types";
 import { loadAuthState } from "@/context/auth/storage";
 
 export interface AuthState {
@@ -15,6 +15,7 @@ export interface AuthState {
   isGuest: boolean;
   guestId: string | null;
   phoneNumber: string | null;
+  socialAuthData: SocialAuthData | null;
   loading: boolean;
 }
 
@@ -27,6 +28,7 @@ export const useAuthState = () => {
   const [isGuest, setIsGuest] = useState<boolean>(false);
   const [guestId, setGuestId] = useState<string | null>(null);
   const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
+  const [socialAuthData, setSocialAuthData] = useState<SocialAuthData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   // Uygulama başlatıldığında kimlik doğrulama durumunu yükle
@@ -49,6 +51,10 @@ export const useAuthState = () => {
         if (authState.guestId) {
           setGuestId(authState.guestId);
           setIsGuest(true);
+        }
+
+        if (authState.socialAuthData) {
+          setSocialAuthData(authState.socialAuthData);
         }
       } catch (error) {
         console.error("❌ Kimlik doğrulama durumu yüklenemedi:", error);
@@ -77,6 +83,7 @@ export const useAuthState = () => {
     isGuest,
     guestId,
     phoneNumber,
+    socialAuthData,
     loading,
     // State setters
     setUser,
@@ -87,5 +94,6 @@ export const useAuthState = () => {
     setIsGuest,
     setGuestId,
     setPhoneNumber,
+    setSocialAuthData,
   };
 };

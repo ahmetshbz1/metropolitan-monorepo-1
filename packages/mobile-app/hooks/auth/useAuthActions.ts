@@ -15,7 +15,9 @@ import {
   clearAllAuthData,
   tokenStorage,
   userStorage,
+  socialAuthStorage,
 } from "@/context/auth/storage";
+import { firebaseSignOut } from "@/core/firebase/auth/signOut";
 
 interface AuthActions {
   sendOTP: (
@@ -42,6 +44,7 @@ interface AuthActionsDeps {
   registrationToken: string | null;
   guestId: string | null;
   phoneNumber: string | null;
+  socialAuthData: any | null;
   setUser: (user: User | null) => void;
   setToken: (token: string | null) => void;
   setAccessToken: (token: string | null) => void;
@@ -50,6 +53,7 @@ interface AuthActionsDeps {
   setIsGuest: (value: boolean) => void;
   setGuestId: (id: string | null) => void;
   setPhoneNumber: (phone: string | null) => void;
+  setSocialAuthData: (data: any | null) => void;
   migrateGuestToUser: (phoneNumber: string, guestId: string) => Promise<void>;
 }
 
@@ -59,6 +63,7 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
     registrationToken,
     guestId,
     phoneNumber,
+    socialAuthData,
     setUser,
     setToken,
     setAccessToken,
@@ -67,6 +72,7 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
     setIsGuest,
     setGuestId,
     setPhoneNumber,
+    setSocialAuthData,
     migrateGuestToUser,
   } = deps;
 
@@ -137,7 +143,13 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
       return { success: false, message: "Kayıt token'ı bulunamadı." };
     }
 
-    const result = await completeProfileService(userData, registrationToken);
+    // Add firebaseUid from social auth data if available
+    const profileData = {
+      ...userData,
+      ...(socialAuthData?.uid ? { firebaseUid: socialAuthData.uid } : {}),
+    };
+
+    const result = await completeProfileService(profileData, registrationToken);
 
     if (result.success) {
       if (result.accessToken && result.refreshToken) {
@@ -163,6 +175,10 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
           console.error("Misafir verisi taşıma hatası:", error);
         }
       }
+
+      // Clear social auth data after successful profile completion
+      setSocialAuthData(null);
+      await socialAuthStorage.remove();
 
       // Kullanıcı profilini çek
       try {
@@ -196,6 +212,13 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
       // Logout işlemi local olarak devam etsin
     }
 
+    // Firebase'den çıkış yap
+    try {
+      await firebaseSignOut();
+    } catch (e: any) {
+      console.error("Firebase logout başarısız:", e);
+    }
+
     // Local state'i temizle
     setUser(null);
     setToken(null);
@@ -205,6 +228,7 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
     setIsGuest(false);
     setGuestId(null);
     setPhoneNumber(null);
+    setSocialAuthData(null);
 
     // Tüm kimlik doğrulama verilerini temizle
     await clearAllAuthData();

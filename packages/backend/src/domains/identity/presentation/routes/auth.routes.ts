@@ -10,6 +10,7 @@ import { deleteAccountRoutes } from "./delete-account.routes";
 import { guestMigrationRoutes } from "./guest-migration.routes";
 import { logoutRoutes } from "./logout.routes";
 import { otpRoutes } from "./otp.routes";
+import { socialAuthRoutes } from "./social-auth.routes";
 
 /**
  * Authentication routes coordinator
@@ -18,6 +19,8 @@ import { otpRoutes } from "./otp.routes";
 export const authRoutes = createApp()
   // Mount OTP routes (send-otp, verify-otp)
   .use(otpRoutes)
+  // Mount social auth routes (Apple, Google via Firebase)
+  .use(socialAuthRoutes)
   // Mount guest data migration routes
   .use(guestMigrationRoutes)
   // Mount logout routes (includes auth guard)

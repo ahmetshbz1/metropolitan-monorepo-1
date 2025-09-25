@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>18493082891-0qg1bp44jncs4m7jt6426ud1cv7bil4t.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.18493082891-0qg1bp44jncs4m7jt6426ud1cv7bil4t</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>18493082891-lrm3rhsfonmun2j35v2mmk76t10cn96t.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDZTjMiSNfP9kwHJpCF3CCl8ZwvLbsjDGw</string>
+	<key>GCM_SENDER_ID</key>
+	<string>18493082891</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.metropolitan.food</string>
+	<key>PROJECT_ID</key>
+	<string>metropolitan-c84b7</string>
+	<key>STORAGE_BUCKET</key>
+	<string>metropolitan-c84b7.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:18493082891:ios:4090c7f397e7038f7ce60e</string>
+</dict>
+</plist>

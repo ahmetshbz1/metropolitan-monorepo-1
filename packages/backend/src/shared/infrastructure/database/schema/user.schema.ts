@@ -35,6 +35,8 @@ export const users = pgTable(
     firstName: text("first_name"),
     lastName: text("last_name"),
     email: text("email").unique(),
+    // Firebase Authentication UID
+    firebaseUid: text("firebase_uid").unique(),
     // Kullanıcı tipi: 'individual' veya 'corporate'
     userType: text("user_type").notNull().default("individual"),
     profilePhotoUrl: text("profile_photo_url"),

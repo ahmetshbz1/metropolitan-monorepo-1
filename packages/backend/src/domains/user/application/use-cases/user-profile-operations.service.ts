@@ -56,6 +56,7 @@ export class UserProfileOperationsService {
       companyId: string | null;
       privacyAccepted?: boolean;
       marketingConsent?: boolean;
+      firebaseUid?: string;
     }
   ) {
     const [updatedUser] = await db
@@ -65,6 +66,7 @@ export class UserProfileOperationsService {
         lastName: profileData.lastName,
         email: profileData.email,
         companyId: profileData.companyId,
+        firebaseUid: profileData.firebaseUid,
         termsAcceptedAt: new Date(),
         privacyAcceptedAt: profileData.privacyAccepted ? new Date() : null,
         marketingConsent: profileData.marketingConsent || false,

@@ -42,6 +42,8 @@ export interface CompleteProfilePayload {
   privacyAccepted: boolean;
   /** Indicates whether the user wants to receive marketing communications. */
   marketingConsent?: boolean;
+  /** Firebase UID from social authentication */
+  firebaseUid?: string;
 }
 
 export interface UpdateProfileRequest {

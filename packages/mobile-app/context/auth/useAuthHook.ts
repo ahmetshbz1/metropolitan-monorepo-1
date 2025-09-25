@@ -4,6 +4,9 @@
 
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
+import { router } from "expo-router";
+import api from "@/core/api";
+import { socialAuthStorage, tokenStorage, userStorage } from "@/context/auth/storage";
 
 // Custom hooks
 import { useAuthActions } from "@/hooks/auth/useAuthActions";
@@ -29,6 +32,7 @@ export const useAuthHook = () => {
     isGuest,
     guestId,
     phoneNumber,
+    socialAuthData,
     loading,
     setUser,
     setToken,
@@ -38,6 +42,7 @@ export const useAuthHook = () => {
     setIsGuest,
     setGuestId,
     setPhoneNumber,
+    setSocialAuthData,
   } = useAuthState();
 
   // Guest authentication
@@ -56,6 +61,7 @@ export const useAuthHook = () => {
     registrationToken,
     guestId,
     phoneNumber,
+    socialAuthData,
     setUser,
     setToken,
     setAccessToken,
@@ -64,6 +70,7 @@ export const useAuthHook = () => {
     setIsGuest,
     setGuestId,
     setPhoneNumber,
+    setSocialAuthData,
     migrateGuestToUser,
   });
 
@@ -77,9 +84,55 @@ export const useAuthHook = () => {
     try {
       const result = await firebaseSignInWithApple();
       if (result.success && result.user) {
-        // Backend'e Firebase user bilgisini gönder ve JWT token al
-        // Bu kısım backend'de Firebase auth entegrasyonu yapıldıktan sonra eklenecek
-        console.log("Apple Sign-In başarılı:", result.user);
+        // Store social auth data
+        const authData = {
+          uid: result.user.uid,
+          email: result.user.email,
+          fullName: result.user.fullName,
+          firstName: result.user.firstName,
+          lastName: result.user.lastName,
+          photoURL: result.user.photoURL,
+          provider: 'apple' as const,
+        };
+        setSocialAuthData(authData);
+        await socialAuthStorage.save(authData);
+
+        // Check if user exists in backend
+        try {
+          const requestData: any = {
+            firebaseUid: result.user.uid,
+            provider: 'apple',
+          };
+
+          // Only include email if it's not null
+          if (result.user.email) {
+            requestData.email = result.user.email;
+          }
+
+          const response = await api.post("/auth/social-signin", requestData);
+
+          if (response.data.success) {
+            if (response.data.userExists && response.data.accessToken) {
+              // User exists, login successful
+              setUser(response.data.user);
+              setAccessToken(response.data.accessToken);
+              setRefreshToken(response.data.refreshToken);
+              setToken(response.data.accessToken); // Backward compatibility
+
+              // Save tokens to storage
+              await tokenStorage.saveTokens(response.data.accessToken, response.data.refreshToken);
+              await userStorage.save(response.data.user);
+
+              router.replace("/(tabs)");
+            } else {
+              // New user, navigate to phone login
+              router.push("/(auth)/phone-login");
+            }
+          }
+        } catch (backendError) {
+          // Navigate to phone login if backend error
+          router.push("/(auth)/phone-login");
+        }
       }
       return result;
     } catch (error) {
@@ -92,9 +145,55 @@ export const useAuthHook = () => {
     try {
       const result = await firebaseSignInWithGoogle();
       if (result.success && result.user) {
-        // Backend'e Firebase user bilgisini gönder ve JWT token al
-        // Bu kısım backend'de Firebase auth entegrasyonu yapıldıktan sonra eklenecek
-        console.log("Google Sign-In başarılı:", result.user);
+        // Store social auth data
+        const authData = {
+          uid: result.user.uid,
+          email: result.user.email,
+          fullName: result.user.fullName,
+          firstName: result.user.firstName,
+          lastName: result.user.lastName,
+          photoURL: result.user.photoURL,
+          provider: 'google' as const,
+        };
+        setSocialAuthData(authData);
+        await socialAuthStorage.save(authData);
+
+        // Check if user exists in backend
+        try {
+          const requestData: any = {
+            firebaseUid: result.user.uid,
+            provider: 'google',
+          };
+
+          // Only include email if it's not null
+          if (result.user.email) {
+            requestData.email = result.user.email;
+          }
+
+          const response = await api.post("/auth/social-signin", requestData);
+
+          if (response.data.success) {
+            if (response.data.userExists && response.data.accessToken) {
+              // User exists, login successful
+              setUser(response.data.user);
+              setAccessToken(response.data.accessToken);
+              setRefreshToken(response.data.refreshToken);
+              setToken(response.data.accessToken); // Backward compatibility
+
+              // Save tokens to storage
+              await tokenStorage.saveTokens(response.data.accessToken, response.data.refreshToken);
+              await userStorage.save(response.data.user);
+
+              router.replace("/(tabs)");
+            } else {
+              // New user, navigate to phone login
+              router.push("/(auth)/phone-login");
+            }
+          }
+        } catch (backendError) {
+          // Navigate to phone login if backend error
+          router.push("/(auth)/phone-login");
+        }
       }
       return result;
     } catch (error) {
@@ -113,6 +212,7 @@ export const useAuthHook = () => {
     isGuest,
     guestId,
     phoneNumber,
+    socialAuthData,
     loading,
     isAuthenticated: !!(user && (token || accessToken)),
     isAppleSignInAvailable,

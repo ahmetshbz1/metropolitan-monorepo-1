@@ -74,6 +74,7 @@ const publicProfileRoutes = createApp().post(
           "Gizlilik politikasını kabul etmelisiniz.",
       }),
       marketingConsent: t.Optional(t.Boolean()),
+      firebaseUid: t.Optional(t.String()),
     }),
   }
 );

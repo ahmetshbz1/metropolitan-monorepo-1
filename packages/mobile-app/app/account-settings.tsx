@@ -136,7 +136,7 @@ export default function AccountSettingsScreen() {
                   {user?.lastName || ""}
                 </ThemedText>
                 <ThemedText className="text-sm opacity-70">
-                  {user?.phone || t("account_settings.no_phone")}
+                  {user?.phoneNumber || t("account_settings.no_phone")}
                 </ThemedText>
                 {user?.email && (
                   <ThemedText className="text-sm opacity-70">
