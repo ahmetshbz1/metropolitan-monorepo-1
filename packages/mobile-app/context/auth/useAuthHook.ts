@@ -5,14 +5,14 @@
 import { useTranslation } from "react-i18next";
 
 // Custom hooks
+import { useAuthActions } from "@/hooks/auth/useAuthActions";
 import { useAuthState } from "@/hooks/auth/useAuthState";
 import { useGuestAuth } from "@/hooks/auth/useGuestAuth";
 import { useProfileManagement } from "@/hooks/auth/useProfileManagement";
-import { useAuthActions } from "@/hooks/auth/useAuthActions";
 
 export const useAuthHook = () => {
   const { t } = useTranslation();
-  
+
   // Auth state management
   const {
     user,
@@ -64,6 +64,7 @@ export const useAuthHook = () => {
     guestId,
     phoneNumber,
     loading,
+    isAuthenticated: !!(user && token),
 
     // Actions
     sendOTP,

@@ -2,7 +2,11 @@
 //  metropolitan app
 //  Created by Ahmet on 24.06.2025.
 
-import type { ApiResponse, User, CompleteProfilePayload } from "@metropolitan/shared";
+import type {
+  ApiResponse,
+  CompleteProfilePayload,
+  User,
+} from "@metropolitan/shared";
 
 // Extended User type for mobile-specific fields
 export interface MobileUser extends User {
@@ -18,6 +22,7 @@ export type AuthContextType = {
   isGuest: boolean;
   guestId: string | null;
   phoneNumber: string | null;
+  isAuthenticated: boolean;
   sendOTP: (
     phoneNumber: string,
     userType?: "individual" | "corporate"

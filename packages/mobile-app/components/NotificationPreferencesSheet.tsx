@@ -2,18 +2,22 @@
 // metropolitan app
 // Notification preferences bottom sheet component
 
-import React, { useEffect, useState, forwardRef, useImperativeHandle, useRef } from "react";
-import { View, Switch } from "react-native";
-import { BottomSheetModal, BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { useTranslation } from "react-i18next";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { Ionicons } from "@expo/vector-icons";
-import Colors from "@/constants/Colors";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { api } from "@/core/api";
-import { useAuth } from "@/context/AuthContext";
 import CustomBottomSheet from "@/components/CustomBottomSheet";
+import { ThemedText } from "@/components/ThemedText";
+import Colors from "@/constants/Colors";
+import { useAuth } from "@/context/AuthContext";
+import { api } from "@/core/api";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { Ionicons } from "@expo/vector-icons";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
+import { useTranslation } from "react-i18next";
+import { Switch, View } from "react-native";
 
 interface NotificationPreferences {
   sms: boolean;
@@ -21,7 +25,9 @@ interface NotificationPreferences {
   email: boolean;
 }
 
-interface NotificationPreferencesSheetProps {}
+interface NotificationPreferencesSheetProps {
+  // Props can be added here if needed in the future
+}
 
 export interface NotificationPreferencesSheetRef {
   present: () => void;
@@ -41,7 +47,7 @@ const NotificationPreferencesSheet = forwardRef<
     push: true,
     email: true,
   });
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   useImperativeHandle(ref, () => ({
@@ -67,10 +73,13 @@ const NotificationPreferencesSheet = forwardRef<
   };
 
   // Save preference to backend
-  const updatePreference = async (type: keyof NotificationPreferences, value: boolean) => {
+  const updatePreference = async (
+    type: keyof NotificationPreferences,
+    value: boolean
+  ) => {
     if (!isAuthenticated) {
       // For guest users, just update local state
-      setPreferences(prev => ({ ...prev, [type]: value }));
+      setPreferences((prev) => ({ ...prev, [type]: value }));
       return;
     }
 
@@ -78,7 +87,10 @@ const NotificationPreferencesSheet = forwardRef<
     setPreferences(newPreferences);
 
     try {
-      const response = await api.put("/users/user/notification-preferences", newPreferences);
+      const response = await api.put(
+        "/users/user/notification-preferences",
+        newPreferences
+      );
       if (!response.data.success) {
         // Revert on failure
         setPreferences(preferences);
@@ -134,11 +146,7 @@ const NotificationPreferencesSheet = forwardRef<
                 marginRight: 12,
               }}
             >
-              <Ionicons
-                name={type.icon}
-                size={20}
-                color={colors.primary}
-              />
+              <Ionicons name={type.icon} size={20} color={colors.primary} />
             </View>
             <View style={{ flex: 1 }}>
               <ThemedText className="text-base font-medium">

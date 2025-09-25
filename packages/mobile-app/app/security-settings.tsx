@@ -2,34 +2,26 @@
 // metropolitan app
 // Security settings page
 
+import { HapticButton } from "@/components/HapticButton";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Colors from "@/constants/Colors";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { Ionicons } from "@expo/vector-icons";
-import React, { useLayoutEffect, useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import { ScrollView, Switch, View, Alert, ActivityIndicator } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { HapticButton } from "@/components/HapticButton";
-import { useToast } from "@/hooks/useToast";
-import { api } from "@/core/api";
 import { useAuth } from "@/context/AuthContext";
+import { api } from "@/core/api";
+import { useColorScheme } from "@/hooks/useColorScheme";
 import { useNavigationProtection } from "@/hooks/useNavigationProtection";
+import { useToast } from "@/hooks/useToast";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import React, { useLayoutEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { ActivityIndicator, ScrollView, Switch, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface SecuritySettings {
   twoFactorEnabled: boolean;
   loginAlerts: boolean;
   deviceTracking: boolean;
-}
-
-interface LoginSession {
-  id: string;
-  deviceName: string;
-  lastActive: string;
-  location: string;
-  isCurrent: boolean;
 }
 
 export default function SecuritySettingsScreen() {
@@ -47,7 +39,6 @@ export default function SecuritySettingsScreen() {
     loginAlerts: true,
     deviceTracking: true,
   });
-  const [sessions, setSessions] = useState<LoginSession[]>([]);
   const [loading, setLoading] = useState(false);
 
   useLayoutEffect(() => {
@@ -56,28 +47,9 @@ export default function SecuritySettingsScreen() {
     });
   }, [navigation, t]);
 
-  useEffect(() => {
-    loadSessions();
-  }, []);
-
-  const loadSessions = async () => {
-    if (!isAuthenticated) return;
-
-    // Örnek session verileri (gerçekte API'den gelecek)
-    setSessions([
-      {
-        id: "1",
-        deviceName: "iPhone 14 Pro",
-        lastActive: t("security_settings.current_session"),
-        location: "Warsaw, Poland",
-        isCurrent: true,
-      },
-    ]);
-  };
-
   const updateSetting = async (key: keyof SecuritySettings, value: boolean) => {
     // İki faktörlü doğrulama henüz hazır değil
-    if (key === 'twoFactorEnabled') {
+    if (key === "twoFactorEnabled") {
       showToast(t("general.feature_soon"), "info");
       return;
     }
@@ -102,29 +74,6 @@ export default function SecuritySettingsScreen() {
 
   const handleChangePhone = () => {
     safeRouter.push("/change-phone");
-  };
-
-  const handleEndSession = (sessionId: string) => {
-    Alert.alert(
-      t("security_settings.end_session_title"),
-      t("security_settings.end_session_message"),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("security_settings.end_session_confirm"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              // await api.post(`/auth/sessions/${sessionId}/end`);
-              setSessions(sessions.filter(s => s.id !== sessionId));
-              showToast(t("security_settings.session_ended"), "success");
-            } catch (error) {
-              showToast(t("security_settings.session_end_failed"), "error");
-            }
-          },
-        },
-      ]
-    );
   };
 
   const securityItems = [
@@ -197,7 +146,10 @@ export default function SecuritySettingsScreen() {
                   alignSelf: "flex-start",
                 }}
               >
-                <ThemedText className="text-sm font-medium" style={{ color: "white" }}>
+                <ThemedText
+                  className="text-sm font-medium"
+                  style={{ color: "white" }}
+                >
                   {t("profile.login")}
                 </ThemedText>
               </HapticButton>
@@ -231,46 +183,6 @@ export default function SecuritySettingsScreen() {
                   borderBottomColor: colors.border,
                 }}
               >
-              <View
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
-                  backgroundColor: colors.primary + "15",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginRight: 12,
-                }}
-              >
-                <Ionicons name="call-outline" size={20} color={colors.primary} />
-              </View>
-              <View className="flex-1">
-                <ThemedText className="text-base font-medium">
-                  {t("security_settings.change_phone")}
-                </ThemedText>
-                <ThemedText className="text-xs opacity-60 mt-1">
-                  {user?.phone || t("security_settings.no_phone")}
-                </ThemedText>
-              </View>
-              <Ionicons
-                name="chevron-forward"
-                size={20}
-                color={colors.mediumGray}
-              />
-            </HapticButton>
-
-            {/* Security Settings */}
-            {securityItems.map((item, index) => (
-              <View
-                key={item.key}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  padding: 16,
-                  borderBottomWidth: index < securityItems.length - 1 ? 1 : 0,
-                  borderBottomColor: colors.border,
-                }}
-              >
                 <View
                   style={{
                     width: 40,
@@ -282,128 +194,98 @@ export default function SecuritySettingsScreen() {
                     marginRight: 12,
                   }}
                 >
-                  <Ionicons name={item.icon} size={20} color={colors.primary} />
+                  <Ionicons
+                    name="call-outline"
+                    size={20}
+                    color={colors.primary}
+                  />
                 </View>
                 <View className="flex-1">
-                  <View className="flex-row items-center">
-                    <ThemedText className="text-base font-medium">
-                      {item.title}
-                    </ThemedText>
-                    {item.key === 'twoFactorEnabled' && (
-                      <View
-                        style={{
-                          marginLeft: 8,
-                          paddingHorizontal: 8,
-                          paddingVertical: 2,
-                          backgroundColor: colors.warning + "20",
-                          borderRadius: 4,
-                        }}
-                      >
-                        <ThemedText
-                          className="text-xs"
-                          style={{ color: colors.warning }}
-                        >
-                          {t("general.soon")}
-                        </ThemedText>
-                      </View>
-                    )}
-                  </View>
+                  <ThemedText className="text-base font-medium">
+                    {t("security_settings.change_phone")}
+                  </ThemedText>
                   <ThemedText className="text-xs opacity-60 mt-1">
-                    {item.subtitle}
+                    {user?.phone || t("security_settings.no_phone")}
                   </ThemedText>
                 </View>
-                {loading && item.value !== settings[item.key] ? (
-                  <ActivityIndicator size="small" color={colors.primary} />
-                ) : (
-                  <Switch
-                    value={item.value}
-                    onValueChange={(value) => updateSetting(item.key, value)}
-                    trackColor={{ false: colors.border, true: colors.primary }}
-                    thumbColor={colors.card}
-                    disabled={loading || item.key === 'twoFactorEnabled'}
-                  />
-                )}
-              </View>
-            ))}
-          </View>
-        </View>
-        )}
+                <Ionicons
+                  name="chevron-forward"
+                  size={20}
+                  color={colors.mediumGray}
+                />
+              </HapticButton>
 
-        {/* Active Sessions */}
-        {isAuthenticated && sessions.length > 0 && (
-          <View className="px-4 mb-6">
-            <ThemedText className="text-sm font-semibold mb-3 opacity-60 uppercase">
-              {t("security_settings.active_sessions")}
-            </ThemedText>
-            <View
-              style={{
-                backgroundColor: colors.card,
-                borderRadius: 18,
-                overflow: "hidden",
-              }}
-            >
-              {sessions.map((session, index) => (
+              {/* Security Settings */}
+              {securityItems.map((item, index) => (
                 <View
-                  key={session.id}
+                  key={item.key}
                   style={{
+                    flexDirection: "row",
+                    alignItems: "center",
                     padding: 16,
-                    borderBottomWidth: index < sessions.length - 1 ? 1 : 0,
+                    borderBottomWidth: index < securityItems.length - 1 ? 1 : 0,
                     borderBottomColor: colors.border,
                   }}
                 >
-                  <View className="flex-row items-start justify-between">
-                    <View className="flex-1">
-                      <View className="flex-row items-center mb-1">
-                        <Ionicons
-                          name="phone-portrait-outline"
-                          size={16}
-                          color={colors.primary}
-                        />
-                        <ThemedText className="text-sm font-medium ml-2">
-                          {session.deviceName}
-                        </ThemedText>
-                        {session.isCurrent && (
-                          <View
-                            style={{
-                              marginLeft: 8,
-                              paddingHorizontal: 8,
-                              paddingVertical: 2,
-                              backgroundColor: colors.success + "20",
-                              borderRadius: 4,
-                            }}
-                          >
-                            <ThemedText
-                              className="text-xs"
-                              style={{ color: colors.success }}
-                            >
-                              {t("security_settings.current")}
-                            </ThemedText>
-                          </View>
-                        )}
-                      </View>
-                      <ThemedText className="text-xs opacity-60">
-                        {session.location}
-                      </ThemedText>
-                      <ThemedText className="text-xs opacity-60 mt-1">
-                        {session.lastActive}
-                      </ThemedText>
-                    </View>
-                    {!session.isCurrent && (
-                      <HapticButton
-                        onPress={() => handleEndSession(session.id)}
-                        style={{
-                          padding: 8,
-                        }}
-                      >
-                        <ThemedText
-                          className="text-xs font-medium"
-                          style={{ color: colors.error }}
-                        >
-                          {t("security_settings.end_session")}
-                        </ThemedText>
-                      </HapticButton>
-                    )}
+                  <View
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 20,
+                      backgroundColor: colors.primary + "15",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginRight: 12,
+                    }}
+                  >
+                    <Ionicons
+                      name={item.icon}
+                      size={20}
+                      color={colors.primary}
+                    />
                   </View>
+                  <View className="flex-1">
+                    <View className="flex-row items-center">
+                      <ThemedText className="text-base font-medium">
+                        {item.title}
+                      </ThemedText>
+                      {item.key === "twoFactorEnabled" && (
+                        <View
+                          style={{
+                            marginLeft: 8,
+                            paddingHorizontal: 8,
+                            paddingVertical: 2,
+                            backgroundColor: colors.warning + "20",
+                            borderRadius: 4,
+                          }}
+                        >
+                          <ThemedText
+                            className="text-xs"
+                            style={{ color: colors.warning }}
+                          >
+                            {t("general.soon")}
+                          </ThemedText>
+                        </View>
+                      )}
+                    </View>
+                    <ThemedText className="text-xs opacity-60 mt-1">
+                      {item.subtitle}
+                    </ThemedText>
+                  </View>
+                  {loading && item.value !== settings[item.key] ? (
+                    <ActivityIndicator size="small" color={colors.primary} />
+                  ) : (
+                    <Switch
+                      value={item.value}
+                      onValueChange={(value) => updateSetting(item.key, value)}
+                      trackColor={{
+                        false: colors.border,
+                        true: colors.primary,
+                      }}
+                      thumbColor={colors.card}
+                      disabled={loading || item.key === "twoFactorEnabled"}
+                    />
+                  )}
                 </View>
               ))}
             </View>

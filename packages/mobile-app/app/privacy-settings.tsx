@@ -2,21 +2,21 @@
 // metropolitan app
 // Privacy settings page
 
+import { HapticButton } from "@/components/HapticButton";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Colors from "@/constants/Colors";
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/core/api";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useNavigationProtection } from "@/hooks/useNavigationProtection";
 import { useToast } from "@/hooks/useToast";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import React, { useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, Switch, View, ActivityIndicator } from "react-native";
+import { ActivityIndicator, ScrollView, Switch, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { HapticButton } from "@/components/HapticButton";
-import { useNavigationProtection } from "@/hooks/useNavigationProtection";
 
 interface PrivacySettings {
   shareDataWithPartners: boolean;
@@ -167,7 +167,10 @@ export default function PrivacySettingsScreen() {
                   alignSelf: "flex-start",
                 }}
               >
-                <ThemedText className="text-sm font-medium" style={{ color: "white" }}>
+                <ThemedText
+                  className="text-sm font-medium"
+                  style={{ color: "white" }}
+                >
                   {t("profile.login")}
                 </ThemedText>
               </HapticButton>
@@ -264,7 +267,6 @@ export default function PrivacySettingsScreen() {
             </View>
           </View>
         </View>
-
       </ScrollView>
     </ThemedView>
   );
