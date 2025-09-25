@@ -17,7 +17,11 @@ const deliveryAddress = "ul. Złota 44, 00-120 Warszawa, Poland";
 export const HelpModal = forwardRef<Ref>((_, ref) => {
   const { t } = useTranslation();
   return (
-    <CustomBottomSheet ref={ref} title={t("order_detail.help_modal.title")}>
+    <CustomBottomSheet
+      ref={ref}
+      title={t("order_detail.help_modal.title")}
+      snapPoints={["60%"]}
+    >
       <HelpContent
         infoText={t("order_detail.help_modal.info_text")}
         address={{
