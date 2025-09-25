@@ -5,10 +5,11 @@
 import { ThemedText } from "@/components/ThemedText";
 import { Product } from "@/context/ProductContext";
 import { useProductCard } from "@/hooks/useProductCard";
+import { useHaptics } from "@/hooks/useHaptics";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import React from "react";
-import { TouchableOpacity, View } from "react-native";
+import React, { useRef } from "react";
+import { TouchableOpacity, View, Animated } from "react-native";
 import { HapticIconButton } from "../HapticButton";
 import { ProductCardContent } from "./ProductCardContent";
 import { ProductCardImage } from "./ProductCardImage";
@@ -42,13 +43,37 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
     handleAddToCart,
     handleToggleFavorite,
   } = useProductCard(product);
+  const { triggerHaptic } = useHaptics();
+  const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const isHorizontal = variant === "horizontal";
 
+  const handlePressIn = () => {
+    triggerHaptic();
+    Animated.spring(scaleAnim, {
+      toValue: 0.95,
+      useNativeDriver: true,
+      speed: 20,
+      bounciness: 0,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 20,
+      bounciness: 0,
+    }).start();
+  };
+
   return (
-    <View
+    <Animated.View
       className={isHorizontal ? "mr-3" : "mb-3"}
-      style={isHorizontal ? { width: 180 } : { flex: 1/3 }}
+      style={[
+        isHorizontal ? { width: 180 } : { flex: 1/3 },
+        { transform: [{ scale: scaleAnim }] }
+      ]}
     >
       <Link
         href={{
@@ -58,7 +83,9 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
         asChild
       >
         <TouchableOpacity
-          activeOpacity={0.9}
+          activeOpacity={1}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
           className="overflow-hidden rounded-3xl border"
           style={{
             backgroundColor: colors.cardBackground,
@@ -100,6 +127,6 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
           </HapticIconButton>
         </TouchableOpacity>
       </Link>
-    </View>
+    </Animated.View>
   );
 });

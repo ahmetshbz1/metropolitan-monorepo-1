@@ -9,12 +9,12 @@ import { GestureResponderEvent, Platform } from "react-native";
 export function useHaptics() {
   const { settings } = useUserSettings();
 
-  const triggerHaptic = (force = false) => {
+  const triggerHaptic = (style: Haptics.ImpactFeedbackStyle = Haptics.ImpactFeedbackStyle.Light, force = false) => {
     if (!settings.hapticsEnabled && !force) return;
 
     if (Platform.OS === "ios" || Platform.OS === "android") {
       try {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        Haptics.impactAsync(style);
       } catch (error) {}
     }
   };

@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   TouchableOpacityProps,
 } from "react-native";
+import * as Haptics from "expo-haptics";
 
 import { useHaptics } from "@/hooks/useHaptics";
 import { useThemeColor } from "@/hooks/useThemeColor";
