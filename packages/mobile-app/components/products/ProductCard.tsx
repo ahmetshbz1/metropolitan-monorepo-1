@@ -6,7 +6,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { Product } from "@/context/ProductContext";
 import { useProductCard } from "@/hooks/useProductCard";
 import { Ionicons } from "@expo/vector-icons";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import React from "react";
 import { TouchableOpacity, View, Share } from "react-native";
 import { useTranslation } from "react-i18next";
@@ -47,6 +47,10 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
   } = useProductCard(product);
   const { t } = useTranslation();
   const router = useRouter();
+  const suppressNextPressRef = React.useRef(false);
+  const pressStartTimeRef = React.useRef<number | null>(null);
+  const LONG_PRESS_GUARD_MS = 350; // guard single-tap vs long-press
+  const longPressTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isHorizontal = variant === "horizontal";
 
@@ -82,6 +86,31 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
     }
   };
 
+  const handleCardPress = () => {
+    // Clear any scheduled long-press guard
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+    if (suppressNextPressRef.current) {
+      // A long-press just opened/closed the context menu; skip navigation once
+      suppressNextPressRef.current = false;
+      return;
+    }
+    // If press duration suggests a long-press, ignore navigation
+    if (
+      pressStartTimeRef.current &&
+      Date.now() - pressStartTimeRef.current >= LONG_PRESS_GUARD_MS
+    ) {
+      // reset timestamp to avoid affecting next press
+      pressStartTimeRef.current = null;
+      return;
+    }
+    // reset timestamp before navigating
+    pressStartTimeRef.current = null;
+    router.push(`/product/${product.id}`);
+  };
+
   const contextMenuActions = [
     {
       title: isOutOfStock ? t("product_detail.out_of_stock") : t("product_card.add_to_cart"),
@@ -114,21 +143,42 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
       <ContextMenu
         actions={contextMenuActions}
         onPress={(e) => {
+          // Prevent the underlying card press from navigating after menu action
+          suppressNextPressRef.current = true;
           handleContextMenu(e.nativeEvent.index);
         }}
+        onCancel={() => {
+          // User opened menu and dismissed it; suppress the next press
+          suppressNextPressRef.current = true;
+        }}
         onPreviewPress={() => {
+          // Preview was tapped from the context menu, also suppress next press
+          suppressNextPressRef.current = true;
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         }}
         previewBackgroundColor={colors.cardBackground}
       >
-        <Link
-          href={{
-            pathname: "/product/[id]",
-            params: { id: product.id },
-          }}
-          asChild
-        >
           <TouchableOpacity
+            onPress={handleCardPress}
+            onPressIn={() => {
+              pressStartTimeRef.current = Date.now();
+              // schedule a guard in case of long-press before ContextMenu events fire
+              if (longPressTimerRef.current) {
+                clearTimeout(longPressTimerRef.current);
+              }
+              longPressTimerRef.current = setTimeout(() => {
+                suppressNextPressRef.current = true;
+                longPressTimerRef.current = null;
+              }, LONG_PRESS_GUARD_MS);
+            }}
+            onLongPress={() => {
+              // If child long-press fires, ensure we suppress subsequent onPress
+              suppressNextPressRef.current = true;
+              if (longPressTimerRef.current) {
+                clearTimeout(longPressTimerRef.current);
+                longPressTimerRef.current = null;
+              }
+            }}
             activeOpacity={0.85}
             className="overflow-hidden rounded-3xl border"
             style={{
@@ -170,7 +220,6 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
             />
           </HapticIconButton>
         </TouchableOpacity>
-      </Link>
       </ContextMenu>
     </View>
   );
