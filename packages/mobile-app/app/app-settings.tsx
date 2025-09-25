@@ -2,25 +2,27 @@
 // metropolitan app
 // Application settings page
 
+import { HapticButton } from "@/components/HapticButton";
+import NotificationPreferencesSheet, {
+  NotificationPreferencesSheetRef,
+} from "@/components/NotificationPreferencesSheet";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Colors from "@/constants/Colors";
-import { changeLanguage } from "@/core/i18n";
 import { useAppColorScheme } from "@/context/ColorSchemeContext";
 import { useUserSettings } from "@/context/UserSettings";
+import { changeLanguage } from "@/core/i18n";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useToast } from "@/hooks/useToast";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
+import * as FileSystem from "expo-file-system";
 import React, { useLayoutEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, View, Alert, Switch } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { HapticButton } from "@/components/HapticButton";
+import { Alert, ScrollView, Switch, View } from "react-native";
 import ContextMenu from "react-native-context-menu-view";
-import NotificationPreferencesSheet, { NotificationPreferencesSheetRef } from "@/components/NotificationPreferencesSheet";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as FileSystem from "expo-file-system";
-import { useToast } from "@/hooks/useToast";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function AppSettingsScreen() {
   const { t, i18n } = useTranslation();
@@ -51,14 +53,24 @@ export default function AppSettingsScreen() {
   ];
 
   const themes = [
-    { code: "system", name: t("app_settings.theme_system"), icon: "phone-portrait-outline" },
-    { code: "light", name: t("app_settings.theme_light"), icon: "sunny-outline" },
+    {
+      code: "system",
+      name: t("app_settings.theme_system"),
+      icon: "phone-portrait-outline",
+    },
+    {
+      code: "light",
+      name: t("app_settings.theme_light"),
+      icon: "sunny-outline",
+    },
     { code: "dark", name: t("app_settings.theme_dark"), icon: "moon-outline" },
   ];
 
-  const currentTheme = themes.find(t => t.code === currentThemeSetting) || themes[0];
+  const currentTheme =
+    themes.find((t) => t.code === currentThemeSetting) || themes[0];
 
-  const currentLanguage = languages.find(l => l.code === i18n.language) || languages[0];
+  const currentLanguage =
+    languages.find((l) => l.code === i18n.language) || languages[0];
 
   const clearCache = async () => {
     Alert.alert(
@@ -77,10 +89,11 @@ export default function AppSettingsScreen() {
               // AsyncStorage'dan sadece cache ile ilgili verileri temizle
               // Auth ile ilgili key'leri koru: user_data, guest_id, is_guest
               const allKeys = await AsyncStorage.getAllKeys();
-              const keysToRemove = allKeys.filter(key =>
-                !key.includes('user_data') &&
-                !key.includes('guest_id') &&
-                !key.includes('is_guest')
+              const keysToRemove = allKeys.filter(
+                (key) =>
+                  !key.includes("user_data") &&
+                  !key.includes("guest_id") &&
+                  !key.includes("is_guest")
               );
 
               if (keysToRemove.length > 0) {
@@ -90,10 +103,13 @@ export default function AppSettingsScreen() {
               // Clear image cache directory
               const cacheDirectory = FileSystem.cacheDirectory;
               if (cacheDirectory) {
-                const cacheFiles = await FileSystem.readDirectoryAsync(cacheDirectory);
+                const cacheFiles =
+                  await FileSystem.readDirectoryAsync(cacheDirectory);
                 await Promise.all(
-                  cacheFiles.map(file =>
-                    FileSystem.deleteAsync(`${cacheDirectory}${file}`, { idempotent: true })
+                  cacheFiles.map((file) =>
+                    FileSystem.deleteAsync(`${cacheDirectory}${file}`, {
+                      idempotent: true,
+                    })
                   )
                 );
               }
@@ -141,58 +157,79 @@ export default function AppSettingsScreen() {
             }}
           >
             {/* Theme Selector */}
-            <ContextMenu
-              dropdownMenuMode
-              actions={themes.map(theme => ({
-                title: theme.name,
-                selected: currentThemeSetting === theme.code,
-              }))}
-              onPress={(e) => {
-                const selectedTheme = themes[e.nativeEvent.index];
-                setTheme(selectedTheme.code as "light" | "dark" | "system");
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                padding: 16,
+                borderBottomWidth: 1,
+                borderBottomColor: colors.border,
               }}
             >
               <View
                 style={{
-                  flexDirection: "row",
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  backgroundColor: colors.primary + "15",
                   alignItems: "center",
-                  padding: 16,
-                  borderBottomWidth: 1,
-                  borderBottomColor: colors.border,
+                  justifyContent: "center",
+                  marginRight: 12,
+                }}
+              >
+                <Ionicons
+                  name={currentTheme.icon as any}
+                  size={20}
+                  color={colors.primary}
+                />
+              </View>
+              <View className="flex-1">
+                <ThemedText className="text-base font-medium">
+                  {t("app_settings.theme")}
+                </ThemedText>
+                <ThemedText className="text-xs opacity-60 mt-1">
+                  {t("app_settings.theme_desc")}
+                </ThemedText>
+              </View>
+              <ContextMenu
+                dropdownMenuMode={true}
+                actions={themes.map((theme) => ({
+                  title: theme.name,
+                  selected: currentThemeSetting === theme.code,
+                }))}
+                onPress={(e) => {
+                  const selectedTheme = themes[e.nativeEvent.index];
+                  if (selectedTheme) {
+                    setTheme(selectedTheme.code as "light" | "dark" | "system");
+                  }
                 }}
               >
                 <View
                   style={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 20,
-                    backgroundColor: colors.primary + "15",
+                    minWidth: 100,
+                    paddingVertical: 8,
+                    paddingHorizontal: 12,
+                    borderRadius: 8,
+                    backgroundColor: colors.border,
+                    flexDirection: "row",
                     alignItems: "center",
                     justifyContent: "center",
-                    marginRight: 12,
                   }}
                 >
-                  <Ionicons
-                    name={currentTheme.icon as any}
-                    size={20}
-                    color={colors.primary}
-                  />
-                </View>
-                <View className="flex-1">
-                  <ThemedText className="text-base font-medium">
-                    {t("app_settings.theme")}
-                  </ThemedText>
-                  <ThemedText className="text-xs opacity-60 mt-1">
+                  <ThemedText
+                    className="text-sm font-medium"
+                    style={{ color: colors.text, marginRight: 4 }}
+                  >
                     {currentTheme.name}
                   </ThemedText>
+                  <Ionicons
+                    name="chevron-down"
+                    size={16}
+                    color={colors.mediumGray}
+                  />
                 </View>
-                <Ionicons
-                  name="chevron-forward"
-                  size={20}
-                  color={colors.mediumGray}
-                />
-              </View>
-            </ContextMenu>
+              </ContextMenu>
+            </View>
 
             {/* Language Selector */}
             <View
@@ -229,7 +266,7 @@ export default function AppSettingsScreen() {
               </View>
               <ContextMenu
                 dropdownMenuMode={true}
-                actions={languages.map(lang => ({
+                actions={languages.map((lang) => ({
                   title: lang.name,
                   selected: i18n.language === lang.code,
                 }))}
@@ -316,7 +353,9 @@ export default function AppSettingsScreen() {
               </View>
               <Switch
                 value={settings.hapticsEnabled}
-                onValueChange={(value) => updateSettings({ hapticsEnabled: value })}
+                onValueChange={(value) =>
+                  updateSettings({ hapticsEnabled: value })
+                }
                 trackColor={{ false: colors.border, true: colors.primary }}
                 thumbColor={colors.card}
               />

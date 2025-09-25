@@ -877,6 +877,7 @@
     "title": "Uygulama Ayarları",
     "appearance": "Görünüm",
     "theme": "Tema",
+    "theme_desc": "Uygulama temasını seçin",
     "theme_system": "Sistem",
     "theme_light": "Açık",
     "theme_dark": "Koyu",
