@@ -39,6 +39,7 @@ export class ProfileUpdateService {
         phoneNumber: user.phoneNumber, // API compat için
         profilePhotoUrl: user.profilePhotoUrl,
         userType: user.userType as "individual" | "corporate",
+        authProvider: user.authProvider,
         companyInfo:
           user.userType === "corporate" && user.company
             ? {
@@ -113,6 +114,7 @@ export class ProfileUpdateService {
         phoneNumber: updated.phoneNumber, // API compat için
         profilePhotoUrl: updated.profilePhotoUrl,
         userType: updated.userType as "individual" | "corporate",
+        authProvider: updated.authProvider,
       },
     };
   }

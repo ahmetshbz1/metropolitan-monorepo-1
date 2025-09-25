@@ -1016,7 +1016,13 @@
   },
   "security_settings": {
     "title": "Güvenlik",
+    "linked_accounts": "Bağlı Hesaplar",
     "account_security": "Hesap Güvenliği",
+    "connected": "Bağlı",
+    "not_connected": "Bağlı değil",
+    "apple_sign_in": "Apple ile Oturum Aç",
+    "check_apple_settings": "Ayarlarda kontrol et",
+    "phone_number": "Telefon Numarası",
     "change_phone": "Telefon Numarasını Değiştir",
     "change_phone_title": "Telefon Numarasını Değiştir",
     "change_phone_message": "Telefon numaranızı değiştirmek için doğrulama gerekecektir.",

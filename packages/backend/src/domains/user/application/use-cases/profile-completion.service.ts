@@ -117,6 +117,7 @@ export class ProfileCompletionService {
         privacyAccepted: profileData.privacyAccepted,
         marketingConsent: profileData.marketingConsent,
         firebaseUid: profileData.firebaseUid,
+        authProvider: profileData.authProvider,
       }
     );
 

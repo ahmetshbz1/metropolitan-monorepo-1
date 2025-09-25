@@ -157,6 +157,187 @@ export default function SecuritySettingsScreen() {
           </View>
         )}
 
+        {/* Linked Accounts - Only show if not guest */}
+        {!isGuest && (
+          <View className="px-4 mb-6">
+            <ThemedText className="text-sm font-semibold mb-3 opacity-60 uppercase">
+              {t("security_settings.linked_accounts")}
+            </ThemedText>
+            <View
+              style={{
+                backgroundColor: colors.card,
+                borderRadius: 18,
+                overflow: "hidden",
+                marginBottom: 20,
+              }}
+            >
+              {/* Google Account */}
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  padding: 16,
+                  borderBottomWidth: 1,
+                  borderBottomColor: colors.border,
+                }}
+              >
+                <View
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    backgroundColor: "#4285F415",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginRight: 12,
+                  }}
+                >
+                  <Ionicons
+                    name="logo-google"
+                    size={20}
+                    color="#4285F4"
+                  />
+                </View>
+                <View className="flex-1">
+                  <ThemedText className="text-base font-medium">
+                    Google
+                  </ThemedText>
+                  <ThemedText className="text-xs opacity-60 mt-1">
+                    {user?.authProvider === 'google' && user?.email ? user.email : t("security_settings.not_connected")}
+                  </ThemedText>
+                </View>
+                {user?.authProvider === 'google' && (
+                  <View
+                    style={{
+                      backgroundColor: colors.success + "20",
+                      paddingHorizontal: 8,
+                      paddingVertical: 4,
+                      borderRadius: 12,
+                    }}
+                  >
+                    <ThemedText className="text-xs" style={{ color: colors.success }}>
+                      {t("security_settings.connected")}
+                    </ThemedText>
+                  </View>
+                )}
+              </View>
+
+              {/* Apple Account */}
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  padding: 16,
+                  borderBottomWidth: 1,
+                  borderBottomColor: colors.border,
+                }}
+              >
+                <View
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    backgroundColor: colors.text + "15",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginRight: 12,
+                  }}
+                >
+                  <Ionicons
+                    name="logo-apple"
+                    size={20}
+                    color={colors.text}
+                  />
+                </View>
+                <View className="flex-1">
+                  <ThemedText className="text-base font-medium">
+                    Apple
+                  </ThemedText>
+                  <ThemedText className="text-xs opacity-60 mt-1">
+                    {user?.authProvider === 'apple' ? (user?.email || t("security_settings.connected")) : t("security_settings.not_connected")}
+                  </ThemedText>
+                </View>
+                {user?.authProvider === 'apple' ? (
+                  <View
+                    style={{
+                      backgroundColor: colors.success + "20",
+                      paddingHorizontal: 8,
+                      paddingVertical: 4,
+                      borderRadius: 12,
+                    }}
+                  >
+                    <ThemedText className="text-xs" style={{ color: colors.success }}>
+                      {t("security_settings.connected")}
+                    </ThemedText>
+                  </View>
+                ) : (
+                  <View
+                    style={{
+                      backgroundColor: colors.gray + "20",
+                      paddingHorizontal: 8,
+                      paddingVertical: 4,
+                      borderRadius: 12,
+                    }}
+                  >
+                    <ThemedText className="text-xs" style={{ color: colors.mediumGray }}>
+                      {t("security_settings.not_connected")}
+                    </ThemedText>
+                  </View>
+                )}
+              </View>
+
+              {/* Phone Number */}
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  padding: 16,
+                }}
+              >
+                <View
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 20,
+                    backgroundColor: colors.primary + "15",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginRight: 12,
+                  }}
+                >
+                  <Ionicons
+                    name="call-outline"
+                    size={20}
+                    color={colors.primary}
+                  />
+                </View>
+                <View className="flex-1">
+                  <ThemedText className="text-base font-medium">
+                    {t("security_settings.phone_number")}
+                  </ThemedText>
+                  <ThemedText className="text-xs opacity-60 mt-1">
+                    {user?.phoneNumber || t("security_settings.no_phone")}
+                  </ThemedText>
+                </View>
+                {user?.phoneNumber && (
+                  <View
+                    style={{
+                      backgroundColor: colors.success + "20",
+                      paddingHorizontal: 8,
+                      paddingVertical: 4,
+                      borderRadius: 12,
+                    }}
+                  >
+                    <ThemedText className="text-xs" style={{ color: colors.success }}>
+                      {t("security_settings.connected")}
+                    </ThemedText>
+                  </View>
+                )}
+              </View>
+            </View>
+          </View>
+        )}
+
         {/* Account Security - Only show if not guest */}
         {!isGuest && (
           <View className="px-4 mb-6">

@@ -13,6 +13,7 @@ export interface MobileUser extends User {
   profilePicture?: string; // Bileşenlerde kullanılacak tam, işlenmiş URL
   nip?: string;
   userType?: "individual" | "corporate";
+  authProvider?: string | null; // 'google', 'apple', or null for phone-only
 }
 
 export interface SocialAuthData {

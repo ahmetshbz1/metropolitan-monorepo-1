@@ -44,6 +44,8 @@ export interface CompleteProfilePayload {
   marketingConsent?: boolean;
   /** Firebase UID from social authentication */
   firebaseUid?: string;
+  /** Authentication provider: 'google', 'apple', null for phone-only */
+  authProvider?: string;
 }
 
 export interface UpdateProfileRequest {
@@ -64,6 +66,7 @@ export interface ProfileResponse {
     profilePhotoUrl: string | null;
     userType: "individual" | "corporate";
     companyInfo: CompanyInfo | null;
+    authProvider: string | null;
   };
 }
 
@@ -79,6 +82,7 @@ export interface ProfileUpdateResponse {
     phoneNumber: string | null; // API compat için
     profilePhotoUrl: string | null;
     userType: "individual" | "corporate";
+    authProvider: string | null;
   };
 }
 

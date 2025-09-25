@@ -47,12 +47,13 @@ export const socialAuthRoutes = createApp()
             where: eq(users.email, body.email),
           });
 
-          // If found by email, update with Firebase UID
+          // If found by email, update with Firebase UID and auth provider
           if (user) {
             await db
               .update(users)
               .set({
                 firebaseUid: body.firebaseUid,
+                authProvider: body.provider,
                 updatedAt: new Date(),
               })
               .where(eq(users.id, user.id));
@@ -88,7 +89,18 @@ export const socialAuthRoutes = createApp()
           };
         }
 
-        // User exists with complete profile - generate tokens
+        // User exists with complete profile - update auth provider if needed and generate tokens
+        // Update auth provider if it's different or not set
+        if (user.authProvider !== body.provider) {
+          await db
+            .update(users)
+            .set({
+              authProvider: body.provider,
+              updatedAt: new Date(),
+            })
+            .where(eq(users.id, user.id));
+        }
+
         const deviceInfo = extractDeviceInfo(headers);
         const deviceId = generateDeviceFingerprint(deviceInfo, headers);
         const sessionId = generateSessionId();

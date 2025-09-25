@@ -75,6 +75,7 @@ const publicProfileRoutes = createApp().post(
       }),
       marketingConsent: t.Optional(t.Boolean()),
       firebaseUid: t.Optional(t.String()),
+      authProvider: t.Optional(t.String()),
     }),
   }
 );

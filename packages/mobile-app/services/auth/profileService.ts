@@ -5,9 +5,10 @@
 import { api, API_BASE_URL } from "@/core/api";
 import { CompleteProfileInput, User } from "@/context/auth/types";
 
-// Backend response type that may include phoneNumber
+// Backend response type that may include phoneNumber and authProvider
 interface BackendUserResponse extends User {
   phoneNumber?: string;
+  authProvider?: string | null;
 }
 
 // Kullanıcı verisini işleyip profil resmini oluşturan yardımcı fonksiyon
@@ -42,6 +43,7 @@ export const completeProfile = async (
         userType: userData.userType,
         ...(userData.nip ? { nip: userData.nip } : {}),
         ...(userData.firebaseUid ? { firebaseUid: userData.firebaseUid } : {}),
+        ...(userData.authProvider ? { authProvider: userData.authProvider } : {}),
         termsAccepted: userData.termsAccepted,
         privacyAccepted: userData.privacyAccepted,
         marketingConsent: userData.marketingConsent,

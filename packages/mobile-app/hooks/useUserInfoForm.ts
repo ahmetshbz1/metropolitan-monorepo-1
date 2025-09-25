@@ -183,6 +183,7 @@ export function useUserInfoForm(isB2B: boolean): UseUserInfoFormReturn {
       privacyAccepted: privacyAccepted,
       marketingConsent: marketingAccepted,
       ...(socialAuthData?.uid && { firebaseUid: socialAuthData.uid }),
+      ...(socialAuthData?.provider && { authProvider: socialAuthData.provider }),
     });
     setIsSaving(false);
     if (!result.success) {
