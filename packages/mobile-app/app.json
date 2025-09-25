@@ -17,6 +17,11 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.metropolitan.food",
       "buildNumber": "3",
+      "config": {
+        "googleSignIn": {
+          "reservedClientId": "com.googleusercontent.apps.18493082891-0qg1bp44jncs4m7jt6426ud1cv7bil4t"
+        }
+      },
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
         "CFBundleLocalizations": ["tr", "en", "pl"]
@@ -25,8 +30,12 @@
       "entitlements": {
         "com.apple.developer.in-app-payments": [
           "merchant.com.metropolitan.food"
-        ]
-      }
+        ],
+        "com.apple.developer.applesignin": ["Default"],
+        "aps-environment": "development"
+      },
+      "usesAppleSignIn": true,
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
@@ -34,7 +43,11 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.metropolitan.food",
-      "permissions": ["android.permission.RECORD_AUDIO"]
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "com.google.android.c2dm.permission.RECEIVE"
+      ],
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",
@@ -45,7 +58,16 @@
       "expo-web-browser",
       "expo-font",
       "expo-localization",
-      "expo-image-picker"
+      "expo-image-picker",
+      "expo-apple-authentication",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#ffffff",
+          "defaultChannel": "default"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

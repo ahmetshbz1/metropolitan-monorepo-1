@@ -55,6 +55,9 @@ export type AuthContextType = {
   loginAsGuest: () => Promise<void>;
   logout: () => void;
   loading: boolean;
+  signInWithApple: () => Promise<{ success: boolean; error?: string }>;
+  signInWithGoogle: () => Promise<{ success: boolean; error?: string }>;
+  isAppleSignInAvailable: boolean;
 };
 
 // Re-export shared CompleteProfilePayload for consistency

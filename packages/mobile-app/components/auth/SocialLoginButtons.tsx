@@ -2,11 +2,13 @@
 //  metropolitan app
 //  Created by Ahmet on 27.07.2025.
 
-import React from "react";
-import { Platform, Text, TouchableOpacity, View } from "react-native";
+import React, { useState } from "react";
+import { Platform, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import Svg, { Path } from "react-native-svg";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@/context/AuthContext";
+import * as Haptics from "expo-haptics";
 
 const GoogleIcon = () => (
   <Svg height={26} width={26} viewBox="0 0 24 24">
@@ -41,6 +43,34 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
   onLayout,
 }) => {
   const { t } = useTranslation();
+  const { signInWithApple, signInWithGoogle, isAppleSignInAvailable } = useAuth();
+  const [loading, setLoading] = useState<"apple" | "google" | null>(null);
+
+  const handleAppleSignIn = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setLoading("apple");
+    try {
+      const result = await signInWithApple();
+      if (!result.success) {
+        console.error("Apple Sign-In hatası:", result.error);
+      }
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setLoading("google");
+    try {
+      const result = await signInWithGoogle();
+      if (!result.success) {
+        console.error("Google Sign-In hatası:", result.error);
+      }
+    } finally {
+      setLoading(null);
+    }
+  };
 
   return (
     <View
@@ -54,8 +84,10 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
       </Text>
 
       <View className="flex-row gap-4 self-center justify-center">
-        {Platform.OS === "ios" && (
+        {Platform.OS === "ios" && isAppleSignInAvailable && (
           <TouchableOpacity
+            onPress={handleAppleSignIn}
+            disabled={loading !== null}
             className="rounded-full w-14 h-14 items-center justify-center shadow-sm"
             style={{
               backgroundColor:
@@ -65,16 +97,23 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
               shadowOpacity: 0.05,
               shadowRadius: 2.22,
               elevation: 3,
+              opacity: loading !== null && loading !== "apple" ? 0.5 : 1,
             }}
           >
-            <Ionicons
-              name="logo-apple"
-              size={26}
-              color={colorScheme === "dark" ? "#000000" : "white"}
-            />
+            {loading === "apple" ? (
+              <ActivityIndicator color={colorScheme === "dark" ? "#000000" : "white"} size="small" />
+            ) : (
+              <Ionicons
+                name="logo-apple"
+                size={26}
+                color={colorScheme === "dark" ? "#000000" : "white"}
+              />
+            )}
           </TouchableOpacity>
         )}
         <TouchableOpacity
+          onPress={handleGoogleSignIn}
+          disabled={loading !== null}
           className="rounded-full w-14 h-14 items-center justify-center shadow-sm"
           style={{
             backgroundColor: themeColors.cardBackground,
@@ -83,22 +122,14 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
             shadowOpacity: 0.05,
             shadowRadius: 2.22,
             elevation: 3,
+            opacity: loading !== null && loading !== "google" ? 0.5 : 1,
           }}
         >
-          <GoogleIcon />
-        </TouchableOpacity>
-        <TouchableOpacity
-          className="rounded-full w-14 h-14 items-center justify-center shadow-sm"
-          style={{
-            backgroundColor: themeColors.cardBackground,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.05,
-            shadowRadius: 2.22,
-            elevation: 3,
-          }}
-        >
-          <MaterialCommunityIcons name="facebook" size={28} color="#1877F2" />
+          {loading === "google" ? (
+            <ActivityIndicator color="#4285F4" size="small" />
+          ) : (
+            <GoogleIcon />
+          )}
         </TouchableOpacity>
       </View>
     </View>

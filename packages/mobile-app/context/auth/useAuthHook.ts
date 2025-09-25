@@ -3,6 +3,7 @@
 //  Created by Ahmet on 29.06.2025.
 
 import { useTranslation } from "react-i18next";
+import { useState, useEffect } from "react";
 
 // Custom hooks
 import { useAuthActions } from "@/hooks/auth/useAuthActions";
@@ -10,8 +11,13 @@ import { useAuthState } from "@/hooks/auth/useAuthState";
 import { useGuestAuth } from "@/hooks/auth/useGuestAuth";
 import { useProfileManagement } from "@/hooks/auth/useProfileManagement";
 
+// Firebase auth
+import { signInWithApple as firebaseSignInWithApple, checkAppleAuthAvailable } from "@/core/firebase/auth/appleAuth";
+import { signInWithGoogle as firebaseSignInWithGoogle } from "@/core/firebase/auth/googleAuth";
+
 export const useAuthHook = () => {
   const { t } = useTranslation();
+  const [isAppleSignInAvailable, setIsAppleSignInAvailable] = useState(false);
 
   // Auth state management
   const {
@@ -61,6 +67,42 @@ export const useAuthHook = () => {
     migrateGuestToUser,
   });
 
+  // Check Apple Sign-In availability
+  useEffect(() => {
+    checkAppleAuthAvailable().then(setIsAppleSignInAvailable);
+  }, []);
+
+  // Firebase Social Auth
+  const signInWithApple = async () => {
+    try {
+      const result = await firebaseSignInWithApple();
+      if (result.success && result.user) {
+        // Backend'e Firebase user bilgisini gönder ve JWT token al
+        // Bu kısım backend'de Firebase auth entegrasyonu yapıldıktan sonra eklenecek
+        console.log("Apple Sign-In başarılı:", result.user);
+      }
+      return result;
+    } catch (error) {
+      console.error("Apple Sign-In hatası:", error);
+      return { success: false, error: "Apple Sign-In başarısız" };
+    }
+  };
+
+  const signInWithGoogle = async () => {
+    try {
+      const result = await firebaseSignInWithGoogle();
+      if (result.success && result.user) {
+        // Backend'e Firebase user bilgisini gönder ve JWT token al
+        // Bu kısım backend'de Firebase auth entegrasyonu yapıldıktan sonra eklenecek
+        console.log("Google Sign-In başarılı:", result.user);
+      }
+      return result;
+    } catch (error) {
+      console.error("Google Sign-In hatası:", error);
+      return { success: false, error: "Google Sign-In başarısız" };
+    }
+  };
+
   return {
     // State
     user,
@@ -73,6 +115,7 @@ export const useAuthHook = () => {
     phoneNumber,
     loading,
     isAuthenticated: !!(user && (token || accessToken)),
+    isAppleSignInAvailable,
 
     // Actions
     sendOTP,
@@ -83,5 +126,7 @@ export const useAuthHook = () => {
     refreshUserProfile,
     loginAsGuest,
     logout,
+    signInWithApple,
+    signInWithGoogle,
   };
 };

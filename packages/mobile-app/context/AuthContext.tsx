@@ -19,6 +19,7 @@ const AuthContext = createContext<AuthContextType>({
   guestId: null,
   phoneNumber: null,
   isAuthenticated: false,
+  isAppleSignInAvailable: false,
   sendOTP: async () => ({ success: false, message: "Not implemented" }),
   verifyOTP: async () => ({
     success: false,
@@ -38,6 +39,8 @@ const AuthContext = createContext<AuthContextType>({
   loginAsGuest: async () => {},
   logout: () => {},
   loading: true,
+  signInWithApple: async () => ({ success: false, error: "Not implemented" }),
+  signInWithGoogle: async () => ({ success: false, error: "Not implemented" }),
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -59,6 +62,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       authHookValues.guestId,
       authHookValues.phoneNumber,
       authHookValues.loading,
+      authHookValues.isAppleSignInAvailable,
       authHookValues.sendOTP,
       authHookValues.verifyOTP,
       authHookValues.completeProfile,
@@ -67,6 +71,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       authHookValues.updateUserProfile,
       authHookValues.uploadProfilePhoto,
       authHookValues.refreshUserProfile,
+      authHookValues.signInWithApple,
+      authHookValues.signInWithGoogle,
     ]
   );
 

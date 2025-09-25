@@ -824,7 +824,15 @@
     "rate_limit_exceeded": "İstek limiti aşıldı",
     "network_error": "Bağlantı hatası. Lütfen tekrar deneyin.",
     "server_error": "Sunucu hatası. Lütfen daha sonra tekrar deneyin.",
-    "unknown_error": "Beklenmeyen bir hata oluştu"
+    "unknown_error": "Beklenmeyen bir hata oluştu",
+    "or_continue_with": "veya şununla devam et",
+    "continue_with_apple": "Apple ile Devam Et",
+    "continue_with_google": "Google ile Devam Et",
+    "apple_sign_in_failed": "Apple ile giriş başarısız oldu",
+    "google_sign_in_failed": "Google ile giriş başarısız oldu",
+    "social_sign_in_cancelled": "Sosyal medya girişi iptal edildi",
+    "firebase_auth_error": "Kimlik doğrulama hatası",
+    "firebase_network_error": "Ağ bağlantı hatası"
   },
   "invoice_preview": {
     "title": "Fatura Önizleme",

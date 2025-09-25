@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "18493082891",
+    "project_id": "metropolitan-c84b7",
+    "storage_bucket": "metropolitan-c84b7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:18493082891:android:0d1259ac3de109f17ce60e",
+        "android_client_info": {
+          "package_name": "com.metropolitan.food"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCBz3yCpIN_arfL3pTipefoElD9eaJ1NFs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
