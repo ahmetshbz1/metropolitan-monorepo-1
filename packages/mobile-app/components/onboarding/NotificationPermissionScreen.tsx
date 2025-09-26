@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { View, Alert, ActivityIndicator, Image } from "react-native";
+import { View, ActivityIndicator, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -34,11 +34,8 @@ export function NotificationPermissionScreen({ onContinue }: NotificationPermiss
         await AsyncStorage.setItem("onboarding_notification_asked", "true");
         showHaptic("success");
 
-        Alert.alert(
-          t("onboarding.notification_enabled_title"),
-          t("onboarding.notification_enabled_message"),
-          [{ text: t("common.continue"), onPress: onContinue }]
-        );
+        // Direkt devam et, hoş geldin push'u zaten gidecek
+        onContinue();
       } else {
         // İzin verilmedi ama devam edebilir
         await AsyncStorage.setItem("onboarding_notification_asked", "true");

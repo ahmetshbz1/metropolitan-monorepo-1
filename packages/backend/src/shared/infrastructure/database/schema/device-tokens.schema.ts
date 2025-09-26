@@ -37,9 +37,8 @@ export const deviceTokens = pgTable(
     updatedAt: timestamp("updated_at").notNull().defaultNow(),
   },
   (table) => ({
-    // Aynı token birden fazla kullanıcıda olamaz
-    tokenUnique: uniqueIndex("device_tokens_token_unique").on(table.token),
     // Aynı kullanıcı ve token kombinasyonu tekil olmalı
+    // NOT: Aynı token farklı kullanıcılarda OLABİLİR (aynı cihaz, farklı hesaplar)
     userTokenUnique: uniqueIndex("device_tokens_user_token_unique").on(
       table.userId,
       table.token

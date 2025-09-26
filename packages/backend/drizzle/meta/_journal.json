@@ -71,6 +71,13 @@
       "when": 1758889064635,
       "tag": "0009_sharp_dazzler",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1758890383714,
+      "tag": "0010_hesitant_sunspot",
+      "breakpoints": true
     }
   ]
 }

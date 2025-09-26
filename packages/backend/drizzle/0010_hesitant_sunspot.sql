@@ -1,0 +1,1 @@
+DROP INDEX "device_tokens_token_unique";
