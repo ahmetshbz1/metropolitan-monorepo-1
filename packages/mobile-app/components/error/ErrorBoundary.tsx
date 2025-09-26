@@ -9,8 +9,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Application from 'expo-application';
+import { useTranslation } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 
-interface Props {
+interface Props extends WithTranslation {
   children: ReactNode;
   fallback?: ReactNode;
   onError?: (error: Error, errorInfo: ErrorInfo) => void;
@@ -139,11 +141,11 @@ class ErrorBoundary extends Component<Props, State> {
             </View>
 
             {/* Error Title */}
-            <Text style={styles.title}>Bir Hata Oluştu</Text>
+            <Text style={styles.title}>{this.props.t('errors.ERROR_BOUNDARY_TITLE')}</Text>
 
             {/* Error Description */}
             <Text style={styles.description}>
-              Uygulamamızda beklenmedik bir hata oluştu. Bu durumu en kısa sürede düzelteceğiz.
+              {this.props.t('errors.ERROR_BOUNDARY_DESCRIPTION')}
             </Text>
 
             {/* Error Details (only in dev) */}
@@ -171,7 +173,7 @@ class ErrorBoundary extends Component<Props, State> {
                 activeOpacity={0.8}
               >
                 <Ionicons name="refresh" size={20} color="white" />
-                <Text style={styles.primaryButtonText}>Uygulamayı Yenile</Text>
+                <Text style={styles.primaryButtonText}>{this.props.t('errors.ERROR_BOUNDARY_RELOAD')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -180,16 +182,16 @@ class ErrorBoundary extends Component<Props, State> {
                 activeOpacity={0.8}
               >
                 <Ionicons name="arrow-back" size={20} color="#007AFF" />
-                <Text style={styles.secondaryButtonText}>Tekrar Dene</Text>
+                <Text style={styles.secondaryButtonText}>{this.props.t('errors.ERROR_BOUNDARY_RETRY')}</Text>
               </TouchableOpacity>
             </View>
 
             {/* Support Info */}
             <View style={styles.supportInfo}>
               <Text style={styles.supportText}>
-                Sorun devam ederse destek ekibimizle iletişime geçebilirsiniz.
+                {this.props.t('errors.ERROR_BOUNDARY_SUPPORT')}
               </Text>
-              <Text style={styles.supportEmail}>info@metropolitanfg.pl</Text>
+              <Text style={styles.supportEmail}>{this.props.t('errors.ERROR_BOUNDARY_SUPPORT_EMAIL')}</Text>
             </View>
           </ScrollView>
         </SafeAreaView>
@@ -306,4 +308,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ErrorBoundary;
+export default withTranslation()(ErrorBoundary);
