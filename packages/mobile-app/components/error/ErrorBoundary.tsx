@@ -5,7 +5,6 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -42,7 +41,7 @@ class ErrorBoundary extends Component<Props, State> {
     };
   }
 
-  static getDerivedStateFromError(error: Error): Partial<State> {
+  static getDerivedStateFromError(_error: Error): Partial<State> {
     // Update state to render error UI
     return { hasError: true };
   }
@@ -90,7 +89,6 @@ class ErrorBoundary extends Component<Props, State> {
       timestamp: new Date().toISOString(),
       appVersion: Application.nativeApplicationVersion,
       buildVersion: Application.nativeBuildVersion,
-      platform: Application.platformAsString,
     };
 
     // In production, send this to your error tracking service
@@ -191,7 +189,7 @@ class ErrorBoundary extends Component<Props, State> {
               <Text style={styles.supportText}>
                 Sorun devam ederse destek ekibimizle iletişime geçebilirsiniz.
               </Text>
-              <Text style={styles.supportEmail}>destek@metropolitan.com</Text>
+              <Text style={styles.supportEmail}>info@metropolitanfg.pl</Text>
             </View>
           </ScrollView>
         </SafeAreaView>

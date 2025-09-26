@@ -30,6 +30,7 @@ export function NotificationItem({
   const { t } = useTranslation();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
+  const swipeableRef = React.useRef<Swipeable>(null);
   const { renderRightActions } = SwipeActions({ item, onDelete });
 
   const handlePress = () => {
@@ -42,13 +43,23 @@ export function NotificationItem({
     }
   };
 
+  // Component unmount olduğunda swipeable'ı kapat
+  React.useEffect(() => {
+    return () => {
+      swipeableRef.current?.close();
+    };
+  }, []);
+
   return (
     <Swipeable
+      ref={swipeableRef}
       renderRightActions={renderRightActions}
       rightThreshold={40}
       overshootRight={false}
       friction={2}
       onSwipeableWillOpen={handleSwipeWillOpen}
+      enableTrackpadTwoFingerGesture={false}
+      shouldCancelWhenOutside={true}
     >
       <TouchableOpacity
         onPress={handlePress}
@@ -98,7 +109,7 @@ export function NotificationItem({
                 className="mb-2 leading-5 opacity-70"
                 style={{ fontSize: 14 }}
               >
-                {item.message}
+                {item.body}
               </ThemedText>
 
               <ThemedText className="opacity-50" style={{ fontSize: 12 }}>

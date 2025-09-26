@@ -5,6 +5,7 @@ import { WebhookOrderManagementService } from "./order-management.service";
 import { PaymentIntentActionsService } from "./payment-intent-actions.service";
 import { WebhookStockRollbackService } from "./stock-rollback.service";
 import type { WebhookProcessingResult } from "./webhook-types";
+import { PushNotificationService } from "../../../../shared/application/services/push-notification.service";
 
 export class PaymentStateHandlersService {
   /**
@@ -68,9 +69,43 @@ export class PaymentStateHandlersService {
 
     console.log(`❌ Order ${orderId} payment failed`);
 
+    // Get order info for notification
+    try {
+      const { db } = await import("../../../../shared/infrastructure/database/connection");
+      const { orders } = await import("../../../../shared/infrastructure/database/schema");
+      const { eq } = await import("drizzle-orm");
+
+      const [order] = await db
+        .select({
+          id: orders.id,
+          userId: orders.userId,
+          orderNumber: orders.orderNumber,
+        })
+        .from(orders)
+        .where(eq(orders.id, orderId))
+        .limit(1);
+
+      if (order) {
+        // Send payment failed notification
+        await PushNotificationService.sendToUser(order.userId, {
+          title: "❌ Ödeme Başarısız",
+          body: `${order.orderNumber} numaralı siparişinizin ödemesi alınamadı. Lütfen tekrar deneyin.`,
+          type: "payment_failed",
+          data: {
+            screen: `/cart`,
+            orderId: order.id,
+            orderNumber: order.orderNumber,
+            type: "payment_failed",
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Failed to send payment failed notification:", error);
+    }
+
     // Rollback stock
     const rollbackResult = await WebhookStockRollbackService.rollbackOrderStock(orderId);
-    
+
     if (!rollbackResult.success) {
       console.error(`Stock rollback failed for order ${orderId}:`, rollbackResult.errors);
     }
@@ -107,7 +142,7 @@ export class PaymentStateHandlersService {
   static async handleCancellation(orderId: string): Promise<WebhookProcessingResult> {
     // Check idempotency
     const idempotencyCheck = await WebhookOrderManagementService.checkOrderIdempotency(
-      orderId, 
+      orderId,
       'canceled'
     );
 
@@ -129,9 +164,43 @@ export class PaymentStateHandlersService {
 
     console.log(`🚫 Order ${orderId} payment canceled`);
 
+    // Get order info for notification
+    try {
+      const { db } = await import("../../../../shared/infrastructure/database/connection");
+      const { orders } = await import("../../../../shared/infrastructure/database/schema");
+      const { eq } = await import("drizzle-orm");
+
+      const [order] = await db
+        .select({
+          id: orders.id,
+          userId: orders.userId,
+          orderNumber: orders.orderNumber,
+        })
+        .from(orders)
+        .where(eq(orders.id, orderId))
+        .limit(1);
+
+      if (order) {
+        // Send payment canceled notification
+        await PushNotificationService.sendToUser(order.userId, {
+          title: "🚫 Ödeme İptal Edildi",
+          body: `${order.orderNumber} numaralı siparişinizin ödemesi iptal edildi.`,
+          type: "payment_canceled",
+          data: {
+            screen: `/cart`,
+            orderId: order.id,
+            orderNumber: order.orderNumber,
+            type: "payment_canceled",
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Failed to send payment canceled notification:", error);
+    }
+
     // Rollback stock
     const rollbackResult = await WebhookStockRollbackService.rollbackOrderStock(orderId);
-    
+
     if (!rollbackResult.success) {
       console.error(`Stock rollback failed for canceled order ${orderId}:`, rollbackResult.errors);
     }

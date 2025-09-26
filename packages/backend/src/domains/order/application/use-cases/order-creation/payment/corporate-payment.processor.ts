@@ -5,6 +5,7 @@
 import type { CartItem as CartItemData } from "@metropolitan/shared/types/cart";
 import type { OrderCreationResult, OrderItem as OrderItemData } from "@metropolitan/shared/types/order";
 import { eq } from "drizzle-orm";
+import { PushNotificationService } from "../../../../../../shared/application/services/push-notification.service";
 
 export class CorporatePaymentProcessor {
   /**
@@ -43,6 +44,23 @@ export class CorporatePaymentProcessor {
 
     // Note: Invoice will be generated after admin approval
     console.log("📝 Fatura admin onayından sonra oluşturulacak");
+
+    // Banka havalesi bildirimi gönder
+    try {
+      await PushNotificationService.sendToUser(userId, {
+        title: "🏦 Banka Havalesi Siparişi",
+        body: `${order.orderNumber} numaralı siparişiniz alındı. Ödemeniz onaylandıktan sonra siparişiniz hazırlanacak.`,
+        type: "bank_transfer",
+        data: {
+          screen: `/order/${order.id}`,
+          orderId: order.id,
+          orderNumber: order.orderNumber,
+          type: "bank_transfer",
+        },
+      });
+    } catch (error) {
+      console.error("Failed to send bank transfer notification:", error);
+    }
 
     return this.buildSuccessResult(updatedOrder || order);
   }

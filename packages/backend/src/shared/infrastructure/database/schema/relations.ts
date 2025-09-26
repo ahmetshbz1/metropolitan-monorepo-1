@@ -6,6 +6,7 @@ import { relations } from "drizzle-orm";
 
 import { cartItems, favorites } from "./cart.schema";
 import { deviceTokens } from "./device-tokens.schema";
+import { notifications } from "./notifications.schema";
 import { orderItems, orders, trackingEvents } from "./order.schema";
 import {
   categories,
@@ -30,6 +31,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   cartItems: many(cartItems),
   favorites: many(favorites),
   deviceTokens: many(deviceTokens),
+  notifications: many(notifications),
 }));
 
 export const addressesRelations = relations(addresses, ({ one, many }) => ({
@@ -43,6 +45,13 @@ export const addressesRelations = relations(addresses, ({ one, many }) => ({
 export const deviceTokensRelations = relations(deviceTokens, ({ one }) => ({
   user: one(users, {
     fields: [deviceTokens.userId],
+    references: [users.id],
+  }),
+}));
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(users, {
+    fields: [notifications.userId],
     references: [users.id],
   }),
 }));

@@ -11,8 +11,9 @@ import { t } from "elysia";
 import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
 import { createApp } from "../../../../shared/infrastructure/web/app";
 import { db } from "../../../../shared/infrastructure/database/connection";
-import { deviceTokens } from "../../../../shared/infrastructure/database/schema";
+import { deviceTokens, notifications } from "../../../../shared/infrastructure/database/schema";
 import { eq, and } from "drizzle-orm";
+import { createNotification } from "./notifications.routes";
 import { ProfileCompletionService } from "../../application/use-cases/profile-completion.service";
 import { ProfilePhotoService } from "../../application/use-cases/profile-photo.service";
 import { ProfileUpdateService } from "../../application/use-cases/profile-update.service";
@@ -212,6 +213,18 @@ const protectedProfileRoutes = createApp()
 
           const result = await response.json();
           console.log('Test notification sent:', result);
+
+          // Bildirimi veritabanına da kaydet
+          if (result.data && result.data.status === 'ok') {
+            await createNotification(userId, {
+              title: '🎉 Metropolitan\'e Hoş Geldiniz!',
+              body: 'Push bildirimleri başarıyla aktifleştirildi.',
+              type: 'system',
+              data: { screen: '/(tabs)' },
+              source: 'push',
+              pushId: result.data.id,
+            });
+          }
         } catch (error) {
           console.error('Test notification error:', error);
         }

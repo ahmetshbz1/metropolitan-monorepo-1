@@ -16,6 +16,7 @@ import {
   orders,
   users,
 } from "../../../../shared/infrastructure/database/schema";
+import { PushNotificationService } from "../../../../shared/application/services/push-notification.service";
 
 // Refactored modular services
 import { CartManagementService } from "./order-creation/cart-management.service";
@@ -107,6 +108,23 @@ export class OrderCreationService {
       // Cart will be cleared in webhook after payment confirmation
       console.log("🛒 Cart will be cleared after payment confirmation via webhook");
 
+      // Ödeme bekleniyor bildirimi gönder
+      try {
+        await PushNotificationService.sendToUser(userId, {
+          title: "💳 Ödeme Bekleniyor",
+          body: `${order.orderNumber} numaralı siparişiniz oluşturuldu. Ödemenizi tamamlayın.`,
+          type: "payment_pending",
+          data: {
+            screen: `/checkout/payment`,
+            orderId: order.id,
+            orderNumber: order.orderNumber,
+            type: "payment_pending",
+          },
+        });
+      } catch (error) {
+        console.error("Failed to send payment pending notification:", error);
+      }
+
       return {
         ...order,
         stripePaymentIntentId: stripeInfo.paymentIntentId,
@@ -129,6 +147,37 @@ export class OrderCreationService {
    */
   static async finalizeOrderAfterPayment(orderId: string): Promise<void> {
     await CartManagementService.finalizeOrderAfterPayment(orderId);
+
+    // Sipariş bilgilerini al ve push gönder
+    try {
+      const [order] = await db
+        .select({
+          id: orders.id,
+          userId: orders.userId,
+          orderNumber: orders.orderNumber,
+          totalAmount: orders.totalAmount,
+        })
+        .from(orders)
+        .where(eq(orders.id, orderId))
+        .limit(1);
+
+      if (order) {
+        // Ödeme başarılı bildirimi gönder
+        await PushNotificationService.sendToUser(order.userId, {
+          title: "✅ Ödeme Başarılı",
+          body: `${order.orderNumber} numaralı siparişiniz için ödemeniz alındı. Siparişiniz hazırlanıyor.`,
+          type: "payment_success",
+          data: {
+            screen: `/order/${order.id}`,
+            orderId: order.id,
+            orderNumber: order.orderNumber,
+            type: "payment_success",
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Failed to send payment success notification:", error);
+    }
   }
 
   /**

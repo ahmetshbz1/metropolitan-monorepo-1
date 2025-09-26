@@ -13,7 +13,7 @@ import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useHaptics } from "@/hooks/useHaptics";
 
-const supportEmail = "destek@metropolitan.com";
+const supportEmail = "info@metropolitanfg.pl";
 const supportPhone = "+48123456789";
 
 interface HelpContentProps {

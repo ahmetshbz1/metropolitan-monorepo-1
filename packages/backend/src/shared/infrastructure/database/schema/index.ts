@@ -20,5 +20,8 @@ export * from "./guest.schema";
 // Cihaz token'ları
 export * from "./device-tokens.schema";
 
+// Bildirimler
+export * from "./notifications.schema";
+
 // İlişkiler
 export * from "./relations";

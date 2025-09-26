@@ -14,6 +14,7 @@ import {
   trackingEvents,
   users,
 } from "../../../../shared/infrastructure/database/schema";
+import { PushNotificationService } from "../../../../shared/application/services/push-notification.service";
 
 export class OrderTrackingService {
   /**
@@ -199,5 +200,122 @@ export class OrderTrackingService {
     }
 
     return order;
+  }
+
+  /**
+   * Sipariş durumunu günceller ve bildirim gönderir
+   */
+  static async updateOrderStatus(
+    orderId: string,
+    newStatus: string,
+    trackingInfo?: {
+      trackingNumber?: string;
+      shippingCompany?: string;
+      estimatedDelivery?: Date;
+      location?: string;
+      description?: string;
+    }
+  ) {
+    // Siparişi güncelle
+    const [updatedOrder] = await db
+      .update(orders)
+      .set({
+        status: newStatus,
+        trackingNumber: trackingInfo?.trackingNumber || orders.trackingNumber,
+        shippingCompany: trackingInfo?.shippingCompany || orders.shippingCompany,
+        estimatedDelivery: trackingInfo?.estimatedDelivery || orders.estimatedDelivery,
+        updatedAt: new Date(),
+      })
+      .where(eq(orders.id, orderId))
+      .returning();
+
+    if (!updatedOrder) {
+      throw new Error("Sipariş güncellenemedi");
+    }
+
+    // Tracking event ekle
+    if (trackingInfo?.description) {
+      await db.insert(trackingEvents).values({
+        orderId: orderId,
+        status: newStatus,
+        statusText: this.getStatusText(newStatus),
+        location: trackingInfo.location || "",
+        timestamp: new Date(),
+        description: trackingInfo.description,
+      });
+    }
+
+    // Push notification gönder
+    const notificationData = this.getNotificationData(newStatus, updatedOrder.orderNumber);
+    if (notificationData) {
+      await PushNotificationService.sendToUser(updatedOrder.userId, {
+        ...notificationData,
+        data: {
+          screen: `/order/${orderId}`,
+          orderId: orderId,
+          orderNumber: updatedOrder.orderNumber,
+          status: newStatus,
+          type: "order_update",
+        },
+      });
+    }
+
+    return updatedOrder;
+  }
+
+  /**
+   * Sipariş durumuna göre bildirim metni döndürür
+   */
+  private static getNotificationData(status: string, orderNumber: string) {
+    const notifications: Record<string, { title: string; body: string }> = {
+      confirmed: {
+        title: "✅ Siparişiniz Onaylandı",
+        body: `${orderNumber} numaralı siparişiniz onaylandı ve hazırlanıyor.`,
+      },
+      preparing: {
+        title: "📦 Siparişiniz Hazırlanıyor",
+        body: `${orderNumber} numaralı siparişiniz hazırlanıyor.`,
+      },
+      shipped: {
+        title: "🚚 Kargoya Verildi",
+        body: `${orderNumber} numaralı siparişiniz kargoya verildi. Takip kodunuzu kontrol edebilirsiniz.`,
+      },
+      out_for_delivery: {
+        title: "🚛 Dağıtıma Çıktı",
+        body: `${orderNumber} numaralı siparişiniz bugün teslim edilecek.`,
+      },
+      delivered: {
+        title: "✨ Teslim Edildi",
+        body: `${orderNumber} numaralı siparişiniz başarıyla teslim edildi. Afiyet olsun!`,
+      },
+      cancelled: {
+        title: "❌ Sipariş İptal Edildi",
+        body: `${orderNumber} numaralı siparişiniz iptal edildi.`,
+      },
+      refunded: {
+        title: "💳 İade Edildi",
+        body: `${orderNumber} numaralı siparişiniz için ödeme iadesi yapıldı.`,
+      },
+    };
+
+    return notifications[status] || null;
+  }
+
+  /**
+   * Sipariş durumu açıklaması
+   */
+  private static getStatusText(status: string): string {
+    const statusTexts: Record<string, string> = {
+      pending: "Beklemede",
+      confirmed: "Onaylandı",
+      preparing: "Hazırlanıyor",
+      shipped: "Kargoya Verildi",
+      out_for_delivery: "Dağıtımda",
+      delivered: "Teslim Edildi",
+      cancelled: "İptal Edildi",
+      refunded: "İade Edildi",
+    };
+
+    return statusTexts[status] || status;
   }
 }
