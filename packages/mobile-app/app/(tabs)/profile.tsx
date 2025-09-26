@@ -80,14 +80,6 @@ export default function ProfileScreen() {
           showChevron: true,
         },
         {
-          id: "notification-settings",
-          title: t("profile.notification_settings"),
-          subtitle: t("profile.notification_settings_desc"),
-          icon: "notifications-circle-outline",
-          route: "/notification-settings",
-          showChevron: true,
-        },
-        {
           id: "account-settings",
           title: t("profile.account_settings"),
           subtitle: t("profile.account_settings_desc"),
