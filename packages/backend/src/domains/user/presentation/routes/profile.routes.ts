@@ -11,7 +11,7 @@ import { t } from "elysia";
 import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
 import { createApp } from "../../../../shared/infrastructure/web/app";
 import { db } from "../../../../shared/infrastructure/database/connection";
-import { deviceTokens, notifications } from "../../../../shared/infrastructure/database/schema";
+import { deviceTokens, notifications, users } from "../../../../shared/infrastructure/database/schema";
 import { eq, and } from "drizzle-orm";
 import { createNotification } from "./notifications.routes";
 import { ProfileCompletionService } from "../../application/use-cases/profile-completion.service";
@@ -21,7 +21,9 @@ import { ProfileUpdateService } from "../../application/use-cases/profile-update
 // Bu tip backend'e özel kalabilir, çünkü JWT payload'u ile ilgili.
 export interface RegistrationTokenPayload {
   sub: string;
+  userId?: string; // User ID to prevent race conditions
   phoneNumber: string;
+  userType?: string;
 }
 
 // Açık rotalar - Kayıt token'ı gerekli
@@ -46,11 +48,13 @@ const publicProfileRoutes = createApp().post(
       }
 
       // Profil tamamlama service'i çağır
+      // userId varsa onu kullan (race condition önleme), yoksa phoneNumber ile devam et
       const result = await ProfileCompletionService.completeProfile(
-        payload.phoneNumber,
+        payload.userId || payload.phoneNumber,
         body,
         jwt,
-        headers
+        headers,
+        !!payload.userId // Pass flag to indicate if we're using userId
       );
 
       return result;
@@ -292,6 +296,146 @@ const protectedProfileRoutes = createApp()
           error: 'Invalid file. Must be JPEG, PNG, or WebP under 2MB.'
         }),
       }),
+    }
+  )
+
+  // Link social provider
+  .post(
+    "/me/link-provider",
+    async ({ profile, body, set }) => {
+      try {
+        const userId = profile?.sub || profile?.userId;
+        if (!userId) {
+          set.status = 401;
+          return { success: false, message: "Unauthorized" };
+        }
+
+        // Get current user
+        const user = await db.query.users.findFirst({
+          where: eq(users.id, userId),
+        });
+
+        if (!user) {
+          set.status = 404;
+          return { success: false, message: "User not found" };
+        }
+
+        // Check if user already has a different provider
+        if (user.authProvider && user.authProvider !== body.provider) {
+          set.status = 400;
+          return {
+            success: false,
+            error: "PROVIDER_CONFLICT",
+            message: `Your account is already linked to ${user.authProvider}`,
+          };
+        }
+
+        // Check if another user already uses this social account
+        const existingUserWithProvider = await db.query.users.findFirst({
+          where: body.provider === 'apple' && body.appleUserId
+            ? eq(users.appleUserId, body.appleUserId)
+            : eq(users.firebaseUid, body.firebaseUid),
+        });
+
+        if (existingUserWithProvider && existingUserWithProvider.id !== userId) {
+          set.status = 400;
+          return {
+            success: false,
+            error: "ALREADY_LINKED",
+            message: `Bu ${body.provider === 'apple' ? 'Apple' : 'Google'} hesabı zaten başka bir kullanıcıya bağlı. Önce diğer hesaptan bağlantıyı kaldırmanız gerekiyor.`,
+          };
+        }
+
+        // Link the provider
+        const updateData: any = {
+          authProvider: body.provider,
+          firebaseUid: body.firebaseUid,
+          updatedAt: new Date(),
+        };
+
+        if (body.provider === 'apple' && body.appleUserId) {
+          updateData.appleUserId = body.appleUserId;
+        }
+
+        // Only update email if it's not already set
+        if (body.email && !user.email) {
+          updateData.email = body.email;
+        }
+
+        await db
+          .update(users)
+          .set(updateData)
+          .where(eq(users.id, userId));
+
+        return {
+          success: true,
+          message: `Successfully linked ${body.provider} to your account`,
+        };
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to link social provider";
+        set.status = 500;
+        return { success: false, message };
+      }
+    },
+    {
+      body: t.Object({
+        provider: t.String({ enum: ["apple", "google"] }),
+        firebaseUid: t.String(),
+        appleUserId: t.Optional(t.String()),
+        email: t.Optional(t.String({ format: "email" })),
+      }),
+    }
+  )
+
+  // Unlink social provider
+  .delete(
+    "/me/social-provider",
+    async ({ profile, set }) => {
+      try {
+        const userId = profile?.sub || profile?.userId;
+        if (!userId) {
+          set.status = 401;
+          return { success: false, message: "Unauthorized" };
+        }
+
+        // Get current user
+        const user = await db.query.users.findFirst({
+          where: eq(users.id, userId),
+        });
+
+        if (!user) {
+          set.status = 404;
+          return { success: false, message: "User not found" };
+        }
+
+        // Check if user has social provider
+        if (!user.authProvider) {
+          set.status = 400;
+          return { success: false, message: "No social provider linked to this account" };
+        }
+
+        // Remove social provider links
+        await db
+          .update(users)
+          .set({
+            authProvider: null,
+            firebaseUid: null,
+            appleUserId: null,
+            updatedAt: new Date(),
+          })
+          .where(eq(users.id, userId));
+
+        return {
+          success: true,
+          message: `Successfully unlinked ${user.authProvider} from your account`,
+        };
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to unlink social provider";
+        set.status = 500;
+        return { success: false, message };
+      }
     }
   )
 

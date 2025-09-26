@@ -47,7 +47,7 @@ export class UserProfileOperationsService {
    * Update user profile with terms acceptance
    */
   static async updateProfileWithTerms(
-    phoneNumber: string,
+    phoneNumberOrUserId: string,
     userType: "individual" | "corporate",
     profileData: {
       firstName: string;
@@ -61,6 +61,16 @@ export class UserProfileOperationsService {
       appleUserId?: string; // Add Apple User ID
     }
   ) {
+    // Check if it's a UUID (user ID) or phone number
+    const isUserId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(phoneNumberOrUserId);
+
+    const whereClause = isUserId
+      ? eq(users.id, phoneNumberOrUserId)
+      : and(
+          eq(users.phoneNumber, phoneNumberOrUserId),
+          eq(users.userType, userType)
+        );
+
     const [updatedUser] = await db
       .update(users)
       .set({
@@ -77,12 +87,7 @@ export class UserProfileOperationsService {
         marketingConsentAt: profileData.marketingConsent ? new Date() : null,
         updatedAt: new Date(),
       })
-      .where(
-        and(
-          eq(users.phoneNumber, phoneNumber),
-          eq(users.userType, userType)
-        )
-      )
+      .where(whereClause)
       .returning({ id: users.id });
 
     if (!updatedUser) {

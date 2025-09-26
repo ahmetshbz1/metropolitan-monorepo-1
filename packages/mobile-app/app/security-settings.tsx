@@ -7,7 +7,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Colors from "@/constants/Colors";
 import { useAuth } from "@/context/AuthContext";
-import { api } from "@/core/api";
+import api from "@/core/api";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useNavigationProtection } from "@/hooks/useNavigationProtection";
 import { useToast } from "@/hooks/useToast";
@@ -15,7 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import React, { useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, ScrollView, Switch, View } from "react-native";
+import { ActivityIndicator, Alert, ScrollView, Switch, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface SecuritySettings {
@@ -32,7 +32,7 @@ export default function SecuritySettingsScreen() {
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const { showToast } = useToast();
-  const { isAuthenticated, user, isGuest } = useAuth();
+  const { isAuthenticated, user, isGuest, refreshUserProfile } = useAuth();
 
   const [settings, setSettings] = useState<SecuritySettings>({
     twoFactorEnabled: false,
@@ -74,6 +74,92 @@ export default function SecuritySettingsScreen() {
 
   const handleChangePhone = () => {
     safeRouter.push("/change-phone");
+  };
+
+  const handleLinkProvider = async (provider: 'apple' | 'google') => {
+    try {
+      setLoading(true);
+
+      if (provider === 'apple') {
+        // Import Apple auth dynamically
+        const { signInWithApple } = await import('@/core/firebase/auth/appleAuth');
+        const result = await signInWithApple();
+
+        if (result.success && result.user) {
+          // Call backend to link Apple account
+          await api.post("/users/me/link-provider", {
+            provider: 'apple',
+            firebaseUid: result.user.uid,
+            appleUserId: result.user.appleUserId,
+            email: result.user.email,
+          });
+
+          showToast(t("security_settings.connect_success", { provider: 'Apple' }), "success");
+          await refreshUserProfile();
+        }
+      } else if (provider === 'google') {
+        // Import Google auth dynamically
+        const { signInWithGoogle } = await import('@/core/firebase/auth/googleAuth');
+        const result = await signInWithGoogle();
+
+        if (result.success && result.user) {
+          // Call backend to link Google account
+          await api.post("/users/me/link-provider", {
+            provider: 'google',
+            firebaseUid: result.user.uid,
+            email: result.user.email,
+          });
+
+          showToast(t("security_settings.connect_success", { provider: 'Google' }), "success");
+          await refreshUserProfile();
+        }
+      }
+    } catch (error: any) {
+      console.error("Failed to link provider:", error);
+
+      // Check if it's a provider conflict
+      if (error?.response?.data?.error === 'PROVIDER_CONFLICT') {
+        showToast(error.response.data.message, "error");
+      } else {
+        showToast(t("security_settings.connect_failed"), "error");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUnlinkProvider = (provider: 'apple' | 'google') => {
+    Alert.alert(
+      t("security_settings.disconnect_title"),
+      t("security_settings.disconnect_message", { provider: provider === 'apple' ? 'Apple' : 'Google' }),
+      [
+        {
+          text: t("general.cancel"),
+          style: "cancel",
+        },
+        {
+          text: t("security_settings.disconnect_confirm"),
+          style: "destructive",
+          onPress: async () => {
+            setLoading(true);
+            try {
+              await api.delete("/users/me/social-provider");
+              showToast(
+                t("security_settings.disconnect_success", { provider: provider === 'apple' ? 'Apple' : 'Google' }),
+                "success"
+              );
+              // Refresh user data
+              await refreshUserProfile();
+            } catch (error) {
+              console.error("Failed to unlink provider:", error);
+              showToast(t("security_settings.disconnect_failed"), "error");
+            } finally {
+              setLoading(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const securityItems = [
@@ -206,20 +292,35 @@ export default function SecuritySettingsScreen() {
                     {user?.authProvider === 'google' && user?.email ? user.email : t("security_settings.not_connected")}
                   </ThemedText>
                 </View>
-                {user?.authProvider === 'google' && (
-                  <View
+                {user?.authProvider === 'google' ? (
+                  <HapticButton
+                    onPress={() => handleUnlinkProvider('google')}
                     style={{
-                      backgroundColor: colors.success + "20",
-                      paddingHorizontal: 8,
-                      paddingVertical: 4,
+                      backgroundColor: colors.error + "15",
+                      paddingHorizontal: 10,
+                      paddingVertical: 6,
                       borderRadius: 12,
                     }}
                   >
-                    <ThemedText className="text-xs" style={{ color: colors.success }}>
-                      {t("security_settings.connected")}
+                    <ThemedText className="text-xs font-medium" style={{ color: colors.error }}>
+                      {t("security_settings.disconnect")}
                     </ThemedText>
-                  </View>
-                )}
+                  </HapticButton>
+                ) : !user?.authProvider ? (
+                  <HapticButton
+                    onPress={() => handleLinkProvider('google')}
+                    style={{
+                      backgroundColor: colors.primary + "20",
+                      paddingHorizontal: 10,
+                      paddingVertical: 6,
+                      borderRadius: 12,
+                    }}
+                  >
+                    <ThemedText className="text-xs font-medium" style={{ color: colors.primary }}>
+                      {t("security_settings.connect")}
+                    </ThemedText>
+                  </HapticButton>
+                ) : null}
               </View>
 
               {/* Apple Account */}
@@ -258,18 +359,33 @@ export default function SecuritySettingsScreen() {
                   </ThemedText>
                 </View>
                 {user?.authProvider === 'apple' ? (
-                  <View
+                  <HapticButton
+                    onPress={() => handleUnlinkProvider('apple')}
                     style={{
-                      backgroundColor: colors.success + "20",
-                      paddingHorizontal: 8,
-                      paddingVertical: 4,
+                      backgroundColor: colors.error + "15",
+                      paddingHorizontal: 10,
+                      paddingVertical: 6,
                       borderRadius: 12,
                     }}
                   >
-                    <ThemedText className="text-xs" style={{ color: colors.success }}>
-                      {t("security_settings.connected")}
+                    <ThemedText className="text-xs font-medium" style={{ color: colors.error }}>
+                      {t("security_settings.disconnect")}
                     </ThemedText>
-                  </View>
+                  </HapticButton>
+                ) : !user?.authProvider ? (
+                  <HapticButton
+                    onPress={() => handleLinkProvider('apple')}
+                    style={{
+                      backgroundColor: colors.primary + "20",
+                      paddingHorizontal: 10,
+                      paddingVertical: 6,
+                      borderRadius: 12,
+                    }}
+                  >
+                    <ThemedText className="text-xs font-medium" style={{ color: colors.primary }}>
+                      {t("security_settings.connect")}
+                    </ThemedText>
+                  </HapticButton>
                 ) : (
                   <View
                     style={{

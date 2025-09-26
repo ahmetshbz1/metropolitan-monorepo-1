@@ -37,19 +37,41 @@ export const socialAuthRoutes = createApp()
         let user;
 
         if (body.provider === 'apple' && body.appleUserId) {
-          // For Apple: ALWAYS use appleUserId as primary identifier
+          // For Apple: First try appleUserId, then email
           user = await db.query.users.findFirst({
             where: eq(users.appleUserId, body.appleUserId),
           });
+
+          // If not found by appleUserId but email exists, check by email
+          if (!user && body.email) {
+            user = await db.query.users.findFirst({
+              where: eq(users.email, body.email),
+            });
+
+            // If found by email and no other provider is linked, allow re-linking
+            if (user && !user.authProvider) {
+              log.info({ userId: user.id }, "Re-linking Apple account to existing user");
+            }
+          }
         } else if (body.provider === 'google') {
-          // For Google: Use Firebase UID (Google doesn't have same issue)
+          // For Google: First try firebaseUid, then email
           user = await db.query.users.findFirst({
             where: body.firebaseUid
               ? eq(users.firebaseUid, body.firebaseUid)
-              : body.email
-                ? eq(users.email, body.email)
-                : undefined,
+              : undefined,
           });
+
+          // If not found by firebaseUid but email exists, check by email
+          if (!user && body.email) {
+            user = await db.query.users.findFirst({
+              where: eq(users.email, body.email),
+            });
+
+            // If found by email and no other provider is linked, allow re-linking
+            if (user && !user.authProvider) {
+              log.info({ userId: user.id }, "Re-linking Google account to existing user");
+            }
+          }
         } else {
           // Fallback for other providers
           user = await db.query.users.findFirst({
@@ -71,23 +93,96 @@ export const socialAuthRoutes = createApp()
           return {
             success: true,
             userExists: false,
+            profileComplete: false,
             message: "Please complete registration",
           };
         }
 
+        // Check if user is soft-deleted and reactivate if needed
+        if (user.deletedAt) {
+          log.info(
+            { userId: user.id, deletedAt: user.deletedAt },
+            "Reactivating soft-deleted user via social auth"
+          );
+
+          await db
+            .update(users)
+            .set({
+              deletedAt: null,
+              updatedAt: new Date(),
+            })
+            .where(eq(users.id, user.id));
+
+          user.deletedAt = null;
+        }
+
+        // Check if user is trying to link a different social provider
+        // Allow re-linking if no provider is currently linked
+        if (user.authProvider && user.authProvider !== body.provider) {
+          log.warn(
+            {
+              userId: user.id,
+              existingProvider: user.authProvider,
+              attemptedProvider: body.provider,
+            },
+            "User attempting to link different social provider"
+          );
+
+          return {
+            success: false,
+            userExists: true,
+            profileComplete: !!user.firstName,
+            error: "PROVIDER_CONFLICT",
+            message: `Bu hesap zaten ${user.authProvider === 'apple' ? 'Apple' : 'Google'} ile bağlı. ${body.provider === 'apple' ? 'Apple' : 'Google'} ile giriş yapmak için önce Ayarlar > Güvenlik > Bağlı Hesaplar'dan mevcut bağlantıyı kaldırın.`,
+            existingProvider: user.authProvider,
+            attemptedProvider: body.provider,
+            suggestedAction: "unlink_first",
+          };
+        }
+
+        // Allow re-linking if provider was previously unlinked
+        if (!user.authProvider && user.email && body.email === user.email) {
+          log.info(
+            {
+              userId: user.id,
+              provider: body.provider,
+              email: user.email,
+            },
+            "Re-linking social provider to existing account"
+          );
+        }
+
         // Check if profile is complete
         if (!user.firstName) {
-          // Profile incomplete - return indication to continue with registration
+          // Profile incomplete - need to complete registration
           log.info(
-            { userId: user.id },
-            "Social auth user profile incomplete"
+            {
+              userId: user.id,
+              hasProfile: false,
+              phoneVerified: user.phoneNumberVerified
+            },
+            "Social auth user needs profile completion"
           );
 
           return {
             success: true,
-            userExists: false,
+            userExists: true,  // User exists in DB
+            profileComplete: false,  // But profile not complete
             message: "Please complete your profile",
           };
+        }
+
+        // Profile complete - allow login regardless of phone verification
+        // (Social auth already provides identity verification)
+        if (!user.phoneNumberVerified) {
+          log.info(
+            {
+              userId: user.id,
+              phoneNumber: user.phoneNumber,
+              phoneVerified: false
+            },
+            "Social auth login with unverified phone (allowed)"
+          );
         }
 
         // User exists with complete profile - update auth provider if needed and generate tokens
@@ -173,6 +268,7 @@ export const socialAuthRoutes = createApp()
         return {
           success: true,
           userExists: true,
+          profileComplete: true,
           message: "Login successful",
           accessToken,
           refreshToken,

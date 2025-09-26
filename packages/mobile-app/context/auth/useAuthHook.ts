@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { router } from "expo-router";
 import api from "@/core/api";
 import { socialAuthStorage, tokenStorage, userStorage } from "@/context/auth/storage";
+import { useToast } from "@/hooks/useToast";
 
 // Custom hooks
 import { useAuthActions } from "@/hooks/auth/useAuthActions";
@@ -20,6 +21,7 @@ import { signInWithGoogle as firebaseSignInWithGoogle } from "@/core/firebase/au
 
 export const useAuthHook = () => {
   const { t } = useTranslation();
+  const { showToast } = useToast();
   const [isAppleSignInAvailable, setIsAppleSignInAvailable] = useState(false);
 
   // Auth state management
@@ -112,10 +114,20 @@ export const useAuthHook = () => {
           }
 
           const response = await api.post("/auth/social-signin", requestData);
+          console.log("🔍 Social signin response:", {
+            provider: requestData.provider,
+            success: response.data.success,
+            userExists: response.data.userExists,
+            profileComplete: response.data.profileComplete,
+            hasAccessToken: !!response.data.accessToken,
+            error: response.data.error,
+            message: response.data.message
+          });
 
           if (response.data.success) {
-            if (response.data.userExists && response.data.accessToken) {
-              // User exists, login successful
+            if (response.data.userExists && response.data.profileComplete && response.data.accessToken) {
+              // User exists with complete profile, login successful
+              console.log(`✅ ${requestData.provider} user exists with complete profile, logging in directly`);
               setUser(response.data.user);
               setAccessToken(response.data.accessToken);
               setRefreshToken(response.data.refreshToken);
@@ -127,9 +139,28 @@ export const useAuthHook = () => {
 
               router.replace("/(tabs)");
             } else {
-              // New user, navigate to phone login
+              // New user or incomplete profile, navigate to phone login
+              console.log(`🆕 ${requestData.provider} new user or incomplete profile, redirecting to phone login`);
               router.push("/(auth)/phone-login");
             }
+          } else if (response.data.error === 'PROVIDER_CONFLICT') {
+            // Phone number already linked to different provider
+            console.error("❌ Provider conflict:", response.data.message);
+
+            // Show localized error message with suggested action
+            const existingProviderName = response.data.existingProvider === 'apple' ? 'Apple' : 'Google';
+            const attemptedProviderName = response.data.attemptedProvider === 'apple' ? 'Apple' : 'Google';
+
+            showToast(
+              t('auth.provider_conflict_with_suggestion', {
+                existingProvider: existingProviderName,
+                attemptedProvider: attemptedProviderName
+              }),
+              'error',
+              7000
+            );
+
+            return { success: false, error: response.data.message };
           }
         } catch (backendError) {
           // Navigate to phone login if backend error
@@ -173,10 +204,20 @@ export const useAuthHook = () => {
           }
 
           const response = await api.post("/auth/social-signin", requestData);
+          console.log("🔍 Social signin response:", {
+            provider: requestData.provider,
+            success: response.data.success,
+            userExists: response.data.userExists,
+            profileComplete: response.data.profileComplete,
+            hasAccessToken: !!response.data.accessToken,
+            error: response.data.error,
+            message: response.data.message
+          });
 
           if (response.data.success) {
-            if (response.data.userExists && response.data.accessToken) {
-              // User exists, login successful
+            if (response.data.userExists && response.data.profileComplete && response.data.accessToken) {
+              // User exists with complete profile, login successful
+              console.log(`✅ ${requestData.provider} user exists with complete profile, logging in directly`);
               setUser(response.data.user);
               setAccessToken(response.data.accessToken);
               setRefreshToken(response.data.refreshToken);
@@ -188,9 +229,28 @@ export const useAuthHook = () => {
 
               router.replace("/(tabs)");
             } else {
-              // New user, navigate to phone login
+              // New user or incomplete profile, navigate to phone login
+              console.log(`🆕 ${requestData.provider} new user or incomplete profile, redirecting to phone login`);
               router.push("/(auth)/phone-login");
             }
+          } else if (response.data.error === 'PROVIDER_CONFLICT') {
+            // Phone number already linked to different provider
+            console.error("❌ Provider conflict:", response.data.message);
+
+            // Show localized error message with suggested action
+            const existingProviderName = response.data.existingProvider === 'apple' ? 'Apple' : 'Google';
+            const attemptedProviderName = response.data.attemptedProvider === 'apple' ? 'Apple' : 'Google';
+
+            showToast(
+              t('auth.provider_conflict_with_suggestion', {
+                existingProvider: existingProviderName,
+                attemptedProvider: attemptedProviderName
+              }),
+              'error',
+              7000
+            );
+
+            return { success: false, error: response.data.message };
           }
         } catch (backendError) {
           // Navigate to phone login if backend error

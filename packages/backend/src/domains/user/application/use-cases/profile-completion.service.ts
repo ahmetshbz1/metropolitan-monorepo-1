@@ -73,10 +73,11 @@ export class ProfileCompletionService {
    * Tam profil tamamlama işlemi (B2B flow)
    */
   static async completeProfile(
-    phoneNumber: string,
+    phoneNumberOrUserId: string,
     profileData: CompleteProfileRequest,
     jwt: any,
-    headers?: any
+    headers?: any,
+    isUserId: boolean = false
   ): Promise<ProfileCompletionResponse> {
     // 1. Validate terms and privacy policy acceptance
     UserProfileOperationsService.validateTermsAcceptance(profileData.termsAccepted);
@@ -107,7 +108,7 @@ export class ProfileCompletionService {
 
     // 3. Update user profile
     const updatedUser = await UserProfileOperationsService.updateProfileWithTerms(
-      phoneNumber,
+      phoneNumberOrUserId,
       profileData.userType,
       {
         firstName: profileData.firstName,

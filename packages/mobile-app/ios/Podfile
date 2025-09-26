@@ -60,19 +60,5 @@ target 'metropolitan' do
         end
       end
     end
-
-    # Fix for Hermes dSYM issue
-    installer.pods_project.targets.each do |target|
-      if target.name == 'hermes-engine'
-        target.build_configurations.each do |config|
-          config.build_settings['COPY_PHASE_STRIP'] = 'NO'
-          config.build_settings['DEAD_CODE_STRIPPING'] = 'NO'
-          config.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf-with-dsym'
-          config.build_settings['STRIP_INSTALLED_PRODUCT'] = 'NO'
-          config.build_settings['STRIP_STYLE'] = 'non-global'
-          config.build_settings['STRIP_SWIFT_SYMBOLS'] = 'NO'
-        end
-      end
-    end
   end
 end

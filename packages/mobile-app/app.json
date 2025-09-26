@@ -16,7 +16,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.metropolitan.food",
-      "buildNumber": "8",
+      "buildNumber": "9",
       "config": {
         "googleSignIn": {
           "reservedClientId": "com.googleusercontent.apps.18493082891-0qg1bp44jncs4m7jt6426ud1cv7bil4t"

@@ -50,11 +50,13 @@ export const otpRoutes = createApp()
             ),
           });
 
-          // Determine the action type
-          const isNewUser = !existingUser || !existingUser.firstName;
+          // Clear logic: separate user existence from profile completion
+          const isRegisteredUser = !!existingUser;
+          const hasCompleteProfile = existingUser?.firstName ? true : false;
+          const needsRegistration = !isRegisteredUser;
 
-          // Send OTP with appropriate action type and language
-          if (isNewUser) {
+          // Send appropriate OTP type based on registration status
+          if (needsRegistration) {
             await createRegistrationOtp(body.phoneNumber, language);
           } else {
             await createLoginOtp(body.phoneNumber, language);
@@ -64,7 +66,8 @@ export const otpRoutes = createApp()
             {
               phoneNumber: body.phoneNumber,
               userType: body.userType,
-              action: isNewUser ? "register" : "login",
+              action: needsRegistration ? "register" : "login",
+              hasCompleteProfile,
               language,
             },
             `OTP sent successfully`
@@ -73,7 +76,8 @@ export const otpRoutes = createApp()
           return {
             success: true,
             message: "OTP sent successfully",
-            isNewUser, // Frontend may need this info
+            isNewUser: needsRegistration, // True if user doesn't exist
+            needsProfileCompletion: isRegisteredUser && !hasCompleteProfile, // True if exists but incomplete
           };
         },
         {
@@ -143,10 +147,24 @@ export const otpRoutes = createApp()
                 .insert(users)
                 .values({
                   phoneNumber: body.phoneNumber,
+                  phoneNumberVerified: true, // OTP verified, so phone is verified
                   userType: body.userType,
                 })
                 .returning();
               user = newUser[0];
+            } else if (!user.phoneNumberVerified) {
+              // Existing user but phone not verified, update it
+              log.info(
+                `Updating phone verification status for user ${user.id}`
+              );
+              await db
+                .update(users)
+                .set({
+                  phoneNumberVerified: true,
+                  updatedAt: new Date(),
+                })
+                .where(eq(users.id, user.id));
+              user = { ...user, phoneNumberVerified: true };
             }
 
             if (!user) {
@@ -228,6 +246,7 @@ export const otpRoutes = createApp()
             // Profile incomplete, issue registration token
             const registrationToken = await jwt.sign({
               sub: "registration", // Subject claim to identify the token's purpose
+              userId: user.id, // Include user ID to prevent race conditions
               phoneNumber: user.phoneNumber,
               userType: user.userType,
               exp: Math.floor(Date.now() / 1000) + 5 * 60, // 5 minutes expiration
