@@ -1,6 +1,7 @@
 //  "ProfilePhoto.tsx"
 //  metropolitan app
 //  Created by Ahmet on 15.07.2025.
+import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator, TouchableOpacity, View } from "react-native";
@@ -28,16 +29,31 @@ export function ProfilePhoto({
 
   return (
     <View className="items-center mb-8">
-      <TouchableOpacity onPress={onPreview} activeOpacity={0.85}>
-        <Image
-          source={
-            user?.profilePicture ||
-            require("@/assets/images/default-avatar.png")
-          }
-          style={{ width: 120, height: 120, borderRadius: 60 }}
-          contentFit="cover"
-          accessibilityLabel="Profil fotoğrafı"
-        />
+      <TouchableOpacity
+        onPress={user?.profilePicture ? onPreview : undefined}
+        activeOpacity={user?.profilePicture ? 0.85 : 1}
+      >
+        {user?.profilePicture ? (
+          <Image
+            source={user.profilePicture}
+            style={{ width: 120, height: 120, borderRadius: 60 }}
+            contentFit="cover"
+            accessibilityLabel="Profil fotoğrafı"
+          />
+        ) : (
+          <View
+            style={{
+              width: 120,
+              height: 120,
+              borderRadius: 60,
+              backgroundColor: colors.primary + "20",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Ionicons name="person" size={56} color={colors.primary} />
+          </View>
+        )}
       </TouchableOpacity>
       {photoLoading ? (
         <ActivityIndicator style={{ marginTop: 10 }} />

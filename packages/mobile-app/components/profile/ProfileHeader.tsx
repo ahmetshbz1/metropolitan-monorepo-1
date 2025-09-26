@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -50,15 +51,27 @@ export function ProfileHeader() {
           lightColor={Colors.light.card}
           darkColor={Colors.dark.card}
         >
-          <Image
-            source={
-              user?.profilePicture
-                ? { uri: user.profilePicture }
-                : require("@/assets/images/default-avatar.png")
-            }
-            style={{ width: 60, height: 60, borderRadius: 30, marginRight: 15 }}
-            contentFit="cover"
-          />
+          {user?.profilePicture ? (
+            <Image
+              source={{ uri: user.profilePicture }}
+              style={{ width: 60, height: 60, borderRadius: 30, marginRight: 15 }}
+              contentFit="cover"
+            />
+          ) : (
+            <View
+              style={{
+                width: 60,
+                height: 60,
+                borderRadius: 30,
+                backgroundColor: colors.primary + "20",
+                alignItems: "center",
+                justifyContent: "center",
+                marginRight: 15,
+              }}
+            >
+              <Ionicons name="person" size={28} color={colors.primary} />
+            </View>
+          )}
           <View style={{ flex: 1, backgroundColor: "transparent" }}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <ThemedText className="text-xl font-bold">

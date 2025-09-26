@@ -22,6 +22,11 @@ export function PhotoPreviewModal({
 }: PhotoPreviewModalProps) {
   const { user } = useAuth();
 
+  // Profil fotoğrafı yoksa modal'ı gösterme
+  if (!user?.profilePicture) {
+    return null;
+  }
+
   return (
     <Modal
       visible={visible}
@@ -39,10 +44,7 @@ export function PhotoPreviewModal({
         onPress={onClose}
       >
         <Image
-          source={
-            user?.profilePicture ||
-            require("@/assets/images/default-avatar.png")
-          }
+          source={user.profilePicture}
           style={{
             width: 320,
             height: 320,
