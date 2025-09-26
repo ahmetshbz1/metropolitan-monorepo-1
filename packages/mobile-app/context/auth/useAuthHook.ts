@@ -87,6 +87,7 @@ export const useAuthHook = () => {
         // Store social auth data
         const authData = {
           uid: result.user.uid,
+          appleUserId: result.user.appleUserId, // Apple's unique user ID
           email: result.user.email,
           fullName: result.user.fullName,
           firstName: result.user.firstName,
@@ -101,6 +102,7 @@ export const useAuthHook = () => {
         try {
           const requestData: any = {
             firebaseUid: result.user.uid,
+            appleUserId: result.user.appleUserId, // CRITICAL: Send Apple's unique user ID
             provider: 'apple',
           };
 

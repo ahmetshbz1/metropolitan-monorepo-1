@@ -58,6 +58,7 @@ export class UserProfileOperationsService {
       marketingConsent?: boolean;
       firebaseUid?: string;
       authProvider?: string;
+      appleUserId?: string; // Add Apple User ID
     }
   ) {
     const [updatedUser] = await db
@@ -69,6 +70,7 @@ export class UserProfileOperationsService {
         companyId: profileData.companyId,
         firebaseUid: profileData.firebaseUid,
         authProvider: profileData.authProvider,
+        appleUserId: profileData.appleUserId, // Save Apple User ID
         termsAcceptedAt: new Date(),
         privacyAcceptedAt: profileData.privacyAccepted ? new Date() : null,
         marketingConsent: profileData.marketingConsent || false,

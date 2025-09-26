@@ -118,6 +118,7 @@ export class ProfileCompletionService {
         marketingConsent: profileData.marketingConsent,
         firebaseUid: profileData.firebaseUid,
         authProvider: profileData.authProvider,
+        appleUserId: profileData.appleUserId, // CRITICAL: Save Apple User ID
       }
     );
 

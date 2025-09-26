@@ -173,10 +173,12 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
       return { success: false, message: "Kayıt token'ı bulunamadı." };
     }
 
-    // Add firebaseUid from social auth data if available
+    // Add firebaseUid and appleUserId from social auth data if available
     const profileData = {
       ...userData,
       ...(socialAuthData?.uid ? { firebaseUid: socialAuthData.uid } : {}),
+      ...(socialAuthData?.appleUserId ? { appleUserId: socialAuthData.appleUserId } : {}),
+      ...(socialAuthData?.provider ? { authProvider: socialAuthData.provider } : {}),
     };
 
     const result = await completeProfileService(profileData, registrationToken);

@@ -18,6 +18,7 @@ export interface MobileUser extends User {
 
 export interface SocialAuthData {
   uid: string;
+  appleUserId?: string; // Apple's unique user identifier
   email?: string | null;
   fullName?: string | null;
   firstName?: string;
@@ -73,7 +74,9 @@ export type AuthContextType = {
 };
 
 // Re-export shared CompleteProfilePayload for consistency
-export type CompleteProfileInput = CompleteProfilePayload;
+export type CompleteProfileInput = CompleteProfilePayload & {
+  appleUserId?: string;
+};
 
 // Re-export shared ApiResponse type
 export type { ApiResponse };

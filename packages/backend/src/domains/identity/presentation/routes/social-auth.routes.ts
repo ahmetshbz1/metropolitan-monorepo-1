@@ -27,37 +27,38 @@ export const socialAuthRoutes = createApp()
           {
             firebaseUid: body.firebaseUid,
             email: body.email,
-            provider: body.provider
+            provider: body.provider,
+            appleUserId: body.appleUserId,
           },
           `Social auth attempt`
         );
 
-        // Check if user exists by Firebase UID or email
-        let user = await db.query.users.findFirst({
-          where: body.firebaseUid
-            ? eq(users.firebaseUid, body.firebaseUid)
-            : body.email
-              ? eq(users.email, body.email)
-              : undefined,
-        });
+        // Check user based on provider type
+        let user;
 
-        // If user doesn't exist, check by email for existing account
-        if (!user && body.email) {
+        if (body.provider === 'apple' && body.appleUserId) {
+          // For Apple: ALWAYS use appleUserId as primary identifier
           user = await db.query.users.findFirst({
-            where: eq(users.email, body.email),
+            where: eq(users.appleUserId, body.appleUserId),
           });
-
-          // If found by email, update with Firebase UID and auth provider
-          if (user) {
-            await db
-              .update(users)
-              .set({
-                firebaseUid: body.firebaseUid,
-                authProvider: body.provider,
-                updatedAt: new Date(),
-              })
-              .where(eq(users.id, user.id));
-          }
+        } else if (body.provider === 'google') {
+          // For Google: Use Firebase UID (Google doesn't have same issue)
+          user = await db.query.users.findFirst({
+            where: body.firebaseUid
+              ? eq(users.firebaseUid, body.firebaseUid)
+              : body.email
+                ? eq(users.email, body.email)
+                : undefined,
+          });
+        } else {
+          // Fallback for other providers
+          user = await db.query.users.findFirst({
+            where: body.firebaseUid
+              ? eq(users.firebaseUid, body.firebaseUid)
+              : body.email
+                ? eq(users.email, body.email)
+                : undefined,
+          });
         }
 
         if (!user) {
@@ -90,14 +91,23 @@ export const socialAuthRoutes = createApp()
         }
 
         // User exists with complete profile - update auth provider if needed and generate tokens
-        // Update auth provider if it's different or not set
+        // Update auth provider and Apple User ID if needed
+        const updateData: any = {};
         if (user.authProvider !== body.provider) {
+          updateData.authProvider = body.provider;
+        }
+        if (body.provider === 'apple' && body.appleUserId && user.appleUserId !== body.appleUserId) {
+          updateData.appleUserId = body.appleUserId;
+        }
+        if (body.firebaseUid && user.firebaseUid !== body.firebaseUid) {
+          updateData.firebaseUid = body.firebaseUid;
+        }
+
+        if (Object.keys(updateData).length > 0) {
+          updateData.updatedAt = new Date();
           await db
             .update(users)
-            .set({
-              authProvider: body.provider,
-              updatedAt: new Date(),
-            })
+            .set(updateData)
             .where(eq(users.id, user.id));
         }
 
@@ -175,6 +185,7 @@ export const socialAuthRoutes = createApp()
           firebaseUid: t.String({ minLength: 1 }),
           email: t.Optional(t.String({ format: "email" })),
           provider: t.String({ enum: ["apple", "google"] }),
+          appleUserId: t.Optional(t.String({ minLength: 1 })), // Apple's unique user identifier
         }),
       }
     )

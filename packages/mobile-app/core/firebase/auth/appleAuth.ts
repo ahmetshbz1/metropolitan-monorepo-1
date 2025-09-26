@@ -3,6 +3,27 @@ import { OAuthProvider, signInWithCredential } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
 import * as Crypto from 'expo-crypto';
 
+// Helper function to decode JWT token and get Apple User ID
+function decodeJWT(token: string) {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+      throw new Error('Invalid token');
+    }
+
+    // Decode the payload (second part)
+    const payload = parts[1];
+    // Add padding if needed
+    const padded = payload + '=='.substring(0, (4 - payload.length % 4) % 4);
+    const decoded = atob(padded);
+
+    return JSON.parse(decoded);
+  } catch (error) {
+    console.error('Failed to decode JWT:', error);
+    return null;
+  }
+}
+
 export const signInWithApple = async () => {
   try {
     const nonce = Math.random().toString(36).substring(2, 10);
@@ -20,10 +41,18 @@ export const signInWithApple = async () => {
       nonce: hashedNonce,
     });
 
-    const { identityToken } = appleCredential;
+    const { identityToken, user: appleUserId } = appleCredential;
 
     if (!identityToken) {
       throw new Error('Apple Sign In failed - no identity token returned');
+    }
+
+    // Decode the identity token to get the Apple User ID (sub)
+    const decodedToken = decodeJWT(identityToken);
+    const appleUserIdentifier = decodedToken?.sub || appleUserId;
+
+    if (!appleUserIdentifier) {
+      throw new Error('Apple Sign In failed - no user identifier');
     }
 
     const provider = new OAuthProvider('apple.com');
@@ -43,7 +72,8 @@ export const signInWithApple = async () => {
       : firstName || lastName || null;
 
     const userData = {
-      uid: user.uid,
+      uid: user.uid, // Firebase UID
+      appleUserId: appleUserIdentifier, // Apple's unique user ID - THIS IS CRITICAL!
       email: user.email || appleCredential.email,
       fullName: fullName,
       firstName: firstName,
@@ -52,6 +82,11 @@ export const signInWithApple = async () => {
       provider: 'apple',
     };
 
+    console.log('Apple Sign In - User Data:', {
+      firebaseUid: user.uid,
+      appleUserId: appleUserIdentifier,
+      email: userData.email,
+    });
 
     return { success: true, user: userData };
   } catch (error: any) {

@@ -2,7 +2,7 @@
   "expo": {
     "name": "metropolitan",
     "slug": "metropolitan",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/images/icooon.png",
     "scheme": "metropolitan",
@@ -16,7 +16,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.metropolitan.food",
-      "buildNumber": "4",
+      "buildNumber": "8",
       "config": {
         "googleSignIn": {
           "reservedClientId": "com.googleusercontent.apps.18493082891-0qg1bp44jncs4m7jt6426ud1cv7bil4t"
@@ -24,20 +24,14 @@
       },
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
-        "CFBundleLocalizations": [
-          "tr",
-          "en",
-          "pl"
-        ]
+        "CFBundleLocalizations": ["tr", "en", "pl"]
       },
       "appleTeamId": "64XKK46655",
       "entitlements": {
         "com.apple.developer.in-app-payments": [
           "merchant.com.metropolitan.food"
         ],
-        "com.apple.developer.applesignin": [
-          "Default"
-        ],
+        "com.apple.developer.applesignin": ["Default"],
         "aps-environment": "development"
       },
       "usesAppleSignIn": true,

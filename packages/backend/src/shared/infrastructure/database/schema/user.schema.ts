@@ -37,6 +37,8 @@ export const users = pgTable(
     email: text("email").unique(),
     // Firebase Authentication UID
     firebaseUid: text("firebase_uid").unique(),
+    // Apple User ID - unique identifier from Apple (not email)
+    appleUserId: text("apple_user_id").unique(),
     // Authentication provider: 'google', 'apple', null for phone-only
     authProvider: text("auth_provider"),
     // Kullanıcı tipi: 'individual' veya 'corporate'
