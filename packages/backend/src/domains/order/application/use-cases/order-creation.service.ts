@@ -108,22 +108,9 @@ export class OrderCreationService {
       // Cart will be cleared in webhook after payment confirmation
       console.log("🛒 Cart will be cleared after payment confirmation via webhook");
 
-      // Ödeme bekleniyor bildirimi gönder
-      try {
-        await PushNotificationService.sendToUser(userId, {
-          title: "💳 Ödeme Bekleniyor",
-          body: `${order.orderNumber} numaralı siparişiniz oluşturuldu. Ödemenizi tamamlayın.`,
-          type: "payment_pending",
-          data: {
-            screen: `/checkout/payment`,
-            orderId: order.id,
-            orderNumber: order.orderNumber,
-            type: "payment_pending",
-          },
-        });
-      } catch (error) {
-        console.error("Failed to send payment pending notification:", error);
-      }
+      // NOT SENDING PUSH HERE: User hasn't even started payment process yet
+      // Push will be sent only after successful payment via webhook
+      console.log("🔕 Not sending 'payment pending' push - user hasn't started payment yet");
 
       return {
         ...order,
@@ -148,36 +135,8 @@ export class OrderCreationService {
   static async finalizeOrderAfterPayment(orderId: string): Promise<void> {
     await CartManagementService.finalizeOrderAfterPayment(orderId);
 
-    // Sipariş bilgilerini al ve push gönder
-    try {
-      const [order] = await db
-        .select({
-          id: orders.id,
-          userId: orders.userId,
-          orderNumber: orders.orderNumber,
-          totalAmount: orders.totalAmount,
-        })
-        .from(orders)
-        .where(eq(orders.id, orderId))
-        .limit(1);
-
-      if (order) {
-        // Ödeme başarılı bildirimi gönder
-        await PushNotificationService.sendToUser(order.userId, {
-          title: "✅ Ödeme Başarılı",
-          body: `${order.orderNumber} numaralı siparişiniz için ödemeniz alındı. Siparişiniz hazırlanıyor.`,
-          type: "payment_success",
-          data: {
-            screen: `/order/${order.id}`,
-            orderId: order.id,
-            orderNumber: order.orderNumber,
-            type: "payment_success",
-          },
-        });
-      }
-    } catch (error) {
-      console.error("Failed to send payment success notification:", error);
-    }
+    // Push notification is now sent from webhook handler
+    console.log(`🔄 Push notification will be sent from webhook handler for order ${orderId}`);
   }
 
   /**

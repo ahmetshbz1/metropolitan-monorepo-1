@@ -46,6 +46,41 @@ export class PaymentStateHandlersService {
     // Clear user's cart
     await PaymentIntentActionsService.clearCartSafely(userId, orderId);
 
+    // Send payment success push notification
+    try {
+      const { db } = await import("../../../../shared/infrastructure/database/connection");
+      const { orders } = await import("../../../../shared/infrastructure/database/schema");
+      const { eq } = await import("drizzle-orm");
+
+      const [order] = await db
+        .select({
+          id: orders.id,
+          userId: orders.userId,
+          orderNumber: orders.orderNumber,
+        })
+        .from(orders)
+        .where(eq(orders.id, orderId))
+        .limit(1);
+
+      if (order) {
+        // Send payment success notification
+        await PushNotificationService.sendToUser(order.userId, {
+          title: "✅ Ödeme Başarılı",
+          body: `${order.orderNumber} numaralı siparişiniz için ödemeniz alındı. Siparişiniz hazırlanıyor.`,
+          type: "payment_success",
+          data: {
+            screen: `/order/${order.id}`,
+            orderId: order.id,
+            orderNumber: order.orderNumber,
+            type: "payment_success",
+          },
+        });
+        console.log(`📱 Payment success push sent for order ${order.orderNumber}`);
+      }
+    } catch (error) {
+      console.error("Failed to send payment success notification:", error);
+    }
+
     // Generate invoice asynchronously
     PaymentIntentActionsService.generateInvoiceAsync(orderId, userId);
 

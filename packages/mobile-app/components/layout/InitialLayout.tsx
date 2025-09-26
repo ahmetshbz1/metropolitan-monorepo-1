@@ -23,6 +23,9 @@ export const InitialLayout: React.FC = () => {
   const { i18n } = useTranslation();
   const { isAuthenticated } = useAuth();
 
+  // Push notification navigasyon kontrolü için
+  const lastNavigationRef = React.useRef<{ screen: string; time: number } | null>(null);
+
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
     if (error) throw error;
@@ -50,7 +53,22 @@ export const InitialLayout: React.FC = () => {
 
           // Eğer bildirimde yönlendirme bilgisi varsa
           if (data?.screen) {
-            router.push(data.screen);
+            const targetScreen = data.screen;
+            const now = Date.now();
+
+            // Son 2 saniye içinde aynı sayfaya navigasyon yapıldıysa ignore et
+            if (lastNavigationRef.current &&
+                lastNavigationRef.current.screen === targetScreen &&
+                (now - lastNavigationRef.current.time) < 2000) {
+              console.log(`Aynı sayfaya (${targetScreen}) kısa süre önce navigasyon yapıldı, ignore ediliyor`);
+              return;
+            }
+
+            // Navigasyon bilgisini kaydet
+            lastNavigationRef.current = { screen: targetScreen, time: now };
+
+            // Navigasyon yap
+            router.push(targetScreen);
           }
         }
       );
