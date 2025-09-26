@@ -243,8 +243,8 @@ export default function SecuritySettingsScreen() {
           </View>
         )}
 
-        {/* Linked Accounts - Only show if not guest */}
-        {!isGuest && (
+        {/* Linked Accounts - Only show if not guest and not corporate user */}
+        {!isGuest && user?.userType !== "corporate" && (
           <View className="px-4 mb-6">
             <ThemedText className="text-sm font-semibold mb-3 opacity-60 uppercase">
               {t("security_settings.linked_accounts")}
