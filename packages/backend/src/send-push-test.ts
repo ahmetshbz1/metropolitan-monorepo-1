@@ -11,7 +11,7 @@ async function sendRealPushNotifications() {
   const userId = "96d9a2e4-3e06-46ce-bd23-db7da7271776";
 
   // ExponentPushToken tokenınızı buraya manuel ekleyin
-  const yourToken = "ExponentPushToken[gFM269GGghCrmZDV0RE_u2]";
+  const yourToken = "ExponentPushToken[kDJHFDEjaJNZ9drwfUOpKl]";
 
   // Önce device token'ı veritabanına kaydet
   try {
@@ -50,15 +50,15 @@ async function sendRealPushNotifications() {
     // İlk push gönder
     console.log("\n📱 İlk push gönderiliyor...");
     const result1 = await PushNotificationService.sendToUser(userId, {
-      title: "🎉 Test Push 1",
-      body: "Bu push hem cihaza gider hem veritabanına kaydedilir!",
+      title: "Selam Umut 👋",
+      body: "TestFlight'a hoş geldin! Metropolitan uygulamasını test edebilirsin.",
       type: "test",
       data: {
         screen: "/(tabs)/notifications",
         test: true,
         timestamp: new Date().toISOString(),
       },
-      badge: 10,
+      badge: 1,
     });
     console.log("İlk push sonucu:", result1);
 
@@ -68,15 +68,15 @@ async function sendRealPushNotifications() {
     // İkinci push gönder
     console.log("\n📱 İkinci push gönderiliyor...");
     const result2 = await PushNotificationService.sendToUser(userId, {
-      title: "🔥 Test Push 2",
-      body: "Bildirimler sayfanızı kontrol edin, her şey çalışıyor!",
+      title: "🛍️ Yeni Siparişler",
+      body: "Uygulamada yeni ürünler var, keşfetmeye başla!",
       type: "test",
       data: {
         screen: "/(tabs)/notifications",
         test: true,
         timestamp: new Date().toISOString(),
       },
-      badge: 11,
+      badge: 2,
     });
     console.log("İkinci push sonucu:", result2);
 

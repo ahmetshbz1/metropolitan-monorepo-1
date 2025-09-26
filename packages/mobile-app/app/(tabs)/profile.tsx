@@ -2,12 +2,12 @@
 //  metropolitan app
 //  Created by Ahmet on 09.06.2025.
 
+import { useNavigationProtection } from "@/hooks/useNavigationProtection";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { RefreshControl, ScrollView, View, TouchableOpacity } from "react-native";
-import { useNavigationProtection } from "@/hooks/useNavigationProtection";
+import { RefreshControl, ScrollView, View } from "react-native";
 
 import { HapticButton } from "@/components/HapticButton";
 import { LogoutButton } from "@/components/profile/LogoutButton";
@@ -286,7 +286,11 @@ export default function ProfileScreen() {
               accessibilityRole="button"
               accessibilityLabel={t("profile.login")}
             >
-              <Ionicons name="log-in-outline" size={22} color={colors.primary} />
+              <Ionicons
+                name="log-in-outline"
+                size={22}
+                color={colors.primary}
+              />
               <ThemedText
                 className="font-semibold ml-2.5"
                 style={{ color: colors.primary }}
@@ -302,7 +306,7 @@ export default function ProfileScreen() {
         {/* Version Info */}
         <View className="items-center mt-2 mb-4">
           <ThemedText className="text-xs" style={{ color: colors.mediumGray }}>
-            {t("profile.version", { version: "1.0.0" })}
+            {t("profile.version", { version: "1.0.3" })}
           </ThemedText>
         </View>
       </ScrollView>

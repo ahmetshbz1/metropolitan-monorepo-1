@@ -2,7 +2,7 @@
   "expo": {
     "name": "metropolitan",
     "slug": "metropolitan",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/images/icooon.png",
     "scheme": "metropolitan",
@@ -16,7 +16,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.metropolitan.food",
-      "buildNumber": "3",
+      "buildNumber": "4",
       "config": {
         "googleSignIn": {
           "reservedClientId": "com.googleusercontent.apps.18493082891-0qg1bp44jncs4m7jt6426ud1cv7bil4t"
