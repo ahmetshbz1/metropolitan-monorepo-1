@@ -11,6 +11,7 @@ import { RefreshControl, ScrollView, View } from "react-native";
 
 import { HapticButton } from "@/components/HapticButton";
 import { LogoutButton } from "@/components/profile/LogoutButton";
+import { ProfileBadge } from "@/components/profile/ProfileBadge";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Colors from "@/constants/Colors";
@@ -262,9 +263,16 @@ export default function ProfileScreen() {
               </View>
             )}
             <View className="flex-1">
-              <ThemedText className="text-xl font-bold">
-                {user?.firstName || t("profile.guest")} {user?.lastName || ""}
-              </ThemedText>
+              <View className="flex-row items-center">
+                <ThemedText className="text-xl font-bold">
+                  {user?.firstName || t("profile.guest")} {user?.lastName || ""}
+                </ThemedText>
+                {user && !isGuest && (
+                  <ProfileBadge
+                    type={user?.userType === "corporate" ? "b2b" : "b2c"}
+                  />
+                )}
+              </View>
               <ThemedText className="text-sm opacity-70">
                 {user?.phoneNumber || t("profile.no_phone")}
               </ThemedText>
