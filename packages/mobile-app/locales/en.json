@@ -311,7 +311,8 @@
     "NOT_FOUND_ERROR": "The requested resource was not found",
     "VALIDATION_ERROR": "Validation error",
     "UNAUTHORIZED_ERROR": "Authentication required",
-    "FORBIDDEN_ERROR": "Insufficient permissions"
+    "FORBIDDEN_ERROR": "Insufficient permissions",
+    "UPLOAD_PHOTO_FAILED": "Failed to upload photo"
   },
   "tabs": {
     "title": "Main Menu",
@@ -463,14 +464,15 @@
     "order_no": "Order #{{id}}",
     "price": "{{price}}",
     "total": "Total",
+    "load_error": "An error occurred while loading your orders.",
     "empty": {
-      "title": "You don't have any orders yet",
+      "title": "You haven't made any orders yet",
       "button": "Start Shopping"
     },
     "guest_empty": {
-      "title": "Sign in to view order history",
-      "subtitle": "You need to sign in to your account to view and track your orders.",
-      "button": "Sign In"
+      "title": "Log in to view your order history",
+      "subtitle": "You need to log into your account to view and track your orders.",
+      "button": "Log In"
     }
   },
   "order": {

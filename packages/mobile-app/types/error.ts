@@ -24,7 +24,7 @@ export function getErrorMessage(error: unknown): string {
     }
   }
   
-  return "An unknown error occurred";
+  return "UNEXPECTED_ERROR"; // This will be handled by i18n in components
 }
 
 // Type guard for Axios errors

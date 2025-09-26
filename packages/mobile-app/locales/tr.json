@@ -311,7 +311,8 @@
     "NOT_FOUND_ERROR": "İstenen kaynak bulunamadı",
     "VALIDATION_ERROR": "Doğrulama hatası",
     "UNAUTHORIZED_ERROR": "Kimlik doğrulaması gerekli",
-    "FORBIDDEN_ERROR": "Yeterli izniniz bulunmuyor"
+    "FORBIDDEN_ERROR": "Yeterli izniniz bulunmuyor",
+    "UPLOAD_PHOTO_FAILED": "Fotoğraf yüklenemedi"
   },
   "tabs": {
     "title": "Ana Menü",
@@ -463,6 +464,7 @@
     "order_no": "Sipariş #{{id}}",
     "price": "{{price}}",
     "total": "Toplam",
+    "load_error": "Siparişlerinizi yüklerken bir hata oluştu.",
     "empty": {
       "title": "Henüz hiç siparişiniz yok",
       "button": "Alışverişe Başla"

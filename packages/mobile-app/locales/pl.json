@@ -311,7 +311,8 @@
     "NOT_FOUND_ERROR": "Żądany zasób nie został znaleziony",
     "VALIDATION_ERROR": "Błąd walidacji",
     "UNAUTHORIZED_ERROR": "Wymagane uwierzytelnienie",
-    "FORBIDDEN_ERROR": "Niewystarczające uprawnienia"
+    "FORBIDDEN_ERROR": "Niewystarczające uprawnienia",
+    "UPLOAD_PHOTO_FAILED": "Nie udało się przesłać zdjęcia"
   },
   "tabs": {
     "title": "Menu główne",
@@ -469,10 +470,11 @@
   "orders": {
     "order_no": "Zamówienie #{{id}}",
     "price": "{{price}}",
-    "total": "Suma",
+    "total": "Razem",
+    "load_error": "Wystąpił błąd podczas ładowania Twoich zamówień.",
     "empty": {
       "title": "Nie masz jeszcze żadnych zamówień",
-      "button": "Rozpocznij zakupy"
+      "button": "Zacznij zakupy"
     },
     "guest_empty": {
       "title": "Zaloguj się, aby zobaczyć historię zamówień",

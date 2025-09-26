@@ -4,6 +4,7 @@
 
 import { useCallback } from "react";
 import { ActivityIndicator, RefreshControl, ScrollView } from "react-native";
+import { useTranslation } from "react-i18next";
 
 import { ThemedView } from "@/components/ThemedView";
 import { EmptyOrders } from "@/components/orders/EmptyOrders";
@@ -17,6 +18,7 @@ import { useTabBarHeight } from "@/hooks/useTabBarHeight";
 import { useFocusEffect } from "expo-router";
 
 export default function OrdersScreen() {
+  const { t } = useTranslation();
   const { paddingBottom } = useTabBarHeight();
   const { isGuest } = useAuth();
   const { orders, loading, error, fetchOrders, refreshOrders } = useOrders();
@@ -60,7 +62,7 @@ export default function OrdersScreen() {
   if (error && orders.length === 0) {
     return (
       <ErrorState
-        message="Siparişlerinizi yüklerken bir hata oluştu."
+        message={t("orders.load_error")}
         onRetry={() => fetchOrders(true)}
       />
     );

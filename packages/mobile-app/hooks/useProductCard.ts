@@ -11,9 +11,11 @@ import { useToast } from "@/hooks/useToast";
 import { Product } from "@metropolitan/shared";
 import { useRouter } from "expo-router";
 import { getErrorMessage } from "@/types/error";
+import { useTranslation } from "react-i18next";
 import type { GestureResponderEvent } from "react-native";
 
 export const useProductCard = (product: Product) => {
+  const { t } = useTranslation();
   const { colors, colorScheme } = useTheme();
   const { addToCart, cartItems } = useCart();
   const { triggerHaptic } = useHaptics();
@@ -43,8 +45,13 @@ export const useProductCard = (product: Product) => {
     try {
       await addToCart(product.id, 1);
     } catch (error) {
-      // Stok yetersizliği veya diğer hatalar için toast göster
-      showToast(getErrorMessage(error) || "Ürün sepete eklenemedi", "error");
+      // Handle structured errors and fallback to generic error message
+      const errorMessage = getErrorMessage(error);
+      if (errorMessage === "UNEXPECTED_ERROR") {
+        showToast(t("errors.UNEXPECTED_ERROR"), "error");
+      } else {
+        showToast(errorMessage || t("errors.CART_ADD_ERROR"), "error");
+      }
     }
   };
 

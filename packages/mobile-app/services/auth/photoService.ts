@@ -54,7 +54,7 @@ export const uploadProfilePhoto = async (
     } else {
       return {
         success: false,
-        message: data.message || "Fotoğraf yükleme başarısız.",
+        message: data.message || "UPLOAD_PHOTO_FAILED",
       };
     }
   } catch (e) {
