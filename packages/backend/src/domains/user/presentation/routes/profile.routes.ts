@@ -135,6 +135,69 @@ const protectedProfileRoutes = createApp()
     }
   )
 
+  // Push notification token kaydet
+  .post(
+    "/device-token",
+    async ({ profile, body, set }) => {
+      try {
+        const userId = profile?.sub || profile?.userId;
+        if (!userId) {
+          set.status = 401;
+          return { success: false, message: "Unauthorized" };
+        }
+
+        // TODO: Token'ı database'e kaydet
+        console.log(`Push token saved for user ${userId}:`, {
+          token: body.token,
+          platform: body.platform,
+          deviceName: body.deviceName,
+        });
+
+        // Test bildirimi gönder
+        try {
+          const response = await fetch('https://exp.host/--/api/v2/push/send', {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              'Accept-encoding': 'gzip, deflate',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              to: body.token,
+              title: '🎉 Metropolitan\'e Hoş Geldiniz!',
+              body: 'Push bildirimleri başarıyla aktifleştirildi.',
+              data: { screen: '/(tabs)' },
+              sound: 'default',
+              badge: 1,
+            }),
+          });
+
+          const result = await response.json();
+          console.log('Test notification sent:', result);
+        } catch (error) {
+          console.error('Test notification error:', error);
+        }
+
+        return {
+          success: true,
+          message: "Device token saved successfully.",
+        };
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to save device token";
+        set.status = 500;
+        return { success: false, message };
+      }
+    },
+    {
+      body: t.Object({
+        token: t.String(),
+        platform: t.String({ enum: ["ios", "android"] }),
+        deviceName: t.Optional(t.String()),
+      }),
+    }
+  )
+
   // Profil fotoğrafı yükle
   .post(
     "/me/profile-photo",

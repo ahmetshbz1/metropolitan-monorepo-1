@@ -18,6 +18,8 @@ import {
   socialAuthStorage,
 } from "@/context/auth/storage";
 import { firebaseSignOut } from "@/core/firebase/auth/signOut";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 
 interface AuthActions {
   sendOTP: (
@@ -195,6 +197,22 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
         }
       } catch (error) {
         console.error("Profil çekme hatası:", error);
+      }
+
+      // Marketing consent true ise push notification izni iste
+      if (userData.marketingConsent) {
+        try {
+          const NotificationService = await import('@/core/firebase/notifications/notificationService');
+          const token = await NotificationService.default.registerForPushNotifications();
+
+          if (token) {
+            await AsyncStorage.setItem("notification_permission_asked", "true");
+            await AsyncStorage.setItem("notification_permission_granted", "true");
+            console.log('✅ Push notifications enabled automatically based on marketing consent');
+          }
+        } catch (error) {
+          console.log('Push notification permission skipped:', error);
+        }
       }
     }
 

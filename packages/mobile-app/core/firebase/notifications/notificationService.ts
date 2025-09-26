@@ -27,11 +27,21 @@ export class NotificationService {
     return NotificationService.instance;
   }
 
+  async hasNotificationPermission(): Promise<boolean> {
+    try {
+      const settings = await Notifications.getPermissionsAsync();
+      return settings.status === 'granted';
+    } catch (error) {
+      console.error('İzin kontrolü hatası:', error);
+      return false;
+    }
+  }
+
   async registerForPushNotifications(): Promise<string | null> {
     try {
+      // Simülatörde de token alabiliriz ama gerçek push alamayız
       if (!Device.isDevice) {
-        console.log('Push notifications yalnızca fiziksel cihazlarda çalışır');
-        return null;
+        console.log('Push notifications simülatörde test modunda çalışıyor');
       }
 
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -81,11 +91,12 @@ export class NotificationService {
 
   private async sendTokenToBackend(token: string): Promise<void> {
     try {
-      await api.post('/api/user/device-token', {
+      await api.post('/users/device-token', {
         token,
         platform: Platform.OS,
         deviceName: Device.deviceName || 'Unknown Device',
       });
+      console.log('Push token backend\'e başarıyla gönderildi');
     } catch (error) {
       console.error('Token backend gönderim hatası:', error);
     }

@@ -98,9 +98,8 @@ const NotificationPreferencesSheet = forwardRef<
         // Revert on failure
         setPreferences(preferences);
         showToast(t("app_settings.notification_update_failed"), "error");
-      } else {
-        showToast(t("app_settings.notification_update_success"), "success");
       }
+      // Success durumunda toast gösterme
     } catch (error) {
       // Revert on error
       setPreferences(preferences);

@@ -186,8 +186,25 @@ export function useUserInfoForm(isB2B: boolean): UseUserInfoFormReturn {
       ...(socialAuthData?.provider && { authProvider: socialAuthData.provider }),
     });
     setIsSaving(false);
+
     if (!result.success) {
       showToast(result.message, "error");
+    } else {
+      // Marketing consent true ise notification izni otomatik olarak istenir
+      if (marketingAccepted) {
+        try {
+          const NotificationService = await import('@/core/firebase/notifications/notificationService');
+          const token = await NotificationService.default.registerForPushNotifications();
+
+          if (token) {
+            await AsyncStorage.setItem("notification_permission_asked", "true");
+            await AsyncStorage.setItem("notification_permission_granted", "true");
+            console.log('✅ Push notifications enabled based on marketing consent');
+          }
+        } catch (error) {
+          console.log('Push notification permission handled:', error);
+        }
+      }
     }
   };
 

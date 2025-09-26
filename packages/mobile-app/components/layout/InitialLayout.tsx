@@ -8,6 +8,10 @@ import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
 import { View } from "react-native";
 import { useTranslation } from "react-i18next";
+import NotificationService from "@/core/firebase/notifications/notificationService";
+import { useAuth } from "@/context/AuthContext";
+import { router } from "expo-router";
+import * as Notifications from 'expo-notifications';
 
 import { NavigationStack } from "./NavigationStack";
 
@@ -17,6 +21,7 @@ export const InitialLayout: React.FC = () => {
   });
   const colorScheme = useColorScheme();
   const { i18n } = useTranslation();
+  const { isAuthenticated } = useAuth();
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
@@ -27,6 +32,39 @@ export const InitialLayout: React.FC = () => {
     if (loaded) {
       SplashScreen.hideAsync();
     }
+  }, [loaded]);
+
+  // Push notifications'ı başlat - Custom permission ekranı gösterilmişse
+  useEffect(() => {
+    const initializePushNotifications = async () => {
+      // Notification listener'ları kur (token zaten alınmış olabilir)
+      NotificationService.setupNotificationListeners(
+        (notification) => {
+          // Bildirim alındığında
+          console.log('Bildirim alındı:', notification);
+        },
+        (response) => {
+          // Bildirime tıklandığında
+          console.log('Bildirim tıklandı:', response);
+          const data = response.notification.request.content.data;
+
+          // Eğer bildirimde yönlendirme bilgisi varsa
+          if (data?.screen) {
+            router.push(data.screen);
+          }
+        }
+      );
+    };
+
+    // Uygulama başladığında notification'ları başlat
+    if (loaded) {
+      initializePushNotifications();
+    }
+
+    // Cleanup
+    return () => {
+      NotificationService.removeNotificationListeners();
+    };
   }, [loaded]);
 
   // Font yüklenmemiş ise null döndür (Expo splash screen görünür)
