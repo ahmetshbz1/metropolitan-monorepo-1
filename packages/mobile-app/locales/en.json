@@ -7,6 +7,8 @@
     "addresses": "My Addresses",
     "favorites": "My Favorites",
     "notifications": "Notifications",
+    "notification_settings": "Notification Settings",
+    "notification_settings_desc": "Manage your notification preferences",
     "account_settings": "Account Settings",
     "account_settings_desc": "Profile and security settings",
     "app_settings": "App Settings",
@@ -19,18 +21,9 @@
     "legal_section": "Legal",
     "help_center": "Help Center",
     "contact_us": "Contact Us",
-    "terms_of_service": "Terms of Service",
-    "privacy_policy": "Privacy Policy",
     "legal": "Legal",
     "legal_desc": "Terms, privacy and company info",
-    "app_settings_section_title": "App Settings",
-    "app_theme": "App Theme",
-    "app_language": "App Language",
-    "haptics": "Haptic Feedback",
-    "dark_mode": "Dark Mode",
-    "light_mode": "Light Mode",
     "communication_preferences": "Communication Preferences",
-    "support_section_title": "Support",
     "faq": {
       "title": "FAQ",
       "content": "Frequently asked questions and answers will be listed here. For example: How do I return my order?"
@@ -40,6 +33,7 @@
     "logout_confirm_message": "Are you sure you want to log out?",
     "logout_confirm_cancel": "Cancel",
     "logout_confirm_confirm": "Log Out",
+    "login": "Sign In",
     "security": "Security and Privacy",
     "contact": {
       "info_text": "If you need help with anything, you can contact us through the channels below.",
@@ -56,23 +50,33 @@
     "logout_alert_message": "Are you sure you want to log out?",
     "logout_alert_cancel": "Cancel",
     "logout_alert_confirm": "Log Out",
+    "language": "Language",
+    "accept_terms": "I have read, understood, and agree.",
+    "agree_to_the": "I have read and agree to the",
+    "terms_and_policy": "Terms of Service and Privacy Policy",
     "communication_preferences_description": "Manage your notification preferences",
     "email_notifications": "Email Notifications",
     "push_notifications": "Push Notifications",
     "sms_notifications": "SMS Notifications",
+    "preferences_update_failed": "Failed to update notification preferences",
+    "push_permission_denied": "Notification permission denied",
+    "push_permission_error": "Could not get notification permission",
     "badge": {
       "b2b": "Business",
       "b2c": "Personal"
     },
     "header_edit": "Edit",
     "legal_section_title": "Legal Documents",
+    "privacy_policy": "Privacy Policy",
     "privacy_policy_subtitle": "Protection and use of your personal data",
+    "terms_of_service": "Terms of Service",
     "terms_of_service_subtitle": "Service usage terms and conditions"
   },
   "languages": {
     "tr": "Türkçe",
     "pl": "Polski",
-    "en": "English"
+    "en": "English",
+    "title": "Language Options"
   },
   "language_selection": {
     "title": "App Language"
@@ -84,6 +88,7 @@
   },
   "addresses": {
     "title": "My Addresses",
+    "error_loading": "An error occurred while loading addresses.",
     "office": {
       "name": "Head Office",
       "address": "Buyukdere St. No: 23, Sisli"
@@ -100,7 +105,6 @@
     "tax_id": "Tax ID: {{taxId}}",
     "default_delivery": "Default Delivery",
     "default_billing": "Default Billing",
-    "error_loading": "An error occurred while loading addresses.",
     "delete": {
       "confirm_title": "Delete Address",
       "confirm_message": "Are you sure you want to delete this address?",
@@ -112,7 +116,8 @@
     "set_default_title": "Set as Default",
     "set_default_message": "Which type of default would you like to set for this address?",
     "set_default_delivery": "Set as Default Delivery",
-    "set_default_billing": "Set as Default Billing"
+    "set_default_billing": "Set as Default Billing",
+    "set_default_error": "An error occurred while setting default address."
   },
   "edit_profile": {
     "title": "Edit Profile",
@@ -120,6 +125,8 @@
     "first_name": "First Name",
     "first_name_placeholder": "Enter your first name",
     "last_name": "Last Name",
+    "guest_title": "Guest User",
+    "guest_message": "You need to log in to edit your profile information. By logging in, you can take advantage of all features.",
     "last_name_placeholder": "Enter your last name",
     "email": "Email",
     "email_placeholder": "Enter your email address",
@@ -136,23 +143,30 @@
     "photo_error_title": "Photo Error",
     "photo_error_generic": "An error occurred while uploading the photo"
   },
-  "faq": {
-    "title": "Frequently Asked Questions",
-    "q1": {
-      "question": "How can I cancel my order?",
-      "answer": "You can cancel your order from the \"My Orders\" section before its status changes to \"Preparing\". If your order has been shipped, it cannot be canceled."
+  "payment_methods": {
+    "title": "Payment Methods",
+    "company_card": "Company Card",
+    "personal_card": "Personal Card",
+    "empty": {
+      "title": "You have no saved cards",
+      "subtitle": "Add a new card to speed up your payments.",
+      "add_button": "Add New Card"
     },
-    "q2": {
-      "question": "How does the product return process work?",
-      "answer": "You can return the products you have received within 14 days. After creating a return request from the My Account > My Orders section, you can send the product free of charge with the provided shipping code."
+    "card_details": "{{details}} - Exp. {{expiry}}",
+    "default_method": "Default Payment Method",
+    "error_loading": "An error occurred while loading payment methods.",
+    "delete": {
+      "confirm_title": "Delete Payment Method",
+      "confirm_message": "Are you sure you want to delete this payment method?",
+      "error_title": "Error",
+      "error_message": "An error occurred while deleting the payment method."
     },
-    "q3": {
-      "question": "How much is the shipping fee?",
-      "answer": "Shipping is free for all your orders. There is no minimum limit."
+    "add_new_method": "Add New Payment Method",
+    "card": {
+      "title": "Credit / Debit Card"
     },
-    "q4": {
-      "question": "Which payment methods can I use?",
-      "answer": "You can pay by credit card, debit card, and PayPal. We also have a cash on delivery option."
+    "bank_transfer": {
+      "title": "Bank Transfer / EFT"
     }
   },
   "favorites": {
@@ -169,36 +183,10 @@
     "search_placeholder": "Type to search...",
     "categories": {
       "orders": "Orders",
-      "returns": "Returns & Refunds",
+      "returns": "Returns and Refunds",
       "account": "Account Management",
       "payment": "Payment Options",
-      "security": "Security & Privacy"
-    }
-  },
-  "payment_methods": {
-    "title": "Payment Methods",
-    "company_card": "Company Card",
-    "personal_card": "Personal Card",
-    "empty": {
-      "title": "You have no saved cards",
-      "subtitle": "Add a new card to speed up your payments.",
-      "add_button": "Add New Card"
-    },
-    "card_details": "{{details}} - Exp. {{expiry}}",
-    "default_method": "Default Payment Method",
-    "error_loading": "An error occurred while loading payment methods.",
-    "delete": {
-      "confirm_title": "Delete Card",
-      "confirm_message": "Are you sure you want to delete this card?",
-      "error_title": "Error",
-      "error_message": "An error occurred while deleting the card."
-    },
-    "add_new_method": "Add New Payment Method",
-    "card": {
-      "title": "Credit / Debit Card"
-    },
-    "bank_transfer": {
-      "title": "Bank Transfer"
+      "security": "Security and Privacy"
     }
   },
   "login": {
@@ -230,7 +218,16 @@
     "subtitle_part2": ".",
     "verify_button": "Verify",
     "resend_code": "Resend code",
-    "resend_code_in": "Resend code in"
+    "resend_code_in": "Resend code in",
+    "send_success": "Verification code sent successfully",
+    "send_failed": "Verification code could not be sent",
+    "verify_success": "Verification successful",
+    "verify_failed": "Verification failed. Please check the code.",
+    "invalid_code": "Invalid verification code",
+    "expired_code": "Verification code has expired",
+    "too_many_attempts": "Too many incorrect attempts. Please wait.",
+    "resend_wait": "Wait {{seconds}} seconds for new code",
+    "code_sent_to": "Code sent to {{phone}}"
   },
   "user_info": {
     "title": "Account Information",
@@ -258,9 +255,17 @@
     "nip_error_length": "NIP must be 10 digits.",
     "nip_error_generic": "NIP verification failed. Please try again.",
     "save_error_title": "Failed to Save Profile",
-    "accept_terms": "I have read, understood, and agree.",
-    "agree_to_the": "I have read and agree to the",
-    "terms_and_policy": "Terms of Service and Privacy Policy"
+    "save_error_message": "An error occurred while saving profile. Please try again.",
+    "save_success": "Profile saved successfully",
+    "missing_fields": "Please fill in all required fields",
+    "registering": "Saving...",
+    "agree_to_the": "I have read and agree to the:",
+    "terms_and_policy": "Terms of Service and Privacy Policy",
+    "agree_to": "I agree to:",
+    "terms_of_service": "Terms of Service",
+    "privacy_policy": "Privacy Policy",
+    "marketing_consent": "I want to be informed about campaigns and announcements",
+    "marketing_consent_desc": "Get notified about special campaigns via SMS, email and app notifications"
   },
   "terms": {
     "title": "Terms and Conditions",
@@ -289,16 +294,16 @@
   "tabs": {
     "title": "Main Menu",
     "home": "Home",
-    "products": "Products",
     "cart": {
       "title": "My Cart",
-      "clear_alert_title": "Clear Cart",
       "clear_alert_message": "All items in your cart will be deleted. Are you sure?",
       "clear_alert_cancel": "Cancel",
+      "clear_alert_title": "Clear Cart",
       "clear_alert_confirm": "Yes, Delete"
     },
-    "orders": "My Orders",
     "profile": "Profile",
+    "orders": "My Orders",
+    "products": "Products",
     "search_placeholder": "Search products..."
   },
   "home": {
@@ -359,7 +364,9 @@
     "payment": {
       "credit_card": "Credit Card",
       "cash_on_delivery": "Cash on Delivery",
-      "no_card_info": "No card information"
+      "no_card_info": "No card information",
+      "stripe_payment": "Secure payment",
+      "unknown_payment": "Unknown payment method"
     },
     "delivery_payment": {
       "title": "Delivery & Payment",
@@ -403,10 +410,8 @@
       "total_items_one": "Total {{count}} item",
       "total_items_other": "Total {{count}} items",
       "total_items": "Total {{count}} items",
-      "products_title": "Products",
-      "reorder_button": "Reorder",
-      "review_button": "Rate the Products",
-      "section_title": "Order Contents"
+      "section_title": "Order Contents",
+      "no_items": "There are no products in this order."
     },
     "summary": {
       "subtotal": "Subtotal",
@@ -418,6 +423,7 @@
     "tracking": {
       "title": "Delivery Status",
       "status_pending": "Your order is awaiting confirmation.",
+      "bank_transfer_pending": "We will notify you when your order is confirmed.",
       "status_confirmed": "Your order is being prepared.",
       "status_preparing": "Your order is being packaged.",
       "shipped_internal": "Shipped with our own vehicle.",
@@ -460,29 +466,28 @@
     }
   },
   "cart": {
-    "remove_item_alert_title": "Remove Item",
-    "remove_item_alert_message": "Are you sure you want to remove this item from cart?",
-    "remove_item_alert_cancel": "Cancel",
-    "remove_item_alert_confirm": "Remove",
-    "checkout_alert_title": "Confirm Order",
-    "checkout_alert_message": "The total amount for your order is {{total}}. Do you want to proceed?",
-    "checkout_alert_cancel": "Cancel",
-    "checkout_alert_confirm": "Proceed",
+    "title": "My Cart",
     "empty": {
       "title": "Your cart is empty",
+      "subtitle": "Add products to start shopping.",
       "button": "Start Shopping"
-    },
-    "item": {
-      "price": "{{price}}"
-    },
-    "summary": {
-      "total_label": "Subtotal ({{count}} items)",
-      "total_value": "{{total}}",
-      "checkout_button": "Checkout"
     },
     "stock_limit_title": "Stock Limit",
     "stock_limit_message": "You can add maximum {{stock}} of this product.",
     "insufficient_stock": "There are {{availableStock}} items available in stock. You can purchase maximum {{availableStock}} items.",
+    "checkout_alert_cancel": "Cancel",
+    "remove_item_alert_cancel": "Cancel",
+    "remove_item_alert_confirm": "Remove",
+    "summary": {
+      "checkout_button": "Complete Order",
+      "total_label": "Subtotal ({{count}} items)",
+      "total_value": "{{total}}"
+    },
+    "checkout_alert_confirm": "Continue",
+    "checkout_alert_title": "Confirm Order",
+    "checkout_alert_message": "The total amount for your order is {{total}}. Do you want to proceed?",
+    "remove_item_alert_message": "Are you sure you want to remove this item from cart?",
+    "remove_item_alert_title": "Remove Item",
     "load_error": "An error occurred while loading the cart",
     "add_error": "An error occurred while adding the product to cart",
     "update_error": "An error occurred while updating the product quantity",
@@ -539,25 +544,39 @@
     "complete_order": "Complete Order",
     "missing_info": "Missing Information",
     "missing_info_desc": "Please fill in all required information.",
+    "missing_fields": "Please fill in all required fields",
     "order_success": "Order Successful",
     "order_success_desc": "Your order has been placed successfully!",
     "order_error": "An error occurred while creating the order. Please try again.",
+    "order_creation_failed": "Failed to create order",
     "bank_transfer_title": "Bank Transfer Information",
+    "bank_transfer_success": "Order Confirmed",
+    "bank_transfer_success_desc": "As a corporate customer, your order has been automatically confirmed. The invoice will be sent to your email address.",
     "confirm_and_proceed": "Confirm & Proceed",
     "view_bank_details_prompt": "Tap to view bank details",
     "no_payment_method_selected": "No payment method selected",
     "order_notes": "Order Notes",
     "order_notes_placeholder": "You can add your notes about the order here (e.g., don't ring the bell).",
+    "payment_success": "Payment Successful",
+    "payment_success_desc": "Your payment has been processed successfully!",
+    "payment_failed": "Payment Failed",
+    "payment_error": "An error occurred during payment processing",
     "payment_methods": {
       "card": {
         "title": "Credit / Debit Card",
         "subtitle": "Visa, Mastercard, Maestro"
       },
       "apple_pay": {
-        "title": "Apple Pay"
+        "title": "Apple Pay",
+        "subtitle": "Fast payment with Touch ID, Face ID"
+      },
+      "google_pay": {
+        "title": "Google Pay",
+        "subtitle": "Secure mobile payment"
       },
       "blik": {
-        "title": "BLIK"
+        "title": "BLIK",
+        "subtitle": "Mobile payment (6-digit code)"
       },
       "bank_transfer": {
         "title": "Bank Transfer / EFT",
@@ -581,52 +600,6 @@
     "shipped": "Shipped",
     "delivered": "Delivered",
     "unknown": "Unknown"
-  },
-  "product_detail": {
-    "not_found_title": "Product Not Found",
-    "not_found_body": "The requested product could not be found.",
-    "go_back": "Go Back",
-    "share_message": "{{name}} - {{price}} - Check it out on the Metropolitan app!",
-    "share": {
-      "check_out_this_product": "Check out this product!"
-    },
-    "low_stock_one": "Last {{count}} item",
-    "low_stock_other": "Last {{count}} items",
-    "category": "Category",
-    "stock": "Stock: {{count}}",
-    "similar_products": "Similar Products",
-    "similar_products_page_title": "Similar Products",
-    "view_all_similar": "View All",
-    "product_details": "Product Details",
-    "product_details_sheet_title": "Product Details",
-    "in_stock": "In stock",
-    "out_of_stock": "Out of stock",
-    "info": {
-      "price": "{{price}}",
-      "unit": "/ {{unit}}",
-      "in_stock": "In stock",
-      "stock_left_one": "{{count}} item left",
-      "stock_left_other": "{{count}} items left",
-      "description_title": "Product Description",
-      "no_description": "No detailed description is available for this product yet."
-    },
-    "purchase": {
-      "add_to_cart": "Add to Cart",
-      "adding_to_cart": "Adding",
-      "added_to_cart": "Added to Cart",
-      "update_cart": "Update",
-      "go_to_cart": "Go to Cart",
-      "out_of_stock": "Out of Stock",
-      "notify_me": "Notify Me",
-      "notify_success": "Notification Added",
-      "notify_success_message": "We'll notify you when {{productName}} is back in stock.",
-      "stock_error_title": "Stock Limit Exceeded",
-      "stock_error_message": "You can add a maximum of {{count}} units of this product.",
-      "generic_error_title": "Error",
-      "generic_error_message": "An error occurred while adding to cart. Please try again."
-    },
-    "add_to_cart": "Add to Cart",
-    "stock_available": "Stock: {{count}} available"
   },
   "app_bar": {
     "search_placeholder": "Search..."
@@ -661,6 +634,100 @@
     "gallery_required_title": "Gallery Permission Required",
     "gallery_required_message": "We need your permission to access the gallery to select a photo."
   },
+  "add_payment_method": {
+    "title": "Add New Payment Method",
+    "form": {
+      "cardholder_name": "Cardholder Name",
+      "cardholder_name_placeholder": "Name on card",
+      "card_number_last4": "Card Number (Last 4 digits)",
+      "expiry_month": "Expiry Month",
+      "expiry_year": "Expiry Year",
+      "save_button": "Save Card",
+      "error_title": "Missing Information",
+      "error_message": "Please fill in all fields.",
+      "submit_error_title": "Error",
+      "submit_error_message": "An error occurred while adding the payment method. Please try again."
+    }
+  },
+  "edit_address": {
+    "title": "Edit Address",
+    "form": {
+      "save_button": "Save Changes",
+      "error_title": "Form Incomplete",
+      "error_message": "Please fill in all fields.",
+      "submit_error_title": "Error",
+      "submit_error_message": "An error occurred while updating the address. Please try again.",
+      "update_success_message": "Address updated successfully!"
+    }
+  },
+  "product_detail": {
+    "not_found_title": "Product Not Found",
+    "not_found_body": "The requested product could not be found.",
+    "go_back": "Go Back",
+    "share_message": "{{name}} - {{price}} - Check it out on the Metropolitan app!",
+    "share": {
+      "check_out_this_product": "Check out this product!"
+    },
+    "low_stock": "Last {{count}} items",
+    "stock": "Stock: {{count}}",
+    "similar_products": "Similar Products",
+    "similar_products_page_title": "Similar Products",
+    "view_all_similar": "View All",
+    "product_details": "Product Details",
+    "product_details_sheet_title": "Product Details",
+    "in_stock": "In stock",
+    "info": {
+      "price": "{{price}}",
+      "unit": "/ {{unit}}",
+      "in_stock": "In stock",
+      "stock_left": "{{count}} items left",
+      "description_title": "Product Description",
+      "no_description": "No detailed description is available for this product yet.",
+      "general": "General Information",
+      "description": "Description",
+      "net_quantity": "Net Quantity",
+      "origin_country": "Country of Origin",
+      "expiry_date": "Expiry Date",
+      "allergens": "Allergen Information",
+      "nutritional_values": "Nutritional Values",
+      "per_100g": "Per 100g",
+      "energy": "Energy",
+      "fat": "Fat",
+      "saturated_fat": "Saturated Fat",
+      "carbohydrates": "Carbohydrates",
+      "sugar": "Sugar",
+      "protein": "Protein",
+      "salt": "Salt",
+      "storage": "Storage Conditions",
+      "manufacturer": "Manufacturer Information"
+    },
+    "purchase": {
+      "add_to_cart": "Add to Cart",
+      "adding_to_cart": "Adding",
+      "added_to_cart": "Added to Cart",
+      "update_cart": "Update",
+      "go_to_cart": "Go to Cart",
+      "out_of_stock": "Out of Stock",
+      "notify_me": "Notify Me",
+      "notify_success": "Notification Added",
+      "notify_success_message": "We'll notify you when {{productName}} is back in stock.",
+      "stock_error_title": "Stock Limit Exceeded",
+      "stock_error_message": "You can add a maximum of {{count}} units of this product.",
+      "generic_error_title": "Error",
+      "generic_error_message": "An error occurred while adding to cart. Please try again."
+    },
+    "add_to_cart": "Add to Cart",
+    "stock_available": "{{count}}: In stock",
+    "category": "Category: {{category}}",
+    "out_of_stock": "Out of stock"
+  },
+  "product_card": {
+    "add_to_cart": "Add to Cart",
+    "add_to_favorites": "Add to Favorites",
+    "remove_from_favorites": "Remove from Favorites",
+    "share": "Share",
+    "view_details": "View Details"
+  },
   "common": {
     "ok": "OK",
     "cancel": "Cancel",
@@ -680,46 +747,99 @@
     "back": "Back",
     "page_load_error": "Page failed to load",
     "connection_error": "Check your internet connection and try again",
-    "retry": "Try Again"
+    "retry": "Try Again",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "close": "Close",
+    "next": "Next",
+    "finish": "Finish",
+    "filter": "Filter",
+    "sort": "Sort",
+    "refresh": "Refresh",
+    "update": "Update",
+    "submit": "Submit",
+    "skip": "Skip",
+    "required": "Required",
+    "optional": "Optional",
+    "select": "Select",
+    "selected": "Selected",
+    "all": "All",
+    "none": "None",
+    "processing": "Processing...",
+    "please_wait": "Please wait...",
+    "completed": "Completed",
+    "failed": "Failed",
+    "pending": "Pending",
+    "expired": "Expired",
+    "active": "Active",
+    "inactive": "Inactive",
+    "enabled": "Enabled",
+    "disabled": "Disabled"
   },
   "general": {
     "under_construction": "Under Construction",
     "feature_soon": "This feature will be added soon",
+    "soon": "Soon",
     "yes": "Yes",
     "no": "No"
   },
-  "edit_address": {
-    "title": "Edit Address",
-    "form": {
-      "save_button": "Save Changes",
-      "error_title": "Form Incomplete",
-      "error_message": "Please fill in all fields.",
-      "submit_error_title": "Error",
-      "submit_error_message": "An error occurred while updating the address. Please try again.",
-      "update_success_message": "Address updated successfully!"
-    }
-  },
-  "add_payment_method": {
-    "title": "Add New Payment Method",
-    "form": {
-      "cardholder_name": "Cardholder Name",
-      "cardholder_name_placeholder": "Name on card",
-      "card_number_last4": "Card Number (Last 4 digits)",
-      "expiry_month": "Expiry Month",
-      "expiry_year": "Expiry Year",
-      "save_button": "Save Card",
-      "error_title": "Missing Information",
-      "error_message": "Please fill in all fields.",
-      "submit_error_title": "Error",
-      "submit_error_message": "An error occurred while adding the payment method. Please try again."
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "q1": {
+      "question": "How can I cancel my order?",
+      "answer": "You can cancel your order from the \"My Orders\" section before its status changes to \"Preparing\". If your order has been shipped, it cannot be canceled."
+    },
+    "q2": {
+      "question": "How does the product return process work?",
+      "answer": "You can return the products you have received within 14 days. After creating a return request from the My Account > My Orders section, you can send the product free of charge with the provided shipping code."
+    },
+    "q3": {
+      "question": "How much is the shipping fee?",
+      "answer": "Shipping is free for all your orders. There is no minimum limit."
+    },
+    "q4": {
+      "question": "Which payment methods can I use?",
+      "answer": "You can pay by credit card, debit card and PayPal. We also have a cash on delivery option."
     }
   },
   "auth": {
     "required": "Login Required",
+    "no_registration_token": "Registration token not found. Please log in again.",
     "login_to_continue": "Please log in to continue",
     "login_required": "You need to log in to perform this action.",
     "guest_data_migrated": "Your cart and favorites have been transferred to your account",
-    "migration_success_title": "Data Transferred"
+    "migration_success_title": "Data Transferred",
+    "profile_complete_failed": "Profile completion failed",
+    "profile_update_failed": "Profile update failed",
+    "profile_refresh_failed": "Profile refresh failed",
+    "profile_could_not_refresh": "Could not refresh user profile",
+    "session_expired": "Your session has expired. Please log in again.",
+    "token_expired": "Authentication expired",
+    "invalid_token": "Invalid authentication",
+    "access_denied": "Access denied",
+    "unauthorized": "Unauthorized access",
+    "logout_success": "Successfully logged out",
+    "logout_failed": "An error occurred while logging out",
+    "new_device_detected": "New device detected",
+    "device_fingerprint_mismatch": "Device verification failed",
+    "concurrent_session_detected": "Login detected from another device",
+    "session_limit_exceeded": "Maximum session limit reached",
+    "too_many_requests": "Too many requests. Please wait.",
+    "rate_limit_exceeded": "Request limit exceeded",
+    "provider_conflict": "This phone number is already linked to your {{provider}} account. You cannot use the same number with a different social login method.",
+    "provider_conflict_with_suggestion": "This account is already linked with {{existingProvider}}. To log in with {{attemptedProvider}}, first remove the existing connection from Settings > Security > Linked Accounts.",
+    "network_error": "Connection error. Please try again.",
+    "server_error": "Server error. Please try again later.",
+    "unknown_error": "An unexpected error occurred",
+    "or_continue_with": "or continue with",
+    "continue_with_apple": "Continue with Apple",
+    "continue_with_google": "Continue with Google",
+    "apple_sign_in_failed": "Apple sign in failed",
+    "google_sign_in_failed": "Google sign in failed",
+    "social_sign_in_cancelled": "Social media sign in cancelled",
+    "firebase_auth_error": "Authentication error",
+    "firebase_network_error": "Network connection error"
   },
   "invoice_preview": {
     "title": "Invoice Preview",
@@ -749,6 +869,21 @@
   },
   "notifications": {
     "title": "Notifications",
+    "permission_header": "Notification Permission",
+    "permission_title": "Don't Miss Out on Opportunities!",
+    "permission_subtitle": "Get instant notifications about exclusive campaigns and your orders.",
+    "feature_order_updates": "Order Tracking",
+    "feature_order_updates_desc": "Stay informed about every step of your order",
+    "feature_special_offers": "Special Offers",
+    "feature_special_offers_desc": "Exclusive discounts and campaigns for you",
+    "feature_delivery_alerts": "Delivery Notifications",
+    "feature_delivery_alerts_desc": "Get notified when the courier is approaching",
+    "privacy_note": "You can change your notification preferences at any time from settings.",
+    "enable_notifications": "Enable Notifications",
+    "enabling": "Enabling",
+    "maybe_later": "Maybe Later",
+    "permission_denied_title": "Notifications Disabled",
+    "permission_denied_message": "You can enable notifications later from Settings > Notifications.",
     "mark_all_read": "Mark All as Read",
     "mark_as_read": "Mark as Read",
     "delete_all": "Delete All",
@@ -783,8 +918,10 @@
     "client_secret_missing": "Payment secret is missing"
   },
   "app_settings": {
+    "title": "App Settings",
     "appearance": "Appearance",
     "theme": "Theme",
+    "theme_desc": "Choose app theme",
     "theme_system": "System",
     "theme_light": "Light",
     "theme_dark": "Dark",
@@ -809,6 +946,7 @@
     "email_notifications_desc": "Email updates",
     "error": "Error",
     "notification_update_failed": "Failed to update notification preferences",
+    "notification_update_success": "Notification preferences updated",
     "guest_notification_warning": "Login to save your notification preferences",
     "clear_cache_title": "Clear Cache",
     "clear_cache_message": "All cache files and temporary data will be deleted. This action cannot be undone.",
@@ -821,8 +959,15 @@
     "title": "Support",
     "contact_section": "Contact",
     "whatsapp": "WhatsApp",
+    "whatsapp_message": "Hello, I would like to get help about Metropolitan Food Group.",
     "call_us": "Call Us",
     "email": "Email",
+    "address": "Address",
+    "social_section": "Social Media",
+    "instagram": "Instagram",
+    "facebook": "Facebook",
+    "twitter": "Twitter",
+    "linkedin": "LinkedIn",
     "faq_section": "Frequently Asked Questions",
     "faq": {
       "delivery_question": "How does shipping work?",
@@ -849,11 +994,14 @@
     "privacy_desc": "Data protection and privacy",
     "cookie_policy": "Cookie Policy",
     "cookie_desc": "Cookie usage information",
+    "gdpr": "GDPR",
+    "gdpr_desc": "Personal data protection",
     "company_info_section": "Company Information",
     "tax_number": "Tax Number",
     "trade_register": "Trade Register",
     "email": "Email",
     "phone": "Phone",
+    "get_directions": "Get Directions",
     "notice_title": "Legal Notice",
     "notice_desc": "All content and materials in this app belong to Metropolitan Food Group Sp. z o.o. and are protected by copyright."
   },
@@ -866,12 +1014,146 @@
     "security_desc": "Configure security settings",
     "general": "General",
     "danger_zone": "Danger Zone",
+    "export_data": "Download My Data",
+    "export_data_desc": "Download your account data",
     "delete_account_desc": "Permanently delete your account",
     "guest_user": "Guest User",
     "no_phone": "No phone number"
   },
+  "privacy_settings": {
+    "title": "Privacy",
+    "data_control": "Data Control",
+    "data_sharing": "Data Sharing",
+    "data_sharing_desc": "Share your data with our partners",
+    "analytics": "Analytics Data",
+    "analytics_desc": "Collect app usage data",
+    "marketing_emails": "Marketing Emails",
+    "marketing_emails_desc": "Stay informed about campaigns and discounts",
+    "info_title": "Your Privacy Matters to Us",
+    "info_desc": "Your data is stored securely and used only to improve service quality. You can change your preferences at any time.",
+    "guest_title": "Guest User",
+    "guest_warning": "Log in to save your privacy preferences",
+    "settings_updated": "Privacy settings updated",
+    "update_failed": "Failed to update privacy settings"
+  },
+  "security_settings": {
+    "title": "Security",
+    "linked_accounts": "Linked Accounts",
+    "account_security": "Account Security",
+    "connected": "Connected",
+    "not_connected": "Not connected",
+    "disconnect": "Disconnect",
+    "disconnect_title": "Remove Social Account Link",
+    "disconnect_message": "Are you sure you want to disconnect your {{provider}} account? You can continue logging in with your phone number.",
+    "disconnect_confirm": "Disconnect",
+    "disconnect_success": "{{provider}} connection successfully removed",
+    "disconnect_failed": "Failed to remove connection. Please try again.",
+    "connect": "Connect",
+    "connect_success": "Your {{provider}} account has been successfully connected",
+    "connect_failed": "Failed to connect account. Please try again.",
+    "apple_sign_in": "Sign In with Apple",
+    "check_apple_settings": "Check in Settings",
+    "phone_number": "Phone Number",
+    "change_phone": "Change Phone Number",
+    "change_phone_title": "Change Phone Number",
+    "change_phone_message": "Verification will be required to change your phone number.",
+    "no_phone": "No phone number",
+    "two_factor": "Two-Factor Authentication (2FA)",
+    "two_factor_desc": "Extra security with Google/Microsoft Authenticator",
+    "login_alerts": "Login Notifications",
+    "login_alerts_desc": "Get notified when new login occurs",
+    "device_tracking": "Device Tracking",
+    "device_tracking_desc": "Save logged-in devices",
+    "active_sessions": "Active Sessions",
+    "current": "Current",
+    "current_session": "Currently active",
+    "end_session": "End Session",
+    "end_session_title": "End Session",
+    "end_session_message": "You will be logged out of this device. Are you sure?",
+    "end_session_confirm": "End",
+    "end_all_sessions": "End All Sessions",
+    "end_all_sessions_title": "Log Out of All Devices",
+    "end_all_sessions_message": "You will be logged out of all devices. All active sessions including this device will be terminated.",
+    "session_ended": "Session ended",
+    "all_sessions_ended": "All sessions ended",
+    "session_end_failed": "Failed to end session",
+    "device_info": "Device Info",
+    "last_activity": "Last Activity",
+    "session_created": "Session Started",
+    "security_tip_title": "Security Tip",
+    "security_tip_desc": "To keep your account secure, regularly check your active sessions and end devices you don't recognize.",
+    "token_refresh_info": "Automatic token refresh is active for your security",
+    "enhanced_security": "Enhanced Security Active",
+    "guest_warning": "Log in to use security settings",
+    "guest_title": "Guest User",
+    "guest_message": "Please log in to access security settings",
+    "settings_updated": "Security settings updated",
+    "update_failed": "Failed to update security settings",
+    "device_management": "Device Management",
+    "trusted_devices": "Trusted Devices",
+    "device_added": "Device added",
+    "device_removed": "Device removed",
+    "device_trusted": "Device marked as trusted",
+    "device_untrusted": "Device removed from trust list",
+    "current_device": "This Device",
+    "other_devices": "Other Devices",
+    "device_name": "Device Name",
+    "device_type": "Device Type",
+    "device_os": "Operating System",
+    "device_browser": "Browser",
+    "device_location": "Location",
+    "device_ip": "IP Address",
+    "first_seen": "First Seen",
+    "last_seen": "Last Seen",
+    "remove_device": "Remove Device",
+    "remove_device_title": "Remove Device",
+    "remove_device_message": "This device will be removed from the trust list. Are you sure?",
+    "remove_device_confirm": "Remove",
+    "suspicious_activity": "Suspicious activity detected",
+    "verify_identity": "Verify your identity",
+    "session_management": "Session Management",
+    "max_sessions": "Maximum session count: {{count}}",
+    "active_session_count": "{{count}} active sessions",
+    "refresh_sessions": "Refresh Sessions",
+    "session_details": "Session Details",
+    "session_id": "Session ID",
+    "session_duration": "Session Duration",
+    "expire_time": "Expiry Time",
+    "auto_logout": "Automatically logged out",
+    "session_expired_message": "Your session was terminated for security reasons"
+  },
+  "change_phone": {
+    "title": "Change Phone Number",
+    "verify_current_title": "Security Verification",
+    "verify_current_desc": "For your security, you need to verify your current phone number first.",
+    "current_phone_label": "Current Phone Number",
+    "current_phone_hint": "Enter the phone number registered to your account",
+    "phone_placeholder": "+48 XXX XXX XXX",
+    "verify_button": "Verify",
+    "new_phone_label": "New Phone Number",
+    "new_phone_hint": "Enter your new phone number",
+    "send_otp_button": "Send Verification Code",
+    "verify_new_title": "Verify Phone Number",
+    "verify_new_desc": "Enter the 6-digit code sent to {{phone}}",
+    "otp_label": "Verification Code",
+    "complete_button": "Complete Change",
+    "resend_otp": "Resend Code",
+    "resend_timer": "Resend in {{seconds}}s",
+    "step1_complete": "Current number verified",
+    "invalid_phone": "Invalid phone number",
+    "phone_mismatch": "Phone number doesn't match your account",
+    "same_as_current": "New number cannot be the same as current",
+    "invalid_otp": "Verification code must be 6 digits",
+    "current_verified": "Current number verified",
+    "otp_sent": "Verification code sent",
+    "otp_resent": "New verification code sent",
+    "success": "Phone number successfully changed",
+    "verify_error": "Verification failed",
+    "send_error": "Could not send SMS",
+    "resend_error": "Could not resend code"
+  },
   "delete_account": {
-    "title": "Delete Account",
+    "title": "Delete My Account",
     "confirm_title": "Delete Account",
     "confirm_message": "Are you sure you want to delete your account? This can be reversed but if you don't login within 20 days your account will be permanently deleted.",
     "confirm_button": "Yes, Delete",
@@ -897,5 +1179,135 @@
     "info_1": "Your account will be temporarily deleted",
     "info_2": "You can recover your account by logging in within 20 days",
     "info_3": "After 20 days all your data will be permanently deleted"
+  },
+  "gdpr_compliance": {
+    "title": "GDPR Rights",
+    "description": "Your rights over your personal data",
+    "access_data": "Access My Data",
+    "access_data_desc": "Access all your personal data",
+    "rectify_data": "Rectify Data",
+    "rectify_data_desc": "Correct incorrect or incomplete data",
+    "delete_data": "Delete Data",
+    "delete_data_desc": "Delete your account and all data",
+    "export_data": "Export Data",
+    "export_data_desc": "Download your data in portable format",
+    "consent_management": "Consent Management",
+    "marketing_consent": "Marketing Communication",
+    "analytics_consent": "Analytics Data",
+    "third_party_consent": "3rd Party Sharing",
+    "withdraw_consent": "Withdraw Consent",
+    "consent_withdrawn": "Your consent has been successfully withdrawn",
+    "right_to_access": "Right to Access (Article 15)",
+    "right_to_rectification": "Right to Rectification (Article 16)",
+    "right_to_erasure": "Right to be Forgotten (Article 17)",
+    "right_to_portability": "Right to Data Portability (Article 20)",
+    "data_updated": "Your data has been updated",
+    "update_failed": "Update failed"
+  },
+  "export_data": {
+    "title": "Download My Data",
+    "info_title": "Data Export",
+    "info_desc": "Securely download all data related to your account. Your data will be provided in JSON format.",
+    "included_data": "Included Data",
+    "data_profile": "Profile information (name, surname, email)",
+    "data_orders": "Order history and invoices",
+    "data_addresses": "Your saved addresses",
+    "data_preferences": "Preferences and settings",
+    "export_methods": "Export Methods",
+    "email_option": "Send by Email",
+    "email_option_desc": "Your data will be sent to your email address via secure link",
+    "download_option": "Direct Download",
+    "download_option_desc": "Download your data immediately as a ZIP file",
+    "start_export": "Start Export",
+    "email_success": "Your data has been sent to your email address",
+    "download_success": "Your data has been successfully downloaded",
+    "downloading": "Your data is downloading...",
+    "download_failed": "File download failed",
+    "save_file": "Save File",
+    "sharing_not_available": "File sharing is not available on this device",
+    "file_password": "File Password",
+    "file_password_desc": "Your file has been encrypted for security. You can open it using the password below:",
+    "copy_password": "Copy Password",
+    "password_copied": "Password copied",
+    "open_file": "Open",
+    "file_saved": "File saved successfully",
+    "export_error": "An error occurred during data export"
+  },
+  "file_viewer": {
+    "title": "File Viewer",
+    "file_name": "File Name",
+    "enter_password": "Enter Password",
+    "password_placeholder": "Enter ZIP file password",
+    "unlock": "Unlock",
+    "unlocking": "Opening file...",
+    "wrong_password": "Wrong password",
+    "files_in_archive": "Files in Archive",
+    "file_size": "Size",
+    "view_content": "View Content",
+    "download_file": "Download File",
+    "no_files": "No files found in archive",
+    "extraction_failed": "File extraction failed"
+  },
+  "json_viewer": {
+    "title": "Content Preview",
+    "copy_content": "Copy Content",
+    "content_copied": "Content copied",
+    "invalid_json": "Invalid JSON format",
+    "data_preview": "Data Preview",
+    "user_data": "User Data",
+    "share_content": "Share",
+    "sharing_failed": "Sharing failed",
+    "file_created": "File created"
+  },
+  "notification_settings": {
+    "title": "Notification Settings",
+    "permission_disabled": "Notifications Disabled",
+    "permission_disabled_desc": "Grant permission to receive notifications about order updates and special campaigns.",
+    "enable_notifications": "Enable Notifications",
+    "permission_denied_title": "Notification Permission",
+    "permission_denied_message": "You need to grant permission from settings to receive notifications.",
+    "open_settings": "Open Settings",
+    "permission_granted_title": "Notifications Enabled",
+    "permission_granted_message": "You will now receive notifications about order updates and campaigns.",
+    "permission_error": "Could not get notification permission. Please try again.",
+    "permission_required_title": "Notification Permission Required",
+    "permission_required_message": "You need to enable notifications first to use this feature.",
+    "enable": "Enable",
+    "preferences": "Notification Preferences",
+    "order_updates": "Order Updates",
+    "order_updates_desc": "Order status, shipping tracking and delivery notifications",
+    "promotions": "Campaigns",
+    "promotions_desc": "Discounts, special offers and seasonal campaigns",
+    "price_alerts": "Price Alerts",
+    "price_alerts_desc": "Price drops on your favorite products",
+    "new_products": "New Products",
+    "new_products_desc": "Newly added products and collections",
+    "general": "General Notifications",
+    "general_desc": "System updates and important announcements",
+    "update_error": "An error occurred while updating your preferences.",
+    "info_text": "You can change your notification preferences at any time. We recommend keeping 'Order Updates' enabled for important order notifications."
+  },
+  "order_notification": {
+    "title": "Notifications for Order Tracking",
+    "description": "Track your order status in real-time. Get notifications about shipping movements, delivery updates and special offers.",
+    "enable_notifications": "Enable Notifications",
+    "later": "Later",
+    "permission_denied_title": "Notification Permission",
+    "permission_denied_message": "You need to enable notification permission from settings for order tracking.",
+    "open_settings": "Open Settings",
+    "permission_granted_title": "Notifications Active",
+    "permission_granted_message": "You will now receive instant notifications about your orders.",
+    "permission_error": "Could not get notification permission. Please try from profile settings later."
+  },
+  "onboarding": {
+    "notification_title": "Stay Informed",
+    "notification_description": "Get instant notifications about your order status and special opportunities.",
+    "notification_feature_orders": "Order tracking and delivery notifications",
+    "notification_feature_deals": "Exclusive campaigns and discounts for you",
+    "notification_feature_shipping": "Shipping status updates",
+    "enable_notifications": "Enable Notifications",
+    "skip_for_now": "Skip for Now",
+    "notification_enabled_title": "Great!",
+    "notification_enabled_message": "We will now keep you informed about important updates."
   }
 }
