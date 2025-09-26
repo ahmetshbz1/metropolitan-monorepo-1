@@ -39,7 +39,7 @@ const loadLanguageFromStorage = async (): Promise<string> => {
       return savedLanguage;
     }
   } catch (error) {
-    console.error("Dil ayarı yüklenirken hata:", error);
+    // Removed console statement
   }
 
   return getSystemLanguage();
@@ -66,7 +66,7 @@ export const changeLanguage = async (language: "tr" | "en" | "pl") => {
     await AsyncStorage.setItem("@app_language", language);
     await i18n.changeLanguage(language);
   } catch (error) {
-    console.error("Dil değiştirilirken hata:", error);
+    // Removed console statement
   }
 };
 

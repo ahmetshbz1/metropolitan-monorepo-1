@@ -14,9 +14,9 @@ export const processApplePayPayment = async ({
   currency = "PLN",
   orderId // Add orderId parameter
 }: PlatformPayParams & { orderId?: string }): Promise<StripePaymentResult> => {
-  console.log("🍎 Processing Apple Pay payment...");
-  console.log("💰 Amount:", amount, currency);
-  console.log("📦 Order ID:", orderId);
+  // Removed console statement
+  // Removed console statement
+  // Removed console statement
 
   const { error } = await confirmPlatformPayPayment(clientSecret, {
     applePay: {
@@ -33,17 +33,17 @@ export const processApplePayPayment = async ({
   });
 
   if (error) {
-    console.error("❌ Apple Pay error:", error);
+    // Removed console statement
 
     // CRITICAL: Rollback stock if payment was cancelled/failed
     if (orderId && (error.code === 'Canceled' || error.code === 'Failed')) {
-      console.log(`🔄 Apple Pay ${error.code.toLowerCase()}, attempting stock rollback for order ${orderId}`);
+      // Removed console statement}, attempting stock rollback for order ${orderId}`);
 
       try {
         const rollbackResponse = await api.post(`/orders/${orderId}/rollback-stock`);
-        console.log(`✅ Stock rollback successful:`, rollbackResponse.data);
+        // Removed console statement
       } catch (rollbackError: any) {
-        console.error(`❌ Stock rollback failed for order ${orderId}:`, rollbackError);
+        // Removed console statement
         // Don't fail the payment error response due to rollback failure
         // Just log it for monitoring
       }
@@ -63,7 +63,7 @@ export const processApplePayPayment = async ({
     };
   }
 
-  console.log("✅ Apple Pay payment completed successfully!");
+  // Removed console statement
   const paymentIntentId = clientSecret.split("_secret_")[0];
   return {
     success: true,

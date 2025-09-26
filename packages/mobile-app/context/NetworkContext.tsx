@@ -100,12 +100,7 @@ export const NetworkProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     // Log network state changes in development
     if (__DEV__) {
-      console.log('Network state changed:', {
-        isConnected: state.isConnected,
-        isInternetReachable: state.isInternetReachable,
-        type: state.type,
-        quality,
-      });
+      // Network state changed
     }
   };
 
@@ -141,7 +136,7 @@ export const NetworkProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setOfflineQueue(queue);
       }
     } catch (error) {
-      console.error('Error loading offline queue:', error);
+      // Error loading offline queue
     }
   };
 
@@ -149,7 +144,7 @@ export const NetworkProvider: React.FC<{ children: React.ReactNode }> = ({ child
     try {
       await AsyncStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(offlineQueue));
     } catch (error) {
-      console.error('Error saving offline queue:', error);
+      // Error saving offline queue
     }
   };
 
@@ -171,7 +166,7 @@ export const NetworkProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
 
     if (__DEV__) {
-      console.log('Added to offline queue:', newRequest);
+      // Removed console statement
     }
   }, []);
 
@@ -196,7 +191,7 @@ export const NetworkProvider: React.FC<{ children: React.ReactNode }> = ({ child
             setOfflineQueue(prev => prev.filter(r => r.id !== request.id));
 
             if (__DEV__) {
-              console.log('Successfully processed offline request:', request.id);
+              // Removed console statement
             }
           } else {
             // Handle failed request
@@ -207,7 +202,7 @@ export const NetworkProvider: React.FC<{ children: React.ReactNode }> = ({ child
             } else {
               // Max retries reached, remove from queue
               if (__DEV__) {
-                console.warn('Max retries reached for request:', request.id);
+                // Max retries reached for request: ${request.id}
               }
             }
           }
@@ -220,7 +215,7 @@ export const NetworkProvider: React.FC<{ children: React.ReactNode }> = ({ child
           }
 
           if (__DEV__) {
-            console.error('Error processing offline request:', error);
+            // Error processing offline request
           }
         }
       }

@@ -15,26 +15,18 @@ export const processCardPayment = async ({
   t,
   orderId // Add orderId parameter
 }: CardPaymentParams & { orderId?: string }): Promise<StripePaymentResult> => {
-  console.log(
-    `💳 Processing ${paymentMethodType} payment with Payment Sheet...`
-  );
-  console.log("📦 Order ID:", orderId);
+  // 💳 Processing payment with Payment Sheet
+  // Removed console statement
 
   // Payment Sheet'i initialize et
   const initConfig = getPaymentSheetConfig(clientSecret, paymentMethodType);
 
-  console.log(
-    "🔧 Initializing Payment Sheet with config:",
-    JSON.stringify(initConfig, null, 2)
-  );
+  // 🔧 Initializing Payment Sheet with config
   const { error: initError } = await initPaymentSheet(initConfig);
 
   if (initError) {
-    console.error("❌ Payment Sheet initialization error:", initError);
-    console.error(
-      "❌ Full error details:",
-      JSON.stringify(initError, null, 2)
-    );
+    // Removed console statement
+    // ❌ Full error details
     return {
       success: false,
       error:
@@ -44,23 +36,23 @@ export const processCardPayment = async ({
     };
   }
 
-  console.log("✅ Payment Sheet initialized, presenting...");
+  // Removed console statement
 
   // Payment Sheet'i kullanıcıya göster
   const { error: presentError } = await presentPaymentSheet();
 
   if (presentError) {
-    console.error("❌ Payment Sheet presentation error:", presentError);
+    // Removed console statement
 
     // CRITICAL: Rollback stock if payment was cancelled/failed
     if (orderId && (presentError.code === 'Canceled' || presentError.code === 'Failed')) {
-      console.log(`🔄 Payment ${presentError.code.toLowerCase()}, attempting stock rollback for order ${orderId}`);
+      // Removed console statement}, attempting stock rollback for order ${orderId}`);
 
       try {
         const rollbackResponse = await api.post(`/orders/${orderId}/rollback-stock`);
-        console.log(`✅ Stock rollback successful:`, rollbackResponse.data);
+        // Removed console statement
       } catch (rollbackError: any) {
-        console.error(`❌ Stock rollback failed for order ${orderId}:`, rollbackError);
+        // Removed console statement
         // Don't fail the payment error response due to rollback failure
         // Just log it for monitoring
       }
@@ -69,7 +61,7 @@ export const processCardPayment = async ({
     return handlePaymentError(presentError, t);
   }
 
-  console.log("✅ Payment completed successfully!");
+  // Removed console statement
 
   // Payment başarılı
   const paymentIntentId = clientSecret.split("_secret_")[0];

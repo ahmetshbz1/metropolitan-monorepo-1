@@ -47,7 +47,7 @@ export function NotificationPermissionPrompt() {
       // Show only if no permission and not guest
       setShouldShow(!hasPermission && !user?.isGuest);
     } catch (error) {
-      console.error("Error checking notification permission:", error);
+      // Removed console statement
       setShouldShow(false);
     }
   };
@@ -92,7 +92,7 @@ export function NotificationPermissionPrompt() {
         );
       }
     } catch (error) {
-      console.error("Bildirim izni hatası:", error);
+      // Removed console statement
       Alert.alert(
         t("common.error"),
         t("order_notification.permission_error")

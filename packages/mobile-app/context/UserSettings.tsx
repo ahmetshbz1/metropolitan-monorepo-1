@@ -55,7 +55,7 @@ export const UserSettingsProvider: React.FC<{ children: React.ReactNode }> = ({
           setSettings(JSON.parse(storedSettings));
         }
       } catch (error) {
-        console.error("Ayarlar yüklenirken hata oluştu:", error);
+        // Removed console statement
       } finally {
         setIsLoading(false);
       }
@@ -74,7 +74,7 @@ export const UserSettingsProvider: React.FC<{ children: React.ReactNode }> = ({
         JSON.stringify(updatedSettings)
       );
     } catch (error) {
-      console.error("Ayarlar kaydedilirken hata oluştu:", error);
+      // Removed console statement
     }
   };
 

@@ -19,8 +19,8 @@ export const signInWithGoogle = async () => {
       useProxy: isExpoGo,
     });
 
-    console.log('Google Sign-In Redirect URI:', redirectUri);
-    console.log('Using Expo Go:', isExpoGo);
+    // Removed console statement
+    // Removed console statement
 
     const discovery = {
       authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
@@ -56,7 +56,7 @@ export const signInWithGoogle = async () => {
         throw new Error('No authorization code received from Google');
       }
 
-      console.log('Google Sign-In: Exchanging authorization code for tokens...');
+      // Removed console statement
 
       // Exchange code for tokens
       const tokenResult = await AuthSession.exchangeCodeAsync(
@@ -71,14 +71,14 @@ export const signInWithGoogle = async () => {
         discovery
       );
 
-      console.log('Token Exchange Result:', JSON.stringify(tokenResult, null, 2));
+      // Removed console statement);
 
       // Google OAuth 2.0'da idToken farklı key'lerde olabilir
       const id_token = tokenResult.idToken || tokenResult.id_token;
       const access_token = tokenResult.accessToken || tokenResult.access_token;
 
       if (!id_token) {
-        console.error('Token result does not contain ID token:', tokenResult);
+        // Token result does not contain ID token
         throw new Error('No ID token received from Google');
       }
 
@@ -109,7 +109,7 @@ export const signInWithGoogle = async () => {
       return { success: false, error: 'Google Sign In failed' };
     }
   } catch (error: any) {
-    console.error('Google Sign In Error:', error);
+    // Google Sign In Error
     return { success: false, error: error.message || 'Google Sign In failed' };
   }
 };

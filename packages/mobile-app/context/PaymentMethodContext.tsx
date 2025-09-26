@@ -95,11 +95,11 @@ export const PaymentMethodProvider = ({
     try {
       // Payment methods artık backend'de tutulmuyor
       // Stripe payment method'ları dinamik olarak checkout'ta seçiliyor
-      console.log("Payment method added:", paymentData);
+      // Removed console statement
       await fetchPaymentMethods(); // Listeyi güncelle
       return paymentData;
     } catch (e) {
-      console.error("Failed to add payment method", e);
+      // Failed to add payment method
       throw e;
     }
   };
@@ -108,10 +108,10 @@ export const PaymentMethodProvider = ({
     try {
       // Payment methods artık backend'de tutulmuyor
       // Hardcoded payment method'ları silinemez
-      console.log("Payment method delete attempted:", paymentMethodId);
+      // Removed console statement
       throw new Error("Varsayılan ödeme yöntemleri silinemez");
     } catch (e) {
-      console.error("Failed to delete payment method", e);
+      // Failed to delete payment method
       throw e;
     }
   };

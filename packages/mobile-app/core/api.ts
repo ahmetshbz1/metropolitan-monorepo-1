@@ -15,7 +15,7 @@ const getApiBaseUrl = (): string => {
 
   // Development fallback (sadece development için)
   if (__DEV__) {
-    console.warn("EXPO_PUBLIC_API_BASE_URL not found, using fallback for development");
+    // Removed console statement
     return "http://192.168.1.230:3000";
   }
 

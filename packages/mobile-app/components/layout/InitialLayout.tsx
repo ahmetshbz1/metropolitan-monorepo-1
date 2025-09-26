@@ -44,11 +44,11 @@ export const InitialLayout: React.FC = () => {
       NotificationService.setupNotificationListeners(
         (notification) => {
           // Bildirim alındığında
-          console.log('Bildirim alındı:', notification);
+          // Removed console statement
         },
         (response) => {
           // Bildirime tıklandığında
-          console.log('Bildirim tıklandı:', response);
+          // Removed console statement
           const data = response.notification.request.content.data;
 
           // Eğer bildirimde yönlendirme bilgisi varsa
@@ -60,7 +60,7 @@ export const InitialLayout: React.FC = () => {
             if (lastNavigationRef.current &&
                 lastNavigationRef.current.screen === targetScreen &&
                 (now - lastNavigationRef.current.time) < 2000) {
-              console.log(`Aynı sayfaya (${targetScreen}) kısa süre önce navigasyon yapıldı, ignore ediliyor`);
+              // Removed console statement kısa süre önce navigasyon yapıldı, ignore ediliyor`);
               return;
             }
 

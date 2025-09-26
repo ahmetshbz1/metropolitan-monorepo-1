@@ -63,7 +63,7 @@ export default function ExportDataScreen() {
         showToast(t("export_data.export_error"), "error");
       }
     } catch (error) {
-      console.error("Email export error:", error);
+      // Removed console statement
       showToast(t("export_data.export_error"), "error");
     } finally {
       setLoading(false);
@@ -89,7 +89,7 @@ export default function ExportDataScreen() {
         showToast(t("export_data.export_error"), "error");
       }
     } catch (error) {
-      console.error("Direct download error:", error);
+      // Removed console statement
       showToast(t("export_data.export_error"), "error");
     } finally {
       setLoading(false);
@@ -133,7 +133,7 @@ export default function ExportDataScreen() {
       // Dosya başarıyla kaydedildi mesajı göster
       showToast(t("export_data.file_saved"), "success", 3000);
     } catch (error) {
-      console.error("File download error:", error);
+      // Removed console statement
       showToast(t("export_data.download_failed"), "error");
     }
   };
@@ -169,7 +169,7 @@ export default function ExportDataScreen() {
           },
         });
       } catch (error) {
-        console.error("File viewer navigation error:", error);
+        // Removed console statement
         showToast("Dosya görüntüleyici açılamadı", "error");
       }
     }

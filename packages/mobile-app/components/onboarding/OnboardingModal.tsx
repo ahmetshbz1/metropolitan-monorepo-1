@@ -24,7 +24,7 @@ export function OnboardingModal() {
         setShowOnboarding(true);
       }
     } catch (error) {
-      console.error("Error checking onboarding status:", error);
+      // Removed console statement
     } finally {
       setLoading(false);
     }
@@ -35,7 +35,7 @@ export function OnboardingModal() {
       await AsyncStorage.setItem("has_seen_onboarding", "true");
       setShowOnboarding(false);
     } catch (error) {
-      console.error("Error saving onboarding status:", error);
+      // Removed console statement
     }
   };
 

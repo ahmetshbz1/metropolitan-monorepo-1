@@ -63,7 +63,7 @@ export default function SecuritySettingsScreen() {
         await api.put("/users/user/security-settings", newSettings);
         showToast(t("security_settings.settings_updated"), "success");
       } catch (error) {
-        console.error("Failed to update security settings:", error);
+        // Removed console statement
         setSettings(settings); // Revert on error
         showToast(t("security_settings.update_failed"), "error");
       } finally {
@@ -115,7 +115,7 @@ export default function SecuritySettingsScreen() {
         }
       }
     } catch (error: any) {
-      console.error("Failed to link provider:", error);
+      // Removed console statement
 
       // Check if it's a provider conflict
       if (error?.response?.data?.error === 'PROVIDER_CONFLICT') {
@@ -151,7 +151,7 @@ export default function SecuritySettingsScreen() {
               // Refresh user data
               await refreshUserProfile();
             } catch (error) {
-              console.error("Failed to unlink provider:", error);
+              // Removed console statement
               showToast(t("security_settings.disconnect_failed"), "error");
             } finally {
               setLoading(false);

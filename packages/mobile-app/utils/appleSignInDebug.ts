@@ -6,7 +6,7 @@ export async function resetAppleSignIn() {
   try {
     // 1. Firebase'den çıkış yap
     await signOut(auth);
-    console.log("Firebase sign out successful");
+    // Removed console statement
 
     // 2. Apple credential'ları temizle
     // Apple'ın kendi cache'ini temizlemek için yeni bir giriş başlat ve iptal et
@@ -19,33 +19,33 @@ export async function resetAppleSignIn() {
             AppleAuthentication.AppleAuthenticationScope.EMAIL,
           ],
         });
-        console.log("New Apple sign-in initiated:", credential.user);
+        // Removed console statement
       } catch (e: any) {
         // Kullanıcı iptal ederse buraya düşer
         if (e.code === 'ERR_REQUEST_CANCELED') {
-          console.log("Apple sign-in cancelled - cache cleared");
+          // Removed console statement
         }
       }
     }
 
     return { success: true };
   } catch (error) {
-    console.error("Reset Apple Sign-In error:", error);
+    // Removed console statement
     return { success: false, error };
   }
 }
 
 export async function debugAppleAuth() {
-  console.log("=== Apple Auth Debug Info ===");
+  // Removed console statement
 
   // Firebase current user
   const currentUser = auth.currentUser;
-  console.log("Firebase current user:", currentUser?.uid);
-  console.log("Firebase provider data:", currentUser?.providerData);
+  // Removed console statement
+  // Removed console statement
 
   // Apple authentication availability
   const isAvailable = await AppleAuthentication.isAvailableAsync();
-  console.log("Apple Auth available:", isAvailable);
+  // Removed console statement
 
-  console.log("============================");
+  // Removed console statement
 }

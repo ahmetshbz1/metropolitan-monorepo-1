@@ -82,7 +82,7 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
         setCategories(data.data);
       }
     } catch (e) {
-      // console.error('Failed to fetch categories', e);
+      // // Removed console statement
     } finally {
       setLoadingCategories(false);
     }

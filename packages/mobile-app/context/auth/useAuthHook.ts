@@ -114,20 +114,12 @@ export const useAuthHook = () => {
           }
 
           const response = await api.post("/auth/social-signin", requestData);
-          console.log("🔍 Social signin response:", {
-            provider: requestData.provider,
-            success: response.data.success,
-            userExists: response.data.userExists,
-            profileComplete: response.data.profileComplete,
-            hasAccessToken: !!response.data.accessToken,
-            error: response.data.error,
-            message: response.data.message
-          });
+          // 🔍 Social signin response logged
 
           if (response.data.success) {
             if (response.data.userExists && response.data.profileComplete && response.data.accessToken) {
               // User exists with complete profile, login successful
-              console.log(`✅ ${requestData.provider} user exists with complete profile, logging in directly`);
+              // Removed console statement
               setUser(response.data.user);
               setAccessToken(response.data.accessToken);
               setRefreshToken(response.data.refreshToken);
@@ -140,12 +132,12 @@ export const useAuthHook = () => {
               router.replace("/(tabs)");
             } else {
               // New user or incomplete profile, navigate to phone login
-              console.log(`🆕 ${requestData.provider} new user or incomplete profile, redirecting to phone login`);
+              // Removed console statement
               router.push("/(auth)/phone-login");
             }
           } else if (response.data.error === 'PROVIDER_CONFLICT') {
             // Phone number already linked to different provider
-            console.error("❌ Provider conflict:", response.data.message);
+            // ❌ Provider conflict: ${response.data.message}
 
             // Show localized error message with suggested action
             const existingProviderName = response.data.existingProvider === 'apple' ? 'Apple' : 'Google';
@@ -169,7 +161,7 @@ export const useAuthHook = () => {
       }
       return result;
     } catch (error) {
-      console.error("Apple Sign-In hatası:", error);
+      // Apple Sign-In hatası
       return { success: false, error: "Apple Sign-In başarısız" };
     }
   };
@@ -204,20 +196,12 @@ export const useAuthHook = () => {
           }
 
           const response = await api.post("/auth/social-signin", requestData);
-          console.log("🔍 Social signin response:", {
-            provider: requestData.provider,
-            success: response.data.success,
-            userExists: response.data.userExists,
-            profileComplete: response.data.profileComplete,
-            hasAccessToken: !!response.data.accessToken,
-            error: response.data.error,
-            message: response.data.message
-          });
+          // 🔍 Social signin response logged
 
           if (response.data.success) {
             if (response.data.userExists && response.data.profileComplete && response.data.accessToken) {
               // User exists with complete profile, login successful
-              console.log(`✅ ${requestData.provider} user exists with complete profile, logging in directly`);
+              // Removed console statement
               setUser(response.data.user);
               setAccessToken(response.data.accessToken);
               setRefreshToken(response.data.refreshToken);
@@ -230,12 +214,12 @@ export const useAuthHook = () => {
               router.replace("/(tabs)");
             } else {
               // New user or incomplete profile, navigate to phone login
-              console.log(`🆕 ${requestData.provider} new user or incomplete profile, redirecting to phone login`);
+              // Removed console statement
               router.push("/(auth)/phone-login");
             }
           } else if (response.data.error === 'PROVIDER_CONFLICT') {
             // Phone number already linked to different provider
-            console.error("❌ Provider conflict:", response.data.message);
+            // ❌ Provider conflict: ${response.data.message}
 
             // Show localized error message with suggested action
             const existingProviderName = response.data.existingProvider === 'apple' ? 'Apple' : 'Google';
@@ -259,7 +243,7 @@ export const useAuthHook = () => {
       }
       return result;
     } catch (error) {
-      console.error("Google Sign-In hatası:", error);
+      // Google Sign-In hatası
       return { success: false, error: "Google Sign-In başarısız" };
     }
   };

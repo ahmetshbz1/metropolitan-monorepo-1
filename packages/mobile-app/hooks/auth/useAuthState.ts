@@ -57,7 +57,7 @@ export const useAuthState = () => {
           setSocialAuthData(authState.socialAuthData);
         }
       } catch (error) {
-        console.error("❌ Kimlik doğrulama durumu yüklenemedi:", error);
+        // Removed console statement
       } finally {
         // Minimum 2 saniye splash screen göster
         const elapsedTime = Date.now() - startTime;

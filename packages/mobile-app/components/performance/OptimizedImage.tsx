@@ -143,7 +143,7 @@ export const preloadImages = async (urls: string[]) => {
     
     await Promise.all(imagePromises);
   } catch (error) {
-    console.warn("Failed to preload some images:", error);
+    // Removed console statement
   }
 };
 
@@ -153,6 +153,6 @@ export const clearImageCache = async () => {
     await Image.clearDiskCache();
     await Image.clearMemoryCache();
   } catch (error) {
-    console.error("Failed to clear image cache:", error);
+    // Removed console statement
   }
 };

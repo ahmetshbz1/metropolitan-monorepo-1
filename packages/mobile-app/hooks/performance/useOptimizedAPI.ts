@@ -224,7 +224,7 @@ export function useOptimizedAPI<T = any>() {
         staleTimestamp: now + (options.staleTime || 60000),
       });
     } catch (error) {
-      console.warn("Background refresh failed:", error);
+      // Removed console statement
     }
   }, []);
   
@@ -239,7 +239,7 @@ export function useOptimizedAPI<T = any>() {
       await request(url, { ...options, priority: "low" });
     } catch (error) {
       // Silently fail for prefetch
-      console.warn("Prefetch failed:", error);
+      // Removed console statement
     }
   }, [request]);
   
@@ -284,14 +284,14 @@ api.interceptors.response.use(
     // Log slow requests
     const duration = Date.now() - response.config.metadata?.startTime;
     if (duration > 1000) {
-      console.warn(`Slow API request: ${response.config.url} took ${duration}ms`);
+      // Removed console statement
     }
     return response;
   },
   (error) => {
     // Log failed requests
     const duration = Date.now() - error.config?.metadata?.startTime;
-    console.error(`API request failed: ${error.config?.url} after ${duration}ms`);
+    // Removed console statement
     return Promise.reject(error);
   }
 );

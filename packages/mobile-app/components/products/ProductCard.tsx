@@ -65,7 +65,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
       });
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (error) {
-      console.error("Error sharing:", error);
+      // Removed console statement
     }
   };
 

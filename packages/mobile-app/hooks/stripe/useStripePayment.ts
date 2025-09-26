@@ -26,8 +26,8 @@ export const useStripePayment = () => {
     setLoading(true);
 
     try {
-      console.log("🔧 Processing payment with Stripe...");
-      console.log("💳 Selected payment method type:", paymentMethodType);
+      // Removed console statement
+      // Removed console statement
 
       // Apple Pay işlemi
       if (paymentMethodType === "apple_pay") {
@@ -63,7 +63,7 @@ export const useStripePayment = () => {
         orderId
       });
     } catch (error: any) {
-      console.error("❌ Stripe payment error:", error);
+      // Removed console statement
       return {
         success: false,
         error: error?.message || t("payment.unknown_error"),

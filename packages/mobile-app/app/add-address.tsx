@@ -75,7 +75,7 @@ export default function AddAddressScreen() {
       router.back();
     } catch (error) {
       showToast(t("add_address.form.submit_error_message"), "error");
-      console.error(error);
+      // Removed console statement
     } finally {
       setLoading(false);
     }

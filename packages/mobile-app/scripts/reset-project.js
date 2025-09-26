@@ -83,7 +83,7 @@ const moveDirectories = async (userInput) => {
     await fs.promises.writeFile(layoutPath, layoutContent);
 
   } catch (error) {
-    console.error(`❌ Error during script execution: ${error.message}`);
+    // Removed console statement
   }
 };
 

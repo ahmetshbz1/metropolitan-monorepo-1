@@ -52,13 +52,13 @@ class ErrorBoundary extends Component<Props, State> {
 
     // Prevent error loops - if too many errors in short time, don't update
     if (errorCount > 5 && now - lastErrorTime < 1000) {
-      console.error('Too many errors detected, preventing error loop');
+      // Removed console statement
       return;
     }
 
     // Log error to console in development
     if (__DEV__) {
-      console.error('ErrorBoundary caught an error:', error, errorInfo);
+      // Removed console statement
     }
 
     // Update state with error details
@@ -94,7 +94,7 @@ class ErrorBoundary extends Component<Props, State> {
     // In production, send this to your error tracking service
     if (!__DEV__) {
       // Example: sendErrorToSentry(errorData);
-      console.error('Production error:', errorData);
+      // Removed console statement
     }
   };
 
@@ -114,7 +114,7 @@ class ErrorBoundary extends Component<Props, State> {
       // In development and when Updates is disabled, just reset the error boundary
       this.handleReset();
     } catch (error) {
-      console.error('Failed to reload app:', error);
+      // Removed console statement
       this.handleReset();
     }
   };

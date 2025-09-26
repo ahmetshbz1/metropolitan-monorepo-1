@@ -41,7 +41,7 @@ export const useCartData = () => {
       setCartItems(items);
       setSummary(summary);
     } catch (error: any) {
-      console.error("Sepet yüklenirken hata:", error);
+      // Removed console statement
       setError(error.response?.data?.message || t("cart.load_error"));
 
       // Hata durumunda boş sepet göster

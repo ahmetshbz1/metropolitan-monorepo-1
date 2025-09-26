@@ -76,7 +76,7 @@ export const usePdfLoader = (invoiceId: string | undefined) => {
         });
       }
     } catch (error: any) {
-      console.error("PDF preview error:", error);
+      // Removed console statement
 
       if (error.response?.status === 401) {
         showToast(t("auth.login_required"), "error");
@@ -92,7 +92,7 @@ export const usePdfLoader = (invoiceId: string | undefined) => {
   };
 
   const handleLoadComplete = (numberOfPages: number) => {
-    console.log(`PDF yüklendi: ${numberOfPages} sayfa`);
+    // Removed console statement
     setTotalPages(numberOfPages);
     setLoading(false);
   };
@@ -102,7 +102,7 @@ export const usePdfLoader = (invoiceId: string | undefined) => {
   };
 
   const handleError = (error: any) => {
-    console.error("PDF yükleme hatası:", error);
+    // Removed console statement
     setLoading(false);
     showToast(t("invoice_preview.load_error"), "error");
   };

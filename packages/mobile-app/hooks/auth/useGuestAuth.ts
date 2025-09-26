@@ -27,7 +27,7 @@ export const useGuestAuth = (
       setGuestId(newGuestId);
       await guestStorage.saveGuestId(newGuestId);
     } else {
-      console.error("Misafir oturumu oluşturulamadı");
+      // Removed console statement
     }
   };
 
@@ -41,7 +41,7 @@ export const useGuestAuth = (
       setGuestId(null);
       setIsGuest(false);
     } catch (error) {
-      console.error("Misafir verisi taşıma hatası:", error);
+      // Removed console statement
       throw error;
     }
   };

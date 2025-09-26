@@ -41,7 +41,7 @@ export const ProductImage = memo(function ProductImage({ product }: ProductImage
       });
       triggerHaptic();
     } catch (error) {
-      console.error("Error sharing:", error);
+      // Removed console statement
     }
   }, [product, t, triggerHaptic]);
 

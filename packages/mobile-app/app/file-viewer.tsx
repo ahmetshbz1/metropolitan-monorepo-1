@@ -93,7 +93,7 @@ export default function FileViewerScreen() {
       );
       return; // Başarılı, catch bloğuna gitme
     } catch (error: any) {
-      console.error("Unlock error:", error);
+      // Removed console statement
       if (error.response?.status === 400) {
         showToast(t("file_viewer.wrong_password"), "error");
       } else {

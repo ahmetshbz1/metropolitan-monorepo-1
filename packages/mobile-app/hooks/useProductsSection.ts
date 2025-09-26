@@ -92,7 +92,7 @@ export const useProductsSection = (items: OrderItem[]) => {
         await addAllItemsToCart(items);
       }
     } catch (error) {
-      console.error("Reorder failed:", error);
+      // Removed console statement
       Alert.alert(t("common.error"), t("order_detail.reorder.error_message"));
     }
   };
@@ -104,12 +104,12 @@ export const useProductsSection = (items: OrderItem[]) => {
       
       for (const item of availableItems) {
         const quantityToAdd = Math.min(item.quantity, item.availableStock);
-        console.log(`Adding ${quantityToAdd} of ${item.product.name} (available: ${item.availableStock})`);
+        // Removed console statement`);
         
         try {
           await addToCart(item.product.id, quantityToAdd);
         } catch (error) {
-          console.error(`Failed to add ${item.product.name}:`, error);
+          // Removed console statement
           // Tek bir ürün eklenemezse diğerlerini denemeye devam et
           continue;
         }
@@ -127,7 +127,7 @@ export const useProductsSection = (items: OrderItem[]) => {
         ]
       );
     } catch (error) {
-      console.error("Partial reorder failed:", error);
+      // Removed console statement
       Alert.alert(t("common.error"), t("order_detail.reorder.error_message"));
     }
   };
@@ -150,7 +150,7 @@ export const useProductsSection = (items: OrderItem[]) => {
         ]
       );
     } catch (error) {
-      console.error("Full reorder failed:", error);
+      // Removed console statement
       Alert.alert(t("common.error"), t("order_detail.reorder.error_message"));
     }
   };

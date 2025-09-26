@@ -71,7 +71,7 @@ export default function JsonViewerScreen() {
         showToast(t("json_viewer.sharing_failed"), "error");
       }
     } catch (error) {
-      console.error("Share error:", error);
+      // Removed console statement
       showToast(t("json_viewer.sharing_failed"), "error");
     }
   };

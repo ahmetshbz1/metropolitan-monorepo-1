@@ -127,7 +127,7 @@ export default function AppSettingsScreen() {
 
               showToast(t("app_settings.clear_cache_success"), "success");
             } catch (error) {
-              console.error("Error clearing cache:", error);
+              // Removed console statement
               showToast(t("app_settings.clear_cache_error"), "error");
             }
           },

@@ -21,7 +21,7 @@ export const useClipboard = () => {
         setCopied(false);
       }, 2000); // 2 saniye sonra gizle
     } catch (error) {
-      console.error("Error copying to clipboard:", error);
+      // Removed console statement
     }
   };
 

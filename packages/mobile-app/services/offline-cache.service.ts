@@ -55,10 +55,10 @@ class OfflineCacheService {
       await this.saveCacheKeys();
 
       if (__DEV__) {
-        console.log(`Cached data for key: ${key}`);
+        // Removed console statement
       }
     } catch (error) {
-      console.error(`Error caching data for key ${key}:`, error);
+      // Removed console statement
     }
   }
 
@@ -89,12 +89,12 @@ class OfflineCacheService {
       }
 
       if (__DEV__) {
-        console.log(`Retrieved cached data for key: ${key}`);
+        // Removed console statement
       }
 
       return entry.data;
     } catch (error) {
-      console.error(`Error retrieving cached data for key ${key}:`, error);
+      // Removed console statement
       return null;
     }
   }
@@ -111,10 +111,10 @@ class OfflineCacheService {
       await this.saveCacheKeys();
 
       if (__DEV__) {
-        console.log(`Removed cached data for key: ${key}`);
+        // Removed console statement
       }
     } catch (error) {
-      console.error(`Error removing cached data for key ${key}:`, error);
+      // Removed console statement
     }
   }
 
@@ -129,10 +129,10 @@ class OfflineCacheService {
       await this.saveCacheKeys();
 
       if (__DEV__) {
-        console.log('Cleared all cache');
+        // Removed console statement
       }
     } catch (error) {
-      console.error('Error clearing cache:', error);
+      // Removed console statement
     }
   }
 
@@ -159,7 +159,7 @@ class OfflineCacheService {
         }
       }
     } catch (error) {
-      console.error('Error calculating cache size:', error);
+      // Removed console statement
     }
 
     return totalSize;
@@ -226,7 +226,7 @@ class OfflineCacheService {
       await this.saveCacheKeys();
 
       if (__DEV__) {
-        console.log(`Cleaned ${keysToRemove.length} expired cache entries`);
+        // Removed console statement
       }
     }
   }
@@ -248,7 +248,7 @@ class OfflineCacheService {
         this.cacheKeys = new Set(JSON.parse(keysData));
       }
     } catch (error) {
-      console.error('Error loading cache keys:', error);
+      // Removed console statement
     }
   }
 
@@ -260,7 +260,7 @@ class OfflineCacheService {
       const keysArray = Array.from(this.cacheKeys);
       await AsyncStorage.setItem(`${this.prefix}keys`, JSON.stringify(keysArray));
     } catch (error) {
-      console.error('Error saving cache keys:', error);
+      // Removed console statement
     }
   }
 }

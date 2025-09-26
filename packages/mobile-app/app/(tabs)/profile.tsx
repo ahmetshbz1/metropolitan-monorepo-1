@@ -49,7 +49,7 @@ export default function ProfileScreen() {
     try {
       await refreshUserProfile();
     } catch (error) {
-      console.error("Profil yenileme hatası:", error);
+      // Removed console statement
     } finally {
       setRefreshing(false);
     }

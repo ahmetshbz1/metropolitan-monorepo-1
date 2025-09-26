@@ -23,7 +23,7 @@ export const useTrackingData = (orderId: string | undefined) => {
     try {
       await fetchOrderById(orderId, true);
     } catch (error) {
-      console.error("Error refreshing tracking:", error);
+      // Removed console statement
     } finally {
       setRefreshing(false);
     }

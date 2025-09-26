@@ -39,13 +39,13 @@ export function useCheckoutSummary() {
     setIsProcessing(true);
 
     try {
-      console.log("🎯 Selected payment method:", selectedPaymentMethod);
-      console.log("💳 Is Stripe payment:", isStripePayment);
-      console.log("🏦 Is Bank transfer:", isBankTransfer);
+      // Removed console statement
+      // Removed console statement
+      // Removed console statement
 
       // Stripe payment flow (card, Apple Pay, Google Pay, BLIK)
       if (isStripePayment) {
-        console.log("🔒 Processing Stripe payment...");
+        // Removed console statement
 
         const orderData = {
           shippingAddressId: deliveryAddress.id,
@@ -59,7 +59,7 @@ export function useCheckoutSummary() {
         // Backend'e sipariş oluştur ve Payment Intent al
         const orderResponse = await createOrder(orderData);
 
-        console.log("📦 Order creation response:", orderResponse);
+        // Removed console statement
 
         // Response yapısını kontrol et
         if (!orderResponse || !orderResponse.order) {
@@ -73,16 +73,10 @@ export function useCheckoutSummary() {
           throw new Error(t("payment.client_secret_missing"));
         }
 
-        console.log(
-          "🔑 Processing Stripe payment with clientSecret:",
-          clientSecret
-        );
+        // 🔑 Processing Stripe payment with clientSecret
 
         // Stripe ile 3D Secure authentication yap
-        console.log(
-          "🔧 Processing payment with method:",
-          selectedPaymentMethod.id
-        );
+        // 🔧 Processing payment with method
         // Format amount for Apple Pay (expected as string)
         // Backend sends totalAmount as string ("15.50"), convert to number first
         const formattedAmount = order.totalAmount
@@ -98,12 +92,12 @@ export function useCheckoutSummary() {
         );
 
         if (!paymentResult.success) {
-          console.error("❌ Payment failed:", paymentResult.error);
+          // Removed console statement
           throw new Error(paymentResult.error || t("checkout.payment_error"));
         }
 
         // Payment başarılı - webhook otomatik olarak order'ı güncelleyecek
-        console.log("✅ Payment successful:", paymentResult);
+        // Removed console statement
 
         await clearCart();
         resetCheckout();
@@ -116,7 +110,7 @@ export function useCheckoutSummary() {
       }
       // Bank transfer flow (existing logic)
       else if (isBankTransfer) {
-        console.log("🏦 Processing bank transfer for corporate customer...");
+        // Removed console statement
 
         const orderData = await createOrder({
           shippingAddressId: deliveryAddress.id,
@@ -127,7 +121,7 @@ export function useCheckoutSummary() {
           notes: state.notes || undefined,
         });
 
-        console.log("✅ Bank transfer order creation response:", orderData);
+        // Removed console statement
 
         // Check if the order was created successfully
         if (orderData?.order?.id) {
@@ -141,12 +135,12 @@ export function useCheckoutSummary() {
             params: { id: orderId },
           });
         } else {
-          console.error("❌ Bank transfer order failed:", orderData);
+          // Removed console statement
           throw new Error(t("checkout.order_creation_failed"));
         }
       }
     } catch (error: any) {
-      console.error("❌ Order creation error:", error);
+      // Removed console statement
       const errorMessage =
         error?.response?.data?.message ||
         error?.message ||

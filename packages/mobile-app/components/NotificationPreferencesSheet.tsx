@@ -70,7 +70,7 @@ const NotificationPreferencesSheet = forwardRef<
         setPreferences(response.data.preferences);
       }
     } catch (error) {
-      console.error("Failed to load notification preferences:", error);
+      // Removed console statement
       showToast(t("app_settings.notification_update_failed"), "error");
     }
   };
@@ -103,7 +103,7 @@ const NotificationPreferencesSheet = forwardRef<
     } catch (error) {
       // Revert on error
       setPreferences(preferences);
-      console.error("Failed to update notification preferences:", error);
+      // Removed console statement
       showToast(t("app_settings.notification_update_failed"), "error");
     }
   };

@@ -139,7 +139,7 @@ export const clearAllAuthData = async (): Promise<void> => {
       socialAuthStorage.remove(),
     ]);
   } catch (error) {
-    console.error("Auth verilerini temizlerken hata oluştu:", error);
+    // Removed console statement
   }
 };
 
@@ -162,7 +162,7 @@ export const loadAuthState = async () => {
       socialAuthData,
     };
   } catch (error) {
-    console.error("Auth durumu yüklenirken hata oluştu:", error);
+    // Removed console statement
     return {
       token: null,
       user: null,

@@ -43,7 +43,7 @@ export default function TermsScreen() {
           setContent(response.data.data.content);
         }
       } catch (error) {
-        console.error("Failed to fetch terms:", error);
+        // Removed console statement
       } finally {
         setLoading(false);
       }

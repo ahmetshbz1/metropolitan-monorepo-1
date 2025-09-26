@@ -63,7 +63,7 @@ export const AddressProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(data.message || "Failed to add address.");
       }
     } catch (e) {
-      console.error("Failed to add address", e);
+      // Removed console statement
       throw e;
     }
   };
@@ -87,7 +87,7 @@ export const AddressProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(data.message || "Failed to update address.");
       }
     } catch (e) {
-      console.error("Failed to update address", e);
+      // Removed console statement
       throw e;
     }
   };
@@ -103,7 +103,7 @@ export const AddressProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(data.message || "Failed to delete address.");
       }
     } catch (e) {
-      console.error("Failed to delete address", e);
+      // Removed console statement
       throw e;
     }
   };

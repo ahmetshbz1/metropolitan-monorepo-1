@@ -31,7 +31,7 @@ async function refreshAccessToken(api: AxiosInstance): Promise<string | null> {
   try {
     const refreshToken = await tokenStorage.getRefreshToken();
     if (!refreshToken) {
-      console.log('No refresh token available');
+      // Removed console statement
       return null;
     }
 
@@ -56,14 +56,14 @@ async function refreshAccessToken(api: AxiosInstance): Promise<string | null> {
       // Save new access token
       await tokenStorage.saveAccessToken(newAccessToken);
 
-      console.log('Access token refreshed successfully');
+      // Removed console statement
       return newAccessToken;
     }
 
-    console.log('Failed to refresh token:', response.data.message);
+    // Removed console statement
     return null;
   } catch (error: any) {
-    console.error('Token refresh failed:', error.response?.data || error.message);
+    // Removed console statement
 
     // If refresh failed with 401, clear tokens and redirect to login
     if (error.response?.status === 401) {

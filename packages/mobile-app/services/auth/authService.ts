@@ -82,9 +82,6 @@ export const logoutFromServer = async (): Promise<void> => {
   try {
     await api.post("/auth/logout");
   } catch (e) {
-    console.error(
-      "Logout API çağrısı başarısız, yerel çıkış ile devam ediliyor.",
-      e
-    );
+    // Logout API çağrısı başarısız, yerel çıkış ile devam ediliyor
   }
 };

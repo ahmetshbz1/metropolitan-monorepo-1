@@ -75,7 +75,7 @@ export default function EditAddressScreen() {
       router.back();
     } catch (error) {
       showToast(t("edit_address.form.submit_error_message"), "error");
-      console.error(error);
+      // Removed console statement
     } finally {
       setLoading(false);
     }

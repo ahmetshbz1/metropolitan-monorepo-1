@@ -21,7 +21,7 @@ const getApiBaseUrl = (): string => {
 
   // Development fallback (sadece development için)
   if (__DEV__) {
-    console.warn("EXPO_PUBLIC_API_BASE_URL not found, using fallback for development");
+    // Removed console statement
     return "http://192.168.1.230:3000";
   }
 
@@ -143,7 +143,7 @@ class OfflineAwareApiClient {
         headers: response.headers,
       }, ttl);
     } catch (error) {
-      console.error('Error caching response:', error);
+      // Removed console statement
     }
   }
 
@@ -184,7 +184,7 @@ class OfflineAwareApiClient {
       const cacheKey = this.getCacheKey(config);
       return await offlineCache.get(cacheKey);
     } catch (error) {
-      console.error('Error retrieving cached response:', error);
+      // Removed console statement
       return null;
     }
   }
@@ -220,7 +220,7 @@ class OfflineAwareApiClient {
     this.offlineQueue.push(queuedRequest);
 
     if (__DEV__) {
-      console.log('Added request to offline queue:', queuedRequest);
+      // Removed console statement
     }
   }
 
@@ -247,7 +247,7 @@ class OfflineAwareApiClient {
           if (request.retryCount < 3) {
             failedRequests.push(request);
           } else {
-            console.error('Max retries reached for queued request:', request);
+            // Removed console statement
           }
         }
       }
@@ -277,7 +277,7 @@ class OfflineAwareApiClient {
         }
       }
     } catch (error) {
-      console.error('Error handling token expiration:', error);
+      // Removed console statement
       // Redirect to login screen
       // This would be handled by the auth context
     }
@@ -288,7 +288,7 @@ class OfflineAwareApiClient {
     if (error.config.method?.toUpperCase() === 'GET') {
       const cachedData = await this.getCachedResponse(error.config);
       if (cachedData) {
-        console.warn('Server error, returning cached data');
+        // Removed console statement
         return {
           ...cachedData,
           config: error.config,

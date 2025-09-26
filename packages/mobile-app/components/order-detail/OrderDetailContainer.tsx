@@ -75,7 +75,7 @@ export function OrderDetailContainer({
     try {
       await fetchOrderById(orderId, true);
     } catch (err) {
-      console.error("Error refreshing order:", err);
+      // Removed console statement
     } finally {
       setRefreshing(false);
     }

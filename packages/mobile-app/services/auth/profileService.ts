@@ -15,7 +15,7 @@ interface BackendUserResponse extends User {
 export const processUserData = (userData: BackendUserResponse): User => {
   // Null/undefined kontrolü ekle
   if (!userData) {
-    console.error("processUserData: userData is null or undefined");
+    // Removed console statement
     return {} as User;
   }
 
@@ -101,7 +101,7 @@ export const updateUserProfile = async (
       };
     }
   } catch (e: any) {
-    console.error("Profil güncelleme başarısız:", e);
+    // Removed console statement
     return {
       success: false,
       message: e.response?.data?.message || e.message,
@@ -125,18 +125,11 @@ export const fetchUserProfile = async (): Promise<{
         user: processedUser,
       };
     } else {
-      console.error(
-        "Kullanıcı profili yenilenemedi:",
-        meData.success ? "data field eksik" : "sunucu success:false döndü",
-        meData
-      );
+      // Kullanıcı profili yenilenemedi
       return { success: false };
     }
   } catch (e: any) {
-    console.error(
-      "Profil yenileme başarısız:",
-      e.response?.data?.message || e.message
-    );
+    // Profil yenileme başarısız
     // 401 Unauthorized durumunda logout gerekebilir
     if (e.response?.status === 401) {
       return { success: false, shouldLogout: true };

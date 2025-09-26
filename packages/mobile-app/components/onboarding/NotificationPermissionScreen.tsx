@@ -42,7 +42,7 @@ export function NotificationPermissionScreen({ onContinue }: NotificationPermiss
         onContinue();
       }
     } catch (error) {
-      console.error("Notification permission error:", error);
+      // Removed console statement
       await AsyncStorage.setItem("onboarding_notification_asked", "true");
       onContinue();
     } finally {

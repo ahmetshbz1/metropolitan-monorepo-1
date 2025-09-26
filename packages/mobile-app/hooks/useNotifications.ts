@@ -28,20 +28,20 @@ export function useNotifications(): UseNotificationsReturn {
   // Bildirimleri API'den çek
   const fetchNotifications = useCallback(async () => {
     try {
-      console.log("📡 Fetching notifications from /users/notifications");
+      // Removed console statement
       const response = await api.get("/users/notifications");
-      console.log("✅ Notifications response:", response.data);
+      // Removed console statement
       if (response.data.success) {
         setNotifications(response.data.notifications || []);
       } else {
-        console.error("❌ API returned success: false", response.data);
+        // Removed console statement
         setNotifications([]);
       }
     } catch (error: any) {
-      console.error("❌ Bildirimler yüklenemedi:", error);
-      console.error("❌ Error details:", error.response?.data || error.message);
-      console.error("❌ Error status:", error.response?.status);
-      console.error("❌ Full error:", JSON.stringify(error, null, 2));
+      // Removed console statement
+      // Removed console statement
+      // Removed console statement
+      // Removed console statement);
       setNotifications([]);
     } finally {
       setIsLoading(false);
@@ -65,7 +65,7 @@ export function useNotifications(): UseNotificationsReturn {
         )
       );
     } catch (error) {
-      console.error("Bildirim okundu işaretlenemedi:", error);
+      // Removed console statement
     }
   };
 
@@ -78,7 +78,7 @@ export function useNotifications(): UseNotificationsReturn {
         prev.map((notification) => ({ ...notification, isRead: true }))
       );
     } catch (error) {
-      console.error("Tüm bildirimler okundu işaretlenemedi:", error);
+      // Removed console statement
     }
   };
 
@@ -100,7 +100,7 @@ export function useNotifications(): UseNotificationsReturn {
                 prev.filter((n) => n.id !== notificationId)
               );
             } catch (error) {
-              console.error("Bildirim silinemedi:", error);
+              // Removed console statement
             }
           },
         },
@@ -124,7 +124,7 @@ export function useNotifications(): UseNotificationsReturn {
               await api.delete("/users/notifications");
               setNotifications([]);
             } catch (error) {
-              console.error("Bildirimler silinemedi:", error);
+              // Removed console statement
             }
           },
         },

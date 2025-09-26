@@ -52,7 +52,7 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
     try {
       const result = await signInWithApple();
       if (!result.success) {
-        console.error("Apple Sign-In hatası:", result.error);
+        // Removed console statement
       }
     } finally {
       setLoading(null);
@@ -65,7 +65,7 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
     try {
       const result = await signInWithGoogle();
       if (!result.success) {
-        console.error("Google Sign-In hatası:", result.error);
+        // Removed console statement
       }
     } finally {
       setLoading(null);

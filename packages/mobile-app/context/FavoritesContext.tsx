@@ -77,7 +77,7 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({
         });
         setFavorites(fetchedFavorites);
       } catch (error) {
-        console.error("Failed to fetch favorites:", error);
+        // Removed console statement
         setError(
           "A network error occurred. Please check your connection and try again."
         );
@@ -123,7 +123,7 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({
         await addFavoriteToApi(product.id, { user, isGuest, guestId });
       }
     } catch (error) {
-      console.error("Failed to toggle favorite:", error);
+      // Removed console statement
       // Hata durumunda eski haline geri dön
       setFavorites(previousFavorites);
     }

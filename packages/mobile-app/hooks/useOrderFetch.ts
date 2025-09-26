@@ -66,7 +66,7 @@ export const useOrderFetch = ({
       } catch (err) {
         const errorMessage = getErrorMessage(err);
         setError(errorMessage);
-        console.error("Failed to fetch orders:", err);
+        // Removed console statement
       } finally {
         setLoading(false);
       }
@@ -130,7 +130,7 @@ export const useOrderFetch = ({
       } catch (err) {
         const errorMessage = getErrorMessage(err);
         setError(errorMessage);
-        console.error(`Failed to fetch order ${id}:`, err);
+        // Removed console statement
         throw err;
       } finally {
         if (shouldShowLoading) {

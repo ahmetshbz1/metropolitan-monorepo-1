@@ -27,6 +27,6 @@ export async function showHaptic(type: "light" | "medium" | "heavy" | "success" 
     }
   } catch (error) {
     // Haptic feedback desteklenmiyor veya hata oluştu
-    console.log("Haptic feedback error:", error);
+    // Removed console statement
   }
 }

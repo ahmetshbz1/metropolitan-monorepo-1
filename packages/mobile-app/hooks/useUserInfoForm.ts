@@ -167,7 +167,7 @@ export function useUserInfoForm(isB2B: boolean): UseUserInfoFormReturn {
     if (!isFormValid) return;
 
     if (!registrationToken) {
-      console.error("No registration token available");
+      // Removed console statement
       showToast("Kayıt token'ı bulunamadı. Lütfen tekrar giriş yapın.", "error");
       return;
     }
@@ -199,10 +199,10 @@ export function useUserInfoForm(isB2B: boolean): UseUserInfoFormReturn {
           if (token) {
             await AsyncStorage.setItem("notification_permission_asked", "true");
             await AsyncStorage.setItem("notification_permission_granted", "true");
-            console.log('✅ Push notifications enabled based on marketing consent');
+            // Removed console statement
           }
         } catch (error) {
-          console.log('Push notification permission handled:', error);
+          // Removed console statement
         }
       }
     }

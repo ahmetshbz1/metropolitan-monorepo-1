@@ -33,7 +33,7 @@ export class NotificationService {
       const settings = await Notifications.getPermissionsAsync();
       return settings.status === 'granted';
     } catch (error) {
-      console.error('İzin kontrolü hatası:', error);
+      // İzin kontrolü hatası
       return false;
     }
   }
@@ -42,7 +42,7 @@ export class NotificationService {
     try {
       // Simülatörde de token alabiliriz ama gerçek push alamayız
       if (!Device.isDevice) {
-        console.log('Push notifications simülatörde test modunda çalışıyor');
+        // Removed console statement
       }
 
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -54,7 +54,7 @@ export class NotificationService {
       }
 
       if (finalStatus !== 'granted') {
-        console.log('Push notification izni alınamadı');
+        // Removed console statement
         return null;
       }
 
@@ -64,11 +64,11 @@ export class NotificationService {
         Constants.easConfig?.projectId;
 
       if (!projectId) {
-        console.error('EAS Project ID not found in config');
+        // EAS Project ID not found in config
         return null;
       }
 
-      console.log('Using EAS Project ID:', projectId);
+      // Removed console statement
 
       const token = (await Notifications.getExpoPushTokenAsync({
         projectId,
@@ -90,7 +90,7 @@ export class NotificationService {
 
       return token;
     } catch (error) {
-      console.error('Push notification kayıt hatası:', error);
+      // Push notification kayıt hatası
       return null;
     }
   }
@@ -102,9 +102,9 @@ export class NotificationService {
         platform: Platform.OS,
         deviceName: Device.deviceName || 'Unknown Device',
       });
-      console.log('Push token backend\'e başarıyla gönderildi');
+      // Removed console statement
     } catch (error) {
-      console.error('Token backend gönderim hatası:', error);
+      // Token backend gönderim hatası
     }
   }
 
@@ -113,12 +113,12 @@ export class NotificationService {
     onNotificationResponse?: (response: Notifications.NotificationResponse) => void
   ): void {
     this.notificationListener = Notifications.addNotificationReceivedListener(notification => {
-      console.log('Bildirim alındı:', notification);
+      // Removed console statement
       onNotificationReceived?.(notification);
     });
 
     this.responseListener = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log('Bildirim tıklandı:', response);
+      // Removed console statement
       onNotificationResponse?.(response);
     });
   }

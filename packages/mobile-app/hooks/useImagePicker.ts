@@ -58,7 +58,7 @@ export function useImagePicker() {
         }
       }
     } catch (error) {
-      console.error("Image picking failed:", error);
+      // Removed console statement
       Alert.alert(t("common.error"), t("edit_profile.photo_error_generic"));
       setPhotoLoading(false);
     }

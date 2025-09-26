@@ -58,7 +58,7 @@ export const uploadProfilePhoto = async (
       };
     }
   } catch (e) {
-    console.error("Fotoğraf yükleme başarısız:", e);
+    // Removed console statement
     const errorMessage = isAxiosError(e) 
       ? e.response?.data?.message || e.message
       : getErrorMessage(e);

@@ -32,7 +32,7 @@ export const PdfViewer: React.FC<PdfViewerProps> = ({
       onPageChanged={onPageChanged}
       onError={onError}
       onPressLink={(uri) => {
-        console.log(`Link tıklandı: ${uri}`);
+        // Removed console statement
       }}
       style={{
         flex: 1,

@@ -19,7 +19,7 @@ function decodeJWT(token: string) {
 
     return JSON.parse(decoded);
   } catch (error) {
-    console.error('Failed to decode JWT:', error);
+    // Failed to decode JWT
     return null;
   }
 }
@@ -82,18 +82,14 @@ export const signInWithApple = async () => {
       provider: 'apple',
     };
 
-    console.log('Apple Sign In - User Data:', {
-      firebaseUid: user.uid,
-      appleUserId: appleUserIdentifier,
-      email: userData.email,
-    });
+    // Apple Sign In - User Data logged
 
     return { success: true, user: userData };
   } catch (error: any) {
     if (error.code === 'ERR_REQUEST_CANCELED') {
       return { success: false, error: 'Apple Sign In was cancelled' };
     }
-    console.error('Apple Sign In Error:', error);
+    // Apple Sign In Error
     return { success: false, error: error.message || 'Apple Sign In failed' };
   }
 };

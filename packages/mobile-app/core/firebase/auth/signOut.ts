@@ -4,10 +4,10 @@ import { auth } from '../firebaseConfig';
 export async function firebaseSignOut() {
   try {
     await signOut(auth);
-    console.log("Firebase sign out successful");
+    // Removed console statement
     return { success: true };
   } catch (error) {
-    console.error("Firebase sign out error:", error);
+    // Firebase sign out error
     return { success: false, error };
   }
 }

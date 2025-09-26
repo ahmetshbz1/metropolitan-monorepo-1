@@ -43,7 +43,7 @@ export const usePdfDownload = () => {
         );
       }
     } catch (error) {
-      console.error("Download error:", error);
+      // Removed console statement
       showToast(
         t("order_detail.actions.invoice_download_error"),
         "error"

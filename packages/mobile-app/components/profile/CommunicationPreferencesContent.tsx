@@ -65,7 +65,7 @@ export function CommunicationPreferencesContent() {
           setSmsNotifications(response.data.preferences.sms);
         }
       } catch (error) {
-        console.error('Tercihler yüklenirken hata:', error);
+        // Removed console statement
       }
     };
     fetchPreferences();
@@ -85,7 +85,7 @@ export function CommunicationPreferencesContent() {
         email,
         sms,
       }).catch(error => {
-        console.error('Tercih güncelleme hatası:', error);
+        // Removed console statement
         // Hata durumunda toast göster ama state'i değiştirme
         showToast(t("profile.preferences_update_failed"), "error");
       });
@@ -118,7 +118,7 @@ export function CommunicationPreferencesContent() {
             // İzin var veya alındı - backend'e kaydet
             saveToBackend(value, emailNotifications, smsNotifications);
           } catch (error) {
-            console.error('Push notification permission error:', error);
+            // Removed console statement
             setPushNotifications(false);
             showToast(t("profile.push_permission_error"), "error");
           }

@@ -109,7 +109,7 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
       }
 
       if (result.registrationToken) {
-        console.log("Setting registration token:", result.registrationToken);
+        // Removed console statement
         setRegistrationToken(result.registrationToken);
       }
 
@@ -118,7 +118,7 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
         try {
           await migrateGuestToUser(phone, guestId);
         } catch (error) {
-          console.error("Misafir verisi taşıma hatası:", error);
+          // Removed console statement
         }
       }
 
@@ -144,7 +144,7 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
                   // İzin yoksa iste
                   const token = await NotificationService.default.registerForPushNotifications();
                   if (token) {
-                    console.log('✅ Push notifications enabled for existing user');
+                    // Removed console statement
                   }
                 } else {
                   // İzin var ama token'ı backend'e gönderelim (telefon değişmiş olabilir)
@@ -155,12 +155,12 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
                   }
                 }
               } catch (error) {
-                console.log('Push notification check skipped:', error);
+                // Removed console statement
               }
             }
           }
         } catch (error) {
-          console.error("Profil çekme hatası:", error);
+          // Removed console statement
         }
       }
     }
@@ -204,7 +204,7 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
         try {
           await migrateGuestToUser(phoneNumber, guestId);
         } catch (error) {
-          console.error("Misafir verisi taşıma hatası:", error);
+          // Removed console statement
         }
       }
 
@@ -214,19 +214,19 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
 
       // Kullanıcı profilini çek
       try {
-        console.log("Fetching user profile after profile completion...");
+        // Removed console statement
         const profileResult = await fetchUserProfile();
         if (profileResult.success && profileResult.user) {
-          console.log("Profile fetched successfully:", profileResult.user);
+          // Removed console statement
           const processedUser = processUserData(profileResult.user);
           setUser(processedUser);
           await userStorage.save(processedUser);
-          console.log("User authenticated successfully after profile completion");
+          // Removed console statement
         } else {
-          console.error("Failed to fetch profile after completion:", profileResult);
+          // Removed console statement
         }
       } catch (error) {
-        console.error("Profil çekme hatası:", error);
+        // Removed console statement
       }
 
       // Push notification izni artık checkout veya profil ayarlarında isteniyor
@@ -242,7 +242,7 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
         await logoutFromServer();
       }
     } catch (e: any) {
-      console.error("Logout isteği başarısız:", e);
+      // Removed console statement
       // Logout işlemi local olarak devam etsin
     }
 
@@ -250,7 +250,7 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
     try {
       await firebaseSignOut();
     } catch (e: any) {
-      console.error("Firebase logout başarısız:", e);
+      // Removed console statement
     }
 
     // Local state'i temizle

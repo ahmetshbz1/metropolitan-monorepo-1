@@ -50,7 +50,7 @@ export const useCartActions = ({
       await refreshCart();
     } catch (error) {
       const apiError = error as APIError;
-      console.error("Sepete ekleme hatası:", apiError.response?.data || apiError);
+      // Removed console statement
       
       // Auth error'ı olduğu gibi fırlat
       if ((error as StructuredError).code === "AUTH_REQUIRED") {
@@ -109,7 +109,7 @@ export const useCartActions = ({
       await refreshCart();
     } catch (error) {
       const apiError = error as APIError;
-      console.error("Miktar güncelleme hatası:", apiError.response?.data || apiError);
+      // Removed console statement
       
       // Validation error'ı olduğu gibi fırlat
       if ((error as StructuredError).code === "MIN_QUANTITY_ERROR") {
@@ -154,7 +154,7 @@ export const useCartActions = ({
       // Başarıyla silindi - toast göstermiyoruz, UI güncellemesi yeterli
     } catch (error) {
       const apiError = error as APIError;
-      console.error("Ürün kaldırma hatası:", apiError);
+      // Removed console statement
       const errorMessage =
         apiError.response?.data?.message || t("cart.remove_error");
       setError(errorMessage);
@@ -182,7 +182,7 @@ export const useCartActions = ({
       return { success: true, message: t("cart.cleared") };
     } catch (error) {
       const apiError = error as APIError;
-      console.error("Sepet temizleme hatası:", apiError);
+      // Removed console statement
       const errorMessage =
         apiError.response?.data?.message || t("cart.clear_error");
       setError(errorMessage);

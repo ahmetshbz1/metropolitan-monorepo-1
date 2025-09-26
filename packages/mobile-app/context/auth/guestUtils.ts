@@ -36,7 +36,7 @@ export const createGuestSession = async (
     }
     return { success: false };
   } catch (error: any) {
-    console.error("Misafir oturumu oluşturulamadı:", error);
+    // Removed console statement
     return { success: false };
   }
 };
@@ -57,7 +57,7 @@ export const migrateGuestData = async (
       message: migrationResponse.data.message,
     };
   } catch (error: any) {
-    console.error("Misafir verisi migration hatası:", error);
+    // Removed console statement
     return {
       success: false,
       message: error.response?.data?.message || error.message,

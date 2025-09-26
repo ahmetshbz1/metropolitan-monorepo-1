@@ -109,7 +109,7 @@ export const PurchaseSection = memo<PurchaseSectionProps>(function PurchaseSecti
         }
       });
     } catch (error) {
-      console.error("Sepete ekleme hatası:", error);
+      // Removed console statement
       const structuredError = error as StructuredError;
 
       // useCartState'ten gelen structured error'ı handle et

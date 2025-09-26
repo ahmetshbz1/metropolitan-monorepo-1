@@ -66,10 +66,7 @@ export default function PrivacySettingsScreen() {
           });
         }
       } catch (error) {
-        console.log(
-          "Privacy settings yüklenemedi, default değerler kullanılıyor:",
-          error
-        );
+        // Privacy settings yüklenemedi, default değerler kullanılıyor
         // Hata durumunda default değerleri koru
       }
     };
@@ -87,7 +84,7 @@ export default function PrivacySettingsScreen() {
         await api.put("/users/privacy-settings", newSettings);
         showToast(t("privacy_settings.settings_updated"), "success");
       } catch (error) {
-        console.error("Failed to update privacy settings:", error);
+        // Removed console statement
         setSettings(settings); // Revert on error
         showToast(t("privacy_settings.update_failed"), "error");
       } finally {

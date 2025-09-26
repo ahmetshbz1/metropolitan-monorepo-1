@@ -51,18 +51,11 @@ export function HapticButton({
       if (!disableDebounce) {
         // Son tıklamadan bu yana geçen süre kontrolü
         if (now - lastPressTime.current < debounceDelay) {
-          // Debug mode kontrolü ile log
-          if (__DEV__) {
-            console.log(`Button press debounced (${debounceDelay}ms)`);
-          }
           return;
         }
 
         // Eğer zaten işlem yapılıyorsa, yeni tıklamaları engelle
         if (isPressing.current) {
-          if (__DEV__) {
-            console.log("Button press already in progress");
-          }
           return;
         }
       }

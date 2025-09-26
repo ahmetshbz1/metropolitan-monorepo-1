@@ -26,7 +26,7 @@ export function useNavigationProtection(options: NavigationOptions = {}) {
       // Debounce kontrolü - son navigasyon'dan bu yana geçen süre
       if (now - lastNavigationTime.current < debounceTime) {
         if (__DEV__) {
-          console.log(`Navigation debounced (${method})`);
+          // Removed console statement`);
         }
         return;
       }
@@ -34,7 +34,7 @@ export function useNavigationProtection(options: NavigationOptions = {}) {
       // Eğer zaten navigation işlemi yapılıyorsa, yeni istekleri engelle
       if (isNavigatingRef.current) {
         if (__DEV__) {
-          console.log(`Navigation already in progress (${method})`);
+          // Removed console statement`);
         }
         return;
       }
@@ -60,7 +60,7 @@ export function useNavigationProtection(options: NavigationOptions = {}) {
         }
       } catch (error) {
         if (__DEV__) {
-          console.error("Navigation error:", error);
+          // Removed console statement
         }
       } finally {
         // Navigation işlemi tamamlandıktan sonra flag'i sıfırla
