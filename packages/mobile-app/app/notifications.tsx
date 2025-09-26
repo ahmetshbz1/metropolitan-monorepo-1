@@ -5,7 +5,7 @@
 import { Stack } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, FlatList, RefreshControl } from "react-native";
+import { FlatList, RefreshControl } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { ThemedView } from "@/components/ThemedView";
@@ -14,6 +14,7 @@ import {
   NotificationActionButtons,
   NotificationItem,
 } from "@/components/notifications";
+import { NotificationSkeletonList } from "@/components/notifications/NotificationSkeleton";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useTheme } from "@/hooks/useTheme";
 
@@ -61,9 +62,7 @@ export default function NotificationsScreen() {
 
         {/* Bildirim listesi */}
         {isLoading ? (
-          <ThemedView className="flex-1 items-center justify-center">
-            <ActivityIndicator size="large" color={colors.tint} />
-          </ThemedView>
+          <NotificationSkeletonList />
         ) : (
           <FlatList
             data={notifications}
