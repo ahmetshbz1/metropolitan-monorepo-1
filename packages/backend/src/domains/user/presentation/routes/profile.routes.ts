@@ -439,6 +439,76 @@ const protectedProfileRoutes = createApp()
     }
   )
 
+  // Privacy settings güncelleme
+  .put(
+    "/privacy-settings",
+    async ({ profile, body, set }) => {
+      try {
+        const userId = profile?.sub || profile?.userId;
+        if (!userId) {
+          set.status = 401;
+          return { success: false, message: "Unauthorized" };
+        }
+
+        // Güncelleme verilerini hazırla
+        const updateData: any = {
+          updatedAt: new Date(),
+        };
+
+        // Privacy settings'leri boolean'a dönüştür ve güncelle
+        if (body.shareDataWithPartners !== undefined) {
+          // shareDataWithPartners true ise privacyAcceptedAt'i güncelle, false ise null yap
+          updateData.privacyAcceptedAt = body.shareDataWithPartners ? new Date() : null;
+        }
+
+        if (body.analyticsData !== undefined) {
+          // Analytics data için de privacy accepted'ı kullanıyoruz
+          if (!body.analyticsData && updateData.privacyAcceptedAt === undefined) {
+            updateData.privacyAcceptedAt = null;
+          }
+        }
+
+        if (body.marketingEmails !== undefined) {
+          updateData.marketingConsent = body.marketingEmails;
+        }
+
+        // Kullanıcıyı güncelle
+        const updatedUser = await db
+          .update(users)
+          .set(updateData)
+          .where(eq(users.id, userId))
+          .returning();
+
+        if (!updatedUser[0]) {
+          set.status = 404;
+          return { success: false, message: "User not found" };
+        }
+
+        return {
+          success: true,
+          message: "Privacy settings updated successfully",
+          data: {
+            shareDataWithPartners: !!updatedUser[0].privacyAcceptedAt,
+            analyticsData: !!updatedUser[0].privacyAcceptedAt,
+            marketingEmails: updatedUser[0].marketingConsent || false,
+          },
+        };
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to update privacy settings";
+        set.status = 500;
+        return { success: false, message };
+      }
+    },
+    {
+      body: t.Object({
+        shareDataWithPartners: t.Optional(t.Boolean()),
+        analyticsData: t.Optional(t.Boolean()),
+        marketingEmails: t.Optional(t.Boolean()),
+      }),
+    }
+  )
+
   // Test push notification gönder
   .post(
     "/test-push",

@@ -40,6 +40,9 @@ export class ProfileUpdateService {
         profilePhotoUrl: user.profilePhotoUrl,
         userType: user.userType as "individual" | "corporate",
         authProvider: user.authProvider,
+        // Privacy alanları ekle
+        privacyAcceptedAt: user.privacyAcceptedAt,
+        marketingConsent: user.marketingConsent || false,
         companyInfo:
           user.userType === "corporate" && user.company
             ? {

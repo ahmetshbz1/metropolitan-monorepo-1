@@ -54,9 +54,8 @@ export default function PrivacySettingsScreen() {
 
       try {
         // Backend'den kullanıcının mevcut tercihlerini al
-        // Bu endpoint henüz implementasyonda yoksa default değerlerle çalış
         const response = await api.get("/users/me");
-        const userData = response.data;
+        const userData = response.data?.data;
 
         // Backend'deki verilerden gizlilik tercihlerini çıkar
         if (userData) {
@@ -85,7 +84,7 @@ export default function PrivacySettingsScreen() {
     if (isAuthenticated) {
       setLoading(true);
       try {
-        await api.put("/users/user/privacy-settings", newSettings);
+        await api.put("/users/privacy-settings", newSettings);
         showToast(t("privacy_settings.settings_updated"), "success");
       } catch (error) {
         console.error("Failed to update privacy settings:", error);
