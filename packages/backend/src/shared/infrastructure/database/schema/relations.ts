@@ -5,6 +5,7 @@
 import { relations } from "drizzle-orm";
 
 import { cartItems, favorites } from "./cart.schema";
+import { deviceTokens } from "./device-tokens.schema";
 import { orderItems, orders, trackingEvents } from "./order.schema";
 import {
   categories,
@@ -28,6 +29,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   orders: many(orders),
   cartItems: many(cartItems),
   favorites: many(favorites),
+  deviceTokens: many(deviceTokens),
 }));
 
 export const addressesRelations = relations(addresses, ({ one, many }) => ({
@@ -36,6 +38,13 @@ export const addressesRelations = relations(addresses, ({ one, many }) => ({
     references: [users.id],
   }),
   orders: many(orders),
+}));
+
+export const deviceTokensRelations = relations(deviceTokens, ({ one }) => ({
+  user: one(users, {
+    fields: [deviceTokens.userId],
+    references: [users.id],
+  }),
 }));
 
 // Ürün domain ilişkileri

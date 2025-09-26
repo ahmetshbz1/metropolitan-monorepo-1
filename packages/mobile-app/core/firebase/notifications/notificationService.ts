@@ -57,12 +57,17 @@ export class NotificationService {
         return null;
       }
 
-      const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
+      // ProjectId'yi config'den al
+      const projectId =
+        Constants.expoConfig?.extra?.eas?.projectId ||
+        Constants.easConfig?.projectId;
 
       if (!projectId) {
-        console.error('EAS Project ID bulunamadı');
+        console.error('EAS Project ID not found in config');
         return null;
       }
+
+      console.log('Using EAS Project ID:', projectId);
 
       const token = (await Notifications.getExpoPushTokenAsync({
         projectId,
@@ -165,6 +170,16 @@ export class NotificationService {
 
   getExpoPushToken(): string | null {
     return this.expoPushToken;
+  }
+
+  async ensurePushToken(): Promise<string | null> {
+    // Mevcut token varsa döndür
+    if (this.expoPushToken) {
+      return this.expoPushToken;
+    }
+
+    // Token yoksa register et
+    return await this.registerForPushNotifications();
   }
 }
 

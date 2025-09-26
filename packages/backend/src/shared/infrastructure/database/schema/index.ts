@@ -17,5 +17,8 @@ export * from "./cart.schema";
 // Misafir domain'i
 export * from "./guest.schema";
 
+// Cihaz token'ları
+export * from "./device-tokens.schema";
+
 // İlişkiler
 export * from "./relations";

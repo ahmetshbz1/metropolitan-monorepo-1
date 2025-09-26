@@ -10,6 +10,9 @@ import { t } from "elysia";
 
 import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
 import { createApp } from "../../../../shared/infrastructure/web/app";
+import { db } from "../../../../shared/infrastructure/database/connection";
+import { deviceTokens } from "../../../../shared/infrastructure/database/schema";
+import { eq, and } from "drizzle-orm";
 import { ProfileCompletionService } from "../../application/use-cases/profile-completion.service";
 import { ProfilePhotoService } from "../../application/use-cases/profile-photo.service";
 import { ProfileUpdateService } from "../../application/use-cases/profile-update.service";
@@ -146,12 +149,47 @@ const protectedProfileRoutes = createApp()
           return { success: false, message: "Unauthorized" };
         }
 
-        // TODO: Token'ı database'e kaydet
-        console.log(`Push token saved for user ${userId}:`, {
-          token: body.token,
-          platform: body.platform,
-          deviceName: body.deviceName,
-        });
+        // Önce bu token bu kullanıcıda var mı kontrol et
+        const existingToken = await db
+          .select()
+          .from(deviceTokens)
+          .where(
+            and(
+              eq(deviceTokens.userId, userId),
+              eq(deviceTokens.token, body.token)
+            )
+          )
+          .limit(1);
+
+        if (existingToken.length > 0) {
+          // Token zaten var, sadece son kullanım zamanını güncelle
+          await db
+            .update(deviceTokens)
+            .set({
+              lastUsedAt: new Date(),
+              platform: body.platform,
+              deviceName: body.deviceName || existingToken[0].deviceName,
+              isValid: "true",
+              failureCount: "0",
+              updatedAt: new Date(),
+            })
+            .where(eq(deviceTokens.id, existingToken[0].id));
+
+          console.log(`Device token updated for user ${userId}`);
+        } else {
+          // Yeni token ekle
+          await db.insert(deviceTokens).values({
+            userId: userId,
+            token: body.token,
+            platform: body.platform,
+            deviceName: body.deviceName || "Unknown Device",
+            deviceId: body.deviceId,
+            isValid: "true",
+            failureCount: "0",
+          });
+
+          console.log(`New device token saved for user ${userId}`);
+        }
 
         // Test bildirimi gönder
         try {
@@ -194,6 +232,7 @@ const protectedProfileRoutes = createApp()
         token: t.String(),
         platform: t.String({ enum: ["ios", "android"] }),
         deviceName: t.Optional(t.String()),
+        deviceId: t.Optional(t.String()),
       }),
     }
   )
@@ -238,6 +277,68 @@ const protectedProfileRoutes = createApp()
           maxSize: 2 * 1024 * 1024, // 2MB
           error: 'Invalid file. Must be JPEG, PNG, or WebP under 2MB.'
         }),
+      }),
+    }
+  )
+
+  // Test push notification gönder
+  .post(
+    "/test-push",
+    async ({ profile, body, set }) => {
+      try {
+        const userId = profile?.sub || profile?.userId;
+        if (!userId) {
+          set.status = 401;
+          return { success: false, message: "Unauthorized" };
+        }
+
+        console.log(`Sending test push to token: ${body.token}`);
+
+        const response = await fetch('https://exp.host/--/api/v2/push/send', {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Accept-encoding': 'gzip, deflate',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            to: body.token,
+            title: body.title || '🔔 Test Bildirimi',
+            body: body.body || 'Bu bir test bildirimidir.',
+            data: body.data || { test: true },
+            sound: 'default',
+            badge: 1,
+          }),
+        });
+
+        const result = await response.json();
+
+        if (result.data?.status === 'ok') {
+          return {
+            success: true,
+            message: "Test notification sent successfully",
+            result,
+          };
+        } else {
+          return {
+            success: false,
+            message: "Failed to send test notification",
+            result,
+          };
+        }
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to send test notification";
+        set.status = 500;
+        return { success: false, message };
+      }
+    },
+    {
+      body: t.Object({
+        token: t.String(),
+        title: t.Optional(t.String()),
+        body: t.Optional(t.String()),
+        data: t.Optional(t.Object({})),
       }),
     }
   );

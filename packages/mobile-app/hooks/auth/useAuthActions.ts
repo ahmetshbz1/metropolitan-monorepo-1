@@ -130,6 +130,34 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
             const updatedUser = processUserData(profileResult.user);
             setUser(updatedUser);
             await userStorage.save(updatedUser);
+
+            // Push notification kontrolü - mevcut kullanıcı için
+            // Kullanıcının push tercihi true ise ve izin yoksa iste
+            if (updatedUser.pushNotifications) {
+              try {
+                const NotificationService = await import('@/core/firebase/notifications/notificationService');
+
+                // Önce mevcut izni kontrol et
+                const hasPermission = await NotificationService.default.hasNotificationPermission();
+
+                if (!hasPermission) {
+                  // İzin yoksa iste
+                  const token = await NotificationService.default.registerForPushNotifications();
+                  if (token) {
+                    console.log('✅ Push notifications enabled for existing user');
+                  }
+                } else {
+                  // İzin var ama token'ı backend'e gönderelim (telefon değişmiş olabilir)
+                  const token = await NotificationService.default.getExpoPushToken();
+                  if (!token) {
+                    // Token yoksa tekrar register et
+                    await NotificationService.default.registerForPushNotifications();
+                  }
+                }
+              } catch (error) {
+                console.log('Push notification check skipped:', error);
+              }
+            }
           }
         } catch (error) {
           console.error("Profil çekme hatası:", error);
@@ -199,21 +227,7 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
         console.error("Profil çekme hatası:", error);
       }
 
-      // Marketing consent true ise push notification izni iste
-      if (userData.marketingConsent) {
-        try {
-          const NotificationService = await import('@/core/firebase/notifications/notificationService');
-          const token = await NotificationService.default.registerForPushNotifications();
-
-          if (token) {
-            await AsyncStorage.setItem("notification_permission_asked", "true");
-            await AsyncStorage.setItem("notification_permission_granted", "true");
-            console.log('✅ Push notifications enabled automatically based on marketing consent');
-          }
-        } catch (error) {
-          console.log('Push notification permission skipped:', error);
-        }
-      }
+      // Push notification izni artık checkout veya profil ayarlarında isteniyor
     }
 
     return result;

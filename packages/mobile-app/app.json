@@ -8,11 +8,6 @@
     "scheme": "metropolitan",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "extra": {
-      "eas": {
-        "projectId": "89173833-3d31-45c0-a9c9-2c4e3f5d6b7a"
-      }
-    },
     "locales": {
       "tr": "./locales/native/tr.json",
       "pl": "./locales/native/pl.json",
@@ -29,14 +24,20 @@
       },
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
-        "CFBundleLocalizations": ["tr", "en", "pl"]
+        "CFBundleLocalizations": [
+          "tr",
+          "en",
+          "pl"
+        ]
       },
       "appleTeamId": "64XKK46655",
       "entitlements": {
         "com.apple.developer.in-app-payments": [
           "merchant.com.metropolitan.food"
         ],
-        "com.apple.developer.applesignin": ["Default"],
+        "com.apple.developer.applesignin": [
+          "Default"
+        ],
         "aps-environment": "development"
       },
       "usesAppleSignIn": true,
@@ -79,6 +80,13 @@
     },
     "updates": {
       "enabled": false
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "45dcd12c-24ab-49ba-9cdf-b8f73c3f4632"
+      }
+    },
+    "owner": "metropolitanfg"
   }
 }

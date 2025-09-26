@@ -13,6 +13,7 @@ import { ProductsSearchProvider } from "@/context/ProductsSearchContext";
 import { ScrollToTopProvider } from "@/context/ScrollToTopContext";
 import { CartContext } from "@/context/CartContext";
 import { useTabLayout } from "@/hooks/useTabLayout";
+import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
 
 export default function TabLayout() {
   const { cartItems } = useContext(CartContext);
@@ -79,22 +80,25 @@ export default function TabLayout() {
   }, [navigation, route, t, i18n.language]);
 
   return (
-    <ProductsSearchProvider>
-      <ScrollToTopProvider
-        scrollToTop={scrollToTop}
-        registerScrollHandler={registerScrollHandler}
-        unregisterScrollHandler={unregisterScrollHandler}
-      >
-        <TabScreens
-          key={i18n.language}
-          cartItemCount={cartItemCount}
-          handleClearCart={handleClearCart}
-          handleNotification={handleNotification}
+    <>
+      <ProductsSearchProvider>
+        <ScrollToTopProvider
           scrollToTop={scrollToTop}
-          screenOptions={memoizedScreenOptions}
-        />
-      </ScrollToTopProvider>
-    </ProductsSearchProvider>
+          registerScrollHandler={registerScrollHandler}
+          unregisterScrollHandler={unregisterScrollHandler}
+        >
+          <TabScreens
+            key={i18n.language}
+            cartItemCount={cartItemCount}
+            handleClearCart={handleClearCart}
+            handleNotification={handleNotification}
+            scrollToTop={scrollToTop}
+            screenOptions={memoizedScreenOptions}
+          />
+        </ScrollToTopProvider>
+      </ProductsSearchProvider>
+      <OnboardingModal />
+    </>
   );
 }
 

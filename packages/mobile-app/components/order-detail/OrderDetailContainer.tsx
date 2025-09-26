@@ -18,6 +18,7 @@ import { SummarySection } from "./SummarySection";
 import { DeliveryAndPaymentSection } from "./DeliveryAndPaymentSection";
 import { ActionsSection } from "./ActionsSection";
 import { HelpModal } from "./modal/HelpModal";
+import { NotificationPermissionPrompt } from "./NotificationPermissionPrompt";
 import Colors from "@/constants/Colors";
 import { useOrders } from "@/context/OrderContext";
 
@@ -126,6 +127,7 @@ export function OrderDetailContainer({
           >
             <View className="p-4 gap-4">
               <OrderInfoSection order={order} />
+              <NotificationPermissionPrompt />
               <TrackingSection order={order} />
               <ProductsSection items={items} />
               <SummarySection order={order} />
