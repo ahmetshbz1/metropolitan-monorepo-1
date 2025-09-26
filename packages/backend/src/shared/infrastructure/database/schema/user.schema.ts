@@ -48,6 +48,9 @@ export const users = pgTable(
     privacyAcceptedAt: timestamp("privacy_accepted_at"),
     marketingConsentAt: timestamp("marketing_consent_at"),
     marketingConsent: boolean("marketing_consent").default(false).notNull(),
+    // Gizlilik ayarları - 3 ayrı alan
+    shareDataWithPartners: boolean("share_data_with_partners").default(false).notNull(),
+    analyticsData: boolean("analytics_data").default(false).notNull(),
     // Bildirim tercihleri
     smsNotifications: boolean("sms_notifications").default(true).notNull(),
     pushNotifications: boolean("push_notifications").default(true).notNull(),

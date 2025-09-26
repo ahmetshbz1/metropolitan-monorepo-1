@@ -83,6 +83,9 @@ export class UserProfileOperationsService {
         appleUserId: profileData.appleUserId, // Save Apple User ID
         termsAcceptedAt: new Date(),
         privacyAcceptedAt: profileData.privacyAccepted ? new Date() : null,
+        // Privacy accepted ise diğer gizlilik alanlarını da true yap
+        shareDataWithPartners: profileData.privacyAccepted ? true : false,
+        analyticsData: profileData.privacyAccepted ? true : false,
         marketingConsent: profileData.marketingConsent || false,
         marketingConsentAt: profileData.marketingConsent ? new Date() : null,
         updatedAt: new Date(),

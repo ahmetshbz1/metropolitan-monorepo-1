@@ -455,17 +455,13 @@ const protectedProfileRoutes = createApp()
           updatedAt: new Date(),
         };
 
-        // Privacy settings'leri boolean'a dönüştür ve güncelle
+        // Privacy settings'leri güncelle - artık 3 ayrı alan var
         if (body.shareDataWithPartners !== undefined) {
-          // shareDataWithPartners true ise privacyAcceptedAt'i güncelle, false ise null yap
-          updateData.privacyAcceptedAt = body.shareDataWithPartners ? new Date() : null;
+          updateData.shareDataWithPartners = body.shareDataWithPartners;
         }
 
         if (body.analyticsData !== undefined) {
-          // Analytics data için de privacy accepted'ı kullanıyoruz
-          if (!body.analyticsData && updateData.privacyAcceptedAt === undefined) {
-            updateData.privacyAcceptedAt = null;
-          }
+          updateData.analyticsData = body.analyticsData;
         }
 
         if (body.marketingEmails !== undefined) {
@@ -488,8 +484,8 @@ const protectedProfileRoutes = createApp()
           success: true,
           message: "Privacy settings updated successfully",
           data: {
-            shareDataWithPartners: !!updatedUser[0].privacyAcceptedAt,
-            analyticsData: !!updatedUser[0].privacyAcceptedAt,
+            shareDataWithPartners: updatedUser[0].shareDataWithPartners || false,
+            analyticsData: updatedUser[0].analyticsData || false,
             marketingEmails: updatedUser[0].marketingConsent || false,
           },
         };

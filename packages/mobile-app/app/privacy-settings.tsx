@@ -60,8 +60,8 @@ export default function PrivacySettingsScreen() {
         // Backend'deki verilerden gizlilik tercihlerini çıkar
         if (userData) {
           setSettings({
-            shareDataWithPartners: userData.privacyAcceptedAt ? true : false,
-            analyticsData: userData.privacyAcceptedAt ? true : false,
+            shareDataWithPartners: userData.shareDataWithPartners || false,
+            analyticsData: userData.analyticsData || false,
             marketingEmails: userData.marketingConsent || false,
           });
         }
