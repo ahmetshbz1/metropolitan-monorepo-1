@@ -17,6 +17,9 @@ RUN bun install && bun add uuid
 COPY packages/shared ./packages/shared
 COPY packages/backend ./packages/backend
 
+# Copy .env file for configuration
+COPY .env ./.env
+
 # Switch to backend directory
 WORKDIR /app/packages/backend
 
