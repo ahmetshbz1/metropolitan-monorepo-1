@@ -725,6 +725,14 @@
       "storage": "Storage Conditions",
       "manufacturer": "Manufacturer Information"
     },
+    "badges": {
+      "halal": "Halal",
+      "vegetarian": "Vegetarian",
+      "vegan": "Vegan",
+      "gluten_free": "Gluten Free",
+      "organic": "Organic",
+      "lactose_free": "Lactose Free"
+    },
     "purchase": {
       "add_to_cart": "Add to Cart",
       "adding_to_cart": "Adding",

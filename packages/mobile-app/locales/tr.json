@@ -725,6 +725,14 @@
       "storage": "Saklama Koşulları",
       "manufacturer": "Üretici Bilgileri"
     },
+    "badges": {
+      "halal": "Helal",
+      "vegetarian": "Vejetaryan",
+      "vegan": "Vegan",
+      "gluten_free": "Glutensiz",
+      "organic": "Organik",
+      "lactose_free": "Laktozsuz"
+    },
     "purchase": {
       "add_to_cart": "Sepete Ekle",
       "adding_to_cart": "Ekleniyor",

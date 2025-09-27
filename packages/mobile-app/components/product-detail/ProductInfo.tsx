@@ -6,7 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import React, { memo, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { TextInput, TouchableOpacity, View } from "react-native";
+import { ScrollView, TextInput, TouchableOpacity, View } from "react-native";
 
 import CustomBottomSheet from "@/components/CustomBottomSheet";
 import { HapticIconButton } from "@/components/HapticButton";
@@ -207,110 +207,118 @@ export const ProductInfo = memo<ProductInfoProps>(function ProductInfo({
           {/* Sertifika Badge'leri */}
           {product.badges && Object.values(product.badges).some((v) => v) && (
             <View className="mb-5">
-              <View className="flex-row flex-wrap gap-2">
-                {product.badges.halal && (
-                  <View
-                    className="flex-row items-center px-3 py-2 rounded-full"
-                    style={{ backgroundColor: "#00A86B20" }}
-                  >
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ paddingHorizontal: 4 }}
+                nestedScrollEnabled={false}
+                scrollEnabled={true}
+              >
+                <View className="flex-row gap-2">
+                  {product.badges.halal && (
                     <View
-                      className="w-2 h-2 rounded-full mr-2"
-                      style={{ backgroundColor: "#00A86B" }}
-                    />
-                    <ThemedText
-                      className="text-xs font-semibold"
-                      style={{ color: "#00A86B" }}
+                      className="flex-row items-center px-3 py-2 rounded-full"
+                      style={{ backgroundColor: "#00A86B20" }}
                     >
-                      Helal
-                    </ThemedText>
-                  </View>
-                )}
-                {product.badges.vegetarian && (
-                  <View
-                    className="flex-row items-center px-3 py-2 rounded-full"
-                    style={{ backgroundColor: "#32CD3220" }}
-                  >
+                      <View
+                        className="w-2 h-2 rounded-full mr-2"
+                        style={{ backgroundColor: "#00A86B" }}
+                      />
+                      <ThemedText
+                        className="text-xs font-semibold"
+                        style={{ color: "#00A86B" }}
+                      >
+                        {t("product_detail.badges.halal")}
+                      </ThemedText>
+                    </View>
+                  )}
+                  {product.badges.vegetarian && (
                     <View
-                      className="w-2 h-2 rounded-full mr-2"
-                      style={{ backgroundColor: "#32CD32" }}
-                    />
-                    <ThemedText
-                      className="text-xs font-semibold"
-                      style={{ color: "#32CD32" }}
+                      className="flex-row items-center px-3 py-2 rounded-full"
+                      style={{ backgroundColor: "#32CD3220" }}
                     >
-                      Vejetaryan
-                    </ThemedText>
-                  </View>
-                )}
-                {product.badges.vegan && (
-                  <View
-                    className="flex-row items-center px-3 py-2 rounded-full"
-                    style={{ backgroundColor: "#228B2220" }}
-                  >
+                      <View
+                        className="w-2 h-2 rounded-full mr-2"
+                        style={{ backgroundColor: "#32CD32" }}
+                      />
+                      <ThemedText
+                        className="text-xs font-semibold"
+                        style={{ color: "#32CD32" }}
+                      >
+                        {t("product_detail.badges.vegetarian")}
+                      </ThemedText>
+                    </View>
+                  )}
+                  {product.badges.vegan && (
                     <View
-                      className="w-2 h-2 rounded-full mr-2"
-                      style={{ backgroundColor: "#228B22" }}
-                    />
-                    <ThemedText
-                      className="text-xs font-semibold"
-                      style={{ color: "#228B22" }}
+                      className="flex-row items-center px-3 py-2 rounded-full"
+                      style={{ backgroundColor: "#228B2220" }}
                     >
-                      Vegan
-                    </ThemedText>
-                  </View>
-                )}
-                {product.badges.glutenFree && (
-                  <View
-                    className="flex-row items-center px-3 py-2 rounded-full"
-                    style={{ backgroundColor: "#FFB52E20" }}
-                  >
+                      <View
+                        className="w-2 h-2 rounded-full mr-2"
+                        style={{ backgroundColor: "#228B22" }}
+                      />
+                      <ThemedText
+                        className="text-xs font-semibold"
+                        style={{ color: "#228B22" }}
+                      >
+                        {t("product_detail.badges.vegan")}
+                      </ThemedText>
+                    </View>
+                  )}
+                  {product.badges.glutenFree && (
                     <View
-                      className="w-2 h-2 rounded-full mr-2"
-                      style={{ backgroundColor: "#FFB52E" }}
-                    />
-                    <ThemedText
-                      className="text-xs font-semibold"
-                      style={{ color: "#FFB52E" }}
+                      className="flex-row items-center px-3 py-2 rounded-full"
+                      style={{ backgroundColor: "#FFB52E20" }}
                     >
-                      Glutensiz
-                    </ThemedText>
-                  </View>
-                )}
-                {product.badges.organic && (
-                  <View
-                    className="flex-row items-center px-3 py-2 rounded-full"
-                    style={{ backgroundColor: "#8B451320" }}
-                  >
+                      <View
+                        className="w-2 h-2 rounded-full mr-2"
+                        style={{ backgroundColor: "#FFB52E" }}
+                      />
+                      <ThemedText
+                        className="text-xs font-semibold"
+                        style={{ color: "#FFB52E" }}
+                      >
+                        {t("product_detail.badges.gluten_free")}
+                      </ThemedText>
+                    </View>
+                  )}
+                  {product.badges.organic && (
                     <View
-                      className="w-2 h-2 rounded-full mr-2"
-                      style={{ backgroundColor: "#8B4513" }}
-                    />
-                    <ThemedText
-                      className="text-xs font-semibold"
-                      style={{ color: "#8B4513" }}
+                      className="flex-row items-center px-3 py-2 rounded-full"
+                      style={{ backgroundColor: "#8B451320" }}
                     >
-                      Organik
-                    </ThemedText>
-                  </View>
-                )}
-                {product.badges.lactoseFree && (
-                  <View
-                    className="flex-row items-center px-3 py-2 rounded-full"
-                    style={{ backgroundColor: "#6495ED20" }}
-                  >
+                      <View
+                        className="w-2 h-2 rounded-full mr-2"
+                        style={{ backgroundColor: "#8B4513" }}
+                      />
+                      <ThemedText
+                        className="text-xs font-semibold"
+                        style={{ color: "#8B4513" }}
+                      >
+                        {t("product_detail.badges.organic")}
+                      </ThemedText>
+                    </View>
+                  )}
+                  {product.badges.lactoseFree && (
                     <View
-                      className="w-2 h-2 rounded-full mr-2"
-                      style={{ backgroundColor: "#6495ED" }}
-                    />
-                    <ThemedText
-                      className="text-xs font-semibold"
-                      style={{ color: "#6495ED" }}
+                      className="flex-row items-center px-3 py-2 rounded-full"
+                      style={{ backgroundColor: "#6495ED20" }}
                     >
-                      Laktozsuz
-                    </ThemedText>
-                  </View>
-                )}
-              </View>
+                      <View
+                        className="w-2 h-2 rounded-full mr-2"
+                        style={{ backgroundColor: "#6495ED" }}
+                      />
+                      <ThemedText
+                        className="text-xs font-semibold"
+                        style={{ color: "#6495ED" }}
+                      >
+                        {t("product_detail.badges.lactose_free")}
+                      </ThemedText>
+                    </View>
+                  )}
+                </View>
+              </ScrollView>
             </View>
           )}
 

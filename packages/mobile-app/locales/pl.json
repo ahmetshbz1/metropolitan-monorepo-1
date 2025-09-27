@@ -732,6 +732,14 @@
       "storage": "Warunki przechowywania",
       "manufacturer": "Informacje o producencie"
     },
+    "badges": {
+      "halal": "Halal",
+      "vegetarian": "Wegetariański",
+      "vegan": "Wegański",
+      "gluten_free": "Bezglutenowy",
+      "organic": "Ekologiczny",
+      "lactose_free": "Bez laktozy"
+    },
     "purchase": {
       "add_to_cart": "Dodaj do koszyka",
       "adding_to_cart": "Dodawanie",
