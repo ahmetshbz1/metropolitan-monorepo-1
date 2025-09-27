@@ -88,11 +88,12 @@ export const productRoutes = createApp().group("/products", (app) =>
           .leftJoin(categories, eq(products.categoryId, categories.id))
           .where(and(...conditions));
 
-        // Use HTTPS in production, otherwise use request origin
-        const requestOrigin = new URL(request.url).origin;
-        const baseUrl = process.env.NODE_ENV === 'production'
-          ? 'https://api.metropolitanfg.pl'
-          : requestOrigin;
+        // Derive base URL using forwarded headers when behind proxy (nginx)
+        const xfProto = request.headers.get('x-forwarded-proto');
+        const host = request.headers.get('host');
+        const baseUrl = xfProto && host
+          ? `${xfProto}://${host}`
+          : new URL(request.url).origin;
         const allergenService = new AllergenTranslationService();
         const storageConditionService =
           new StorageConditionTranslationService();

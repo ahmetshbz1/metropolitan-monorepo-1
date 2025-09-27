@@ -16,7 +16,7 @@ export const guestFavoritesRoutes = createApp()
   // Get guest favorites
   .get(
     "/favorites/:guestId",
-    async ({ params, db, query }) => {
+    async ({ params, db, query, request }) => {
       const { guestId } = params;
       const lang = query.lang || "tr";
 
@@ -42,6 +42,10 @@ export const guestFavoritesRoutes = createApp()
         )
         .where(eq(guestFavorites.guestId, guestId));
 
+      const xfProto = request.headers.get('x-forwarded-proto');
+      const host = request.headers.get('host');
+      const baseUrl = xfProto && host ? `${xfProto}://${host}` : new URL(request.url).origin;
+
       const formattedFavorites = favorites.map((item) => ({
         id: item.id,
         product: {
@@ -50,7 +54,7 @@ export const guestFavoritesRoutes = createApp()
           price: Number(item.productPrice) || 0,
           currency: item.productCurrency,
           stock: item.productStock || 0,
-          image: item.productImage,
+          image: item.productImage ? `${baseUrl}${item.productImage}` : "",
           brand: item.productBrand,
         },
       }));

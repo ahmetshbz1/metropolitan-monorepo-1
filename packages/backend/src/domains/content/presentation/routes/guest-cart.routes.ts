@@ -16,7 +16,7 @@ export const guestCartRoutes = createApp()
   // Get guest cart
   .get(
     "/cart/:guestId",
-    async ({ params, db, query }) => {
+    async ({ params, db, query, request }) => {
       const { guestId } = params;
       const lang = query.lang || "tr";
 
@@ -43,6 +43,10 @@ export const guestCartRoutes = createApp()
         )
         .where(eq(guestCartItems.guestId, guestId));
 
+      const xfProto = request.headers.get('x-forwarded-proto');
+      const host = request.headers.get('host');
+      const baseUrl = xfProto && host ? `${xfProto}://${host}` : new URL(request.url).origin;
+
       const formattedItems = cartItems.map((item) => ({
         id: item.id,
         product: {
@@ -51,7 +55,7 @@ export const guestCartRoutes = createApp()
           price: Number(item.productPrice) || 0,
           currency: item.productCurrency,
           stock: item.productStock || 0,
-          image: item.productImage,
+          image: item.productImage ? `${baseUrl}${item.productImage}` : "",
           brand: item.productBrand,
         },
         quantity: item.quantity,
