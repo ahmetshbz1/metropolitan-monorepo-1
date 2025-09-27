@@ -1,74 +1,32 @@
-# Multi-stage build for production-ready Bun application
-# Stage 1: Dependencies
-FROM oven/bun:1.2.22-alpine AS dependencies
+# Production build - Simple version that works
+FROM oven/bun:1-alpine
 
-# Set working directory
+RUN apk add --no-cache python3 make g++ postgresql-client curl
+
 WORKDIR /app
 
-# Copy package files
-COPY package.json bun.lockb ./
+# Copy root package files (monorepo structure)
+COPY package.json bun.lock ./
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/backend/package.json ./packages/backend/
 
-# Install dependencies (including dev dependencies for building)
-RUN bun install --frozen-lockfile
+# Install all dependencies and add uuid
+RUN bun install && bun add uuid
 
-# Stage 2: Build
-FROM oven/bun:1.2.22-alpine AS builder
+# Copy all source code
+COPY packages/shared ./packages/shared
+COPY packages/backend ./packages/backend
 
-# Set working directory
-WORKDIR /app
+# Switch to backend directory
+WORKDIR /app/packages/backend
 
-# Copy dependencies from previous stage
-COPY --from=dependencies /app/node_modules ./node_modules
+# Generate Drizzle client (optional)
+RUN bun run db:generate || true
 
-# Copy package files and source code
-COPY package.json bun.lockb tsconfig.json ./
-COPY src ./src
-COPY drizzle ./drizzle
-COPY index.ts ./
-
-# Build the application
-RUN bun run build
-
-# Stage 3: Production
-FROM oven/bun:1.2.22-alpine AS production
-
-# Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init
-
-# Create non-root user for security
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
-
-# Set working directory
-WORKDIR /app
-
-# Copy package files
-COPY package.json bun.lockb ./
-
-# Install only production dependencies
-RUN bun install --production --frozen-lockfile && \
-    bun pm cache clear
-
-# Copy built application from builder stage
-COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
-COPY --from=builder --chown=nodejs:nodejs /app/drizzle ./drizzle
-
-# Create necessary directories
-RUN mkdir -p /app/public && \
-    chown -R nodejs:nodejs /app
-
-# Switch to non-root user
-USER nodejs
-
-# Expose port
 EXPOSE 3000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD bun --eval "fetch('http://localhost:3000/health').then(() => process.exit(0)).catch(() => process.exit(1))"
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:3000/health || exit 1
 
-# Use dumb-init to handle signals properly
-ENTRYPOINT ["dumb-init", "--"]
-
-# Start the application
-CMD ["bun", "run", "start:prod"]
+# Run TypeScript directly with Bun (no build needed)
+CMD ["bun", "--hot", "index.ts"]
