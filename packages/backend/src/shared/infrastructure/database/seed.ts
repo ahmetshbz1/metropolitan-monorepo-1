@@ -201,17 +201,13 @@ const main = async () => {
       const expiryDate = new Date();
       expiryDate.setDate(expiryDate.getDate() + (isPerishable ? 30 : 365));
 
-      // Badge'leri belirle
+      // Badge'leri kategoriye göre doğru şekilde belirle
       const sampleBadges = {
-        halal: Math.random() > 0.3, // %70 şans helal
+        halal: true, // Tüm ürünler helal
         vegetarian: categoryName !== "ET ÜRÜNLERİ", // Et ürünleri dışında vejetaryan
-        vegan:
-          categoryName === "BAKLİYAT" ||
-          (categoryName !== "ET ÜRÜNLERİ" &&
-            categoryName !== "SÜT ÜRÜNLERİ" &&
-            Math.random() > 0.7),
+        vegan: categoryName === "SALÇA VE EZMELER", // Sadece salça ve ezmeler vegan
         glutenFree: categoryName !== "UNLU MAMÜLLER", // Unlu mamüller dışında glutensiz
-        organic: Math.random() > 0.6, // %40 şans organik
+        organic: Math.random() > 0.5, // %50 şans organik
         lactoseFree: categoryName !== "SÜT ÜRÜNLERİ", // Süt ürünleri dışında laktozsuz
       };
 
@@ -226,24 +222,20 @@ const main = async () => {
           price: price,
           currency: "PLN",
           stock: stock,
-          // Yeni eklenen alanlar
+          // Yeni eklenen alanlar - Kategoriye göre doğru alerjen
           allergens:
             categoryName === "SÜT ÜRÜNLERİ"
-              ? sampleAllergens[0]
+              ? "dairy"
               : categoryName === "UNLU MAMÜLLER"
-                ? sampleAllergens[1]
-                : Math.random() > 0.5
-                  ? sampleAllergens[
-                      Math.floor(Math.random() * sampleAllergens.length)
-                    ]
+                ? "gluten"
+                : categoryName === "ET ÜRÜNLERİ"
+                  ? "eggs"
                   : null,
           nutritionalValues: JSON.stringify(sampleNutritionalValues),
           netQuantity:
             productData.tr.size || `${Math.floor(Math.random() * 500) + 100}g`,
           expiryDate: expiryDate,
-          storageConditions: isPerishable
-            ? sampleStorageConditions[0]
-            : sampleStorageConditions[1],
+          storageConditions: isPerishable ? "refrigerated" : "cool_dry",
           manufacturerInfo: JSON.stringify(sampleManufacturerInfo),
           originCountry: "Türkiye",
           badges: JSON.stringify(sampleBadges),
