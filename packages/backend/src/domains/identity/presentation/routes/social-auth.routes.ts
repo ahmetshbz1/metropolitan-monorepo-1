@@ -22,7 +22,7 @@ export const socialAuthRoutes = createApp()
   .group("/auth", (app) =>
     app.post(
       "/social-signin",
-      async ({ body, headers, jwt, log, db }) => {
+      async ({ body, headers, jwt, log, db, error }) => {
         log.info(
           {
             firebaseUid: body.firebaseUid,
@@ -33,8 +33,102 @@ export const socialAuthRoutes = createApp()
           `Social auth attempt`
         );
 
-        // Check user based on provider type
+        // If Authorization header present, treat as LINK operation to the current authenticated user
+        // This prevents downgrading an already-logged-in user to guest during provider linking
+        let currentUserId: string | undefined;
+        try {
+          const authHeader = (headers["authorization"] || headers["Authorization"]) as string | undefined;
+          if (authHeader?.startsWith("Bearer ")) {
+            const token = authHeader.slice(7);
+            const decoded: any = await jwt.verify(token);
+            if (decoded?.sub && decoded?.type === "access") {
+              currentUserId = decoded.sub as string;
+            }
+          }
+        } catch (e) {
+          // Ignore token errors; proceed as sign-in
+        }
+
+        // Check user based on context
         let user;
+        if (currentUserId) {
+          // Linking flow: fetch the currently authenticated user
+          user = await db.query.users.findFirst({ where: eq(users.id, currentUserId) });
+          if (!user) {
+            return error(401, "Invalid session for social linking");
+          }
+
+          // Prevent linking if another account already uses the same social identifiers
+          if (body.provider === 'apple' && body.appleUserId) {
+            const conflict = await db.query.users.findFirst({ where: and(eq(users.appleUserId, body.appleUserId), eq(users.userType, user.userType)) });
+            if (conflict && conflict.id !== user.id) {
+              return {
+                success: false,
+                error: "PROVIDER_CONFLICT",
+                message: "This Apple account is already linked to another user.",
+              };
+            }
+          }
+          if (body.provider === 'google' && body.firebaseUid) {
+            const conflict = await db.query.users.findFirst({ where: and(eq(users.firebaseUid, body.firebaseUid), eq(users.userType, user.userType)) });
+            if (conflict && conflict.id !== user.id) {
+              return {
+                success: false,
+                error: "PROVIDER_CONFLICT",
+                message: "This Google account is already linked to another user.",
+              };
+            }
+          }
+        } else {
+          // Sign-in flow: resolve user by provider identifiers
+          // Check user based on provider type
+          if (body.provider === 'apple' && body.appleUserId) {
+            // For Apple: First try appleUserId, then email
+            user = await db.query.users.findFirst({
+              where: eq(users.appleUserId, body.appleUserId),
+            });
+  
+            // If not found by appleUserId but email exists, check by email
+            if (!user && body.email) {
+              user = await db.query.users.findFirst({
+                where: eq(users.email, body.email),
+              });
+  
+              // If found by email and no other provider is linked, allow re-linking
+              if (user && !user.authProvider) {
+                log.info({ userId: user.id }, "Re-linking Apple account to existing user");
+              }
+            }
+          } else if (body.provider === 'google') {
+            // For Google: First try firebaseUid, then email
+            user = await db.query.users.findFirst({
+              where: body.firebaseUid
+                ? eq(users.firebaseUid, body.firebaseUid)
+                : undefined,
+            });
+  
+            // If not found by firebaseUid but email exists, check by email
+            if (!user && body.email) {
+              user = await db.query.users.findFirst({
+                where: eq(users.email, body.email),
+              });
+  
+              // If found by email and no other provider is linked, allow re-linking
+              if (user && !user.authProvider) {
+                log.info({ userId: user.id }, "Re-linking Google account to existing user");
+              }
+            }
+          } else {
+            // Fallback for other providers
+            user = await db.query.users.findFirst({
+              where: body.firebaseUid
+                ? eq(users.firebaseUid, body.firebaseUid)
+                : body.email
+                  ? eq(users.email, body.email)
+                  : undefined,
+            });
+          }
+        }
 
         if (body.provider === 'apple' && body.appleUserId) {
           // For Apple: First try appleUserId, then email
@@ -118,7 +212,7 @@ export const socialAuthRoutes = createApp()
 
         // Check if user is trying to link a different social provider
         // Allow re-linking if no provider is currently linked
-        if (user.authProvider && user.authProvider !== body.provider) {
+        if (!currentUserId && user.authProvider && user.authProvider !== body.provider) {
           log.warn(
             {
               userId: user.id,
@@ -197,6 +291,9 @@ export const socialAuthRoutes = createApp()
         if (body.firebaseUid && user.firebaseUid !== body.firebaseUid) {
           updateData.firebaseUid = body.firebaseUid;
         }
+        if (body.email && !user.email) {
+          updateData.email = body.email;
+        }
 
         if (Object.keys(updateData).length > 0) {
           updateData.updatedAt = new Date();
@@ -264,6 +361,19 @@ export const socialAuthRoutes = createApp()
 
         // Return user data without sensitive fields
         const { password, ...safeUser } = user;
+
+        if (currentUserId) {
+          // Linking flow response: tokens still returned to keep client session fresh
+          return {
+            success: true,
+            linked: true,
+            message: "Social account linked successfully",
+            accessToken,
+            refreshToken,
+            expiresIn: 900,
+            user: safeUser,
+          };
+        }
 
         return {
           success: true,
