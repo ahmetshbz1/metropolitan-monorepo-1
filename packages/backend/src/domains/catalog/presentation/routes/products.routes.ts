@@ -88,7 +88,11 @@ export const productRoutes = createApp().group("/products", (app) =>
           .leftJoin(categories, eq(products.categoryId, categories.id))
           .where(and(...conditions));
 
-        const baseUrl = new URL(request.url).origin;
+        // Use HTTPS in production, otherwise use request origin
+        const requestOrigin = new URL(request.url).origin;
+        const baseUrl = process.env.NODE_ENV === 'production'
+          ? 'https://api.metropolitanfg.pl'
+          : requestOrigin;
         const allergenService = new AllergenTranslationService();
         const storageConditionService =
           new StorageConditionTranslationService();
