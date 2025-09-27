@@ -65,3 +65,13 @@ export const productTranslations = pgTable("product_translations", {
   fullName: text("full_name"),
   description: text("description"),
 });
+
+// Alerjen çevirileri tablosu
+export const allergenTranslations = pgTable("allergen_translations", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  allergenKey: text("allergen_key").notNull(),
+  languageCode: text("language_code").notNull(),
+  translation: text("translation").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});

@@ -11,6 +11,7 @@ import {
   productTranslations,
   products,
 } from "../../../../shared/infrastructure/database/schema";
+import { AllergenTranslationService } from "../../../../shared/infrastructure/database/services/allergen-translation.service";
 import { createApp } from "../../../../shared/infrastructure/web/app";
 
 export const productRoutes = createApp().group("/products", (app) =>
@@ -87,28 +88,47 @@ export const productRoutes = createApp().group("/products", (app) =>
           .where(and(...conditions));
 
         const baseUrl = new URL(request.url).origin;
+        const allergenService = new AllergenTranslationService();
 
-        const formattedProducts = allProducts.map((p) => ({
-          id: p.id,
-          name: p.name,
-          description: p.description,
-          image: p.imageUrl ? `${baseUrl}${p.imageUrl}` : "",
-          price: Number(p.price) || 0,
-          currency: p.currency,
-          stock: p.stock ?? 0,
-          category: p.categorySlug,
-          brand: p.brand || "Yayla", // Use brand from DB, fallback just in case
-          size: p.size || undefined,
-          // Yeni eklenen alanlar
-          allergens: p.allergens || undefined,
-          nutritionalValues: p.nutritionalValues ? JSON.parse(p.nutritionalValues) : undefined,
-          netQuantity: p.netQuantity || undefined,
-          expiryDate: p.expiryDate || undefined,
-          storageConditions: p.storageConditions || undefined,
-          manufacturerInfo: p.manufacturerInfo ? JSON.parse(p.manufacturerInfo) : undefined,
-          originCountry: p.originCountry || undefined,
-          badges: p.badges ? JSON.parse(p.badges) : undefined,
-        }));
+        const formattedProducts = await Promise.all(
+          allProducts.map(async (p) => {
+            // Alerjen çevirisini al
+            let translatedAllergens = p.allergens;
+            if (p.allergens) {
+              const allergenTranslation = await allergenService.getTranslation(
+                p.allergens,
+                lang
+              );
+              translatedAllergens = allergenTranslation || p.allergens;
+            }
+
+            return {
+              id: p.id,
+              name: p.name,
+              description: p.description,
+              image: p.imageUrl ? `${baseUrl}${p.imageUrl}` : "",
+              price: Number(p.price) || 0,
+              currency: p.currency,
+              stock: p.stock ?? 0,
+              category: p.categorySlug,
+              brand: p.brand || "Yayla", // Use brand from DB, fallback just in case
+              size: p.size || undefined,
+              // Yeni eklenen alanlar
+              allergens: translatedAllergens || undefined,
+              nutritionalValues: p.nutritionalValues
+                ? JSON.parse(p.nutritionalValues)
+                : undefined,
+              netQuantity: p.netQuantity || undefined,
+              expiryDate: p.expiryDate || undefined,
+              storageConditions: p.storageConditions || undefined,
+              manufacturerInfo: p.manufacturerInfo
+                ? JSON.parse(p.manufacturerInfo)
+                : undefined,
+              originCountry: p.originCountry || undefined,
+              badges: p.badges ? JSON.parse(p.badges) : undefined,
+            };
+          })
+        );
 
         return { success: true, data: formattedProducts };
       },
