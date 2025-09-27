@@ -9,24 +9,24 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID?.trim();
 const authToken = process.env.TWILIO_AUTH_TOKEN?.trim();
 const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER?.trim() || "+48732125573"; // Default to provided number
 
-// NEVER use mock data - always send real SMS
-const MOCK_SMS = false; // Mock veri kesinlikle yasak!
+// Check if real SMS should be sent (development vs production)
+const ENABLE_REAL_SMS = process.env.ENABLE_REAL_SMS === 'true';
+const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
 // Initialize Twilio client only if credentials are available
 const client = accountSid && authToken ? twilio(accountSid, authToken) : null;
 
-if (!MOCK_SMS) {
-  console.log("=== Twilio Configuration ===");
-  console.log(`Account SID: ${accountSid ? accountSid.substring(0, 10) + '...' : 'NOT SET'}`);
-  console.log(`Auth Token: ${authToken ? 'SET (hidden)' : 'NOT SET'}`);
-  console.log(`Phone Number: ${twilioPhoneNumber}`);
-  console.log(`Mock SMS: ${MOCK_SMS}`);
-  console.log(`Client Initialized: ${client ? 'YES' : 'NO'}`);
-  console.log("========================");
+console.log("=== Twilio Configuration ===");
+console.log(`Environment: ${IS_DEVELOPMENT ? 'DEVELOPMENT' : 'PRODUCTION'}`);
+console.log(`Real SMS Enabled: ${ENABLE_REAL_SMS}`);
+console.log(`Account SID: ${accountSid ? accountSid.substring(0, 10) + '...' : 'NOT SET'}`);
+console.log(`Auth Token: ${authToken ? 'SET (hidden)' : 'NOT SET'}`);
+console.log(`Phone Number: ${twilioPhoneNumber}`);
+console.log(`Client Initialized: ${client ? 'YES' : 'NO'}`);
+console.log("========================");
 
-  if (!client) {
-    console.error("Twilio client could not be initialized. Check your credentials.");
-  }
+if (!client && ENABLE_REAL_SMS) {
+  console.error("Twilio client could not be initialized. Check your credentials.");
 }
 
 /**
@@ -42,7 +42,13 @@ export function generateOtpCode(): string {
  * @param message SMS message content
  */
 async function sendTwilioSms(phoneNumber: string, message: string): Promise<void> {
-  // Mock SMS is strictly forbidden - always use real SMS
+  // Development modda SMS gönderimi kapalıysa mock yap
+  if (IS_DEVELOPMENT && !ENABLE_REAL_SMS) {
+    console.log(`📱 [MOCK SMS] To: ${phoneNumber}`);
+    console.log(`📱 [MOCK SMS] Message: ${message}`);
+    console.log(`📱 [MOCK SMS] Development mode - SMS not sent`);
+    return;
+  }
 
   if (!client) {
     throw new Error("Twilio client is not initialized. Check your credentials.");
@@ -55,7 +61,7 @@ async function sendTwilioSms(phoneNumber: string, message: string): Promise<void
       to: phoneNumber
     });
 
-    console.log(`SMS sent successfully to ${phoneNumber}. Message SID: ${result.sid}`);
+    console.log(`✅ SMS sent successfully to ${phoneNumber}. Message SID: ${result.sid}`);
   } catch (error: any) {
     console.error(`Failed to send SMS to ${phoneNumber}:`, error);
     console.error(`Twilio Error Code: ${error.code}, Status: ${error.status}`);
