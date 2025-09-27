@@ -9,6 +9,39 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **packages/mobile-app**: React Native + Expo mobile application
 - **packages/shared**: TypeScript types, constants, utilities (@metropolitan/shared)
 
+## 🚀 Production Deployment
+
+### Server Information
+- **Server IP**: 91.99.232.146
+- **Domain**: api.metropolitanfg.pl
+- **SSH Alias**: metropolitan-deploy
+- **Deploy Path**: /opt/metropolitan-backend
+- **Deploy Script**: /opt/deploy.sh
+
+### SSH Configuration
+Add to `~/.ssh/config`:
+```bash
+Host metropolitan-deploy
+    HostName 91.99.232.146
+    User root
+    Port 22
+```
+
+### Quick Deploy Commands
+```bash
+# SSH to production server
+ssh metropolitan-deploy
+
+# Deploy latest prod branch
+ssh metropolitan-deploy "/opt/deploy.sh"
+
+# View production logs
+ssh metropolitan-deploy "docker-compose -f /opt/metropolitan-backend/docker-compose.prod.yml logs -f backend"
+
+# Restart services
+ssh metropolitan-deploy "docker-compose -f /opt/metropolitan-backend/docker-compose.prod.yml restart"
+```
+
 ## ⚡ Development Commands
 
 ### Workspace Operations

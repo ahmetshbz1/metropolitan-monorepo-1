@@ -9,25 +9,28 @@ import { offlineCache } from '@/services/offline-cache.service';
 
 // Environment variables'dan API URL'sini al
 const getApiBaseUrl = (): string => {
-  const envUrl = process.env.EXPO_PUBLIC_API_BASE_URL;
-
-  if (envUrl) {
-    // Production'da HTTPS zorla
-    if (!__DEV__ && !envUrl.startsWith('https://')) {
-      throw new Error("HTTPS required in production");
-    }
-    return envUrl;
-  }
-
-  // Development fallback (sadece development için)
+  // Development mode'da local backend kullan
   if (__DEV__) {
-    // Removed console statement
+    // Önce env'den bak, yoksa local IP kullan
+    const devUrl = process.env.EXPO_PUBLIC_API_BASE_URL;
+    if (devUrl && devUrl.includes('localhost') || devUrl?.includes('192.168') || devUrl?.includes('10.0')) {
+      return devUrl;
+    }
+
+    // Local network IP'ni otomatik algıla (Mac/PC'nin local IP'si)
+    // Bu IP'yi terminal'de "ifconfig | grep inet" ile bulabilirsin
+    // Örnek: 192.168.1.230, 10.0.0.5, vb.
+    console.log('[API] Development mode - Using local backend');
+    console.log('[API] Update EXPO_PUBLIC_API_BASE_URL in .env.local with your local IP:3000');
+
+    // Development'ta fallback olarak production kullan
+    // Ama uyarı ver ki developer local'i ayarlasın
     return "https://api.metropolitanfg.pl";
   }
 
-  throw new Error(
-    "EXPO_PUBLIC_API_BASE_URL environment variable is required for production"
-  );
+  // Production mode - her zaman production URL kullan
+  console.log('[API] Production mode - Using production backend');
+  return "https://api.metropolitanfg.pl";
 };
 
 export const API_BASE_URL = getApiBaseUrl();
