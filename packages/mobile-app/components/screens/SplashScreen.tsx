@@ -46,7 +46,7 @@ export const SplashScreen: React.FC = () => {
         {/* Logo Image */}
         <View>
           <Image
-            source={require("@/assets/images/metropolitan.png")}
+            source={require("@/assets/images/icooon.png")}
             className="w-44 h-44 rounded-2xl"
             resizeMode="cover"
           />

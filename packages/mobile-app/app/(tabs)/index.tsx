@@ -124,12 +124,12 @@ export default function HomeScreen() {
     }, [])
   );
 
+  // Initial data fetch - sadece bir kez çalışır
   useEffect(() => {
-    if (products.length === 0 && !loadingProducts && !error) {
-      fetchCategories();
-      fetchProducts();
-    }
-  }, []); // Dependency array'i boş bırakıyoruz - sadece component mount'ta çalışsın
+    // İlk yükleme için veri çek
+    fetchCategories();
+    fetchProducts();
+  }, []); // Dependency array'i boş - sadece component mount'ta çalışsın
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);

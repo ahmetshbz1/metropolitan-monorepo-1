@@ -39,17 +39,10 @@ export default function ProductsScreen() {
     setSearchQuery(searchQuery);
   }, [searchQuery, setSearchQuery]);
 
+  // Initial data fetch - sadece bir kez çalışır
   useEffect(() => {
-    if (products.length === 0 && !loadingProducts && !error) {
-      fetchProducts(selectedCategory);
-    }
-  }, [
-    products.length,
-    loadingProducts,
-    error,
-    selectedCategory,
-    fetchProducts,
-  ]);
+    fetchProducts(selectedCategory);
+  }, []); // Dependency array'i boş - sadece component mount'ta çalışsın
 
   const handleCategoryPress = useCallback(
     (slug: string) => {

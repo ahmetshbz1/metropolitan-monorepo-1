@@ -7,6 +7,11 @@
     "icon": "./assets/images/icooon.png",
     "scheme": "metropolitan",
     "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/icooon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
     "newArchEnabled": true,
     "locales": {
       "tr": "./locales/native/tr.json",
@@ -39,6 +44,7 @@
     },
     "android": {
       "adaptiveIcon": {
+        "foregroundImage": "./assets/images/icooon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
@@ -63,7 +69,7 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/images/notification-icon.png",
+          "icon": "./assets/images/icooon.png",
           "color": "#ffffff",
           "defaultChannel": "default"
         }

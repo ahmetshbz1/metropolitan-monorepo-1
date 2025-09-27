@@ -291,3 +291,7 @@ const order: Order = await orderService.create(orderData)
 Kullanıcı istekleri,
 mobile-app de sadece tr.json dosyasına çevirileri ekle kullanıcı en sonunda en ve pl json dosyalarını tr.json dosyasından çoğaltacak 
 - hiçbir zaman mock veri kullanma bu kesinlikle yasak !!!!
+- Bundan sonra workflow'umuz:
+  1. Main'de çalış
+  2. Test et
+  3. Prod'a merge et
