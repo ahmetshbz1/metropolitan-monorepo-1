@@ -10,6 +10,24 @@ import * as schema from "../../../../shared/infrastructure/database/schema";
 import { createApp } from "../../../../shared/infrastructure/web/app";
 
 export const paymentRoutes = createApp()
+  // Public endpoint for Stripe config (no auth needed)
+  .get("/payment/config", async () => {
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    // Production'da live key, development'ta test key kullan
+    const publishableKey = isProduction
+      ? process.env.STRIPE_PUBLISHABLE_KEY_LIVE || process.env.STRIPE_PUBLISHABLE_KEY
+      : process.env.STRIPE_PUBLISHABLE_KEY;
+
+    return {
+      success: true,
+      data: {
+        publishableKey,
+        mode: isProduction ? 'live' : 'test',
+        environment: process.env.NODE_ENV || 'development'
+      }
+    };
+  })
   .use(isAuthenticated)
   .group("/me/payment-methods", (app) =>
     app

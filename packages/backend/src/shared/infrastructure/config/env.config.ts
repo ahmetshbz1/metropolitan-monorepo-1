@@ -17,7 +17,10 @@ try {
       const [key, ...valueParts] = line.split('=');
       if (key && valueParts.length > 0) {
         const value = valueParts.join('=').trim();
-        process.env[key] = value;
+        // Only set if not already set (don't override existing env vars)
+        if (!process.env[key]) {
+          process.env[key] = value;
+        }
       }
     }
   });

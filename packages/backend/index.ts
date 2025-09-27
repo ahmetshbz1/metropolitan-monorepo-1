@@ -6,7 +6,6 @@ import { randomBytes } from "crypto";
 import { logger } from "@bogeychan/elysia-logger";
 import { staticPlugin } from "@elysiajs/static";
 import { swagger } from "@elysiajs/swagger";
-import { spawnSync } from "bun";
 import { Elysia } from "elysia";
 import pretty from "pino-pretty";
 
@@ -23,6 +22,7 @@ import { changePhoneRoutes } from "./src/domains/identity/presentation/routes/ch
 import { refreshTokenRoutes } from "./src/domains/identity/presentation/routes/refresh-token.routes";
 import { invoicesRoutes } from "./src/domains/order/presentation/routes/invoices.routes";
 import { ordersRoutes } from "./src/domains/order/presentation/routes/orders.routes";
+import { paymentRoutes } from "./src/domains/payment/presentation/routes/payment.routes";
 import { stripeWebhookRoutes } from "./src/domains/payment/presentation/routes/stripe-webhook.routes";
 import { cartRoutes } from "./src/domains/shopping/presentation/routes/cart.routes";
 import { favoritesRoutes } from "./src/domains/shopping/presentation/routes/favorites.routes";
@@ -38,10 +38,16 @@ import { healthRoutes } from "./src/shared/application/common/health.routes";
 import { utilsRoutes } from "./src/shared/application/common/utils.routes";
 import { db } from "./src/shared/infrastructure/database/connection";
 import { compressionPlugin } from "./src/shared/infrastructure/middleware/compression";
-import { initializeSentry } from "./src/shared/infrastructure/monitoring/sentry.config";
+import {
+  corsConfig,
+  securityHeaders,
+} from "./src/shared/infrastructure/middleware/cors";
 import { setupGlobalErrorHandlers } from "./src/shared/infrastructure/middleware/global-error-handler";
-import { corsConfig, securityHeaders } from "./src/shared/infrastructure/middleware/cors";
-import { createRateLimiter, rateLimitConfigs } from "./src/shared/infrastructure/middleware/rate-limit";
+import {
+  createRateLimiter,
+  rateLimitConfigs,
+} from "./src/shared/infrastructure/middleware/rate-limit";
+import { initializeSentry } from "./src/shared/infrastructure/monitoring/sentry.config";
 
 // Initialize Sentry monitoring
 initializeSentry();
@@ -79,8 +85,14 @@ export const app = new Elysia()
         },
         servers: [
           {
-            url: process.env.NODE_ENV === 'production' ? "https://api.metropolitanfg.pl" : "http://localhost:3000",
-            description: process.env.NODE_ENV === 'production' ? "Production server" : "Development server",
+            url:
+              process.env.NODE_ENV === "production"
+                ? "https://api.metropolitanfg.pl"
+                : "http://localhost:3000",
+            description:
+              process.env.NODE_ENV === "production"
+                ? "Production server"
+                : "Development server",
           },
         ],
         tags: [
@@ -144,6 +156,9 @@ export const app = new Elysia()
       // Cart routes (directly under /api for /me/cart)
       .use(cartRoutes)
 
+      // Payment routes
+      .use(paymentRoutes)
+
       // Catalog Domain
       .use(productRoutes)
 
@@ -170,7 +185,7 @@ if (process.env.NODE_ENV !== "test") {
   console.log(
     `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
   );
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== "production") {
     console.log(`📱 For local development, use your machine's IP address`);
   }
 }
