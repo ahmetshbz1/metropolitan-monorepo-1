@@ -23,6 +23,13 @@ export const corsConfig = () => {
       'https://www.metropolitan.com',
       'https://app.metropolitan.com',
       'https://admin.metropolitan.com',
+      'https://metropolitanfg.pl',
+      'https://www.metropolitanfg.pl',
+      'https://api.metropolitanfg.pl',
+      'capacitor://localhost', // iOS native app
+      'http://localhost', // iOS native app alternative
+      'ionic://localhost', // Ionic apps
+      'file://', // Android native app
     ];
 
     // Add any additional origins from environment variables
