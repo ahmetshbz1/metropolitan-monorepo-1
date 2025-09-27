@@ -23,6 +23,9 @@ COPY .env ./.env
 # Switch to backend directory
 WORKDIR /app/packages/backend
 
+# Copy .env to backend directory too (for drizzle config)
+COPY .env ./.env
+
 # Generate Drizzle client (optional)
 RUN bun run db:generate || true
 
