@@ -7,21 +7,18 @@ import { setupInterceptors } from "./api-interceptors";
 
 // Environment variables'dan API URL'sini al
 const getApiBaseUrl = (): string => {
+  // Environment variable'ı kontrol et
   const envUrl = process.env.EXPO_PUBLIC_API_BASE_URL;
 
-  if (envUrl) {
+  // Eğer environment variable varsa kullan
+  if (envUrl && envUrl.trim() !== '') {
+    console.log('[API] Using environment URL:', envUrl);
     return envUrl;
   }
 
-  // Development fallback (sadece development için)
-  if (__DEV__) {
-    // Removed console statement
-    return "http://192.168.1.230:3000";
-  }
-
-  throw new Error(
-    "EXPO_PUBLIC_API_BASE_URL environment variable is required for production"
-  );
+  // Production için sabit URL kullan
+  console.log('[API] Using production URL: https://api.metropolitanfg.pl');
+  return "https://api.metropolitanfg.pl";
 };
 
 export const API_BASE_URL = getApiBaseUrl();

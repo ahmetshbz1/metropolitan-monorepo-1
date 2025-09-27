@@ -79,8 +79,8 @@ export const app = new Elysia()
         },
         servers: [
           {
-            url: "http://192.168.1.230:3000",
-            description: "Development server",
+            url: process.env.NODE_ENV === 'production' ? "https://api.metropolitanfg.pl" : "http://localhost:3000",
+            description: process.env.NODE_ENV === 'production' ? "Production server" : "Development server",
           },
         ],
         tags: [
@@ -170,5 +170,7 @@ if (process.env.NODE_ENV !== "test") {
   console.log(
     `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
   );
-  console.log(`📱 Mobile app can connect to: http://192.168.1.230:3000`);
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`📱 For local development, use your machine's IP address`);
+  }
 }

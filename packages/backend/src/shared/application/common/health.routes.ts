@@ -110,13 +110,11 @@ function getSystemInfo() {
 
 export const healthRoutes = new Elysia({ prefix: "/health" })
   // Basic health check
-  .get("/", async () => {
-    return {
-      status: "healthy",
-      timestamp: new Date().toISOString(),
-      service: "metropolitan-backend",
-    };
-  })
+  .get("/", () => ({
+    status: "healthy",
+    timestamp: new Date().toISOString(),
+    service: "metropolitan-backend",
+  }))
 
   // Detailed health check
   .get("/detailed", async () => {
