@@ -17,17 +17,11 @@ RUN bun install && bun add uuid
 COPY packages/shared ./packages/shared
 COPY packages/backend ./packages/backend
 
-# Copy .env file for configuration
-COPY .env ./.env
-
 # Switch to backend directory
 WORKDIR /app/packages/backend
 
-# Copy .env to backend directory too (for drizzle config)
-COPY .env ./.env
-
-# Generate Drizzle client (optional)
-RUN bun run db:generate || true
+# Do not bake .env into the image; rely on runtime env from docker-compose
+# and /opt/metropolitan/.env copied by deploy script.
 
 EXPOSE 3000
 
