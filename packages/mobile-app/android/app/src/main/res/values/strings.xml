@@ -1,6 +1,6 @@
 <resources>
   <string name="app_name">metropolitan</string>
+  <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
+  <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
   <string name="expo_system_ui_user_interface_style" translatable="false">automatic</string>
-  <string name="CAMERA">We need access to your camera to take a new profile photo.</string>
-  <string name="READ_EXTERNAL_STORAGE">We need access to your photos to select your profile picture.</string>
 </resources>

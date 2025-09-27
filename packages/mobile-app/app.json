@@ -19,9 +19,9 @@
       "en": "./locales/native/en.json"
     },
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.metropolitan.food",
-      "buildNumber": "10",
+      "buildNumber": "17",
       "config": {
         "googleSignIn": {
           "reservedClientId": "com.googleusercontent.apps.18493082891-0qg1bp44jncs4m7jt6426ud1cv7bil4t"
