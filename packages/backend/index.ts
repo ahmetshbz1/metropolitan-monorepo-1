@@ -56,16 +56,7 @@ const stream = pretty({
   sync: true,
 });
 
-// Root endpoint'te göstermek için git commit hash'ini al
-const getGitCommitHash = () => {
-  try {
-    const { stdout } = spawnSync(["git", "rev-parse", "HEAD"]);
-    return stdout.toString().trim();
-  } catch (_e) {
-    return "unknown";
-  }
-};
-const commitHash = getGitCommitHash();
+// Git commit hash kaldırıldı - production'da gereksiz
 
 export const app = new Elysia()
   .use(corsConfig()) // CORS configuration
@@ -124,7 +115,7 @@ export const app = new Elysia()
       const requestId = randomBytes(8).toString("hex");
 
       if (typeof response === "string") {
-        return `${response} From ${commitHash} (${requestId}) in ${durationInMs.toPrecision(15)}ms.`;
+        return `${response} (${requestId}) in ${durationInMs.toPrecision(15)}ms.`;
       }
       return response;
     },
