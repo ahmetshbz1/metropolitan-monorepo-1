@@ -96,7 +96,7 @@ services:
       # Fakturownia
       FAKTUROWNIA_API_TOKEN: ${FAKTUROWNIA_API_TOKEN}
       FAKTUROWNIA_ACCOUNT: ${FAKTUROWNIA_ACCOUNT}
-      FAKTUROWNIA_API_URL: https://ahmtcan12211.fakturownia.pl
+      FAKTUROWNIA_API_URL: ${FAKTUROWNIA_API_URL}
 
       # Sentry
       SENTRY_DSN: ${SENTRY_DSN}
