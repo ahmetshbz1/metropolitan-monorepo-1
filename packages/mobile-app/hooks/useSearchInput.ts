@@ -24,7 +24,7 @@ export const useSearchInput = ({
 
   // Ekran genişliğini al ve arama input'u için maksimum genişlik hesapla
   const screenWidth = Dimensions.get("window").width;
-  const maxSearchWidth = screenWidth - 100; // Cancel button ve margin için 100px bırak
+  const maxSearchWidth = screenWidth - 60; // Cancel button ve margin için 60px bırak
 
   useEffect(() => {
     if (initialValue.trim()) {
