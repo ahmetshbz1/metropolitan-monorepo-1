@@ -2,7 +2,7 @@
 //  metropolitan backend
 //  Created by Ahmet on 15.01.2025.
 
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
@@ -31,8 +31,10 @@ export class AllergenTranslationService {
       .select()
       .from(allergenTranslations)
       .where(
-        eq(allergenTranslations.allergenKey, allergenKey) &&
+        and(
+          eq(allergenTranslations.allergenKey, allergenKey),
           eq(allergenTranslations.languageCode, languageCode)
+        )
       )
       .limit(1);
 
