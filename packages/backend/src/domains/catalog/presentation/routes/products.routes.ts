@@ -12,6 +12,7 @@ import {
   products,
 } from "../../../../shared/infrastructure/database/schema";
 import { AllergenTranslationService } from "../../../../shared/infrastructure/database/services/allergen-translation.service";
+import { StorageConditionTranslationService } from "../../../../shared/infrastructure/database/services/storage-condition-translation.service";
 import { createApp } from "../../../../shared/infrastructure/web/app";
 
 export const productRoutes = createApp().group("/products", (app) =>
@@ -89,6 +90,8 @@ export const productRoutes = createApp().group("/products", (app) =>
 
         const baseUrl = new URL(request.url).origin;
         const allergenService = new AllergenTranslationService();
+        const storageConditionService =
+          new StorageConditionTranslationService();
 
         const formattedProducts = await Promise.all(
           allProducts.map(async (p) => {
@@ -100,6 +103,18 @@ export const productRoutes = createApp().group("/products", (app) =>
                 lang
               );
               translatedAllergens = allergenTranslation || p.allergens;
+            }
+
+            // Saklama koşulları çevirisini al
+            let translatedStorageConditions = p.storageConditions;
+            if (p.storageConditions) {
+              const storageConditionTranslation =
+                await storageConditionService.getTranslation(
+                  p.storageConditions,
+                  lang
+                );
+              translatedStorageConditions =
+                storageConditionTranslation || p.storageConditions;
             }
 
             return {
@@ -120,7 +135,7 @@ export const productRoutes = createApp().group("/products", (app) =>
                 : undefined,
               netQuantity: p.netQuantity || undefined,
               expiryDate: p.expiryDate || undefined,
-              storageConditions: p.storageConditions || undefined,
+              storageConditions: translatedStorageConditions || undefined,
               manufacturerInfo: p.manufacturerInfo
                 ? JSON.parse(p.manufacturerInfo)
                 : undefined,

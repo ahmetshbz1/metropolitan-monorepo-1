@@ -75,3 +75,16 @@ export const allergenTranslations = pgTable("allergen_translations", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+// Saklama koşulları çevirileri tablosu
+export const storageConditionTranslations = pgTable(
+  "storage_condition_translations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    conditionKey: text("condition_key").notNull(),
+    languageCode: text("language_code").notNull(),
+    translation: text("translation").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  }
+);
