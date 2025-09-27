@@ -17,10 +17,6 @@ pnpm-debug.log*
 lerna-debug.log*
 app.log
 
-# Local environment
-# .env
-# .env.local
-# .env.*.local
 
 # data
 # /data

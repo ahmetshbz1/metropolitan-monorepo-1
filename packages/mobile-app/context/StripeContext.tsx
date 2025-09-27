@@ -30,8 +30,16 @@ export const StripeProviderWrapper: React.FC<{ children: ReactNode }> = ({
       try {
         const response = await api.get("/payment/config");
         if (response.data?.data?.publishableKey) {
-          setPublishableKey(response.data.data.publishableKey);
-          console.log(`Stripe ${response.data.data.mode} mode initialized`);
+          const { publishableKey, mode, environment } = response.data.data;
+          setPublishableKey(publishableKey);
+
+          // Detailed logging to show which key was received
+          console.log(`=== Stripe Configuration Mobile ===`);
+          console.log(`Environment: ${environment}`);
+          console.log(`Mode: ${mode}`);
+          console.log(`Key Type: ${publishableKey.startsWith('pk_test_') ? 'TEST' : publishableKey.startsWith('pk_live_') ? 'LIVE' : 'UNKNOWN'}`);
+          console.log(`Key Preview: ${publishableKey.substring(0, 15)}...`);
+          console.log(`===================================`);
         }
       } catch (error) {
         console.error("Failed to fetch Stripe config:", error);
