@@ -11,10 +11,12 @@ import postgres from "postgres";
 
 import * as schema from "./schema";
 import {
+  allergenTranslations,
   categories,
   categoryTranslations,
-  products,
   productTranslations,
+  products,
+  storageConditionTranslations,
 } from "./schema";
 
 console.log("🌱 Starting to seed the database...");
@@ -55,6 +57,8 @@ const main = async () => {
     try {
       // Sıralama önemli: foreign key constraint'lerini ihlal etmemek için
       // önce bağımlı tablolardaki verileri sil.
+      await db.delete(schema.storageConditionTranslations);
+      await db.delete(schema.allergenTranslations);
       await db.delete(schema.trackingEvents);
       await db.delete(schema.orderItems);
       await db.delete(schema.orders);
@@ -75,6 +79,142 @@ const main = async () => {
       process.exit(1);
     }
 
+    // 1) Sistem sözlükleri: alerjen/koşul çevirileri
+    console.log("🧩 Seeding allergen and storage condition translations...");
+
+    const allergenData: Array<{
+      allergenKey: string;
+      translations: Record<string, string>;
+    }> = [
+      {
+        allergenKey: "dairy",
+        translations: {
+          tr: "Süt ve süt ürünleri içerir",
+          en: "Contains milk and dairy products",
+          pl: "Zawiera mleko i produkty mleczne",
+        },
+      },
+      {
+        allergenKey: "gluten",
+        translations: {
+          tr: "Gluten içerebilir",
+          en: "May contain gluten",
+          pl: "Może zawierać gluten",
+        },
+      },
+      {
+        allergenKey: "eggs",
+        translations: {
+          tr: "Yumurta içerebilir",
+          en: "May contain eggs",
+          pl: "Może zawierać jaja",
+        },
+      },
+      {
+        allergenKey: "soy",
+        translations: {
+          tr: "Soya içerebilir",
+          en: "May contain soy",
+          pl: "Może zawierać soję",
+        },
+      },
+      {
+        allergenKey: "nuts",
+        translations: {
+          tr: "Fındık ve fıstık içerebilir",
+          en: "May contain nuts",
+          pl: "Może zawierać orzechy",
+        },
+      },
+      {
+        allergenKey: "sesame",
+        translations: {
+          tr: "Susam içerebilir",
+          en: "May contain sesame",
+          pl: "Może zawierać sezam",
+        },
+      },
+    ];
+
+    for (const allergen of allergenData) {
+      for (const [languageCode, translation] of Object.entries(
+        allergen.translations
+      )) {
+        await db.insert(allergenTranslations).values({
+          allergenKey: allergen.allergenKey,
+          languageCode,
+          translation,
+        });
+      }
+    }
+
+    const storageConditionData: Array<{
+      conditionKey: string;
+      translations: Record<string, string>;
+    }> = [
+      {
+        conditionKey: "refrigerated",
+        translations: {
+          tr: "Buzdolabında +4°C'de saklanmalıdır",
+          en: "Store in refrigerator at +4°C",
+          pl: "Przechowywać w lodówce w temperaturze +4°C",
+        },
+      },
+      {
+        conditionKey: "cool_dry",
+        translations: {
+          tr: "Serin ve kuru yerde saklanmalıdır",
+          en: "Store in a cool and dry place",
+          pl: "Przechowywać w chłodnym i suchym miejscu",
+        },
+      },
+      {
+        conditionKey: "away_from_sunlight",
+        translations: {
+          tr: "Güneş ışığından korunmalıdır",
+          en: "Keep away from direct sunlight",
+          pl: "Chronić przed bezpośrednim działaniem promieni słonecznych",
+        },
+      },
+      {
+        conditionKey: "consume_within_3_days",
+        translations: {
+          tr: "Açıldıktan sonra 3 gün içinde tüketilmelidir",
+          en: "Consume within 3 days after opening",
+          pl: "Spożyć w ciągu 3 dni po otwarciu",
+        },
+      },
+      {
+        conditionKey: "room_temperature",
+        translations: {
+          tr: "Oda sıcaklığında saklanmalıdır",
+          en: "Store at room temperature",
+          pl: "Przechowywać w temperaturze pokojowej",
+        },
+      },
+      {
+        conditionKey: "freezer",
+        translations: {
+          tr: "Dondurucuda -18°C'de saklanmalıdır",
+          en: "Store in freezer at -18°C",
+          pl: "Przechowywać w zamrażarce w temperaturze -18°C",
+        },
+      },
+    ];
+
+    for (const condition of storageConditionData) {
+      for (const [languageCode, translation] of Object.entries(
+        condition.translations
+      )) {
+        await db.insert(storageConditionTranslations).values({
+          conditionKey: condition.conditionKey,
+          languageCode,
+          translation,
+        });
+      }
+    }
+
+    // 2) Kategori ve ürün verisi
     const filePath = path.join(
       process.cwd(),
       "data",
