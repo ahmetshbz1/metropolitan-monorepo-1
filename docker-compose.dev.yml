@@ -8,7 +8,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: metropolitan_dev
-      POSTGRES_PASSWORD: dev_password_123
+      POSTGRES_PASSWORD: MetroDev2025SecurePass!
       POSTGRES_DB: metropolitan_dev_db
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --locale=tr_TR.utf8"
     volumes:
@@ -30,6 +30,7 @@ services:
     restart: unless-stopped
     command: >
       redis-server
+      --requirepass MetroRedis2025DevKey!
       --maxmemory 256mb
       --maxmemory-policy allkeys-lru
     volumes:
@@ -39,46 +40,10 @@ services:
     networks:
       - metropolitan_dev_network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD", "redis-cli", "-a", "MetroRedis2025DevKey!", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
-
-  # pgAdmin for Database Management (Development only)
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: metropolitan_pgadmin
-    restart: unless-stopped
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@metropolitan.local
-      PGADMIN_DEFAULT_PASSWORD: admin_password_123
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
-    ports:
-      - "5050:80"
-    networks:
-      - metropolitan_dev_network
-    depends_on:
-      - postgres-dev
-    profiles:
-      - tools
-
-  # Redis Commander for Redis Management (Development only)
-  redis-commander:
-    image: rediscommander/redis-commander:latest
-    container_name: metropolitan_redis_commander
-    restart: unless-stopped
-    environment:
-      REDIS_HOSTS: local:redis-dev:6379
-    ports:
-      - "8081:8081"
-    networks:
-      - metropolitan_dev_network
-    depends_on:
-      - redis-dev
-    profiles:
-      - tools
 
 # Networks
 networks:
@@ -90,6 +55,4 @@ volumes:
   postgres_dev_data:
     driver: local
   redis_dev_data:
-    driver: local
-  pgadmin_data:
     driver: local

@@ -13,6 +13,10 @@ const twilioPhoneNumber = process.env.TWILIO_PHONE_NUMBER?.trim() || "+487321255
 const ENABLE_REAL_SMS = process.env.ENABLE_REAL_SMS === 'true';
 const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
+// Test credentials for Apple Review
+const TEST_PHONE_NUMBER = process.env.TEST_PHONE_NUMBER || '+48123456789';
+const TEST_OTP_CODE = process.env.TEST_OTP_CODE || '555555';
+
 // Initialize Twilio client only if credentials are available
 const client = accountSid && authToken ? twilio(accountSid, authToken) : null;
 
@@ -47,6 +51,11 @@ async function sendTwilioSms(phoneNumber: string, message: string): Promise<void
     console.log(`📱 [MOCK SMS] To: ${phoneNumber}`);
     console.log(`📱 [MOCK SMS] Message: ${message}`);
     console.log(`📱 [MOCK SMS] Development mode - SMS not sent`);
+
+    // Test phone number için özel log
+    if (phoneNumber === TEST_PHONE_NUMBER) {
+      console.log(`🧪 [TEST MODE] Use OTP: ${TEST_OTP_CODE} for phone: ${TEST_PHONE_NUMBER}`);
+    }
     return;
   }
 

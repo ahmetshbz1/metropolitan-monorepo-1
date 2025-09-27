@@ -17,6 +17,9 @@ bun.lockb
 .env.staging
 .env.production
 
+# Server environment file (contains production secrets)
+sunucu.env
+
 # Build outputs
 dist/
 build/

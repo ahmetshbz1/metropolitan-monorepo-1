@@ -11,9 +11,11 @@ const OTP_EXPIRY_SECONDS = 60; // 1 minute (mobile app resend is 60 seconds)
 const OTP_MAX_ATTEMPTS = 3;
 const OTP_RESEND_COOLDOWN = 60; // 1 minute between resends
 
-// NEVER use bypass mode - always use real OTP
-const BYPASS_ENABLED = false; // Mock veri kesinlikle yasak!
-const BYPASS_OTP_CODE = "DISABLED"; // Bu kod artık çalışmayacak
+// Test credentials for Apple Review
+const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
+const ENABLE_REAL_SMS = process.env.ENABLE_REAL_SMS === 'true';
+const TEST_PHONE_NUMBER = process.env.TEST_PHONE_NUMBER || '+48123456789';
+const TEST_OTP_CODE = process.env.TEST_OTP_CODE || '555555';
 
 interface OtpData {
   code: string;
@@ -123,7 +125,15 @@ export async function verifyOtpCode(
     // Normalize phone number to E.164 format
     const formattedPhone = formatPhoneNumber(phoneNumber);
 
-    // Bypass mode is completely disabled - use real OTP only
+    // Test mode for Apple Review - development environment only
+    if (IS_DEVELOPMENT && !ENABLE_REAL_SMS &&
+        formattedPhone === TEST_PHONE_NUMBER && providedCode === TEST_OTP_CODE) {
+      console.log(`🧪 [TEST MODE] OTP verified for test phone: ${TEST_PHONE_NUMBER}`);
+      return {
+        success: true,
+        message: "Test OTP verified successfully."
+      };
+    }
 
     // Get OTP from Redis
     const otpKey = getOtpKey(formattedPhone, action);
