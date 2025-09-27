@@ -1,7 +1,7 @@
 # Production build - Simple version that works
 FROM oven/bun:1-alpine
 
-RUN apk add --no-cache python3 make g++ postgresql-client curl
+RUN apk add --no-cache python3 make g++ postgresql-client curl zip
 
 WORKDIR /app
 
