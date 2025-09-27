@@ -2,7 +2,7 @@
   "expo": {
     "name": "metropolitan",
     "slug": "metropolitan",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "orientation": "portrait",
     "icon": "./assets/images/icooon.png",
     "scheme": "metropolitan",
@@ -21,7 +21,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.metropolitan.food",
-      "buildNumber": "9",
+      "buildNumber": "10",
       "config": {
         "googleSignIn": {
           "reservedClientId": "com.googleusercontent.apps.18493082891-0qg1bp44jncs4m7jt6426ud1cv7bil4t"
@@ -79,7 +79,9 @@
       "typedRoutes": true
     },
     "updates": {
-      "enabled": false
+      "enabled": true,
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/45dcd12c-24ab-49ba-9cdf-b8f73c3f4632"
     },
     "extra": {
       "router": {},
