@@ -78,7 +78,7 @@ const main = async () => {
     const filePath = path.join(
       process.cwd(),
       "data",
-      "yayla_products_kategorili-all.json"
+      "yayla_products_with_images.json"
     );
     const fileContent = fs.readFileSync(filePath, "utf-8");
     const productsData = JSON.parse(fileContent);
@@ -168,7 +168,7 @@ const main = async () => {
         "Gluten içerebilir",
         "Yumurta içerebilir",
         "Soya içerebilir",
-        "Fındık ve fıstık içerebilir"
+        "Fındık ve fıstık içerebilir",
       ];
 
       const sampleNutritionalValues = {
@@ -178,25 +178,26 @@ const main = async () => {
         carbohydrates: `${(Math.random() * 50 + 5).toFixed(1)}g`,
         sugar: `${(Math.random() * 15 + 1).toFixed(1)}g`,
         protein: `${(Math.random() * 20 + 2).toFixed(1)}g`,
-        salt: `${(Math.random() * 2 + 0.1).toFixed(2)}g`
+        salt: `${(Math.random() * 2 + 0.1).toFixed(2)}g`,
       };
 
       const sampleStorageConditions = [
         "Buzdolabında +4°C'de saklanmalıdır",
         "Serin ve kuru yerde saklanmalıdır",
         "Güneş ışığından korunmalıdır",
-        "Açıldıktan sonra 3 gün içinde tüketilmelidir"
+        "Açıldıktan sonra 3 gün içinde tüketilmelidir",
       ];
 
       const sampleManufacturerInfo = {
         name: "Yayla Gıda A.Ş.",
         address: "Organize Sanayi Bölgesi 1. Cadde No:15 Bolu/Türkiye",
         phone: "+90 374 215 10 00",
-        email: "info@yayla.com.tr"
+        email: "info@yayla.com.tr",
       };
 
       // Kategoriye göre özel alanlar
-      const isPerishable = categoryName === "SÜT ÜRÜNLERİ" || categoryName === "ET ÜRÜNLERİ";
+      const isPerishable =
+        categoryName === "SÜT ÜRÜNLERİ" || categoryName === "ET ÜRÜNLERİ";
       const expiryDate = new Date();
       expiryDate.setDate(expiryDate.getDate() + (isPerishable ? 30 : 365));
 
@@ -204,10 +205,14 @@ const main = async () => {
       const sampleBadges = {
         halal: Math.random() > 0.3, // %70 şans helal
         vegetarian: categoryName !== "ET ÜRÜNLERİ", // Et ürünleri dışında vejetaryan
-        vegan: categoryName === "BAKLİYAT" || (categoryName !== "ET ÜRÜNLERİ" && categoryName !== "SÜT ÜRÜNLERİ" && Math.random() > 0.7),
+        vegan:
+          categoryName === "BAKLİYAT" ||
+          (categoryName !== "ET ÜRÜNLERİ" &&
+            categoryName !== "SÜT ÜRÜNLERİ" &&
+            Math.random() > 0.7),
         glutenFree: categoryName !== "UNLU MAMÜLLER", // Unlu mamüller dışında glutensiz
         organic: Math.random() > 0.6, // %40 şans organik
-        lactoseFree: categoryName !== "SÜT ÜRÜNLERİ" // Süt ürünleri dışında laktozsuz
+        lactoseFree: categoryName !== "SÜT ÜRÜNLERİ", // Süt ürünleri dışında laktozsuz
       };
 
       const [newProduct] = await db
@@ -222,16 +227,26 @@ const main = async () => {
           currency: "PLN",
           stock: stock,
           // Yeni eklenen alanlar
-          allergens: categoryName === "SÜT ÜRÜNLERİ" ? sampleAllergens[0] :
-                    categoryName === "UNLU MAMÜLLER" ? sampleAllergens[1] :
-                    Math.random() > 0.5 ? sampleAllergens[Math.floor(Math.random() * sampleAllergens.length)] : null,
+          allergens:
+            categoryName === "SÜT ÜRÜNLERİ"
+              ? sampleAllergens[0]
+              : categoryName === "UNLU MAMÜLLER"
+                ? sampleAllergens[1]
+                : Math.random() > 0.5
+                  ? sampleAllergens[
+                      Math.floor(Math.random() * sampleAllergens.length)
+                    ]
+                  : null,
           nutritionalValues: JSON.stringify(sampleNutritionalValues),
-          netQuantity: productData.tr.size || `${Math.floor(Math.random() * 500) + 100}g`,
+          netQuantity:
+            productData.tr.size || `${Math.floor(Math.random() * 500) + 100}g`,
           expiryDate: expiryDate,
-          storageConditions: isPerishable ? sampleStorageConditions[0] : sampleStorageConditions[1],
+          storageConditions: isPerishable
+            ? sampleStorageConditions[0]
+            : sampleStorageConditions[1],
           manufacturerInfo: JSON.stringify(sampleManufacturerInfo),
           originCountry: "Türkiye",
-          badges: JSON.stringify(sampleBadges)
+          badges: JSON.stringify(sampleBadges),
         })
         .returning({ id: products.id });
       if (!newProduct)
