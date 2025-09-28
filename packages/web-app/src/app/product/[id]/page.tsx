@@ -4,6 +4,7 @@ import { ProductCard } from "@/components/product/ProductCard";
 import ProductDetailTabs from "@/components/product/ProductDetailTabs";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
+import { Lens } from "@/components/ui/lens";
 import { useProducts } from "@/context/ProductContext";
 import { ArrowLeft, Heart, Minus, Plus, ShoppingCart } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -173,11 +174,13 @@ export default function ProductDetailPage() {
                 className="bg-muted rounded-xl overflow-hidden"
               >
                 {product.image ? (
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-contain"
-                  />
+                  <Lens zoomFactor={2} lensSize={120}>
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-contain"
+                    />
+                  </Lens>
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <div className="text-center text-muted-foreground">
