@@ -49,9 +49,10 @@ export const authTokenGuard = (app: Elysia) =>
       }
     })
     .guard({
-      beforeHandle: ({ profile, error }) => {
+      beforeHandle: ({ profile, set }) => {
         if (!profile) {
-          return error(401, "Unauthorized");
+          set.status = 401;
+          return { success: false, message: "Unauthorized" };
         }
       },
     });
