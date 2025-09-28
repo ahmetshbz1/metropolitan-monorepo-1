@@ -353,36 +353,42 @@ export const useAuthHook = () => {
     }
   };
 
-  // Logout
+  // Logout - Mobile pattern'i
   const logout = async () => {
     try {
+      // Server'a logout isteği gönder (manual header)
       if (accessToken) {
-        await api.post("/auth/logout");
+        await api.post("/auth/logout", {}, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
       }
     } catch (error) {
       console.error("Logout error:", error);
-    } finally {
-      // Clear all auth data
-      setUser(null);
-      setToken(null);
-      setAccessToken(null);
-      setRefreshToken(null);
-      setRegistrationToken(null);
-      setIsGuest(false);
-      setGuestId(null);
-      setPhoneNumber(null);
-      setSocialAuthData(null);
-
-      // Clear storage
-      await tokenStorage.clearTokens();
-      await userStorage.clear();
-      await socialAuthStorage.clear();
-      await guestStorage.clearGuestId();
-      await registrationStorage.clearToken();
-
-      // Redirect to home
-      router.push("/");
+      // Server hatası olsa bile local logout devam etsin
     }
+
+    // Local state'i temizle
+    setUser(null);
+    setToken(null);
+    setAccessToken(null);
+    setRefreshToken(null);
+    setRegistrationToken(null);
+    setIsGuest(false);
+    setGuestId(null);
+    setPhoneNumber(null);
+    setSocialAuthData(null);
+
+    // Tüm storage'ı temizle
+    await tokenStorage.clearTokens();
+    await userStorage.clear();
+    await socialAuthStorage.clear();
+    await guestStorage.clearGuestId();
+    await registrationStorage.clearToken();
+
+    // Ana sayfaya yönlendir
+    router.push("/");
   };
 
   // Google Sign-In
