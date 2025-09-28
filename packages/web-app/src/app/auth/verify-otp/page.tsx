@@ -107,7 +107,7 @@ export default function VerifyOtpPage() {
 
       if (result.success) {
         if (result.isNewUser) {
-          router.replace("/auth/complete-profile");
+          router.replace(`/auth/complete-profile?userType=${userType}`);
         } else {
           router.replace("/");
         }

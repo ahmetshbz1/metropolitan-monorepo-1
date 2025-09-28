@@ -108,5 +108,10 @@
     "back": "Geri",
     "go_back": "Geri Dön",
     "lang_code": "tr"
+  },
+  "auth": {
+    "phoneLogin": {
+      "b2bNote": "Kurumsal müşteriler sadece telefon numarası ile katılabilir."
+    }
   }
 }

@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
 import { ArrowLeft, CheckCircle2, Circle, Loader2, User } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -15,6 +15,9 @@ export default function CompleteProfilePage() {
   const { t } = useTranslation();
   const { completeProfile, socialAuthData } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const userType = (searchParams.get("userType") as "individual" | "corporate") || "individual";
 
   const [formData, setFormData] = useState({
     firstName: socialAuthData?.firstName || "",
@@ -22,7 +25,7 @@ export default function CompleteProfilePage() {
     email: socialAuthData?.email || "",
     companyName: "",
     nip: "",
-    userType: "individual" as "individual" | "corporate",
+    userType: userType,
     termsAccepted: false,
     privacyAccepted: false,
     marketingAccepted: false,
@@ -33,7 +36,7 @@ export default function CompleteProfilePage() {
   const isFormValid = () => {
     if (!formData.firstName.trim() || !formData.lastName.trim()) return false;
     if (!formData.email.trim()) return false;
-    if (formData.userType === "corporate" && !formData.companyName.trim()) return false;
+    if (formData.userType === "corporate" && formData.nip.trim().length !== 10) return false;
     if (!formData.termsAccepted || !formData.privacyAccepted) return false;
     return true;
   };
@@ -139,6 +142,22 @@ export default function CompleteProfilePage() {
                   required
                 />
               </div>
+
+              {/* Corporate Fields */}
+              {formData.userType === "corporate" && (
+                <div className="space-y-2">
+                  <Label htmlFor="nip" className="text-sm font-medium">Vergi Numarası (NIP) *</Label>
+                  <Input
+                    id="nip"
+                    type="text"
+                    value={formData.nip}
+                    onChange={handleInputChange("nip")}
+                    className="h-11 bg-muted/50 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    placeholder="1234567890"
+                    maxLength={10}
+                  />
+                </div>
+              )}
 
 
               {/* Terms Section - Mobile-app style */}
