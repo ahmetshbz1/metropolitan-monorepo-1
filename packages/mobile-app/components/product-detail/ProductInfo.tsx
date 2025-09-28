@@ -7,7 +7,6 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import React, { memo, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, TextInput, TouchableOpacity, View } from "react-native";
-import * as Haptics from "expo-haptics";
 
 import CustomBottomSheet from "@/components/CustomBottomSheet";
 import { HapticIconButton } from "@/components/HapticButton";
@@ -16,6 +15,7 @@ import { ThemedView } from "@/components/ThemedView";
 import Colors from "@/constants/Colors";
 import { formatPrice } from "@/core/utils";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useHaptics } from "@/hooks/useHaptics";
 import type { Product } from "@metropolitan/shared";
 
 interface ProductInfoProps {
@@ -36,6 +36,7 @@ export const ProductInfo = memo<ProductInfoProps>(function ProductInfo({
   const { t } = useTranslation();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
+  const { triggerHaptic } = useHaptics();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [sheetReady, setSheetReady] = useState(false);
@@ -107,7 +108,7 @@ export const ProductInfo = memo<ProductInfoProps>(function ProductInfo({
           <TouchableOpacity
             className="flex-row items-center self-start mt-2"
             onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              triggerHaptic();
               bottomSheetRef.current?.present();
             }}
           >
