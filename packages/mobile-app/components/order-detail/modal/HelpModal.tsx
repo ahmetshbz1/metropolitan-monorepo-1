@@ -12,7 +12,7 @@ import { HelpContent } from "@/components/profile/HelpContent";
 type Ref = BottomSheetModal;
 
 // In a real app, you would pass the order's delivery address dynamically.
-const deliveryAddress = "ul. Złota 44, 00-120 Warszawa, Poland";
+const deliveryAddress = "ul. Aleja Krakowska 44, 05-090 Janki, Warsaw";
 
 export const HelpModal = forwardRef<Ref>((_, ref) => {
   const { t } = useTranslation();
@@ -21,6 +21,7 @@ export const HelpModal = forwardRef<Ref>((_, ref) => {
       ref={ref}
       title={t("order_detail.help_modal.title")}
       snapPoints={["60%"]}
+      keepMounted={true}
     >
       <HelpContent
         infoText={t("order_detail.help_modal.info_text")}

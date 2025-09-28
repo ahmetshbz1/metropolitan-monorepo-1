@@ -14,7 +14,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { useHaptics } from "@/hooks/useHaptics";
 
 const supportEmail = "info@metropolitanfg.pl";
-const supportPhone = "+48123456789";
+const supportPhone = "+48 600 790 035";
 
 interface HelpContentProps {
   infoText: string;

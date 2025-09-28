@@ -49,7 +49,7 @@ const NotificationPreferencesSheet = forwardRef<
     push: true,
     email: true,
   });
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const bottomSheetRef = useRef<BottomSheetModal>(null);
 
   useImperativeHandle(ref, () => ({
@@ -62,8 +62,12 @@ const NotificationPreferencesSheet = forwardRef<
 
   // Load preferences when sheet opens
   const loadPreferences = async () => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
 
+    setLoading(true);
     try {
       const response = await api.get("/users/user/notification-preferences");
       if (response.data.success) {
@@ -72,6 +76,8 @@ const NotificationPreferencesSheet = forwardRef<
     } catch (error) {
       // Removed console statement
       showToast(t("app_settings.notification_update_failed"), "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -203,6 +209,8 @@ const NotificationPreferencesSheet = forwardRef<
       ref={bottomSheetRef}
       title={t("app_settings.notification_preferences")}
       snapPoints={["40%"]}
+      loading={loading}
+      keepMounted={true}
     >
       {content}
     </CustomBottomSheet>

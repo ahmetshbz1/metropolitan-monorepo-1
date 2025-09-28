@@ -10,9 +10,9 @@ import {
 } from "@gorhom/bottom-sheet";
 import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
-import { forwardRef, useCallback, useMemo } from "react";
+import { forwardRef, useCallback, useMemo, useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, TouchableOpacity, View } from "react-native";
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -70,6 +70,20 @@ export const TrackingDetailModal = forwardRef<
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
   const { t, i18n } = useTranslation();
+  const [contentReady, setContentReady] = useState(false);
+
+  // Content ready state management
+  useEffect(() => {
+    if (order && trackingEvents !== undefined) {
+      // Small delay to prevent flash of empty content
+      const timer = setTimeout(() => {
+        setContentReady(true);
+      }, 150);
+      return () => clearTimeout(timer);
+    } else {
+      setContentReady(false);
+    }
+  }, [order, trackingEvents]);
 
   const renderBackdrop = useCallback(
     (props: any) => (
@@ -123,7 +137,14 @@ export const TrackingDetailModal = forwardRef<
           </View>
         )}
         <BottomSheetScrollView contentContainerStyle={{ paddingBottom: 20 }}>
-          {trackingEvents.length > 0 ? (
+          {!contentReady ? (
+            <View className="flex-1 justify-center items-center py-8">
+              <ActivityIndicator size="large" color={colors.tint} />
+              <ThemedText className="mt-4 text-center" style={{ color: colors.textSecondary }}>
+                {t("common.loading")}
+              </ThemedText>
+            </View>
+          ) : trackingEvents.length > 0 ? (
             trackingEvents.map((event, index) => (
               <TimelineNode
                 key={event.id}

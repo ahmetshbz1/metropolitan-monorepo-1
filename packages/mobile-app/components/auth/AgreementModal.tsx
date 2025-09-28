@@ -4,9 +4,10 @@
 
 import { ThemedText } from "@/components/ThemedText";
 import Colors from "@/constants/Colors";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  ActivityIndicator,
   Modal,
   NativeScrollEvent,
   ScrollView,
@@ -38,6 +39,20 @@ export const AgreementModal = ({
   const { t } = useTranslation();
 
   const [scrolledToEnd, setScrolledToEnd] = useState(false);
+  const [contentReady, setContentReady] = useState(false);
+
+  // Content ready state management
+  useEffect(() => {
+    if (visible && content) {
+      // Small delay to prevent flash of empty content
+      const timer = setTimeout(() => {
+        setContentReady(true);
+      }, 100);
+      return () => clearTimeout(timer);
+    } else {
+      setContentReady(false);
+    }
+  }, [visible, content]);
 
   const isCloseToBottom = ({
     layoutMeasurement,

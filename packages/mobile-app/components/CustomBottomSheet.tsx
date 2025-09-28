@@ -10,7 +10,7 @@ import {
   BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
 import React, { forwardRef, useCallback, useMemo, useState } from "react";
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Colors from "@/constants/Colors";
@@ -26,9 +26,11 @@ export interface Props {
   snapPoints?: string[];
   onOpenChange?: (open: boolean) => void;
   keepMounted?: boolean; // Keep children mounted after first open for instant reopen
+  loading?: boolean; // Show loading indicator while data is being fetched
+  loadingComponent?: React.ReactNode; // Custom loading component
 }
 
-const CustomBottomSheet = forwardRef<Ref, Props>(({ title, children, snapPoints: customSnapPoints, onOpenChange, keepMounted }, ref) => {
+const CustomBottomSheet = forwardRef<Ref, Props>(({ title, children, snapPoints: customSnapPoints, onOpenChange, keepMounted, loading = false, loadingComponent }, ref) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
   const { bottom: safeAreaBottom } = useSafeAreaInsets();
@@ -107,7 +109,18 @@ const CustomBottomSheet = forwardRef<Ref, Props>(({ title, children, snapPoints:
         contentContainerStyle={{ paddingBottom: safeAreaBottom || 16 }}
         keyboardShouldPersistTaps="handled"
       >
-        {keepMounted ? children : isOpen ? children : null}
+        {loading ? (
+          loadingComponent || (
+            <View className="flex-1 justify-center items-center py-8">
+              <ActivityIndicator size="large" color={colors.tint} />
+              <ThemedText className="mt-4 text-center" style={{ color: colors.textSecondary }}>
+                Yükleniyor...
+              </ThemedText>
+            </View>
+          )
+        ) : (
+          keepMounted ? children : isOpen ? children : null
+        )}
       </BottomSheetScrollView>
     </BottomSheetModal>
   );
