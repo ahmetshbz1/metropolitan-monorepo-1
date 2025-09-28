@@ -83,34 +83,34 @@
   /* Metropolitan Dark Theme - Instagram tarzı saf siyah + turuncu */
   --background: oklch(0 0 0); /* #000000 saf siyah */
   --foreground: oklch(1 0 0); /* #FFFFFF saf beyaz */
-  --card: oklch(0.185 0.003 264.695); /* #1C1C1E iOS koyu gri */
+  --card: oklch(0.2 0 0); /* #333333 saf gri */
   --card-foreground: oklch(1 0 0); /* #FFFFFF */
-  --popover: oklch(0.185 0.003 264.695); /* #1C1C1E */
+  --popover: oklch(0.2 0 0); /* #333333 saf gri */
   --popover-foreground: oklch(1 0 0); /* #FFFFFF */
   --primary: oklch(0.7236 0.1868 48.9); /* #FF7A1A Dark mode turuncu */
   --primary-foreground: oklch(1 0 0); /* #FFFFFF */
-  --secondary: oklch(0.185 0.003 264.695); /* #1C1C1E */
+  --secondary: oklch(0.2 0 0); /* #333333 saf gri */
   --secondary-foreground: oklch(1 0 0); /* #FFFFFF */
-  --muted: oklch(0.23 0.003 264.695); /* #2C2C2E koyu gri */
+  --muted: oklch(0.25 0 0); /* #404040 saf gri */
   --muted-foreground: oklch(0.614 0.046 257.417); /* #9CA3AF orta gri */
-  --accent: oklch(0.23 0.003 264.695); /* #2C2C2E */
+  --accent: oklch(0.25 0 0); /* #404040 saf gri */
   --accent-foreground: oklch(1 0 0); /* #FFFFFF */
   --destructive: oklch(0.62 0.21 22.216); /* #DC2626 dark kırmızı */
-  --border: oklch(0.23 0.003 264.695); /* #2C2C2E */
-  --input: oklch(0.28 0.003 264.695); /* #3C3C3E */
+  --border: oklch(0.25 0 0); /* #404040 saf gri */
+  --input: oklch(0.3 0 0); /* #4D4D4D saf gri */
   --ring: oklch(0.7236 0.1868 48.9); /* Dark turuncu ring */
   --chart-1: oklch(0.7236 0.1868 48.9); /* Dark turuncu */
   --chart-2: oklch(0.6 0.15 140); /* Yeşil */
   --chart-3: oklch(0.65 0.15 260); /* Mavi */
   --chart-4: oklch(0.75 0.15 80); /* Sarı */
   --chart-5: oklch(0.7 0.15 320); /* Mor */
-  --sidebar: oklch(0.185 0.003 264.695); /* #1C1C1E */
+  --sidebar: oklch(0.2 0 0); /* #333333 saf gri */
   --sidebar-foreground: oklch(1 0 0); /* #FFFFFF */
   --sidebar-primary: oklch(0.7236 0.1868 48.9); /* Dark turuncu */
   --sidebar-primary-foreground: oklch(1 0 0); /* #FFFFFF */
-  --sidebar-accent: oklch(0.23 0.003 264.695); /* #2C2C2E */
+  --sidebar-accent: oklch(0.25 0 0); /* #404040 saf gri */
   --sidebar-accent-foreground: oklch(1 0 0); /* #FFFFFF */
-  --sidebar-border: oklch(0.23 0.003 264.695); /* #2C2C2E */
+  --sidebar-border: oklch(0.25 0 0); /* #404040 saf gri */
   --sidebar-ring: oklch(0.7236 0.1868 48.9); /* Dark turuncu */
 }
 
@@ -120,5 +120,22 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
   }
 }

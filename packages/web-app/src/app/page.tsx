@@ -1,138 +1,169 @@
 "use client";
 
+import { HeroSlider } from "@/components/home/HeroSlider";
+import { ProductSection } from "@/components/home/ProductSection";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useEffect, useState } from "react";
+import { Product, Category } from "@metropolitan/shared";
 import { api } from "@/lib/api";
-import { useState } from "react";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function Home() {
-  const [apiStatus, setApiStatus] = useState<string>("Ready");
-  const [loading, setLoading] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation();
 
-  const testAPI = async () => {
-    setLoading(true);
-    try {
-      // Test health check endpoint
-      const response = await api.get("/health");
-      setApiStatus(`✅ Connected - ${response.data.message || "OK"}`);
-    } catch (error: any) {
-      console.error("API Test Error:", error);
-      setApiStatus(`❌ Failed - ${error.response?.data?.error || error.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // API'den ürünleri ve kategorileri çek - mobile-app endpoint'leri kullan
+        const [productsResponse, categoriesResponse] = await Promise.all([
+          api.get("/products", {
+            params: { 
+              lang: "tr", 
+              page: 1, 
+              limit: 20 
+            }
+          }),
+          api.get("/products/categories", {
+            params: { lang: "tr" }
+          })
+        ]);
+        
+        if (productsResponse.data.success) {
+          setProducts(productsResponse.data.data || []);
+        }
+        if (categoriesResponse.data.success) {
+          setCategories(categoriesResponse.data.data || []);
+        }
+      } catch (err: any) {
+        console.error("API fetch error:", err);
+        setError(err.response?.data?.message || t("error.loading_error"));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <section className="container mx-auto px-4 py-8">
+          <div className="h-[300px] md:h-[500px] lg:h-[600px] bg-muted rounded-2xl animate-pulse" />
+        </section>
+        <div className="space-y-8">
+          {[1, 2, 3].map(i => (
+            <section key={i} className="py-8">
+              <div className="container mx-auto px-4">
+                <div className="h-8 bg-muted rounded w-48 mb-6 animate-pulse" />
+                <div className="flex gap-4 overflow-hidden">
+                  {[1, 2, 3, 4].map(j => (
+                    <div key={j} className="w-80 h-80 bg-muted rounded-lg animate-pulse flex-shrink-0" />
+                  ))}
+                </div>
+              </div>
+            </section>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">{t("error.error_occurred")}</h2>
+          <p className="text-muted-foreground mb-6">{error}</p>
+          <Button onClick={() => window.location.reload()}>
+            {t("error.try_again")}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Ürünler yok ise boş diziler döndür
+  const featuredProducts = products.length > 0 ? products.slice(0, 4) : [];
+  const weeklyProducts = products.length > 1 ? products.slice(1, 5) : [];
+  const bestSellers = products.length > 2 ? products.slice(2, 6) : [];
+  const newArrivals = products.length > 3 ? products.slice(3, 7) : [];
+
+  // Eğer hiç ürün yoksa mesaj göster
+  if (!loading && !error && products.length === 0) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">{t("error.no_products")}</h2>
+          <p className="text-muted-foreground">{t("error.no_products_desc")}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="max-w-4xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            Metropolitan Food Group
-          </h1>
-          <p className="text-xl text-muted-foreground">
-            Web Application - Backend Integration Test
+    <div className="min-h-screen bg-background">
+      {/* Hero Section */}
+      <section className="container mx-auto px-4 py-8">
+        <HeroSlider />
+      </section>
+
+      {/* Featured Products */}
+      <ProductSection
+        title={t("home.featured_products")}
+        products={featuredProducts}
+        variant="horizontal"
+      />
+
+      {/* Weekly Special */}
+      <ProductSection
+        title={t("home.weekly_products")}
+        products={weeklyProducts}
+        variant="horizontal"
+      />
+
+      {/* Best Sellers */}
+      <ProductSection
+        title={t("home.bestsellers")}
+        products={bestSellers}
+        variant="horizontal"
+      />
+
+      {/* New Arrivals */}
+      {newArrivals.length > 0 && (
+        <ProductSection
+          title={t("home.new_arrivals")}
+          products={newArrivals}
+          variant="horizontal"
+        />
+      )}
+
+      {/* Call to Action */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-4">
+            {t("home.discover_all")}
+          </h2>
+          <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+            {t("home.discover_subtitle")}
           </p>
+          <Button size="lg" asChild>
+            <Link href="/products">
+              {t("home.view_all_products")}
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
+          </Button>
         </div>
-
-        {/* API Test Card */}
-        <Card className="border-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
-              Backend API Connection Test
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">API Base URL:</p>
-                <p className="text-sm text-muted-foreground font-mono">
-                  {process.env.NEXT_PUBLIC_API_BASE_URL}/api
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="font-medium">Status:</p>
-                <p className="text-sm">{apiStatus}</p>
-              </div>
-            </div>
-
-            <Button
-              onClick={testAPI}
-              disabled={loading}
-              className="w-full"
-            >
-              {loading ? "Testing..." : "Test API Connection"}
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Color Test */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Color System Test</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="space-y-2">
-              <div className="w-full h-12 bg-primary rounded"></div>
-              <p className="text-sm font-medium">Primary</p>
-              <p className="text-xs text-muted-foreground">Metropolitan Orange</p>
-            </div>
-            <div className="space-y-2">
-              <div className="w-full h-12 bg-secondary rounded"></div>
-              <p className="text-sm font-medium">Secondary</p>
-            </div>
-            <div className="space-y-2">
-              <div className="w-full h-12 bg-destructive rounded"></div>
-              <p className="text-sm font-medium">Destructive</p>
-            </div>
-            <div className="space-y-2">
-              <div className="w-full h-12 bg-muted rounded"></div>
-              <p className="text-sm font-medium">Muted</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Next Steps */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Next Steps</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2 text-sm">
-              <li className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                Next.js 15.5 + Tailwind CSS 4.0 ✅
-              </li>
-              <li className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                Mobile-app color system ported ✅
-              </li>
-              <li className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                API configuration ✅
-              </li>
-              <li className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                Auth system implementation 🚧
-              </li>
-              <li className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                Login/Register pages 🚧
-              </li>
-              <li className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                Google authentication 🚧
-              </li>
-              <li className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                User dropdown with shadcn 🚧
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
-      </div>
+      </section>
     </div>
   );
 }

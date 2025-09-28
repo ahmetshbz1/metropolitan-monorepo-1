@@ -1,0 +1,69 @@
+{
+  "navbar": {
+    "products": "Ürünler",
+    "categories": "Kategoriler", 
+    "about": "Hakkımızda",
+    "contact": "İletişim",
+    "search_placeholder": "Ürün ara...",
+    "favorites": "Favoriler",
+    "cart": "Sepet",
+    "login": "Giriş Yap"
+  },
+  "hero": {
+    "title_1": "Kaliteli Gıda Ürünleri",
+    "subtitle_1": "Doğanın en taze ürünleri kapınızda",
+    "title_2": "Hızlı ve Güvenli Teslimat",
+    "subtitle_2": "24 saat içinde kapınızda",
+    "title_3": "Güvenilir Alışveriş",
+    "subtitle_3": "Her zaman yanınızda",
+    "shop_now": "Alışverişe Başla"
+  },
+  "home": {
+    "featured_products": "Öne Çıkan Ürünler",
+    "weekly_products": "Haftanın Özel Ürünleri", 
+    "bestsellers": "En Çok Satanlar",
+    "new_arrivals": "Yeni Gelenler",
+    "discover_all": "Tüm Ürünlerimizi Keşfedin",
+    "discover_subtitle": "Binlerce kaliteli ürün arasından size en uygun olanları bulun. Hızlı teslimat ve güvenli alışverişin keyfini çıkarın.",
+    "view_all_products": "Tüm Ürünleri Gör"
+  },
+  "product": {
+    "add_to_cart": "Sepete Ekle",
+    "adding": "Ekleniyor...",
+    "out_of_stock": "Stokta Yok",
+    "low_stock": "Son {{count}} adet",
+    "organic": "Organik",
+    "halal": "Helal",
+    "no_image": "Resim Yok"
+  },
+  "dropdown": {
+    "favorites": "Favorilerim",
+    "addresses": "Adreslerim",
+    "notifications": "Bildirimler",
+    "account_settings": "Hesap Ayarları",
+    "app_settings": "Uygulama Ayarları",
+    "help_center": "Yardım Merkezi",
+    "legal": "Yasal Bilgiler",
+    "logout": "Çıkış Yap",
+    "login": "Giriş Yap",
+    "theme": "Tema",
+    "language": "Dil",
+    "light_theme": "Açık Tema",
+    "dark_theme": "Koyu Tema",
+    "system_theme": "Sistem",
+    "turkish": "Türkçe",
+    "english": "English",
+    "polish": "Polski"
+  },
+  "loading": {
+    "loading_products": "Ürünler yükleniyor...",
+    "loading": "Yükleniyor..."
+  },
+  "error": {
+    "error_occurred": "Bir Hata Oluştu",
+    "try_again": "Tekrar Dene",
+    "loading_error": "Veriler yüklenirken bir hata oluştu",
+    "no_products": "Henüz Ürün Bulunmuyor",
+    "no_products_desc": "Ürünler yüklenmekte olabilir, lütfen daha sonra tekrar deneyin."
+  }
+}
