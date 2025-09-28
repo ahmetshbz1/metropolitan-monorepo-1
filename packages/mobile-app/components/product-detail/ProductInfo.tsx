@@ -7,6 +7,7 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import React, { memo, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, TextInput, TouchableOpacity, View } from "react-native";
+import * as Haptics from "expo-haptics";
 
 import CustomBottomSheet from "@/components/CustomBottomSheet";
 import { HapticIconButton } from "@/components/HapticButton";
@@ -103,9 +104,10 @@ export const ProductInfo = memo<ProductInfoProps>(function ProductInfo({
             {t(`brands.${product.brand.toLowerCase()}`)}
           </ThemedText>
 
-          <HapticIconButton
+          <TouchableOpacity
             className="flex-row items-center self-start mt-2"
             onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               bottomSheetRef.current?.present();
             }}
           >
@@ -126,7 +128,7 @@ export const ProductInfo = memo<ProductInfoProps>(function ProductInfo({
               color={colors.tint}
               className="ml-1"
             />
-          </HapticIconButton>
+          </TouchableOpacity>
         </View>
         <View className="items-end">
           <ThemedText
