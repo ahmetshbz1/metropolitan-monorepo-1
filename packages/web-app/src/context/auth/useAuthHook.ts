@@ -121,8 +121,8 @@ export const useAuthHook = () => {
       });
 
       if (response.data.success) {
-        if (response.data.profileComplete && response.data.accessToken) {
-          // Complete profile, user logged in
+        // Mevcut kullanıcı - accessToken döndüyse login başarılı
+        if (response.data.accessToken) {
           setUser(response.data.user);
           setAccessToken(response.data.accessToken);
           setRefreshToken(response.data.refreshToken);
@@ -143,8 +143,9 @@ export const useAuthHook = () => {
             message: response.data.message,
             isNewUser: false,
           };
-        } else {
-          // Incomplete profile, save registration token
+        }
+        // Yeni kullanıcı - registrationToken döndüyse profil tamamlama gerekli
+        else if (response.data.registrationToken) {
           setRegistrationToken(response.data.registrationToken);
           await registrationStorage.saveToken(response.data.registrationToken);
 
