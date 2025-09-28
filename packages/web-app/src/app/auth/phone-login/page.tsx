@@ -15,13 +15,15 @@ export default function PhoneLoginPage() {
   const { t } = useTranslation();
   const { sendOTP, signInWithGoogle } = useAuth();
   const router = useRouter();
+  const [countryCode, setCountryCode] = useState("48");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [userType, setUserType] = useState<"individual" | "corporate">("individual");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const isValidPhoneNumber = phoneNumber.length >= 10 && phoneNumber.startsWith("+");
+  const fullPhoneNumber = `+${countryCode}${phoneNumber}`;
+  const isValidPhoneNumber = countryCode.length >= 2 && phoneNumber.length >= 7;
 
   const handleSendOTP = async () => {
     if (!isValidPhoneNumber) {
@@ -33,10 +35,10 @@ export default function PhoneLoginPage() {
     setError("");
 
     try {
-      const result = await sendOTP(phoneNumber, userType);
+      const result = await sendOTP(fullPhoneNumber, userType);
       if (result.success) {
         // Navigate to OTP verification page
-        router.push(`/auth/verify-otp?phone=${encodeURIComponent(phoneNumber)}&userType=${userType}`);
+        router.push(`/auth/verify-otp?phone=${encodeURIComponent(fullPhoneNumber)}&userType=${userType}`);
       } else {
         setError(result.message);
       }
@@ -115,18 +117,37 @@ export default function PhoneLoginPage() {
 
             {/* Phone Number Input */}
             <div className="space-y-2">
-              <Label htmlFor="phone">Telefon Numarası</Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="+90 555 123 4567"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                className="h-11 bg-muted/50 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary"
-              />
-              <p className="text-xs text-muted-foreground">
-                Ülke kodu ile birlikte telefon numaranızı giriniz
-              </p>
+              <Label>Telefon Numarası</Label>
+              <div className="flex gap-3">
+                <div className="w-20">
+                  <Input
+                    type="tel"
+                    placeholder="+48"
+                    value={`+${countryCode}`}
+                    onChange={(e) => {
+                      const cleaned = e.target.value.replace(/\+/g, '');
+                      if (/^\d{0,4}$/.test(cleaned)) {
+                        setCountryCode(cleaned);
+                      }
+                    }}
+                    className="h-11 bg-muted/50 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary text-center font-medium"
+                    maxLength={5}
+                  />
+                </div>
+                <div className="flex-1">
+                  <Input
+                    type="tel"
+                    placeholder="555 123 456"
+                    value={phoneNumber}
+                    onChange={(e) => {
+                      const cleaned = e.target.value.replace(/\D/g, '');
+                      setPhoneNumber(cleaned);
+                    }}
+                    className="h-11 bg-muted/50 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    maxLength={15}
+                  />
+                </div>
+              </div>
             </div>
 
             {/* Error Message */}
