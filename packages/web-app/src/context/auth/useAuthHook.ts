@@ -27,6 +27,7 @@ export const useAuthHook = () => {
   const [token, setToken] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
+
   const [registrationToken, setRegistrationToken] = useState<string | null>(
     null
   );
@@ -50,10 +51,11 @@ export const useAuthHook = () => {
         const savedSocialAuthData = await socialAuthStorage.get();
         const savedRegistrationToken = await registrationStorage.getToken();
 
+        // Sadece user da varsa token'ları restore et
         if (savedAccessToken && savedRefreshToken && savedUser) {
           setAccessToken(savedAccessToken);
           setRefreshToken(savedRefreshToken);
-          setToken(savedAccessToken); // Backward compatibility
+          setToken(savedAccessToken);
           setUser(savedUser);
           setIsGuest(false);
           await syncDeviceIdFromToken(savedAccessToken);
@@ -105,13 +107,14 @@ export const useAuthHook = () => {
     }
   };
 
-  // Verify OTP
+  // Verify OTP - Mobile mantığının kopyası
   const verifyOTP = async (
     phoneNumber: string,
     otpCode: string,
     userType: "individual" | "corporate" = "individual"
   ) => {
     try {
+      // 1. Backend service çağır
       const response = await api.post("/auth/verify-otp", {
         phoneNumber,
         otpCode,
@@ -120,48 +123,67 @@ export const useAuthHook = () => {
         socialAuthData,
       });
 
-      if (response.data.success) {
-        // Mevcut kullanıcı - accessToken döndüyse login başarılı
-        if (response.data.accessToken) {
-          setUser(response.data.user);
-          setAccessToken(response.data.accessToken);
-          setRefreshToken(response.data.refreshToken);
-          setToken(response.data.accessToken);
-          setIsGuest(false);
-          setGuestId(null);
-
-          // Save to storage
-          await tokenStorage.saveTokens(
-            response.data.accessToken,
-            response.data.refreshToken
-          );
-          await userStorage.save(response.data.user);
-          await guestStorage.clearGuestId();
-
-          return {
-            success: true,
-            message: response.data.message,
-            isNewUser: false,
-          };
-        }
-        // Yeni kullanıcı - registrationToken döndüyse profil tamamlama gerekli
-        else if (response.data.registrationToken) {
-          setRegistrationToken(response.data.registrationToken);
-          await registrationStorage.saveToken(response.data.registrationToken);
-
-          return {
-            success: true,
-            message: response.data.message,
-            isNewUser: true,
-          };
-        }
-      } else {
+      if (!response.data.success) {
         return {
           success: false,
           message: response.data.message,
           isNewUser: false,
         };
       }
+
+      // 2. Token varsa kaydet
+      if (response.data.accessToken && response.data.refreshToken) {
+        setAccessToken(response.data.accessToken);
+        setRefreshToken(response.data.refreshToken);
+        setToken(response.data.accessToken);
+        setIsGuest(false);
+        setGuestId(null);
+
+        await tokenStorage.saveTokens(
+          response.data.accessToken,
+          response.data.refreshToken
+        );
+        await guestStorage.clearGuestId();
+
+        // 3. Profile fetch et (manual token header)
+        try {
+          const profileResponse = await api.get("/users/me", {
+            headers: {
+              Authorization: `Bearer ${response.data.accessToken}`
+            }
+          });
+          if (profileResponse.data.success && profileResponse.data.data) {
+            setUser(profileResponse.data.data);
+            await userStorage.save(profileResponse.data.data);
+          }
+        } catch (profileError) {
+          console.error("Profile fetch error:", profileError);
+        }
+
+        return {
+          success: true,
+          message: response.data.message,
+          isNewUser: false,
+        };
+      }
+
+      // Registration token varsa kaydet
+      if (response.data.registrationToken) {
+        setRegistrationToken(response.data.registrationToken);
+        await registrationStorage.saveToken(response.data.registrationToken);
+
+        return {
+          success: true,
+          message: response.data.message,
+          isNewUser: true,
+        };
+      }
+
+      return {
+        success: false,
+        message: "Beklenmeyen yanıt",
+        isNewUser: false,
+      };
     } catch (error: any) {
       return {
         success: false,
@@ -246,12 +268,11 @@ export const useAuthHook = () => {
   // Update User Profile
   const updateUserProfile = async (userData: Partial<WebUser>) => {
     try {
-      const response = await api.put("/user/profile", userData);
+      const response = await api.put("/users/me", userData);
 
-      if (response.data.success) {
-        const updatedUser = { ...user, ...response.data.user };
-        setUser(updatedUser);
-        await userStorage.save(updatedUser);
+      if (response.data.success && response.data.data) {
+        setUser(response.data.data);
+        await userStorage.save(response.data.data);
 
         return { success: true, message: response.data.message };
       } else {
@@ -271,10 +292,10 @@ export const useAuthHook = () => {
   const uploadProfilePhoto = async (file: File) => {
     try {
       const formData = new FormData();
-      formData.append("profilePicture", file);
+      formData.append("photo", file);
 
       const response = await api.post(
-        "/user/upload-profile-picture",
+        "/users/me/profile-photo",
         formData,
         {
           headers: {
@@ -283,10 +304,10 @@ export const useAuthHook = () => {
         }
       );
 
-      if (response.data.success) {
+      if (response.data.success && response.data.data) {
         const updatedUser = {
           ...user,
-          profilePicture: response.data.profilePictureUrl,
+          profilePicture: response.data.data.photoUrl,
         };
         setUser(updatedUser);
         await userStorage.save(updatedUser);
@@ -308,10 +329,10 @@ export const useAuthHook = () => {
   // Refresh User Profile
   const refreshUserProfile = async () => {
     try {
-      const response = await api.get("/user/profile");
-      if (response.data.success) {
-        setUser(response.data.user);
-        await userStorage.save(response.data.user);
+      const response = await api.get("/users/me");
+      if (response.data.success && response.data.data) {
+        setUser(response.data.data);
+        await userStorage.save(response.data.data);
       }
     } catch (error) {
       console.error("Profile refresh error:", error);
