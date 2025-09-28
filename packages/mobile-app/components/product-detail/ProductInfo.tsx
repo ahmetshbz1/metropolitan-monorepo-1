@@ -4,7 +4,7 @@
 
 import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import React, { memo, useMemo, useRef } from "react";
+import React, { memo, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, TextInput, TouchableOpacity, View } from "react-native";
 
@@ -36,6 +36,49 @@ export const ProductInfo = memo<ProductInfoProps>(function ProductInfo({
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
   const bottomSheetRef = useRef<BottomSheetModal>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [sheetReady, setSheetReady] = useState(false);
+  const openTsRef = useRef<number | null>(null);
+  const contentCachedRef = useRef(false);
+
+  // Log + defer heavy content until after interactions to avoid jank
+  useEffect(() => {
+    let rafId: number | null = null;
+    let canceled = false;
+    if (sheetOpen) {
+      openTsRef.current = Date.now();
+      setSheetReady(false);
+      try {
+        // Defer mounting heavy content until animations complete
+        rafId = requestAnimationFrame(() => {
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const { InteractionManager } = require("react-native");
+          InteractionManager.runAfterInteractions(() => {
+            if (!canceled) {
+              setSheetReady(true);
+              // Perf ready (log removed)
+              contentCachedRef.current = true; // cache after first ready
+            }
+          });
+        });
+      } catch (e) {
+        // Fallback: enable content if scheduling fails
+        setSheetReady(true);
+        contentCachedRef.current = true;
+      }
+    } else {
+      // keep sheetReady state for instant reopen if cached
+      if (!contentCachedRef.current) {
+        setSheetReady(false);
+      }
+      openTsRef.current = null;
+      // Modal closed (log removed)
+    }
+    return () => {
+      canceled = true;
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, [sheetOpen]);
 
   // Memoize numeric quantity calculation
   const numericQuantity = useMemo(
@@ -202,9 +245,15 @@ export const ProductInfo = memo<ProductInfoProps>(function ProductInfo({
       <CustomBottomSheet
         ref={bottomSheetRef}
         title={t("product_detail.product_details_sheet_title")}
+        onOpenChange={(open) => {
+          setSheetOpen(open);
+        }}
+        keepMounted
       >
         <View className="p-4">
-          {/* Sertifika Badge'leri */}
+          {/* Render content immediately; rely on gesture + keepMounted for smoothness */}
+          <>
+            {/* Sertifika Badge'leri */}
           {product.badges && Object.values(product.badges).some((v) => v) && (
             <View className="mb-5">
               <ScrollView
@@ -614,6 +663,7 @@ export const ProductInfo = memo<ProductInfoProps>(function ProductInfo({
 
           {/* Alt boşluk için */}
           <View className="h-8" />
+          </>
         </View>
       </CustomBottomSheet>
     </ThemedView>
