@@ -24,13 +24,16 @@ export interface Props {
   title: string;
   children: React.ReactNode;
   snapPoints?: string[];
+  onOpenChange?: (open: boolean) => void;
+  keepMounted?: boolean; // Keep children mounted after first open for instant reopen
 }
 
-const CustomBottomSheet = forwardRef<Ref, Props>(({ title, children, snapPoints: customSnapPoints }, ref) => {
+const CustomBottomSheet = forwardRef<Ref, Props>(({ title, children, snapPoints: customSnapPoints, onOpenChange, keepMounted }, ref) => {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
   const { bottom: safeAreaBottom } = useSafeAreaInsets();
   const [isOpen, setIsOpen] = useState(false);
+  const [everOpened, setEverOpened] = useState(false);
 
   // Set a maximum snap point, enableDynamicSizing will adjust to content.
   const snapPoints = useMemo(() => customSnapPoints || ["90%"], [customSnapPoints]);
@@ -83,7 +86,18 @@ const CustomBottomSheet = forwardRef<Ref, Props>(({ title, children, snapPoints:
       snapPoints={snapPoints}
       enableDynamicSizing={false} // Dinamik boyutlandırmayı kapat, sadece snapPoints kullan
       enableDismissOnClose
-      onChange={(index) => setIsOpen(index >= 0)}
+      enablePanDownToClose
+      enableContentPanningGesture={false}
+      keyboardBehavior="extend"
+      keyboardBlurBehavior="restore"
+      android_keyboardInputMode="adjustResize"
+      // Ensure sheet is attached to bottom; no floating gap at home indicator
+      onChange={(index) => {
+        const open = index >= 0;
+        setIsOpen(open);
+        if (open && !everOpened) setEverOpened(true);
+        onOpenChange?.(open);
+      }}
       backdropComponent={renderBackdrop}
       handleComponent={renderHandle}
       backgroundStyle={{ backgroundColor: colors.cardBackground }}
@@ -91,8 +105,9 @@ const CustomBottomSheet = forwardRef<Ref, Props>(({ title, children, snapPoints:
       <BottomSheetScrollView
         className="flex-1"
         contentContainerStyle={{ paddingBottom: safeAreaBottom || 16 }}
+        keyboardShouldPersistTaps="handled"
       >
-        {isOpen ? children : null}
+        {keepMounted ? children : isOpen ? children : null}
       </BottomSheetScrollView>
     </BottomSheetModal>
   );
