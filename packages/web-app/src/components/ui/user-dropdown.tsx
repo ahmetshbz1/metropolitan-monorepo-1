@@ -65,6 +65,7 @@ export const UserDropdown = ({
   user = {
     name: "Misafir",
     username: "",
+    email: "",
     avatar: "",
     initials: "M",
     isGuest: true,
@@ -187,7 +188,7 @@ export const UserDropdown = ({
           </DropdownMenuTrigger>
         </TooltipTrigger>
         <TooltipContent className="hidden md:block">
-          <p>{user.isGuest ? "Misafir hesabı" : "Profil menüsü"}</p>
+          <p>{user.isGuest ? "Misafir hesabi" : "Profil menusu"}</p>
         </TooltipContent>
       </Tooltip>
 
@@ -215,6 +216,11 @@ export const UserDropdown = ({
               {user.username && (
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   {user.username}
+                </p>
+              )}
+              {user.email && (
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {user.email}
                 </p>
               )}
             </div>

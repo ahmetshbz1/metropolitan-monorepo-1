@@ -96,7 +96,8 @@ export function Navbar() {
             <UserDropdown
               user={isAuthenticated && user ? {
                 name: user.firstName + " " + user.lastName,
-                username: user.email || user.phone,
+                username: user.phoneNumber,
+                email: user.email,
                 avatar: user.profilePicture,
                 initials: user.firstName?.charAt(0) + user.lastName?.charAt(0),
                 isGuest: false,
