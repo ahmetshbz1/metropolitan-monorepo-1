@@ -32,9 +32,41 @@
     "adding": "Ekleniyor...",
     "out_of_stock": "Stokta Yok",
     "low_stock": "Son {{count}} adet",
+    "in_stock": "Stokta Mevcut",
     "organic": "Organik",
     "halal": "Helal",
-    "no_image": "Resim Yok"
+    "vegetarian": "Vejetaryen",
+    "vegan": "Vegan",
+    "gluten_free": "Glütensiz",
+    "lactose_free": "Laktozsuz",
+    "no_image": "Resim Yok",
+    "description": "Açıklama",
+    "quantity": "Adet",
+    "max_stock": "En fazla {{count}} adet",
+    "guarantee": "Kalite Garantisi",
+    "quality_guarantee": "100% güvende",
+    "fast_delivery": "Hızlı Teslimat",
+    "same_day_delivery": "Aynı gün kargo",
+    "return_policy": "İade Garantisi",
+    "easy_return": "Kolay iade",
+    "certificates": "Sertifikalar",
+    "general_info": "Genel Bilgiler",
+    "net_quantity": "Net Miktar",
+    "origin_country": "Menşei Ülke",
+    "expiry_date": "Son Kullanma Tarihi",
+    "brand": "Marka",
+    "allergens": "Alerjen Bilgileri",
+    "nutritional_values": "Besin Değerleri",
+    "per_100g": "100g başına",
+    "energy": "Enerji",
+    "fat": "Yağ",
+    "saturated_fat": "Doymuş Yağ",
+    "carbohydrates": "Karbonhidrat",
+    "sugar": "Şeker",
+    "protein": "Protein",
+    "salt": "Tuz",
+    "storage_conditions": "Saklama Koşulları",
+    "similar_products": "Benzer Ürünler"
   },
   "dropdown": {
     "favorites": "Favorilerim",
@@ -64,6 +96,11 @@
     "try_again": "Tekrar Dene",
     "loading_error": "Veriler yüklenirken bir hata oluştu",
     "no_products": "Henüz Ürün Bulunmuyor",
-    "no_products_desc": "Ürünler yüklenmekte olabilir, lütfen daha sonra tekrar deneyin."
+    "no_products_desc": "Ürünler yüklenmekte olabilir, lütfen daha sonra tekrar deneyin.",
+    "product_not_found": "Ürün bulunamadı"
+  },
+  "common": {
+    "back": "Geri",
+    "go_back": "Geri Dön"
   }
 }
