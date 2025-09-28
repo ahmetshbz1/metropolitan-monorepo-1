@@ -105,6 +105,17 @@ export function setupRequestInterceptor(api: AxiosInstance) {
       const deviceHeaders = await getDeviceHeaders();
       Object.assign(config.headers, deviceHeaders);
 
+      // Override Accept-Language to use simple format that backend expects
+      const language = typeof window !== 'undefined'
+        ? window.navigator.language?.split('-')[0] || 'tr'
+        : 'tr';
+
+      // Ensure language is one of the supported ones
+      const supportedLanguages = ['tr', 'en', 'pl'];
+      const finalLanguage = supportedLanguages.includes(language) ? language : 'tr';
+
+      config.headers['Accept-Language'] = finalLanguage;
+
       return config;
     },
     (error) => {

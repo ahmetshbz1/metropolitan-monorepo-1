@@ -20,7 +20,10 @@ const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
 export const ProductProvider = ({ children }: { children: ReactNode }) => {
   const { i18n } = useTranslation();
-  const lang = i18n.language;
+  // Backend expects simple language codes (tr|en|pl), not locale codes like tr-TR
+  const rawLang = i18n.language?.split('-')[0] || 'tr';
+  const supportedLanguages = ['tr', 'en', 'pl'];
+  const lang = supportedLanguages.includes(rawLang) ? rawLang : 'tr';
 
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);

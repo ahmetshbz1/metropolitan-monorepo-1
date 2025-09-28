@@ -7,24 +7,25 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { t } = useTranslation();
+  const { user, isAuthenticated, logout } = useAuth();
+  const router = useRouter();
 
   const handleUserAction = (action: string, route?: string) => {
-    console.log("User action:", action, route);
-    // TODO: Handle user actions - navigate to route or perform action
-    if (route) {
-      // Navigate to route
-      window.location.href = route;
+    if (action === "logout") {
+      logout();
+    } else if (route) {
+      router.push(route);
     }
   };
 
   const handleLogin = () => {
-    console.log("Handle login");
-    // TODO: Navigate to login page
-    window.location.href = "/login";
+    router.push("/auth/phone-login");
   };
 
   return (
@@ -92,7 +93,17 @@ export function Navbar() {
             </Button>
 
             {/* User Dropdown */}
-            <UserDropdown onAction={handleUserAction} onLogin={handleLogin} />
+            <UserDropdown
+              user={isAuthenticated && user ? {
+                name: user.firstName + " " + user.lastName,
+                username: user.email || user.phone,
+                avatar: user.profilePicture,
+                initials: user.firstName?.charAt(0) + user.lastName?.charAt(0),
+                isGuest: false,
+              } : undefined}
+              onAction={handleUserAction}
+              onLogin={handleLogin}
+            />
 
             {/* Mobile Menu Button */}
             <Button

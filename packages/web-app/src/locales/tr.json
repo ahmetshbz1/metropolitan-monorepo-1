@@ -106,6 +106,7 @@
   },
   "common": {
     "back": "Geri",
-    "go_back": "Geri Dön"
+    "go_back": "Geri Dön",
+    "lang_code": "tr"
   }
 }
