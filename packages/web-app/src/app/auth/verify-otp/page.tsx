@@ -2,8 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { OTPInput } from "@/components/ui/otp-input";
 import { useAuth } from "@/context/AuthContext";
 import { ArrowLeft, Loader2, Shield } from "lucide-react";
 import Link from "next/link";
@@ -37,12 +36,9 @@ export default function VerifyOTPPage() {
     }
   }, [countdown]);
 
-  // Auto-submit when OTP is 6 digits
-  useEffect(() => {
-    if (otpCode.length === 6) {
-      handleVerifyOTP();
-    }
-  }, [otpCode]);
+  const handleOTPComplete = () => {
+    handleVerifyOTP();
+  };
 
   const handleVerifyOTP = async () => {
     if (otpCode.length !== 6) {
@@ -76,13 +72,13 @@ export default function VerifyOTPPage() {
   const handleResendCode = async () => {
     setResendLoading(true);
     setError("");
+    setOtpCode("");
 
     try {
       const result = await sendOTP(phoneNumber, userType);
       if (result.success) {
         setCountdown(60);
         setCanResend(false);
-        setOtpCode("");
       } else {
         setError(result.message);
       }
@@ -121,22 +117,13 @@ export default function VerifyOTPPage() {
 
           <CardContent className="space-y-6">
             {/* OTP Input */}
-            <div className="space-y-2">
-              <Label htmlFor="otp">Doğrulama Kodu</Label>
-              <Input
-                id="otp"
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                placeholder="123456"
+            <div className="space-y-4">
+              <OTPInput
                 value={otpCode}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, "").slice(0, 6);
-                  setOtpCode(value);
-                }}
-                className="h-11 text-center text-lg tracking-wider bg-muted/50 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                maxLength={6}
-                autoFocus
+                onChange={setOtpCode}
+                onComplete={handleOTPComplete}
+                isError={!!error}
+                disabled={loading}
               />
               <p className="text-xs text-muted-foreground text-center">
                 6 haneli doğrulama kodunu giriniz
