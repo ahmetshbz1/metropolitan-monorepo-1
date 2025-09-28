@@ -1,188 +1,292 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { OTPInput } from "@/components/ui/otp-input";
 import { useAuth } from "@/context/AuthContext";
-import { ArrowLeft, Loader2, Shield } from "lucide-react";
+import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-export default function VerifyOTPPage() {
+const OTP_LENGTH = 6;
+const RESEND_DELAY_SECONDS = 60;
+
+export default function VerifyOtpPage() {
   const { t } = useTranslation();
   const { verifyOTP, sendOTP } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const phoneNumber = searchParams.get("phone") || "";
-  const userType = (searchParams.get("userType") as "individual" | "corporate") || "individual";
+  const phoneParam = searchParams.get("phone") || "";
+  const userTypeParam = searchParams.get("userType");
+
+  const phoneNumber = phoneParam;
+  const userType = useMemo<"individual" | "corporate">(() => {
+    return userTypeParam === "corporate" ? "corporate" : "individual";
+  }, [userTypeParam]);
 
   const [otpCode, setOtpCode] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [resendLoading, setResendLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [countdown, setCountdown] = useState(60);
-  const [canResend, setCanResend] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [cooldown, setCooldown] = useState(RESEND_DELAY_SECONDS);
 
-  // Countdown timer
+  const verifyButtonRef = useRef<HTMLButtonElement | null>(null);
+
   useEffect(() => {
-    if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
-    } else {
-      setCanResend(true);
+    if (!phoneNumber) {
+      router.replace("/auth/phone-login");
     }
-  }, [countdown]);
+  }, [phoneNumber, router]);
 
-  const handleOTPComplete = () => {
-    handleVerifyOTP();
-  };
-
-  const handleVerifyOTP = async () => {
-    if (otpCode.length !== 6) {
-      setError("Lütfen 6 haneli doğrulama kodunu giriniz");
+  useEffect(() => {
+    if (cooldown <= 0) {
       return;
     }
 
-    setLoading(true);
-    setError("");
+    const timer = window.setInterval(() => {
+      setCooldown((prev) => {
+        if (prev <= 0) {
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [cooldown]);
+
+  useEffect(() => {
+    if (phoneNumber) {
+      setCooldown(RESEND_DELAY_SECONDS);
+    }
+  }, [phoneNumber]);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (isVerifying) {
+      return;
+    }
+
+    if (!phoneNumber) {
+      setError(
+        t(
+          "auth.verifyOtp.errors.phoneMissing",
+          "Telefon numarası bulunamadı. Lütfen tekrar giriş yapın."
+        )
+      );
+      return;
+    }
+
+    if (otpCode.length !== OTP_LENGTH) {
+      setError(
+        t(
+          "auth.verifyOtp.errors.invalidLength",
+          "Lütfen 6 haneli doğrulama kodunu giriniz."
+        )
+      );
+      return;
+    }
+
+    setIsVerifying(true);
+    setError(null);
+    setInfo(null);
 
     try {
       const result = await verifyOTP(phoneNumber, otpCode, userType);
+
       if (result.success) {
         if (result.isNewUser) {
-          // New user, redirect to complete profile
-          router.push("/auth/complete-profile");
+          router.replace("/auth/complete-profile");
         } else {
-          // Existing user, redirect to home
-          router.push("/");
+          router.replace("/");
         }
-      } else {
-        setError(result.message);
+        return;
       }
-    } catch (error: any) {
-      setError(error.message || "Doğrulama kodu kontrol edilirken bir hata oluştu");
+
+      setError(
+        result.message ||
+          t(
+            "auth.verifyOtp.errors.verifyFailed",
+            "Doğrulama kodu kontrol edilirken bir hata oluştu."
+          )
+      );
     } finally {
-      setLoading(false);
+      setIsVerifying(false);
     }
   };
 
   const handleResendCode = async () => {
-    setResendLoading(true);
-    setError("");
+    if (isResending || cooldown > 0 || !phoneNumber) {
+      return;
+    }
+
+    setIsResending(true);
+    setError(null);
+    setInfo(null);
     setOtpCode("");
 
     try {
       const result = await sendOTP(phoneNumber, userType);
+
       if (result.success) {
-        setCountdown(60);
-        setCanResend(false);
+        setCooldown(RESEND_DELAY_SECONDS);
+        setInfo(
+          result.message ||
+            t("auth.verifyOtp.info.resent", "Yeni doğrulama kodu gönderildi.")
+        );
       } else {
-        setError(result.message);
+        setError(
+          result.message ||
+            t(
+              "auth.verifyOtp.errors.resendFailed",
+              "Kod tekrar gönderilirken bir hata oluştu."
+            )
+        );
       }
-    } catch (error: any) {
-      setError(error.message || "Kod tekrar gönderilirken bir hata oluştu");
     } finally {
-      setResendLoading(false);
+      setIsResending(false);
     }
   };
+
+  const handleOtpComplete = () => {
+    verifyButtonRef.current?.focus();
+  };
+
+  const countdownLabel = useMemo(() => {
+    if (cooldown <= 0) {
+      return t(
+        "auth.verifyOtp.resendReady",
+        "Tekrar kod gönderebilirsiniz."
+      );
+    }
+    return t("auth.verifyOtp.resendIn", "Tekrar kod için {{second}} sn.", {
+      second: cooldown,
+    });
+  }, [cooldown, t]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
-        {/* Back Button */}
         <div className="mb-6">
           <Button variant="ghost" size="sm" asChild>
             <Link href="/auth/phone-login">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Geri Dön
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              {t("auth.verifyOtp.back", "Geri Dön")}
             </Link>
           </Button>
         </div>
 
         <Card className="border-0 shadow-lg">
-          <CardHeader className="text-center space-y-4">
-            <div className="w-12 h-12 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
-              <Shield className="h-6 w-6 text-primary" />
+          <CardHeader className="space-y-4 text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+              <ShieldCheck className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <CardTitle className="text-2xl font-bold">Doğrulama Kodu</CardTitle>
+              <CardTitle className="text-2xl font-bold">
+                {t("auth.verifyOtp.title", "Doğrulama Kodu")}
+              </CardTitle>
               <CardDescription className="text-base">
-                {phoneNumber} numarasına gönderilen 6 haneli kodu giriniz
+                {t(
+                  "auth.verifyOtp.subtitle",
+                  "{{phone}} numarasına gönderilen 6 haneli kodu giriniz.",
+                  { phone: phoneNumber }
+                )}
               </CardDescription>
             </div>
           </CardHeader>
 
-          <CardContent className="space-y-6">
-            {/* OTP Input */}
-            <div className="space-y-4">
-              <OTPInput
-                value={otpCode}
-                onChange={setOtpCode}
-                onComplete={handleOTPComplete}
-                isError={!!error}
-                disabled={loading}
-              />
-              <p className="text-xs text-muted-foreground text-center">
-                6 haneli doğrulama kodunu giriniz
-              </p>
-            </div>
-
-            {/* Error Message */}
-            {error && (
-              <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg">
-                {error}
+          <CardContent>
+            <form className="space-y-6" onSubmit={handleSubmit} noValidate>
+              <div className="space-y-3">
+                <OTPInput
+                  value={otpCode}
+                  onChange={(value) => {
+                    setOtpCode(value);
+                    setError(null);
+                  }}
+                  onComplete={handleOtpComplete}
+                  isError={Boolean(error)}
+                  disabled={isVerifying}
+                />
+                <p className="text-center text-xs text-muted-foreground">
+                  {t(
+                    "auth.verifyOtp.helper",
+                    "6 haneli doğrulama kodunu giriniz"
+                  )}
+                </p>
               </div>
-            )}
 
-            {/* Verify Button */}
-            <Button
-              onClick={handleVerifyOTP}
-              disabled={otpCode.length !== 6 || loading}
-              className="w-full h-11"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Doğrulanıyor...
-                </>
-              ) : (
-                "Doğrula"
+              {error && (
+                <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+                  {error}
+                </div>
               )}
-            </Button>
 
-            {/* Resend Code */}
-            <div className="text-center space-y-2">
-              {canResend ? (
+              {info && (
+                <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">
+                  {info}
+                </div>
+              )}
+
+              <Button
+                ref={verifyButtonRef}
+                type="submit"
+                className="h-11 w-full"
+                disabled={
+                  otpCode.length !== OTP_LENGTH || isVerifying || !phoneNumber
+                }
+              >
+                {isVerifying ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {t("auth.verifyOtp.verifying", "Doğrulanıyor...")}
+                  </>
+                ) : (
+                  t("auth.verifyOtp.submit", "Doğrula")
+                )}
+              </Button>
+
+              <div className="space-y-2 text-center">
+                <p className="text-sm text-muted-foreground">{countdownLabel}</p>
                 <Button
+                  type="button"
                   variant="ghost"
-                  onClick={handleResendCode}
-                  disabled={resendLoading}
                   className="h-auto p-0 text-sm"
+                  disabled={isResending || cooldown > 0 || !phoneNumber}
+                  onClick={handleResendCode}
                 >
-                  {resendLoading ? (
+                  {isResending ? (
                     <>
-                      <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                      Gönderiliyor...
+                      <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                      {t("auth.verifyOtp.resending", "Gönderiliyor...")}
                     </>
                   ) : (
-                    "Kodu Tekrar Gönder"
+                    t("auth.verifyOtp.resend", "Kodu Tekrar Gönder")
                   )}
                 </Button>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  Kodu tekrar gönderebilirsiniz: {countdown}s
-                </p>
-              )}
-            </div>
+              </div>
 
-            {/* Help Text */}
-            <div className="text-xs text-center text-muted-foreground space-y-1">
-              <p>Kod gelmedi mi?</p>
-              <p>Spam klasörünüzü kontrol edin veya birkaç dakika bekleyin.</p>
-            </div>
+              <div className="space-y-1 text-center text-xs text-muted-foreground">
+                <p>{t("auth.verifyOtp.notReceived.title", "Kod gelmedi mi?")}</p>
+                <p>
+                  {t(
+                    "auth.verifyOtp.notReceived.help",
+                    "Spam klasörünüzü kontrol edin veya birkaç dakika bekleyin."
+                  )}
+                </p>
+              </div>
+            </form>
           </CardContent>
         </Card>
       </div>
