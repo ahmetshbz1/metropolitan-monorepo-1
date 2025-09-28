@@ -13,6 +13,11 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { Icon } from "@iconify/react";
 import { useTheme } from "next-themes";
@@ -58,10 +63,10 @@ const LANGUAGE_OPTIONS = [
 
 export const UserDropdown = ({
   user = {
-    name: "Konuk Kullanıcı",
+    name: "Misafir",
     username: "",
     avatar: "",
-    initials: "KK",
+    initials: "M",
     isGuest: true,
   },
   onAction = () => {},
@@ -161,23 +166,30 @@ export const UserDropdown = ({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button className="flex items-center justify-center w-10 h-10 rounded-full border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-          {user.avatar ? (
-            <Avatar className="size-8">
-              <AvatarImage src={user.avatar} alt={user.name} />
-              <AvatarFallback className="text-xs">
-                {user.initials}
-              </AvatarFallback>
-            </Avatar>
-          ) : (
-            <Icon
-              icon="solar:user-circle-line-duotone"
-              className="size-6 text-gray-600 dark:text-gray-400"
-            />
-          )}
-        </button>
-      </DropdownMenuTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DropdownMenuTrigger asChild>
+            <button className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors">
+              {user.avatar ? (
+                <Avatar className="size-8">
+                  <AvatarImage src={user.avatar} alt={user.name} />
+                  <AvatarFallback className="text-xs">
+                    {user.initials}
+                  </AvatarFallback>
+                </Avatar>
+              ) : (
+                <Icon
+                  icon="solar:user-bold-duotone"
+                  className="size-6 text-primary"
+                />
+              )}
+            </button>
+          </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <TooltipContent className="hidden md:block">
+          <p>{user.isGuest ? "Misafir hesabı" : "Profil menüsü"}</p>
+        </TooltipContent>
+      </Tooltip>
 
       <DropdownMenuContent className="w-72 rounded-2xl p-2" align="end">
         {/* User Header */}
@@ -189,10 +201,10 @@ export const UserDropdown = ({
                 <AvatarFallback>{user.initials}</AvatarFallback>
               </Avatar>
             ) : (
-              <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
                 <Icon
-                  icon="solar:user-circle-line-duotone"
-                  className="size-6 text-gray-600 dark:text-gray-400"
+                  icon="solar:user-bold-duotone"
+                  className="size-6 text-primary"
                 />
               </div>
             )}

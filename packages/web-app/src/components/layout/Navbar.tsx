@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { UserDropdown } from "@/components/ui/user-dropdown";
-import { Heart, Menu, Search, ShoppingCart } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -89,24 +89,6 @@ export function Navbar() {
             {/* Search Button - Mobile */}
             <Button variant="ghost" size="icon" className="md:hidden">
               <Search className="h-5 w-5" />
-            </Button>
-
-            {/* Favorites */}
-            <Button variant="ghost" size="icon" asChild>
-              <Link href="/favorites">
-                <Heart className="h-5 w-5" />
-              </Link>
-            </Button>
-
-            {/* Cart */}
-            <Button variant="ghost" size="icon" className="relative" asChild>
-              <Link href="/cart">
-                <ShoppingCart className="h-5 w-5" />
-                {/* Cart Badge */}
-                <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  0
-                </span>
-              </Link>
             </Button>
 
             {/* User Dropdown */}

@@ -5,6 +5,11 @@ import ProductDetailTabs from "@/components/product/ProductDetailTabs";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { Lens } from "@/components/ui/lens";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useProducts } from "@/context/ProductContext";
 import { motion } from "framer-motion";
 import { ArrowLeft, Heart, Minus, Plus, ShoppingCart } from "lucide-react";
@@ -330,16 +335,23 @@ export default function ProductDetailPage() {
                   : t("product.add_to_cart")}
               </Button>
 
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={toggleFavorite}
-                className={isFavorite ? "text-red-500 border-red-200" : ""}
-              >
-                <Heart
-                  className={`w-5 h-5 ${isFavorite ? "fill-current" : ""}`}
-                />
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={toggleFavorite}
+                    className={isFavorite ? "text-red-500 border-red-200" : ""}
+                  >
+                    <Heart
+                      className={`w-5 h-5 ${isFavorite ? "fill-current" : ""}`}
+                    />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent className="hidden md:block">
+                  <p>{isFavorite ? "Favorilerden çıkar" : "Favorilere ekle"}</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
         </div>
