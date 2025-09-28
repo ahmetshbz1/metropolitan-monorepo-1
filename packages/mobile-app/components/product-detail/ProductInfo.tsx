@@ -103,7 +103,7 @@ export const ProductInfo = memo<ProductInfoProps>(function ProductInfo({
             {t(`brands.${product.brand.toLowerCase()}`)}
           </ThemedText>
 
-          <TouchableOpacity
+          <HapticIconButton
             className="flex-row items-center self-start mt-2"
             onPress={() => {
               bottomSheetRef.current?.present();
@@ -126,7 +126,7 @@ export const ProductInfo = memo<ProductInfoProps>(function ProductInfo({
               color={colors.tint}
               className="ml-1"
             />
-          </TouchableOpacity>
+          </HapticIconButton>
         </View>
         <View className="items-end">
           <ThemedText
