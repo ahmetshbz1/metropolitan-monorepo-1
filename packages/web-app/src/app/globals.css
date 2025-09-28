@@ -45,71 +45,73 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+  /* Metropolitan Light Theme - Turuncu odaklı (#FF6900) */
+  --background: oklch(0.977 0.003 264.695); /* #F8F9FA hafif gri */
+  --foreground: oklch(0.167 0.003 264.695); /* #1A1A1A ultra koyu */
+  --card: oklch(1 0 0); /* #FFFFFF */
+  --card-foreground: oklch(0.167 0.003 264.695); /* #1A1A1A */
+  --popover: oklch(1 0 0); /* #FFFFFF */
+  --popover-foreground: oklch(0.167 0.003 264.695); /* #1A1A1A */
+  --primary: oklch(0.6996 0.201959 44.4414); /* #FF6900 Metropolitan Ana Turuncu */
+  --primary-foreground: oklch(1 0 0); /* #FFFFFF */
+  --secondary: oklch(0.977 0.003 264.695); /* #FAFAFA */
+  --secondary-foreground: oklch(0.167 0.003 264.695); /* #1A1A1A */
+  --muted: oklch(0.929 0.013 255.508); /* #E5E7EB */
+  --muted-foreground: oklch(0.575 0.046 257.417); /* #8E8E93 iOS gri */
+  --accent: oklch(0.957 0.007 247.896); /* #F3F4F6 */
+  --accent-foreground: oklch(0.167 0.003 264.695); /* #1A1A1A */
+  --destructive: oklch(0.577 0.245 27.325); /* #F44336 Material kırmızı */
+  --border: oklch(0.929 0.013 255.508); /* #E5E7EB */
+  --input: oklch(0.929 0.013 255.508); /* #E5E7EB */
+  --ring: oklch(0.6996 0.201959 44.4414); /* Primary turuncu ring */
+  --chart-1: oklch(0.6996 0.201959 44.4414); /* Ana turuncu */
+  --chart-2: oklch(0.5 0.15 140); /* Yeşil */
+  --chart-3: oklch(0.5 0.15 260); /* Mavi */
+  --chart-4: oklch(0.7 0.15 80); /* Sarı */
+  --chart-5: oklch(0.6 0.15 320); /* Mor */
+  --sidebar: oklch(1 0 0); /* #FFFFFF */
+  --sidebar-foreground: oklch(0.167 0.003 264.695); /* #1A1A1A */
+  --sidebar-primary: oklch(0.6996 0.201959 44.4414); /* Ana turuncu */
+  --sidebar-primary-foreground: oklch(1 0 0); /* #FFFFFF */
+  --sidebar-accent: oklch(0.957 0.007 247.896); /* #F3F4F6 */
+  --sidebar-accent-foreground: oklch(0.167 0.003 264.695); /* #1A1A1A */
+  --sidebar-border: oklch(0.929 0.013 255.508); /* #E5E7EB */
+  --sidebar-ring: oklch(0.6996 0.201959 44.4414); /* Ana turuncu */
 }
 
 .dark {
-  --background: oklch(0.129 0.042 264.695);
-  --foreground: oklch(0.984 0.003 247.858);
-  --card: oklch(0.208 0.042 265.755);
-  --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
-  --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.929 0.013 255.508);
-  --primary-foreground: oklch(0.208 0.042 265.755);
-  --secondary: oklch(0.279 0.041 260.031);
-  --secondary-foreground: oklch(0.984 0.003 247.858);
-  --muted: oklch(0.279 0.041 260.031);
-  --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
-  --accent-foreground: oklch(0.984 0.003 247.858);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.551 0.027 264.364);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.208 0.042 265.755);
-  --sidebar-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.279 0.041 260.031);
-  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.551 0.027 264.364);
+  /* Metropolitan Dark Theme - Instagram tarzı saf siyah + turuncu */
+  --background: oklch(0 0 0); /* #000000 saf siyah */
+  --foreground: oklch(1 0 0); /* #FFFFFF saf beyaz */
+  --card: oklch(0.185 0.003 264.695); /* #1C1C1E iOS koyu gri */
+  --card-foreground: oklch(1 0 0); /* #FFFFFF */
+  --popover: oklch(0.185 0.003 264.695); /* #1C1C1E */
+  --popover-foreground: oklch(1 0 0); /* #FFFFFF */
+  --primary: oklch(0.7236 0.1868 48.9); /* #FF7A1A Dark mode turuncu */
+  --primary-foreground: oklch(1 0 0); /* #FFFFFF */
+  --secondary: oklch(0.185 0.003 264.695); /* #1C1C1E */
+  --secondary-foreground: oklch(1 0 0); /* #FFFFFF */
+  --muted: oklch(0.23 0.003 264.695); /* #2C2C2E koyu gri */
+  --muted-foreground: oklch(0.614 0.046 257.417); /* #9CA3AF orta gri */
+  --accent: oklch(0.23 0.003 264.695); /* #2C2C2E */
+  --accent-foreground: oklch(1 0 0); /* #FFFFFF */
+  --destructive: oklch(0.62 0.21 22.216); /* #DC2626 dark kırmızı */
+  --border: oklch(0.23 0.003 264.695); /* #2C2C2E */
+  --input: oklch(0.28 0.003 264.695); /* #3C3C3E */
+  --ring: oklch(0.7236 0.1868 48.9); /* Dark turuncu ring */
+  --chart-1: oklch(0.7236 0.1868 48.9); /* Dark turuncu */
+  --chart-2: oklch(0.6 0.15 140); /* Yeşil */
+  --chart-3: oklch(0.65 0.15 260); /* Mavi */
+  --chart-4: oklch(0.75 0.15 80); /* Sarı */
+  --chart-5: oklch(0.7 0.15 320); /* Mor */
+  --sidebar: oklch(0.185 0.003 264.695); /* #1C1C1E */
+  --sidebar-foreground: oklch(1 0 0); /* #FFFFFF */
+  --sidebar-primary: oklch(0.7236 0.1868 48.9); /* Dark turuncu */
+  --sidebar-primary-foreground: oklch(1 0 0); /* #FFFFFF */
+  --sidebar-accent: oklch(0.23 0.003 264.695); /* #2C2C2E */
+  --sidebar-accent-foreground: oklch(1 0 0); /* #FFFFFF */
+  --sidebar-border: oklch(0.23 0.003 264.695); /* #2C2C2E */
+  --sidebar-ring: oklch(0.7236 0.1868 48.9); /* Dark turuncu */
 }
 
 @layer base {

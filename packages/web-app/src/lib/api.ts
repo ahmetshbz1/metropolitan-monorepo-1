@@ -1,0 +1,37 @@
+// API Client for Web App
+// Based on mobile-app's API structure but adapted for web
+
+import axios from "axios";
+import { setupInterceptors } from "./api-interceptors";
+
+// Environment variables'dan API URL'sini al
+const getApiBaseUrl = (): string => {
+  // Environment variable'ı kontrol et
+  const envUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  // Eğer environment variable varsa kullan
+  if (envUrl && envUrl.trim() !== '') {
+    console.log('[API] Using environment URL:', envUrl);
+    return envUrl;
+  }
+
+  // Production için sabit URL kullan
+  console.log('[API] Using production URL: https://api.metropolitanfg.pl');
+  return "https://api.metropolitanfg.pl";
+};
+
+export const API_BASE_URL = getApiBaseUrl();
+const API_URL = `${API_BASE_URL}/api`;
+
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Setup enhanced interceptors with refresh token support and device fingerprinting
+setupInterceptors(api);
+
+export { api };
+export default api;
