@@ -9,7 +9,7 @@ import {
   BottomSheetModal,
   BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
-import React, { forwardRef, useCallback, useMemo } from "react";
+import React, { forwardRef, useCallback, useMemo, useState } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -30,6 +30,7 @@ const CustomBottomSheet = forwardRef<Ref, Props>(({ title, children, snapPoints:
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
   const { bottom: safeAreaBottom } = useSafeAreaInsets();
+  const [isOpen, setIsOpen] = useState(false);
 
   // Set a maximum snap point, enableDynamicSizing will adjust to content.
   const snapPoints = useMemo(() => customSnapPoints || ["90%"], [customSnapPoints]);
@@ -82,6 +83,7 @@ const CustomBottomSheet = forwardRef<Ref, Props>(({ title, children, snapPoints:
       snapPoints={snapPoints}
       enableDynamicSizing={false} // Dinamik boyutlandırmayı kapat, sadece snapPoints kullan
       enableDismissOnClose
+      onChange={(index) => setIsOpen(index >= 0)}
       backdropComponent={renderBackdrop}
       handleComponent={renderHandle}
       backgroundStyle={{ backgroundColor: colors.cardBackground }}
@@ -90,7 +92,7 @@ const CustomBottomSheet = forwardRef<Ref, Props>(({ title, children, snapPoints:
         className="flex-1"
         contentContainerStyle={{ paddingBottom: safeAreaBottom || 16 }}
       >
-        {children}
+        {isOpen ? children : null}
       </BottomSheetScrollView>
     </BottomSheetModal>
   );
