@@ -3,25 +3,12 @@
 //  Created by Ahmet on 15.01.2025.
 
 import { and, eq } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
 
+import { db as sharedDb } from "../connection";
 import { allergenTranslations } from "../schema";
 
 export class AllergenTranslationService {
-  private db: ReturnType<typeof drizzle>;
-
-  constructor() {
-    const client = postgres({
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT),
-      database: process.env.POSTGRES_DB,
-      user: process.env.POSTGRES_USER,
-      password: process.env.POSTGRES_PASSWORD,
-    });
-
-    this.db = drizzle(client, { schema: { allergenTranslations } });
-  }
+  private db = sharedDb;
 
   async getTranslation(
     allergenKey: string,
