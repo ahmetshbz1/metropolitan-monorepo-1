@@ -1,0 +1,178 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here.
+All colors MUST be HEX for better iOS compatibility.
+*/
+
+@layer base {
+  :root {
+    /* Metropolitan Color Palette - Light Mode */
+    --background: #f8f9fa; /* Hafif gri */
+    --foreground: #1a1a1a; /* Ultra koyu */
+
+    --card: #fafafa; /* Facebook tarzı açık gri */
+    --card-foreground: #1a1a1a;
+
+    --popover: #f8f9fa;
+    --popover-foreground: #1a1a1a;
+
+    --primary: #ff6900; /* Ana turuncu */
+    --primary-foreground: #ffffff;
+
+    --secondary: #fafafa;
+    --secondary-foreground: #1a1a1a;
+
+    --muted: #c7c7cc; /* Çok açık gri */
+    --muted-foreground: #8e8e93; /* iOS tarzı gri */
+
+    --accent: #ff6900;
+    --accent-foreground: #ffffff;
+
+    --success: #4caf50; /* Material Design yeşil */
+    --warning: #ff9800; /* Material Design turuncu */
+    --error: #f44336; /* Material Design kırmızı */
+    --info: #2196f3; /* Material Design mavi */
+
+    --destructive: #f44336;
+    --destructive-foreground: #ffffff;
+
+    --border: #e5e7eb;
+    --input: #e5e7eb;
+    --ring: #ff6900;
+
+    /* Custom gradients */
+    --gradient-primary: linear-gradient(135deg, #ff6900, #e55a00);
+    --gradient-hero: linear-gradient(135deg, #ff6900, #ff8533, #ffb366);
+
+    --radius: 0.5rem;
+
+    --sidebar-background: #fafafa;
+    --sidebar-foreground: #424242;
+    --sidebar-primary: #1a1a1a;
+    --sidebar-primary-foreground: #fafafa;
+    --sidebar-accent: #f5f5f5;
+    --sidebar-accent-foreground: #1a1a1a;
+    --sidebar-border: #c7c7cc;
+    --sidebar-ring: #3b82f6;
+  }
+
+  .dark {
+    /* Metropolitan Color Palette - Dark Mode */
+    --background: #000000; /* Instagram tarzı saf siyah */
+    --foreground: #ffffff; /* Saf beyaz */
+
+    --card: #1c1c1e; /* iOS tarzı koyu gri */
+    --card-foreground: #ffffff;
+
+    --popover: #000000;
+    --popover-foreground: #ffffff;
+
+    --primary: #ff7a1a; /* Daha canlı turuncu */
+    --primary-foreground: #ffffff;
+
+    --secondary: #1c1c1e;
+    --secondary-foreground: #ffffff;
+
+    --muted: #6b7280; /* Koyu gri */
+    --muted-foreground: #9ca3af; /* Orta gri */
+
+    --accent: #ff7a1a;
+    --accent-foreground: #ffffff;
+
+    --success: #10b981; /* Tailwind emerald-500 */
+    --warning: #d97706; /* Tailwind amber-600 */
+    --error: #dc2626; /* Tailwind red-600 */
+    --info: #2563eb; /* Tailwind blue-600 */
+
+    --destructive: #dc2626;
+    --destructive-foreground: #ffffff;
+
+    /* Dark mode gradients */
+    --gradient-primary: linear-gradient(135deg, #ff7a1a, #cc5200);
+    --gradient-hero: linear-gradient(135deg, #ff7a1a, #ff8533, #ffb366);
+
+    --border: #2c2c2e;
+    --input: #2c2c2e;
+    --ring: #d6d6d6;
+    --sidebar-background: #1a1a1a;
+    --sidebar-foreground: #f5f5f5;
+    --sidebar-primary: #3b82f6;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #292929;
+    --sidebar-accent-foreground: #f5f5f5;
+    --sidebar-border: #292929;
+    --sidebar-ring: #3b82f6;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html,
+  body {
+    @apply bg-background text-foreground;
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+    /* iOS True Tone ve Night Shift düzeltmeleri */
+    background: var(--background) !important;
+    color: var(--foreground) !important;
+    color-scheme: light;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+    /* iOS renk düzeltmeleri */
+    background: var(--background) !important;
+    color: var(--foreground) !important;
+    /* True Tone ve Night Shift'i devre dışı bırak */
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  #root {
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+    @apply bg-background;
+    /* iOS renk düzeltmeleri */
+    background: var(--background) !important;
+    color: var(--foreground) !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* iOS Safari için özel düzeltmeler */
+  @supports (-webkit-touch-callout: none) {
+    html,
+    body,
+    #root {
+      /* iOS'ta True Tone'u etkisiz hale getir */
+      background-color: var(--background) !important;
+      color: var(--foreground) !important;
+      /* Renk düzeltmeleri */
+      -webkit-filter: none !important;
+      filter: none !important;
+    }
+
+    /* iOS'ta sarı renk sorununu çöz */
+    * {
+      -webkit-filter: none !important;
+      filter: none !important;
+    }
+  }
+}
+
+/* 3D Carousel Styles */
+.perspective-1000 {
+  perspective: 1000px;
+}

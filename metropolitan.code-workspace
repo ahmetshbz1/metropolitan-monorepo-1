@@ -9,6 +9,10 @@
       "path": "./packages/mobile-app",
     },
     {
+      "name": "Web App",
+      "path": "./packages/web-app",
+    },
+    {
       "name": "Backend",
       "path": "./packages/backend",
     },
@@ -29,6 +33,7 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "eslint.workingDirectories": [
       "packages/mobile-app",
+      "packages/web-app",
       "packages/backend",
       "packages/shared",
     ],
