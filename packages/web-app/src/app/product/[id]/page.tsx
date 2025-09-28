@@ -6,6 +6,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { Lens } from "@/components/ui/lens";
 import { useProducts } from "@/context/ProductContext";
+import { motion } from "framer-motion";
 import { ArrowLeft, Heart, Minus, Plus, ShoppingCart } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -253,23 +254,56 @@ export default function ProductDetailPage() {
                 </label>
                 <div className="flex items-center gap-4">
                   <div className="flex items-center bg-muted rounded-lg">
-                    <button
+                    <motion.button
                       onClick={decreaseQuantity}
                       disabled={quantity <= 1}
                       className="p-2 hover:bg-muted-foreground/10 disabled:opacity-50 disabled:cursor-not-allowed rounded-l-lg transition-colors"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 17,
+                      }}
                     >
                       <Minus className="w-3 h-3" />
-                    </button>
-                    <span className="px-4 py-2 font-medium min-w-[40px] text-center text-sm">
-                      {quantity}
-                    </span>
-                    <button
+                    </motion.button>
+                    <div className="px-4 py-2 font-medium w-12 text-center text-sm flex items-center justify-center overflow-hidden">
+                      <div className="flex">
+                        {quantity
+                          .toString()
+                          .split("")
+                          .map((digit, index) => (
+                            <motion.span
+                              key={`${index}-${digit}`}
+                              initial={{ y: 20, opacity: 0 }}
+                              animate={{ y: 0, opacity: 1 }}
+                              exit={{ y: -20, opacity: 0 }}
+                              transition={{
+                                type: "spring",
+                                stiffness: 300,
+                                damping: 30,
+                              }}
+                            >
+                              {digit}
+                            </motion.span>
+                          ))}
+                      </div>
+                    </div>
+                    <motion.button
                       onClick={increaseQuantity}
                       disabled={quantity >= product.stock}
                       className="p-2 hover:bg-muted-foreground/10 disabled:opacity-50 disabled:cursor-not-allowed rounded-r-lg transition-colors"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 17,
+                      }}
                     >
                       <Plus className="w-3 h-3" />
-                    </button>
+                    </motion.button>
                   </div>
                   <span className="text-sm text-muted-foreground">
                     {t("product.max_stock", { count: product.stock })}
