@@ -8,39 +8,39 @@ All colors MUST be HEX for better iOS compatibility.
 
 @layer base {
   :root {
-    /* Metropolitan Color Palette - Light Mode */
-    --background: #f8f9fa; /* Hafif gri */
-    --foreground: #1a1a1a; /* Ultra koyu */
+    /* Metropolitan Color Palette - Light Mode (Mobile App Uyumlu) */
+    --background: #ffffff; /* Saf beyaz */
+    --foreground: #000000; /* Saf siyah */
 
-    --card: #fafafa; /* Facebook tarzı açık gri */
-    --card-foreground: #1a1a1a;
+    --card: #ffffff; /* Beyaz kart */
+    --card-foreground: #000000;
 
-    --popover: #f8f9fa;
-    --popover-foreground: #1a1a1a;
+    --popover: #ffffff;
+    --popover-foreground: #000000;
 
-    --primary: #ff6900; /* Ana turuncu */
+    --primary: #ff6900; /* Mobile app primary orange */
     --primary-foreground: #ffffff;
 
-    --secondary: #fafafa;
-    --secondary-foreground: #1a1a1a;
+    --secondary: #f8f9fa; /* Mobile app background */
+    --secondary-foreground: #1a1a1a; /* Mobile app text */
 
-    --muted: #c7c7cc; /* Çok açık gri */
-    --muted-foreground: #8e8e93; /* iOS tarzı gri */
+    --muted: #f8f9fa; /* Mobile app background */
+    --muted-foreground: #8e8e93; /* Mobile app textSecondary */
 
-    --accent: #ff6900;
+    --accent: #ff6900; /* Mobile app primary orange */
     --accent-foreground: #ffffff;
 
-    --success: #4caf50; /* Material Design yeşil */
-    --warning: #ff9800; /* Material Design turuncu */
-    --error: #f44336; /* Material Design kırmızı */
-    --info: #2196f3; /* Material Design mavi */
+    --success: #4caf50; /* Mobile app success */
+    --warning: #ff9800; /* Mobile app warning */
+    --error: #f44336; /* Mobile app error */
+    --info: #2196f3; /* Mobile app info */
 
-    --destructive: #f44336;
+    --destructive: #f44336; /* Mobile app error */
     --destructive-foreground: #ffffff;
 
-    --border: #e5e7eb;
-    --input: #e5e7eb;
-    --ring: #ff6900;
+    --border: #e5e7eb; /* Mobile app border */
+    --input: #e5e7eb; /* Mobile app inputBorder */
+    --ring: #ff6900; /* Mobile app primary orange */
 
     /* Custom gradients */
     --gradient-primary: linear-gradient(135deg, #ff6900, #e55a00);
@@ -48,62 +48,62 @@ All colors MUST be HEX for better iOS compatibility.
 
     --radius: 0.5rem;
 
-    --sidebar-background: #fafafa;
-    --sidebar-foreground: #424242;
-    --sidebar-primary: #1a1a1a;
-    --sidebar-primary-foreground: #fafafa;
-    --sidebar-accent: #f5f5f5;
-    --sidebar-accent-foreground: #1a1a1a;
-    --sidebar-border: #c7c7cc;
+    --sidebar-background: #ffffff;
+    --sidebar-foreground: #0f172a;
+    --sidebar-primary: #3b82f6;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #f1f5f9;
+    --sidebar-accent-foreground: #0f172a;
+    --sidebar-border: #e2e8f0;
     --sidebar-ring: #3b82f6;
   }
 
   .dark {
-    /* Metropolitan Color Palette - Dark Mode */
-    --background: #000000; /* Instagram tarzı saf siyah */
-    --foreground: #ffffff; /* Saf beyaz */
+    /* Metropolitan Color Palette - Dark Mode (Mobile App Uyumlu) */
+    --background: #000000; /* Mobile app background */
+    --foreground: #ffffff; /* Mobile app text */
 
-    --card: #1c1c1e; /* iOS tarzı koyu gri */
+    --card: #1c1c1e; /* Mobile app cardBackground */
     --card-foreground: #ffffff;
 
     --popover: #000000;
     --popover-foreground: #ffffff;
 
-    --primary: #ff7a1a; /* Daha canlı turuncu */
+    --primary: #ff7a1a; /* Mobile app primary orange dark */
     --primary-foreground: #ffffff;
 
-    --secondary: #1c1c1e;
+    --secondary: #1c1c1e; /* Mobile app backgroundSecondary */
     --secondary-foreground: #ffffff;
 
-    --muted: #6b7280; /* Koyu gri */
-    --muted-foreground: #9ca3af; /* Orta gri */
+    --muted: #1c1c1e; /* Mobile app backgroundSecondary */
+    --muted-foreground: #9ca3af; /* Mobile app textSecondary */
 
-    --accent: #ff7a1a;
+    --accent: #ff7a1a; /* Mobile app primary orange dark */
     --accent-foreground: #ffffff;
 
-    --success: #10b981; /* Tailwind emerald-500 */
-    --warning: #d97706; /* Tailwind amber-600 */
-    --error: #dc2626; /* Tailwind red-600 */
-    --info: #2563eb; /* Tailwind blue-600 */
+    --success: #10b981; /* Mobile app success dark */
+    --warning: #d97706; /* Mobile app warning dark */
+    --error: #dc2626; /* Mobile app error dark */
+    --info: #2563eb; /* Mobile app info dark */
 
-    --destructive: #dc2626;
+    --destructive: #dc2626; /* Mobile app error dark */
     --destructive-foreground: #ffffff;
 
     /* Dark mode gradients */
-    --gradient-primary: linear-gradient(135deg, #ff7a1a, #cc5200);
-    --gradient-hero: linear-gradient(135deg, #ff7a1a, #ff8533, #ffb366);
+    --gradient-primary: linear-gradient(135deg, #ff7a1a, #e55a00);
+    --gradient-hero: linear-gradient(135deg, #000000, #1c1c1e, #2c2c2e);
 
-    --border: #2c2c2e;
-    --input: #2c2c2e;
-    --ring: #d6d6d6;
-    --sidebar-background: #1a1a1a;
-    --sidebar-foreground: #f5f5f5;
-    --sidebar-primary: #3b82f6;
+    --border: #2c2c2e; /* Mobile app border */
+    --input: #2c2c2e; /* Mobile app inputBorder */
+    --ring: #ff7a1a; /* Mobile app primary orange dark */
+    --sidebar-background: #000000;
+    --sidebar-foreground: #ffffff;
+    --sidebar-primary: #ff7a1a;
     --sidebar-primary-foreground: #ffffff;
-    --sidebar-accent: #292929;
-    --sidebar-accent-foreground: #f5f5f5;
-    --sidebar-border: #292929;
-    --sidebar-ring: #3b82f6;
+    --sidebar-accent: #1c1c1e;
+    --sidebar-accent-foreground: #ffffff;
+    --sidebar-border: #2c2c2e;
+    --sidebar-ring: #ff7a1a;
   }
 }
 
