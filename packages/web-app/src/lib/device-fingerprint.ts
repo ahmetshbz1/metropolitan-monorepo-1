@@ -2,27 +2,46 @@
 // Browser-based device identification
 // Based on mobile-app's device fingerprinting but adapted for web
 
+import { DEVICE_ID_KEY, isServerGeneratedDeviceId } from './device-id';
+
 /**
  * Get browser and device information for fingerprinting
  */
 export async function getDeviceHeaders(): Promise<Record<string, string>> {
   const headers: Record<string, string> = {};
 
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+    return headers;
+  }
+
   try {
     // Browser information
-    headers['X-User-Agent'] = navigator.userAgent;
     headers['X-Platform'] = 'web';
+    headers['X-User-Agent'] = navigator.userAgent;
+    const platform = (navigator as any).userAgentData?.platform || navigator.platform;
+    if (platform) {
+      headers['X-Device-Model'] = platform;
+    }
+    if (navigator.appVersion) {
+      headers['X-App-Version'] = navigator.appVersion;
+    }
 
     // Screen information
-    headers['X-Screen-Width'] = window.screen.width.toString();
-    headers['X-Screen-Height'] = window.screen.height.toString();
+    if (window.screen?.width && window.screen?.height) {
+      headers['X-Screen-Resolution'] = `${window.screen.width}x${window.screen.height}`;
+    }
     headers['X-Viewport-Width'] = window.innerWidth.toString();
     headers['X-Viewport-Height'] = window.innerHeight.toString();
 
     // Browser features
     headers['X-Language'] = navigator.language;
-    headers['X-Languages'] = navigator.languages.join(',');
-    headers['X-Timezone'] = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (navigator.languages?.length) {
+      headers['X-Languages'] = navigator.languages.join(',');
+    }
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (timezone) {
+      headers['X-Timezone'] = timezone;
+    }
     headers['X-Cookie-Enabled'] = navigator.cookieEnabled.toString();
 
     // Hardware information (if available)
@@ -31,15 +50,19 @@ export async function getDeviceHeaders(): Promise<Record<string, string>> {
     }
 
     if ('deviceMemory' in navigator) {
-      headers['X-Device-Memory'] = (navigator as any).deviceMemory.toString();
+      headers['X-Device-Memory'] = (navigator as any).deviceMemory?.toString();
     }
 
     // Connection information (if available)
     if ('connection' in navigator) {
       const connection = (navigator as any).connection;
       if (connection) {
-        headers['X-Connection-Type'] = connection.effectiveType || 'unknown';
-        headers['X-Connection-Downlink'] = connection.downlink?.toString() || 'unknown';
+        if (connection.effectiveType) {
+          headers['X-Connection-Type'] = connection.effectiveType;
+        }
+        if (typeof connection.downlink === 'number') {
+          headers['X-Connection-Downlink'] = connection.downlink.toString();
+        }
       }
     }
 
@@ -53,25 +76,36 @@ export async function getDeviceHeaders(): Promise<Record<string, string>> {
         if (renderer) headers['X-WebGL-Renderer'] = renderer;
         if (vendor) headers['X-WebGL-Vendor'] = vendor;
       }
-    } catch (e) {
+    } catch {
       // WebGL not available or blocked
     }
 
     // Session ID (generated per session)
-    let sessionId = sessionStorage.getItem('metropolitan_session_id');
-    if (!sessionId) {
-      sessionId = generateSessionId();
-      sessionStorage.setItem('metropolitan_session_id', sessionId);
+    try {
+      let sessionId = sessionStorage.getItem('metropolitan_session_id');
+      if (!sessionId) {
+        sessionId = generateSessionId();
+        sessionStorage.setItem('metropolitan_session_id', sessionId);
+      }
+      headers['X-Session-ID'] = sessionId;
+    } catch {
+      // Session storage might be blocked
     }
-    headers['X-Session-ID'] = sessionId;
 
-    // Device ID (persistent across sessions)
-    let deviceId = localStorage.getItem('metropolitan_device_id');
-    if (!deviceId) {
-      deviceId = generateDeviceId();
-      localStorage.setItem('metropolitan_device_id', deviceId);
+    // Device ID from storage (set after successful auth)
+    try {
+      const deviceId = localStorage.getItem(DEVICE_ID_KEY);
+      if (deviceId) {
+        if (isServerGeneratedDeviceId(deviceId)) {
+          headers['X-Device-ID'] = deviceId;
+        } else {
+          // Remove legacy client-side IDs to avoid mismatches
+          localStorage.removeItem(DEVICE_ID_KEY);
+        }
+      }
+    } catch {
+      // Local storage might be blocked
     }
-    headers['X-Device-ID'] = deviceId;
 
   } catch (error) {
     console.warn('Failed to generate device headers:', error);
@@ -85,35 +119,4 @@ export async function getDeviceHeaders(): Promise<Record<string, string>> {
  */
 function generateSessionId(): string {
   return `sess_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-}
-
-/**
- * Generate a unique device ID
- */
-function generateDeviceId(): string {
-  // Use a combination of stable browser features to create a consistent device ID
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-
-  let fingerprint = navigator.userAgent;
-  fingerprint += navigator.language;
-  fingerprint += screen.width + 'x' + screen.height;
-  fingerprint += new Date().getTimezoneOffset();
-
-  if (ctx) {
-    ctx.textBaseline = 'top';
-    ctx.font = '14px Arial';
-    ctx.fillText('Device fingerprint', 2, 2);
-    fingerprint += canvas.toDataURL();
-  }
-
-  // Simple hash function
-  let hash = 0;
-  for (let i = 0; i < fingerprint.length; i++) {
-    const char = fingerprint.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32-bit integer
-  }
-
-  return `web_${Math.abs(hash).toString(36)}_${Date.now().toString(36)}`;
 }

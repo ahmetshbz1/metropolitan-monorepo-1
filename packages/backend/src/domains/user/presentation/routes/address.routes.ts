@@ -15,7 +15,6 @@ export const addressRoutes = createApp()
     app
       .get("/", async ({ db, profile }) => {
         const userAddresses = await db.query.addresses.findMany({
-           
           where: eq(schema.addresses.userId, profile!.userId),
         });
         return { success: true, data: userAddresses };
@@ -26,7 +25,6 @@ export const addressRoutes = createApp()
           const newAddress = await db
             .insert(schema.addresses)
             .values({
-               
               userId: profile!.userId,
               ...body,
             })

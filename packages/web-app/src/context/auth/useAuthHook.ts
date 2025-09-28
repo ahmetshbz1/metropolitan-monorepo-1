@@ -1,15 +1,22 @@
 "use client";
 
-import { useTranslation } from "react-i18next";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import api from "@/lib/api";
-import { socialAuthStorage, tokenStorage, userStorage, guestStorage, registrationStorage } from "./storage";
-import { WebUser, SocialAuthData } from "./types";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  guestStorage,
+  registrationStorage,
+  socialAuthStorage,
+  syncDeviceIdFromToken,
+  tokenStorage,
+  userStorage,
+} from "./storage";
+import { SocialAuthData, WebUser } from "./types";
 
 // Firebase auth for Google
 import { auth } from "@/lib/firebase";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 export const useAuthHook = () => {
   const { t } = useTranslation();
@@ -20,11 +27,15 @@ export const useAuthHook = () => {
   const [token, setToken] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
-  const [registrationToken, setRegistrationToken] = useState<string | null>(null);
+  const [registrationToken, setRegistrationToken] = useState<string | null>(
+    null
+  );
   const [isGuest, setIsGuest] = useState(false);
   const [guestId, setGuestId] = useState<string | null>(null);
   const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
-  const [socialAuthData, setSocialAuthData] = useState<SocialAuthData | null>(null);
+  const [socialAuthData, setSocialAuthData] = useState<SocialAuthData | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
 
   // Initialize auth state from storage
@@ -45,6 +56,7 @@ export const useAuthHook = () => {
           setToken(savedAccessToken); // Backward compatibility
           setUser(savedUser);
           setIsGuest(false);
+          await syncDeviceIdFromToken(savedAccessToken);
         } else if (savedGuestId) {
           setGuestId(savedGuestId);
           setIsGuest(true);
@@ -68,7 +80,10 @@ export const useAuthHook = () => {
   }, []);
 
   // Send OTP
-  const sendOTP = async (phoneNumber: string, userType: "individual" | "corporate" = "individual") => {
+  const sendOTP = async (
+    phoneNumber: string,
+    userType: "individual" | "corporate" = "individual"
+  ) => {
     try {
       const response = await api.post("/auth/send-otp", {
         phoneNumber,
@@ -84,13 +99,18 @@ export const useAuthHook = () => {
     } catch (error: any) {
       return {
         success: false,
-        message: error.response?.data?.message || "OTP gönderilirken bir hata oluştu"
+        message:
+          error.response?.data?.message || "OTP gönderilirken bir hata oluştu",
       };
     }
   };
 
   // Verify OTP
-  const verifyOTP = async (phoneNumber: string, otpCode: string, userType: "individual" | "corporate" = "individual") => {
+  const verifyOTP = async (
+    phoneNumber: string,
+    otpCode: string,
+    userType: "individual" | "corporate" = "individual"
+  ) => {
     try {
       const response = await api.post("/auth/verify-otp", {
         phoneNumber,
@@ -111,26 +131,42 @@ export const useAuthHook = () => {
           setGuestId(null);
 
           // Save to storage
-          await tokenStorage.saveTokens(response.data.accessToken, response.data.refreshToken);
+          await tokenStorage.saveTokens(
+            response.data.accessToken,
+            response.data.refreshToken
+          );
           await userStorage.save(response.data.user);
           await guestStorage.clearGuestId();
 
-          return { success: true, message: response.data.message, isNewUser: false };
+          return {
+            success: true,
+            message: response.data.message,
+            isNewUser: false,
+          };
         } else {
           // Incomplete profile, save registration token
           setRegistrationToken(response.data.registrationToken);
           await registrationStorage.saveToken(response.data.registrationToken);
 
-          return { success: true, message: response.data.message, isNewUser: true };
+          return {
+            success: true,
+            message: response.data.message,
+            isNewUser: true,
+          };
         }
       } else {
-        return { success: false, message: response.data.message, isNewUser: false };
+        return {
+          success: false,
+          message: response.data.message,
+          isNewUser: false,
+        };
       }
     } catch (error: any) {
       return {
         success: false,
-        message: error.response?.data?.message || "OTP doğrulanırken bir hata oluştu",
-        isNewUser: false
+        message:
+          error.response?.data?.message || "OTP doğrulanırken bir hata oluştu",
+        isNewUser: false,
       };
     }
   };
@@ -138,29 +174,38 @@ export const useAuthHook = () => {
   // Complete Profile
   const completeProfile = async (userData: any) => {
     try {
-      const response = await api.post("/users/complete-profile", {
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        email: userData.email,
-        userType: userData.userType,
-        ...(userData.nip ? { nip: userData.nip } : {}),
-        termsAccepted: userData.termsAccepted,
-        privacyAccepted: userData.privacyAccepted,
-        marketingConsent: userData.marketingAccepted,
-        ...(socialAuthData?.uid ? { firebaseUid: socialAuthData.uid } : {}),
-        ...(socialAuthData?.provider ? { authProvider: socialAuthData.provider } : {}),
-      }, {
-        headers: {
-          Authorization: `Bearer ${registrationToken}`,
+      const response = await api.post(
+        "/users/complete-profile",
+        {
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          email: userData.email,
+          userType: userData.userType,
+          ...(userData.nip ? { nip: userData.nip } : {}),
+          termsAccepted: userData.termsAccepted,
+          privacyAccepted: userData.privacyAccepted,
+          marketingConsent: userData.marketingAccepted,
+          ...(socialAuthData?.uid ? { firebaseUid: socialAuthData.uid } : {}),
+          ...(socialAuthData?.provider
+            ? { authProvider: socialAuthData.provider }
+            : {}),
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${registrationToken}`,
+          },
+        }
+      );
 
       if (response.data.success) {
         if (response.data.accessToken && response.data.refreshToken) {
           setAccessToken(response.data.accessToken);
           setRefreshToken(response.data.refreshToken);
           setToken(response.data.accessToken);
-          await tokenStorage.saveTokens(response.data.accessToken, response.data.refreshToken);
+          await tokenStorage.saveTokens(
+            response.data.accessToken,
+            response.data.refreshToken
+          );
         }
 
         setRegistrationToken(null);
@@ -190,7 +235,9 @@ export const useAuthHook = () => {
     } catch (error: any) {
       return {
         success: false,
-        message: error.response?.data?.message || "Profil tamamlanırken bir hata oluştu"
+        message:
+          error.response?.data?.message ||
+          "Profil tamamlanırken bir hata oluştu",
       };
     }
   };
@@ -212,7 +259,9 @@ export const useAuthHook = () => {
     } catch (error: any) {
       return {
         success: false,
-        message: error.response?.data?.message || "Profil güncellenirken bir hata oluştu"
+        message:
+          error.response?.data?.message ||
+          "Profil güncellenirken bir hata oluştu",
       };
     }
   };
@@ -223,14 +272,21 @@ export const useAuthHook = () => {
       const formData = new FormData();
       formData.append("profilePicture", file);
 
-      const response = await api.post("/user/upload-profile-picture", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await api.post(
+        "/user/upload-profile-picture",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       if (response.data.success) {
-        const updatedUser = { ...user, profilePicture: response.data.profilePictureUrl };
+        const updatedUser = {
+          ...user,
+          profilePicture: response.data.profilePictureUrl,
+        };
         setUser(updatedUser);
         await userStorage.save(updatedUser);
 
@@ -241,7 +297,9 @@ export const useAuthHook = () => {
     } catch (error: any) {
       return {
         success: false,
-        message: error.response?.data?.message || "Fotoğraf yüklenirken bir hata oluştu"
+        message:
+          error.response?.data?.message ||
+          "Fotoğraf yüklenirken bir hata oluştu",
       };
     }
   };
@@ -320,7 +378,7 @@ export const useAuthHook = () => {
           firstName: result.user.displayName?.split(" ")[0],
           lastName: result.user.displayName?.split(" ").slice(1).join(" "),
           photoURL: result.user.photoURL,
-          provider: 'google',
+          provider: "google",
         };
         setSocialAuthData(authData);
         await socialAuthStorage.save(authData);
@@ -329,7 +387,7 @@ export const useAuthHook = () => {
         try {
           const requestData: any = {
             firebaseUid: result.user.uid,
-            provider: 'google',
+            provider: "google",
           };
 
           // Only include email if it's not null
@@ -340,7 +398,11 @@ export const useAuthHook = () => {
           const response = await api.post("/auth/social-signin", requestData);
 
           if (response.data.success) {
-            if (response.data.userExists && response.data.profileComplete && response.data.accessToken) {
+            if (
+              response.data.userExists &&
+              response.data.profileComplete &&
+              response.data.accessToken
+            ) {
               // User exists with complete profile, login successful
               setUser(response.data.user);
               setAccessToken(response.data.accessToken);
@@ -348,7 +410,10 @@ export const useAuthHook = () => {
               setToken(response.data.accessToken);
 
               // Save tokens to storage
-              await tokenStorage.saveTokens(response.data.accessToken, response.data.refreshToken);
+              await tokenStorage.saveTokens(
+                response.data.accessToken,
+                response.data.refreshToken
+              );
               await userStorage.save(response.data.user);
 
               router.push("/");
@@ -358,7 +423,7 @@ export const useAuthHook = () => {
               router.push("/auth/phone-login");
               return { success: true };
             }
-          } else if (response.data.error === 'PROVIDER_CONFLICT') {
+          } else if (response.data.error === "PROVIDER_CONFLICT") {
             // Show error message for provider conflict
             return { success: false, error: response.data.message };
           }

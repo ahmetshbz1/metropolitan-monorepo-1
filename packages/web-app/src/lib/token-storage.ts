@@ -2,6 +2,12 @@
 // Browser localStorage based token management
 // Based on mobile-app's token storage but adapted for web
 
+import {
+  deviceIdStorage,
+  isServerGeneratedDeviceId,
+  syncDeviceIdFromToken,
+} from './device-id';
+
 export class TokenStorage {
   private readonly ACCESS_TOKEN_KEY = 'metropolitan_access_token';
   private readonly REFRESH_TOKEN_KEY = 'metropolitan_refresh_token';
@@ -12,6 +18,7 @@ export class TokenStorage {
   async saveAccessToken(token: string): Promise<void> {
     try {
       localStorage.setItem(this.ACCESS_TOKEN_KEY, token);
+      await syncDeviceIdFromToken(token);
     } catch (error) {
       console.error('Failed to save access token:', error);
     }
@@ -80,6 +87,10 @@ export class TokenStorage {
     try {
       localStorage.removeItem(this.ACCESS_TOKEN_KEY);
       localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+      const currentDeviceId = await deviceIdStorage.get();
+      if (currentDeviceId && !isServerGeneratedDeviceId(currentDeviceId)) {
+        await deviceIdStorage.clear();
+      }
     } catch (error) {
       console.error('Failed to remove tokens:', error);
     }

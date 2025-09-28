@@ -1,10 +1,15 @@
-import { WebUser, SocialAuthData } from "./types";
+import { SocialAuthData, WebUser } from "./types";
+import { deviceIdStorage, syncDeviceIdFromToken } from "@/lib/device-id";
+
+export const deviceStorage = deviceIdStorage;
+export { syncDeviceIdFromToken };
 
 // Token storage için localStorage wrapper
 export const tokenStorage = {
   async saveTokens(accessToken: string, refreshToken: string): Promise<void> {
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("refreshToken", refreshToken);
+    await syncDeviceIdFromToken(accessToken);
   },
 
   async getAccessToken(): Promise<string | null> {
