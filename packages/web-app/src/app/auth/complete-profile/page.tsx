@@ -101,29 +101,6 @@ export default function CompleteProfilePage() {
 
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* User Type Selection */}
-              <div className="space-y-3">
-                <Label className="text-sm font-medium">Hesap Türü</Label>
-                <div className="grid grid-cols-2 gap-2">
-                  <Button
-                    type="button"
-                    variant={formData.userType === "individual" ? "default" : "outline"}
-                    onClick={() => setFormData(prev => ({ ...prev, userType: "individual" }))}
-                    className="h-11"
-                  >
-                    Bireysel
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={formData.userType === "corporate" ? "default" : "outline"}
-                    onClick={() => setFormData(prev => ({ ...prev, userType: "corporate" }))}
-                    className="h-11"
-                  >
-                    Kurumsal
-                  </Button>
-                </div>
-              </div>
-
               {/* Name Fields */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -163,33 +140,6 @@ export default function CompleteProfilePage() {
                 />
               </div>
 
-              {/* Corporate Fields */}
-              {formData.userType === "corporate" && (
-                <>
-                  <div className="space-y-2">
-                    <Label htmlFor="companyName" className="text-sm font-medium">Şirket Adı *</Label>
-                    <Input
-                      id="companyName"
-                      type="text"
-                      value={formData.companyName}
-                      onChange={handleInputChange("companyName")}
-                      className="h-11 bg-muted/50 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="nip" className="text-sm font-medium">Vergi Numarası</Label>
-                    <Input
-                      id="nip"
-                      type="text"
-                      value={formData.nip}
-                      onChange={handleInputChange("nip")}
-                      className="h-11 bg-muted/50 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                      placeholder="1234567890"
-                    />
-                  </div>
-                </>
-              )}
 
               {/* Terms Section - Mobile-app style */}
               <div className="space-y-4">

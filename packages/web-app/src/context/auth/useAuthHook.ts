@@ -240,9 +240,13 @@ export const useAuthHook = () => {
         await guestStorage.clearGuestId();
         await socialAuthStorage.clear();
 
-        // Fetch user profile after successful registration
+        // Fetch user profile after successful registration (manual header)
         try {
-          const profileResponse = await api.get("/users/me");
+          const profileResponse = await api.get("/users/me", {
+            headers: {
+              Authorization: `Bearer ${response.data.accessToken}`
+            }
+          });
           if (profileResponse.data.success && profileResponse.data.data) {
             setUser(profileResponse.data.data);
             await userStorage.save(profileResponse.data.data);
