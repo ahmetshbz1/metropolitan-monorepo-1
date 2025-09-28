@@ -1,21 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { useTranslation } from "react-i18next";
-import { useProducts } from "@/context/ProductContext";
-import { ArrowLeft, Heart, ShoppingCart, Plus, Minus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Badge } from "@/components/ui/badge";
 import { ProductCard } from "@/components/product/ProductCard";
+import ProductDetailTabs from "@/components/product/ProductDetailTabs";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Button } from "@/components/ui/button";
+import { useProducts } from "@/context/ProductContext";
+import { ArrowLeft, Heart, Minus, Plus, ShoppingCart } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { t } = useTranslation();
   const { products, loadingProducts, getProductById } = useProducts();
-  
+
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
@@ -27,27 +27,19 @@ export default function ProductDetailPage() {
 
   // Get similar products (same category, excluding current product)
   let similarProducts = products
-    .filter(p => p.id !== params.id && p.category === product?.category)
+    .filter((p) => p.id !== params.id && p.category === product?.category)
     .slice(0, 8);
 
   // If no products in same category, get random other products
   if (similarProducts.length === 0) {
-    similarProducts = products
-      .filter(p => p.id !== params.id)
-      .slice(0, 8);
+    similarProducts = products.filter((p) => p.id !== params.id).slice(0, 8);
   }
-
-  // Debug: Log data to see what's available
-  console.log("Current product:", product);
-  console.log("All products:", products);
-  console.log("Similar products:", similarProducts);
 
   const handleAddToCart = async () => {
     try {
       setIsAddingToCart(true);
       // TODO: Implement add to cart API call
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-      console.log("Added to cart:", { productId: product?.id, quantity });
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
     } catch (error) {
       console.error("Error adding to cart:", error);
     } finally {
@@ -60,9 +52,9 @@ export default function ProductDetailPage() {
   };
 
   const formatPrice = (price: number, currency = "TRY") => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: currency
+    return new Intl.NumberFormat("tr-TR", {
+      style: "currency",
+      currency,
     }).format(price);
   };
 
@@ -82,26 +74,54 @@ export default function ProductDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="animate-pulse">
             {/* Back button skeleton */}
-            <div className="h-10 w-24 bg-muted rounded-lg mb-6"></div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div className="h-10 w-24 bg-muted rounded-lg mb-4"></div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Image skeleton */}
-              <div className="aspect-square bg-muted rounded-3xl"></div>
-              
+              <div className="space-y-3">
+                <div className="w-full max-w-sm mx-auto">
+                  <div className="aspect-square bg-muted rounded-xl"></div>
+                </div>
+              </div>
+
               {/* Content skeleton */}
-              <div className="space-y-6">
-                <div className="h-8 bg-muted rounded-lg w-3/4"></div>
-                <div className="h-6 bg-muted rounded-lg w-1/2"></div>
-                <div className="h-10 bg-muted rounded-lg w-1/3"></div>
-                <div className="space-y-3">
+              <div className="space-y-3">
+                {/* Title & Category */}
+                <div className="space-y-2">
+                  <div className="h-7 bg-muted rounded-lg w-3/4"></div>
+                  <div className="h-4 bg-muted rounded w-1/3"></div>
+                </div>
+
+                {/* Description */}
+                <div className="space-y-2">
                   <div className="h-4 bg-muted rounded w-full"></div>
                   <div className="h-4 bg-muted rounded w-5/6"></div>
                   <div className="h-4 bg-muted rounded w-4/6"></div>
                 </div>
-                <div className="h-12 bg-muted rounded-lg"></div>
+
+                {/* Price */}
+                <div className="h-8 bg-muted rounded-lg w-1/3"></div>
+
+                {/* Stock status */}
+                <div className="h-5 bg-muted rounded-full w-24"></div>
+
+                {/* Quantity selector */}
+                <div className="space-y-2">
+                  <div className="h-4 bg-muted rounded w-12"></div>
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-24 bg-muted rounded-lg"></div>
+                    <div className="h-4 bg-muted rounded w-20"></div>
+                  </div>
+                </div>
+
+                {/* Action buttons */}
+                <div className="flex gap-3">
+                  <div className="h-12 bg-muted rounded-lg flex-1"></div>
+                  <div className="h-12 w-12 bg-muted rounded-lg"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -115,7 +135,9 @@ export default function ProductDetailPage() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">{t("error.product_not_found")}</h2>
+          <h2 className="text-2xl font-bold mb-4">
+            {t("error.product_not_found")}
+          </h2>
           <p className="text-muted-foreground mb-6">{error}</p>
           <Button onClick={() => router.back()}>
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -146,27 +168,28 @@ export default function ProductDetailPage() {
           {/* Product Image */}
           <div className="space-y-3">
             <div className="w-full max-w-sm mx-auto">
-              <AspectRatio ratio={1} className="bg-muted rounded-xl overflow-hidden">
-              {product.image ? (
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-contain"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <div className="text-center text-muted-foreground">
-                    <div className="w-24 h-24 bg-muted-foreground/20 rounded-xl mx-auto mb-4 flex items-center justify-center">
-                      <div className="w-12 h-12 bg-muted-foreground/30 rounded-lg"></div>
+              <AspectRatio
+                ratio={1}
+                className="bg-muted rounded-xl overflow-hidden"
+              >
+                {product.image ? (
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <div className="text-center text-muted-foreground">
+                      <div className="w-24 h-24 bg-muted-foreground/20 rounded-xl mx-auto mb-4 flex items-center justify-center">
+                        <div className="w-12 h-12 bg-muted-foreground/30 rounded-lg"></div>
+                      </div>
+                      <p className="text-sm">{t("product.no_image")}</p>
                     </div>
-                    <p className="text-sm">{t("product.no_image")}</p>
                   </div>
-                </div>
-              )}
+                )}
               </AspectRatio>
             </div>
-
-
           </div>
 
           {/* Product Details */}
@@ -176,9 +199,7 @@ export default function ProductDetailPage() {
               <h1 className="text-2xl font-bold text-foreground mb-1">
                 {product.name}
               </h1>
-              <p className="text-muted-foreground">
-                {product.category}
-              </p>
+              <p className="text-muted-foreground">{product.category}</p>
             </div>
 
             {/* Description */}
@@ -191,13 +212,14 @@ export default function ProductDetailPage() {
             {/* Price */}
             <div className="flex items-baseline gap-3">
               <span className="text-3xl font-bold text-primary">
-                {formatPrice(product.price)}
+                {formatPrice(product.price, product.currency)}
               </span>
-              {product.originalPrice && product.originalPrice > product.price && (
-                <span className="text-lg text-muted-foreground line-through">
-                  {formatPrice(product.originalPrice)}
-                </span>
-              )}
+              {product.originalPrice &&
+                product.originalPrice > product.price && (
+                  <span className="text-lg text-muted-foreground line-through">
+                    {formatPrice(product.originalPrice, product.currency)}
+                  </span>
+                )}
             </div>
 
             {/* Stock Status */}
@@ -223,25 +245,27 @@ export default function ProductDetailPage() {
             {/* Quantity Selector */}
             {!isOutOfStock && (
               <div>
-                <label className="text-sm font-medium mb-2 block">{t("product.quantity")}</label>
+                <label className="text-sm font-medium mb-2 block">
+                  {t("product.quantity")}
+                </label>
                 <div className="flex items-center gap-4">
                   <div className="flex items-center bg-muted rounded-lg">
                     <button
                       onClick={decreaseQuantity}
                       disabled={quantity <= 1}
-                      className="p-3 hover:bg-muted-foreground/10 disabled:opacity-50 disabled:cursor-not-allowed rounded-l-lg transition-colors"
+                      className="p-2 hover:bg-muted-foreground/10 disabled:opacity-50 disabled:cursor-not-allowed rounded-l-lg transition-colors"
                     >
-                      <Minus className="w-4 h-4" />
+                      <Minus className="w-3 h-3" />
                     </button>
-                    <span className="px-6 py-3 font-medium min-w-[60px] text-center">
+                    <span className="px-4 py-2 font-medium min-w-[40px] text-center text-sm">
                       {quantity}
                     </span>
                     <button
                       onClick={increaseQuantity}
                       disabled={quantity >= product.stock}
-                      className="p-3 hover:bg-muted-foreground/10 disabled:opacity-50 disabled:cursor-not-allowed rounded-r-lg transition-colors"
+                      className="p-2 hover:bg-muted-foreground/10 disabled:opacity-50 disabled:cursor-not-allowed rounded-r-lg transition-colors"
                     >
-                      <Plus className="w-4 h-4" />
+                      <Plus className="w-3 h-3" />
                     </button>
                   </div>
                   <span className="text-sm text-muted-foreground">
@@ -264,16 +288,20 @@ export default function ProductDetailPage() {
                 ) : (
                   <ShoppingCart className="mr-2 h-5 w-5" />
                 )}
-                {isOutOfStock ? t("product.out_of_stock") : t("product.add_to_cart")}
+                {isOutOfStock
+                  ? t("product.out_of_stock")
+                  : t("product.add_to_cart")}
               </Button>
-              
+
               <Button
                 variant="outline"
                 size="lg"
                 onClick={toggleFavorite}
                 className={isFavorite ? "text-red-500 border-red-200" : ""}
               >
-                <Heart className={`w-5 h-5 ${isFavorite ? "fill-current" : ""}`} />
+                <Heart
+                  className={`w-5 h-5 ${isFavorite ? "fill-current" : ""}`}
+                />
               </Button>
             </div>
           </div>
@@ -283,13 +311,14 @@ export default function ProductDetailPage() {
         {similarProducts.length > 0 && (
           <div className="mt-8 pt-8 border-t border-border">
             <h2 className="text-xl font-bold mb-4">
-              {products.filter(p => p.id !== params.id && p.category === product?.category).length > 0 
-                ? t("product.similar_products") 
-                : t("home.featured_products")
-              }
+              {products.filter(
+                (p) => p.id !== params.id && p.category === product?.category
+              ).length > 0
+                ? t("product.similar_products")
+                : t("home.featured_products")}
             </h2>
             <div className="overflow-x-auto">
-              <div className="flex gap-2 pb-4" style={{ width: 'max-content' }}>
+              <div className="flex gap-2 pb-4" style={{ width: "max-content" }}>
                 {similarProducts.map((similarProduct) => (
                   <div key={similarProduct.id} className="w-40 flex-shrink-0">
                     <ProductCard product={similarProduct} />
@@ -299,6 +328,8 @@ export default function ProductDetailPage() {
             </div>
           </div>
         )}
+
+        <ProductDetailTabs product={product} />
       </div>
     </div>
   );

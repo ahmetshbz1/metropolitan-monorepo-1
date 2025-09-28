@@ -66,6 +66,11 @@
     "protein": "Protein",
     "salt": "Tuz",
     "storage_conditions": "Saklama Koşulları",
+    "manufacturer_info": "Üretici Bilgileri",
+    "manufacturer_name": "Üretici",
+    "manufacturer_address": "Adres",
+    "manufacturer_phone": "Telefon",
+    "manufacturer_email": "E-posta",
     "similar_products": "Benzer Ürünler"
   },
   "dropdown": {
