@@ -9,7 +9,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useMarkAllAsRead, useMarkAsRead, useNotifications } from "@/hooks/api/use-notifications";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  useMarkAllAsRead,
+  useMarkAsRead,
+  useNotifications,
+} from "@/hooks/api/use-notifications";
 import { cn } from "@/lib/utils";
 import { Icon } from "@iconify/react";
 import { formatDistanceToNow } from "date-fns";
@@ -44,23 +53,30 @@ export function NotificationsDropdown() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="relative hover:bg-accent"
-        >
-          <Icon
-            icon="solar:bell-line-duotone"
-            className="size-5 text-gray-700 dark:text-gray-300"
-          />
-          {unreadCount > 0 && (
-            <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs bg-red-500 text-white p-0">
-              {unreadCount > 9 ? "9+" : unreadCount}
-            </Badge>
-          )}
-        </Button>
-      </DropdownMenuTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative hover:bg-accent"
+            >
+              <Icon
+                icon="solar:bell-line-duotone"
+                className="size-5 text-gray-700 dark:text-gray-300"
+              />
+              {unreadCount > 0 && (
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs bg-red-500 text-white p-0">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </Badge>
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{t("navbar.notifications")}</p>
+        </TooltipContent>
+      </Tooltip>
 
       <DropdownMenuContent
         className="w-96 max-w-[calc(100vw-2rem)] rounded-2xl p-2"
@@ -118,28 +134,43 @@ export function NotificationsDropdown() {
                     "p-3 rounded-lg cursor-pointer transition-colors flex-col items-start gap-1",
                     !notification.isRead && "bg-primary/5"
                   )}
-                  onClick={() => handleNotificationClick(notification.id, notification.isRead)}
+                  onClick={() =>
+                    handleNotificationClick(
+                      notification.id,
+                      notification.isRead
+                    )
+                  }
                 >
                   <div className="flex items-start gap-3 w-full">
                     <div
                       className={cn(
                         "w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0",
-                        notification.type === "order" && "bg-blue-100 dark:bg-blue-900/30",
-                        notification.type === "payment" && "bg-green-100 dark:bg-green-900/30",
-                        notification.type === "system" && "bg-gray-100 dark:bg-gray-800",
-                        notification.type === "promotion" && "bg-orange-100 dark:bg-orange-900/30",
-                        notification.type === "delivery" && "bg-blue-100 dark:bg-blue-900/30"
+                        notification.type === "order" &&
+                          "bg-blue-100 dark:bg-blue-900/30",
+                        notification.type === "payment" &&
+                          "bg-green-100 dark:bg-green-900/30",
+                        notification.type === "system" &&
+                          "bg-gray-100 dark:bg-gray-800",
+                        notification.type === "promotion" &&
+                          "bg-orange-100 dark:bg-orange-900/30",
+                        notification.type === "delivery" &&
+                          "bg-blue-100 dark:bg-blue-900/30"
                       )}
                     >
                       <Icon
                         icon={NOTIFICATION_ICONS[notification.type]}
                         className={cn(
                           "size-5",
-                          notification.type === "order" && "text-blue-600 dark:text-blue-400",
-                          notification.type === "payment" && "text-green-600 dark:text-green-400",
-                          notification.type === "system" && "text-gray-600 dark:text-gray-400",
-                          notification.type === "promotion" && "text-orange-600 dark:text-orange-400",
-                          notification.type === "delivery" && "text-blue-600 dark:text-blue-400"
+                          notification.type === "order" &&
+                            "text-blue-600 dark:text-blue-400",
+                          notification.type === "payment" &&
+                            "text-green-600 dark:text-green-400",
+                          notification.type === "system" &&
+                            "text-gray-600 dark:text-gray-400",
+                          notification.type === "promotion" &&
+                            "text-orange-600 dark:text-orange-400",
+                          notification.type === "delivery" &&
+                            "text-blue-600 dark:text-blue-400"
                         )}
                       />
                     </div>
