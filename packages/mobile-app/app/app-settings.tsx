@@ -2,6 +2,7 @@
 // metropolitan app
 // Application settings page
 
+import ClearCacheSheet from "@/components/ClearCacheSheet";
 import { HapticButton } from "@/components/HapticButton";
 import NotificationPreferencesSheet, {
   NotificationPreferencesSheetRef,
@@ -13,14 +14,12 @@ import { useAppColorScheme } from "@/context/ColorSchemeContext";
 import { useUserSettings } from "@/context/UserSettings";
 import { changeLanguage } from "@/core/i18n";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { useToast } from "@/hooks/useToast";
 import { Ionicons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useNavigation } from "@react-navigation/native";
-import * as FileSystem from "expo-file-system";
 import React, { useLayoutEffect, useRef, useTransition } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, ScrollView, Switch, View } from "react-native";
+import { ScrollView, Switch, View } from "react-native";
 import ContextMenu from "react-native-context-menu-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -31,10 +30,10 @@ export default function AppSettingsScreen() {
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const { setTheme, currentThemeSetting } = useAppColorScheme();
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const { settings, updateSettings } = useUserSettings();
   const notificationSheetRef = useRef<NotificationPreferencesSheetRef>(null);
-  const { showToast } = useToast();
+  const clearCacheSheetRef = useRef<BottomSheetModal>(null);
 
   // Header title'ı dinamik olarak ayarla
   useLayoutEffect(() => {
@@ -73,67 +72,8 @@ export default function AppSettingsScreen() {
   const currentLanguage =
     languages.find((l) => l.code === i18n.language) || languages[0];
 
-  const clearCache = async () => {
-    Alert.alert(
-      t("app_settings.clear_cache_title"),
-      t("app_settings.clear_cache_message"),
-      [
-        {
-          text: t("common.cancel"),
-          style: "cancel",
-        },
-        {
-          text: t("app_settings.clear_cache_confirm"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              // AsyncStorage'dan sadece cache ile ilgili verileri temizle
-              // Auth ile ilgili key'leri koru: user_data, guest_id, is_guest
-              const allKeys = await AsyncStorage.getAllKeys();
-              const keysToRemove = allKeys.filter(
-                (key) =>
-                  !key.includes("user_data") &&
-                  !key.includes("guest_id") &&
-                  !key.includes("is_guest")
-              );
-
-              if (keysToRemove.length > 0) {
-                await AsyncStorage.multiRemove(keysToRemove);
-              }
-
-              // Clear image cache directory
-              const cacheDirectory = FileSystem.cacheDirectory;
-              if (cacheDirectory) {
-                const cacheFiles =
-                  await FileSystem.readDirectoryAsync(cacheDirectory);
-                await Promise.all(
-                  cacheFiles.map((file) =>
-                    FileSystem.deleteAsync(`${cacheDirectory}${file}`, {
-                      idempotent: true,
-                    })
-                  )
-                );
-              }
-
-              // Clear document directory temporary files
-              const documentDirectory = FileSystem.documentDirectory;
-              if (documentDirectory) {
-                const tempDir = `${documentDirectory}temp/`;
-                const exists = await FileSystem.getInfoAsync(tempDir);
-                if (exists.exists) {
-                  await FileSystem.deleteAsync(tempDir, { idempotent: true });
-                }
-              }
-
-              showToast(t("app_settings.clear_cache_success"), "success");
-            } catch (error) {
-              // Removed console statement
-              showToast(t("app_settings.clear_cache_error"), "error");
-            }
-          },
-        },
-      ]
-    );
+  const clearCache = () => {
+    clearCacheSheetRef.current?.present();
   };
 
   return (
@@ -477,6 +417,7 @@ export default function AppSettingsScreen() {
         </View>
       </ScrollView>
       <NotificationPreferencesSheet ref={notificationSheetRef} />
+      <ClearCacheSheet ref={clearCacheSheetRef} />
     </ThemedView>
   );
 }

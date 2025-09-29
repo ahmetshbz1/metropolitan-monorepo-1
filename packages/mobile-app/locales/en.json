@@ -985,7 +985,17 @@
     "clear_cache_confirm": "Clear",
     "success": "Success",
     "clear_cache_success": "Cache cleared successfully",
-    "clear_cache_error": "An error occurred while clearing cache"
+    "clear_cache_error": "An error occurred while clearing cache",
+    "clear_cache_sheet_title": "Cache Clearing Options",
+    "clear_cache_sheet_subtitle": "Select the data you want to clear",
+    "clear_cache_only": "Clear Cache Only",
+    "clear_cache_only_desc": "Temporary files and cache will be cleared. Your login info will be preserved.",
+    "clear_all_data": "Clear Cache and All Data",
+    "clear_all_data_desc": "All data, session info and cache will be deleted. App will be like freshly installed.",
+    "clear_all_data_confirm_title": "Clear All Data",
+    "clear_all_data_confirm_message": "This will delete all your session info, tokens and cache. The app will restart. Are you sure?",
+    "clear_all_data_confirm_button": "Yes, Clear All",
+    "clear_all_data_success": "All data cleared successfully. Please close and reopen the app."
   },
   "support": {
     "title": "Support",

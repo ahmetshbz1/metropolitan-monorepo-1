@@ -985,7 +985,17 @@
     "clear_cache_confirm": "Temizle",
     "success": "Başarılı",
     "clear_cache_success": "Önbellek başarıyla temizlendi",
-    "clear_cache_error": "Önbellek temizlenirken bir hata oluştu"
+    "clear_cache_error": "Önbellek temizlenirken bir hata oluştu",
+    "clear_cache_sheet_title": "Önbellek Temizleme Seçenekleri",
+    "clear_cache_sheet_subtitle": "Temizlemek istediğiniz verileri seçin",
+    "clear_cache_only": "Sadece Önbelleği Temizle",
+    "clear_cache_only_desc": "Geçici dosyalar ve ön bellek temizlenir. Giriş bilgileriniz korunur.",
+    "clear_all_data": "Önbelleği ve Tüm Verileri Temizle",
+    "clear_all_data_desc": "Tüm veriler, oturum bilgileri ve önbellek silinir. Uygulama ilk kurulmuş gibi olur.",
+    "clear_all_data_confirm_title": "Tüm Verileri Temizle",
+    "clear_all_data_confirm_message": "Bu işlem tüm oturum bilgilerinizi, token'larınızı ve önbelleğinizi silecektir. Uygulama yeniden başlatılacak. Emin misiniz?",
+    "clear_all_data_confirm_button": "Evet, Tümünü Temizle",
+    "clear_all_data_success": "Tüm veriler başarıyla temizlendi. Lütfen uygulamayı kapatup tekrar açın."
   },
   "support": {
     "title": "Destek",
