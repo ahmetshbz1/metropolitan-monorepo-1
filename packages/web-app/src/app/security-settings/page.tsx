@@ -1,5 +1,15 @@
 "use client";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -31,6 +41,8 @@ export default function SecuritySettingsPage() {
     deviceTracking: true,
   });
   const [loading, setLoading] = useState(false);
+  const [unlinkDialogOpen, setUnlinkDialogOpen] = useState(false);
+  const [providerToUnlink, setProviderToUnlink] = useState<'apple' | 'google' | null>(null);
 
   // Show loading state while hydrating
   if (!_hasHydrated) {
@@ -87,22 +99,25 @@ export default function SecuritySettingsPage() {
     toast.info(`${provider === 'apple' ? 'Apple' : 'Google'} hesabı bağlama özelliği yakında eklenecek`);
   };
 
-  const handleUnlinkProvider = async (provider: 'apple' | 'google') => {
-    const confirmed = window.confirm(
-      `${provider === 'apple' ? 'Apple' : 'Google'} hesabınızın bağlantısını kesmek istediğinize emin misiniz?`
-    );
+  const handleUnlinkProvider = (provider: 'apple' | 'google') => {
+    setProviderToUnlink(provider);
+    setUnlinkDialogOpen(true);
+  };
 
-    if (!confirmed) return;
+  const confirmUnlinkProvider = async () => {
+    if (!providerToUnlink) return;
 
     setLoading(true);
     try {
-      await api.delete("/users/me/social-provider");
-      toast.success(`${provider === 'apple' ? 'Apple' : 'Google'} hesabı bağlantısı kesildi`);
+      await api.delete("/me/social-provider");
+      toast.success(`${providerToUnlink === 'apple' ? 'Apple' : 'Google'} hesabı bağlantısı kesildi`);
       await refetchUser();
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Bağlantı kesilemedi");
     } finally {
       setLoading(false);
+      setUnlinkDialogOpen(false);
+      setProviderToUnlink(null);
     }
   };
 
@@ -381,6 +396,51 @@ export default function SecuritySettingsPage() {
           </div>
         </div>
       </div>
+
+      {/* Unlink Provider Confirmation Dialog */}
+      <AlertDialog open={unlinkDialogOpen} onOpenChange={setUnlinkDialogOpen}>
+        <AlertDialogContent className="sm:max-w-md">
+          <AlertDialogHeader>
+            <div className="flex items-center justify-center w-12 h-12 mx-auto mb-2 rounded-full bg-red-100 dark:bg-red-900/20">
+              <Icon
+                icon="solar:danger-circle-bold-duotone"
+                className="size-6 text-red-600 dark:text-red-400"
+              />
+            </div>
+            <AlertDialogTitle className="text-center">
+              Bağlantıyı Kes
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-center">
+              <span className="font-semibold text-foreground">
+                {providerToUnlink === 'apple' ? 'Apple' : 'Google'}
+              </span>{' '}
+              hesabınızın bağlantısını kesmek istediğinize emin misiniz?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="sm:justify-center gap-2">
+            <AlertDialogCancel disabled={loading} className="sm:w-24">
+              İptal
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmUnlinkProvider}
+              disabled={loading}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600 sm:w-32"
+            >
+              {loading ? (
+                <>
+                  <Icon
+                    icon="svg-spinners:ring-resize"
+                    className="size-4 mr-2"
+                  />
+                  Kesiliyor
+                </>
+              ) : (
+                "Bağlantıyı Kes"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
