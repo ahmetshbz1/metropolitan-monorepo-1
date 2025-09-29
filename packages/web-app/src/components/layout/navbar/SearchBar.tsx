@@ -1,10 +1,10 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { useProductSearch } from "@/hooks/api";
+import { useProducts } from "@/hooks/api/use-products";
 import { Package, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 interface SearchBarProps {
@@ -19,6 +19,9 @@ export function SearchBar({ onProductClick }: SearchBarProps) {
   const { t } = useTranslation();
   const router = useRouter();
 
+  // Get all products (already cached from homepage)
+  const { data: allProducts = [], isLoading: productsLoading } = useProducts();
+
   // Prevent hydration mismatch
   useEffect(() => {
     setMounted(true);
@@ -32,8 +35,39 @@ export function SearchBar({ onProductClick }: SearchBarProps) {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  const { data: searchResults = [], isLoading } =
-    useProductSearch(debouncedQuery);
+  // Client-side search with smart scoring
+  const searchResults = useMemo(() => {
+    if (debouncedQuery.length < 2) return [];
+
+    const query = debouncedQuery.toLowerCase();
+
+    return allProducts
+      .map((product) => {
+        const name = product.name?.toLowerCase() || "";
+        const description = product.description?.toLowerCase() || "";
+        const brand = product.brand?.toLowerCase() || "";
+
+        // Scoring system: name match = 100, brand = 50, description = 10
+        let score = 0;
+
+        if (name.includes(query)) {
+          score += 100;
+          // Bonus if name starts with query
+          if (name.startsWith(query)) score += 50;
+        }
+
+        if (brand.includes(query)) score += 50;
+        if (description.includes(query)) score += 10;
+
+        return { product, score };
+      })
+      .filter(({ score }) => score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 10)
+      .map(({ product }) => product);
+  }, [allProducts, debouncedQuery]);
+
+  const isLoading = productsLoading && allProducts.length === 0;
 
   // Auto-show results when data arrives
   useEffect(() => {
