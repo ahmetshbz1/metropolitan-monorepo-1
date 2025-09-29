@@ -80,101 +80,19 @@ export const socialAuthRoutes = createApp()
             }
           }
         } else {
-          // Sign-in flow: resolve user by provider identifiers
-          // Check user based on provider type
+          // Sign-in flow: resolve user by provider identifiers ONLY
+          // Do NOT use email for automatic linking - only use provider-specific identifiers
           if (body.provider === 'apple' && body.appleUserId) {
-            // For Apple: First try appleUserId, then email
+            // For Apple: ONLY try appleUserId
             user = await db.query.users.findFirst({
               where: eq(users.appleUserId, body.appleUserId),
             });
-  
-            // If not found by appleUserId but email exists, check by email
-            if (!user && body.email) {
-              user = await db.query.users.findFirst({
-                where: eq(users.email, body.email),
-              });
-  
-              // If found by email and no other provider is linked, allow re-linking
-              if (user && !user.authProvider) {
-                log.info({ userId: user.id }, "Re-linking Apple account to existing user");
-              }
-            }
-          } else if (body.provider === 'google') {
-            // For Google: First try firebaseUid, then email
+          } else if (body.provider === 'google' && body.firebaseUid) {
+            // For Google: ONLY try firebaseUid
             user = await db.query.users.findFirst({
-              where: body.firebaseUid
-                ? eq(users.firebaseUid, body.firebaseUid)
-                : undefined,
-            });
-  
-            // If not found by firebaseUid but email exists, check by email
-            if (!user && body.email) {
-              user = await db.query.users.findFirst({
-                where: eq(users.email, body.email),
-              });
-  
-              // If found by email and no other provider is linked, allow re-linking
-              if (user && !user.authProvider) {
-                log.info({ userId: user.id }, "Re-linking Google account to existing user");
-              }
-            }
-          } else {
-            // Fallback for other providers
-            user = await db.query.users.findFirst({
-              where: body.firebaseUid
-                ? eq(users.firebaseUid, body.firebaseUid)
-                : body.email
-                  ? eq(users.email, body.email)
-                  : undefined,
+              where: eq(users.firebaseUid, body.firebaseUid),
             });
           }
-        }
-
-        if (body.provider === 'apple' && body.appleUserId) {
-          // For Apple: First try appleUserId, then email
-          user = await db.query.users.findFirst({
-            where: eq(users.appleUserId, body.appleUserId),
-          });
-
-          // If not found by appleUserId but email exists, check by email
-          if (!user && body.email) {
-            user = await db.query.users.findFirst({
-              where: eq(users.email, body.email),
-            });
-
-            // If found by email and no other provider is linked, allow re-linking
-            if (user && !user.authProvider) {
-              log.info({ userId: user.id }, "Re-linking Apple account to existing user");
-            }
-          }
-        } else if (body.provider === 'google') {
-          // For Google: First try firebaseUid, then email
-          user = await db.query.users.findFirst({
-            where: body.firebaseUid
-              ? eq(users.firebaseUid, body.firebaseUid)
-              : undefined,
-          });
-
-          // If not found by firebaseUid but email exists, check by email
-          if (!user && body.email) {
-            user = await db.query.users.findFirst({
-              where: eq(users.email, body.email),
-            });
-
-            // If found by email and no other provider is linked, allow re-linking
-            if (user && !user.authProvider) {
-              log.info({ userId: user.id }, "Re-linking Google account to existing user");
-            }
-          }
-        } else {
-          // Fallback for other providers
-          user = await db.query.users.findFirst({
-            where: body.firebaseUid
-              ? eq(users.firebaseUid, body.firebaseUid)
-              : body.email
-                ? eq(users.email, body.email)
-                : undefined,
-          });
         }
 
         if (!user) {

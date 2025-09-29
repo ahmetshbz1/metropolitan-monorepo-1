@@ -15,10 +15,13 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { useCurrentUser } from "@/hooks/api/use-user";
+import { useCurrentUser, userKeys } from "@/hooks/api/use-user";
+import { auth } from "@/lib/firebase";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { Icon } from "@iconify/react";
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -32,7 +35,8 @@ interface SecuritySettings {
 
 export default function SecuritySettingsPage() {
   const router = useRouter();
-  const { user, accessToken, _hasHydrated } = useAuthStore();
+  const queryClient = useQueryClient();
+  const { user, accessToken, _hasHydrated, setUser } = useAuthStore();
   const { data: currentUser, refetch: refetchUser } = useCurrentUser();
 
   const [settings, setSettings] = useState<SecuritySettings>({
@@ -96,7 +100,60 @@ export default function SecuritySettingsPage() {
   };
 
   const handleLinkProvider = async (provider: 'apple' | 'google') => {
-    toast.info(`${provider === 'apple' ? 'Apple' : 'Google'} hesabı bağlama özelliği yakında eklenecek`);
+    if (provider === 'apple') {
+      // Apple Sign In sadece mobile'da çalışır
+      toast.info('Apple ile bağlanmak için mobile uygulamayı kullanın', {
+        duration: 5000,
+      });
+      return;
+    }
+
+    // Google Sign In
+    setLoading(true);
+    try {
+      const googleProvider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, googleProvider);
+
+      if (!result.user) {
+        throw new Error('Google Sign-In başarısız');
+      }
+
+      // Backend'e link isteği gönder
+      await api.post("/users/me/link-provider", {
+        provider: 'google',
+        firebaseUid: result.user.uid,
+        email: result.user.email,
+      });
+
+      // Kullanıcı datasını güncelle
+      await queryClient.invalidateQueries({ queryKey: userKeys.current() });
+
+      const updatedUser = await queryClient.fetchQuery({
+        queryKey: userKeys.current(),
+        queryFn: async () => {
+          const { authApi } = await import("@/services/api/auth-api");
+          return authApi.getCurrentUser();
+        },
+      });
+
+      if (updatedUser) {
+        setUser(updatedUser);
+      }
+
+      toast.success('Google hesabı başarıyla bağlandı');
+    } catch (error: any) {
+      console.error('Link provider error:', error);
+
+      if (error?.response?.data?.error === 'PROVIDER_CONFLICT') {
+        toast.error(error.response.data.message);
+      } else if (error?.response?.data?.error === 'ALREADY_LINKED') {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error('Google hesabı bağlanamadı');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleUnlinkProvider = (provider: 'apple' | 'google') => {
@@ -110,8 +167,24 @@ export default function SecuritySettingsPage() {
     setLoading(true);
     try {
       await api.delete("/users/me/social-provider");
+
+      // Invalidate and refetch user data
+      await queryClient.invalidateQueries({ queryKey: userKeys.current() });
+
+      // Force refetch to get updated user
+      const updatedUser = await queryClient.fetchQuery({
+        queryKey: userKeys.current(),
+        queryFn: async () => {
+          const { authApi } = await import("@/services/api/auth-api");
+          return authApi.getCurrentUser();
+        },
+      });
+
+      if (updatedUser) {
+        setUser(updatedUser);
+      }
+
       toast.success(`${providerToUnlink === 'apple' ? 'Apple' : 'Google'} hesabı bağlantısı kesildi`);
-      await refetchUser();
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Bağlantı kesilemedi");
     } finally {
@@ -180,7 +253,7 @@ export default function SecuritySettingsPage() {
                     >
                       Bağlantıyı Kes
                     </Button>
-                  ) : !currentUser?.authProvider ? (
+                  ) : (
                     <Button
                       variant="ghost"
                       size="sm"
@@ -190,7 +263,7 @@ export default function SecuritySettingsPage() {
                     >
                       Bağla
                     </Button>
-                  ) : null}
+                  )}
                 </div>
 
                 <Separator className="my-1" />
@@ -221,7 +294,7 @@ export default function SecuritySettingsPage() {
                     >
                       Bağlantıyı Kes
                     </Button>
-                  ) : !currentUser?.authProvider ? (
+                  ) : (
                     <Button
                       variant="ghost"
                       size="sm"
@@ -231,10 +304,6 @@ export default function SecuritySettingsPage() {
                     >
                       Bağla
                     </Button>
-                  ) : (
-                    <Badge variant="outline" className="text-xs">
-                      Bağlı değil
-                    </Badge>
                   )}
                 </div>
               </div>
