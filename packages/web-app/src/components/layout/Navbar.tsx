@@ -1,14 +1,13 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { NotificationsDropdown } from "@/components/ui/notifications-dropdown";
 import { UserDropdown } from "@/components/ui/user-dropdown";
 import { useCurrentUser, useLogout } from "@/hooks/api";
 import { useAuthInit } from "@/hooks/use-auth-init";
 import { useHydration } from "@/hooks/use-hydration";
-import { useAuthStore, useCartStore } from "@/stores";
-import { Heart, Menu, ShoppingCart, Sparkles, Truck } from "lucide-react";
+import { useAuthStore } from "@/stores";
+import { Menu, Sparkles, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -28,7 +27,6 @@ export function Navbar() {
   useAuthInit();
 
   const { user, accessToken, _hasHydrated } = useAuthStore();
-  const { getTotalItems } = useCartStore();
   const logout = useLogout();
 
   // Direct authentication check (isAuthenticated getter is not reactive in Zustand)
@@ -41,8 +39,6 @@ export function Navbar() {
   if (!hydrated || !_hasHydrated) {
     return null;
   }
-
-  const cartItemCount = getTotalItems();
 
   const handleUserAction = (action: string, route?: string) => {
     if (action === "logout") {
@@ -107,36 +103,6 @@ export function Navbar() {
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative hover:bg-primary/10"
-              asChild
-            >
-              <Link href="/favorites">
-                <Heart className="h-5 w-5" />
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs bg-red-500 text-white">
-                  0
-                </Badge>
-              </Link>
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative hover:bg-primary/10"
-              asChild
-            >
-              <Link href="/cart">
-                <ShoppingCart className="h-5 w-5" />
-                {cartItemCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs bg-primary text-primary-foreground">
-                    {cartItemCount}
-                  </Badge>
-                )}
-              </Link>
-            </Button>
-
             {isAuthenticated && <NotificationsDropdown />}
 
             <UserDropdown
