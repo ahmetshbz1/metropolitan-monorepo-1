@@ -63,8 +63,18 @@ export default function CompleteProfilePage() {
 
     completeProfile.mutate(
       {
-        ...formData,
-        termsAccepted: formData.termsAccepted && formData.privacyAccepted,
+        userType: formData.userType,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        ...(formData.nip ? { nip: formData.nip } : {}),
+        termsAccepted: formData.termsAccepted,
+        privacyAccepted: formData.privacyAccepted,
+        marketingConsent: formData.marketingAccepted, // Backend expects 'marketingConsent' not 'marketingAccepted'
+        ...(socialAuthData?.uid ? { firebaseUid: socialAuthData.uid } : {}),
+        ...(socialAuthData?.provider
+          ? { authProvider: socialAuthData.provider }
+          : {}),
       },
       {
         onSuccess: (result) => {

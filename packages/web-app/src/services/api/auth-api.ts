@@ -1,15 +1,15 @@
-import api from '@/lib/api';
-import type { WebUser, SocialAuthData } from '@/context/auth/types';
+import type { SocialAuthData, WebUser } from "@/context/auth/types";
+import api from "@/lib/api";
 
 interface SendOTPRequest {
   phoneNumber: string;
-  userType: 'individual' | 'corporate';
+  userType: "individual" | "corporate";
 }
 
 interface VerifyOTPRequest {
   phoneNumber: string;
   otpCode: string;
-  userType: 'individual' | 'corporate';
+  userType: "individual" | "corporate";
   guestId?: string;
   socialAuthData?: SocialAuthData | null;
 }
@@ -18,7 +18,7 @@ interface CompleteProfileRequest {
   firstName: string;
   lastName: string;
   email: string;
-  userType: 'individual' | 'corporate';
+  userType: "individual" | "corporate";
   nip?: string;
   termsAccepted: boolean;
   privacyAccepted: boolean;
@@ -35,54 +35,62 @@ interface SocialSignInRequest {
 
 export const authApi = {
   sendOTP: async (data: SendOTPRequest) => {
-    const response = await api.post('/auth/send-otp', data);
+    const response = await api.post("/auth/send-otp", data);
     return response.data;
   },
-  
+
   verifyOTP: async (data: VerifyOTPRequest) => {
-    const response = await api.post('/auth/verify-otp', data);
+    const response = await api.post("/auth/verify-otp", data);
     return response.data;
   },
-  
-  completeProfile: async (data: CompleteProfileRequest, registrationToken: string) => {
-    const response = await api.post('/users/complete-profile', data, {
-      headers: { Authorization: `Bearer ${registrationToken}` }
+
+  completeProfile: async (
+    data: CompleteProfileRequest,
+    registrationToken: string
+  ) => {
+    // Backend mounts profileRoutes under /users group, so endpoint is /users/complete-profile
+    const response = await api.post("/users/complete-profile", data, {
+      headers: { Authorization: `Bearer ${registrationToken}` },
     });
     return response.data;
   },
-  
+
   socialSignIn: async (data: SocialSignInRequest) => {
-    const response = await api.post('/auth/social-signin', data);
+    const response = await api.post("/auth/social-signin", data);
     return response.data;
   },
-  
+
   guestLogin: async () => {
-    const response = await api.post('/auth/guest-login');
+    const response = await api.post("/auth/guest-login");
     return response.data;
   },
-  
+
   logout: async (accessToken: string) => {
-    const response = await api.post('/auth/logout', {}, {
-      headers: { Authorization: `Bearer ${accessToken}` }
-    });
+    const response = await api.post(
+      "/auth/logout",
+      {},
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      }
+    );
     return response.data;
   },
-  
+
   getCurrentUser: async () => {
-    const response = await api.get('/users/me');
+    const response = await api.get("/users/me");
     return response.data.data as WebUser;
   },
-  
+
   updateProfile: async (data: Partial<WebUser>) => {
-    const response = await api.put('/users/me', data);
+    const response = await api.put("/users/me", data);
     return response.data.data as WebUser;
   },
-  
+
   uploadProfilePhoto: async (file: File) => {
     const formData = new FormData();
-    formData.append('photo', file);
-    const response = await api.post('/users/me/profile-photo', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+    formData.append("photo", file);
+    const response = await api.post("/users/me/profile-photo", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data.data;
   },
