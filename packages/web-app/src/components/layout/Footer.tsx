@@ -24,11 +24,6 @@ export function Footer() {
   const { t } = useTranslation();
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
-
-  // Legal sayfasında footer'ı gösterme
-  if (pathname === "/legal") {
-    return null;
-  }
   const currentYear = new Date().getFullYear();
   const [qrDialogOpen, setQrDialogOpen] = useState(false);
 

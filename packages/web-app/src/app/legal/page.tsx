@@ -201,36 +201,32 @@ export default function LegalPage() {
           <div className="flex items-center justify-between">
             {/* Mobile: Dropdown */}
             <div className="sm:hidden flex-1">
-              <div className="relative">
-                <button
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="w-full px-3 py-2 text-sm bg-background border rounded-lg flex items-center justify-between hover:bg-muted transition-colors"
-                >
-                  <span className="font-medium text-primary">
-                    {getTitle(selectedType)}
-                  </span>
-                  <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
-                </button>
-
-                {isDropdownOpen && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-background border rounded-lg shadow-lg z-50 overflow-hidden">
+              <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-between"
+                  >
+                    <span className="font-medium text-primary">
+                      {getTitle(selectedType)}
+                    </span>
+                    <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-[calc(100vw-2rem)] sm:w-56">
+                  <DropdownMenuRadioGroup
+                    value={selectedType}
+                    onValueChange={(value) => handleTypeChange(value as LegalType)}
+                  >
                     {(["privacy-policy", "terms-of-service", "cookie-policy"] as LegalType[]).map((type) => (
-                      <button
-                        key={type}
-                        onClick={() => handleTypeChange(type)}
-                        disabled={type === selectedType}
-                        className={`w-full px-3 py-2 text-sm text-left transition-colors ${
-                          type === selectedType
-                            ? "bg-muted text-primary font-medium cursor-not-allowed"
-                            : "hover:bg-muted"
-                        }`}
-                      >
+                      <DropdownMenuRadioItem key={type} value={type}>
                         {getTitle(type)}
-                      </button>
+                      </DropdownMenuRadioItem>
                     ))}
-                  </div>
-                )}
-              </div>
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
 
             {/* Desktop: Tabs */}
