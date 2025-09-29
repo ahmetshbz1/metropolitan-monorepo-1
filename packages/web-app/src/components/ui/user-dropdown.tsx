@@ -24,6 +24,24 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+// Hook to detect mobile screen size
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
+  return isMobile;
+};
+
 // Theme and language options
 const THEME_OPTIONS = [
   {
@@ -76,6 +94,9 @@ export const UserDropdown = ({
   const { t, i18n } = useTranslation();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const isMobile = useIsMobile();
+  const [showThemeOptions, setShowThemeOptions] = useState(false);
+  const [showLanguageOptions, setShowLanguageOptions] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -192,7 +213,14 @@ export const UserDropdown = ({
         </TooltipContent>
       </Tooltip>
 
-      <DropdownMenuContent className="w-72 rounded-2xl p-2" align="end">
+      <DropdownMenuContent
+        className="w-80 sm:w-72 md:w-80 rounded-2xl p-2 max-w-[calc(100vw-2rem)]"
+        align="end"
+        alignOffset={-16}
+        sideOffset={8}
+        avoidCollisions={true}
+        collisionPadding={16}
+      >
         {/* User Header */}
         <div className="flex items-center p-3 mb-2">
           <div className="flex-1 flex items-center gap-3">
@@ -271,91 +299,213 @@ export const UserDropdown = ({
 
         {/* Theme Selection */}
         <DropdownMenuGroup>
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger className="p-2 rounded-lg cursor-pointer">
-              <span className="flex items-center gap-2">
-                <Icon
-                  icon={
-                    mounted && theme === "dark"
-                      ? "solar:moon-line-duotone"
-                      : "solar:sun-line-duotone"
-                  }
-                  className="size-4 text-gray-500 dark:text-gray-400"
-                />
-                <span className="text-sm">{t("dropdown.theme")}</span>
-              </span>
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent
-                className="w-48"
-                side="right"
-                align="center"
-                sideOffset={-100}
+          {isMobile ? (
+            // Mobile: Inline theme options
+            <>
+              <DropdownMenuItem
+                className="p-2 rounded-lg cursor-pointer hover:bg-accent focus:bg-accent transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowThemeOptions(!showThemeOptions);
+                }}
+                onSelect={(e) => e.preventDefault()}
               >
-                <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
+                <span className="flex items-center gap-2 justify-between w-full">
+                  <span className="flex items-center gap-2">
+                    <Icon
+                      icon={
+                        mounted && theme === "dark"
+                          ? "solar:moon-line-duotone"
+                          : "solar:sun-line-duotone"
+                      }
+                      className="size-4 text-gray-500 dark:text-gray-400"
+                    />
+                    <span className="text-sm">{t("dropdown.theme")}</span>
+                  </span>
+                  <Icon
+                    icon={showThemeOptions ? "solar:alt-arrow-up-line-duotone" : "solar:alt-arrow-down-line-duotone"}
+                    className="size-4 text-gray-500 dark:text-gray-400"
+                  />
+                </span>
+              </DropdownMenuItem>
+              {showThemeOptions && (
+                <div className="ml-6 mb-3 space-y-2 mt-2">
                   {THEME_OPTIONS.map((themeOption) => (
-                    <DropdownMenuRadioItem
+                    <DropdownMenuItem
                       key={themeOption.value}
-                      value={themeOption.value}
-                      className="gap-2 p-1.5"
+                      className={cn(
+                        "gap-2 p-2.5 cursor-pointer rounded-md transition-colors hover:bg-accent/50",
+                        theme === themeOption.value ? "bg-accent" : ""
+                      )}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setTheme(themeOption.value);
+                        setShowThemeOptions(false);
+                      }}
+                      onSelect={(e) => e.preventDefault()}
                     >
                       <Icon
                         icon={themeOption.icon}
                         className="size-4 text-gray-500 dark:text-gray-400"
                       />
                       <span className="text-sm">{t(themeOption.labelKey)}</span>
-                    </DropdownMenuRadioItem>
+                    </DropdownMenuItem>
                   ))}
-                </DropdownMenuRadioGroup>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
+                </div>
+              )}
+            </>
+          ) : (
+            // Desktop: Submenu
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger className="p-2 rounded-lg cursor-pointer hover:bg-accent focus:bg-accent transition-colors">
+                <span className="flex items-center gap-2">
+                  <Icon
+                    icon={
+                      mounted && theme === "dark"
+                        ? "solar:moon-line-duotone"
+                        : "solar:sun-line-duotone"
+                    }
+                    className="size-4 text-gray-500 dark:text-gray-400"
+                  />
+                  <span className="text-sm">{t("dropdown.theme")}</span>
+                </span>
+              </DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent
+                  className="w-52"
+                  side="left"
+                  align="start"
+                  sideOffset={8}
+                  alignOffset={-4}
+                  avoidCollisions={true}
+                  collisionPadding={16}
+                >
+                  <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
+                    {THEME_OPTIONS.map((themeOption) => (
+                      <DropdownMenuRadioItem
+                        key={themeOption.value}
+                        value={themeOption.value}
+                        className="gap-2 p-1.5"
+                      >
+                        <Icon
+                          icon={themeOption.icon}
+                          className="size-4 text-gray-500 dark:text-gray-400"
+                        />
+                        <span className="text-sm">{t(themeOption.labelKey)}</span>
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
+          )}
         </DropdownMenuGroup>
 
         {/* Language Selection */}
         <DropdownMenuGroup>
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger className="p-2 rounded-lg cursor-pointer">
-              <span className="flex items-center gap-2">
-                <Icon
-                  icon={
-                    LANGUAGE_OPTIONS.find(
-                      (lang) => lang.value === i18n.language
-                    )?.icon || "solar:global-line-duotone"
-                  }
-                  className="size-4 text-gray-500 dark:text-gray-400"
-                />
-                <span className="text-sm">{t("dropdown.language")}</span>
-              </span>
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent
-                className="w-48"
-                side="right"
-                align="center"
-                sideOffset={-100}
+          {isMobile ? (
+            // Mobile: Inline language options
+            <>
+              <DropdownMenuItem
+                className="p-2 rounded-lg cursor-pointer hover:bg-accent focus:bg-accent transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowLanguageOptions(!showLanguageOptions);
+                }}
+                onSelect={(e) => e.preventDefault()}
               >
-                <DropdownMenuRadioGroup
-                  value={i18n.language}
-                  onValueChange={(lang) => i18n.changeLanguage(lang)}
-                >
+                <span className="flex items-center gap-2 justify-between w-full">
+                  <span className="flex items-center gap-2">
+                    <Icon
+                      icon={
+                        LANGUAGE_OPTIONS.find(
+                          (lang) => lang.value === i18n.language
+                        )?.icon || "solar:global-line-duotone"
+                      }
+                      className="size-4 text-gray-500 dark:text-gray-400"
+                    />
+                    <span className="text-sm">{t("dropdown.language")}</span>
+                  </span>
+                  <Icon
+                    icon={showLanguageOptions ? "solar:alt-arrow-up-line-duotone" : "solar:alt-arrow-down-line-duotone"}
+                    className="size-4 text-gray-500 dark:text-gray-400"
+                  />
+                </span>
+              </DropdownMenuItem>
+              {showLanguageOptions && (
+                <div className="ml-6 mb-3 space-y-2 mt-2">
                   {LANGUAGE_OPTIONS.map((langOption) => (
-                    <DropdownMenuRadioItem
+                    <DropdownMenuItem
                       key={langOption.value}
-                      value={langOption.value}
-                      className="gap-2 p-1.5"
+                      className={cn(
+                        "gap-2 p-2.5 cursor-pointer rounded-md transition-colors hover:bg-accent/50",
+                        i18n.language === langOption.value ? "bg-accent" : ""
+                      )}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        i18n.changeLanguage(langOption.value);
+                        setShowLanguageOptions(false);
+                      }}
+                      onSelect={(e) => e.preventDefault()}
                     >
                       <Icon
                         icon={langOption.icon}
                         className="size-4 text-gray-500 dark:text-gray-400"
                       />
                       <span className="text-sm">{t(langOption.labelKey)}</span>
-                    </DropdownMenuRadioItem>
+                    </DropdownMenuItem>
                   ))}
-                </DropdownMenuRadioGroup>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
+                </div>
+              )}
+            </>
+          ) : (
+            // Desktop: Submenu
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger className="p-2 rounded-lg cursor-pointer hover:bg-accent focus:bg-accent transition-colors">
+                <span className="flex items-center gap-2">
+                  <Icon
+                    icon={
+                      LANGUAGE_OPTIONS.find(
+                        (lang) => lang.value === i18n.language
+                      )?.icon || "solar:global-line-duotone"
+                    }
+                    className="size-4 text-gray-500 dark:text-gray-400"
+                  />
+                  <span className="text-sm">{t("dropdown.language")}</span>
+                </span>
+              </DropdownMenuSubTrigger>
+              <DropdownMenuPortal>
+                <DropdownMenuSubContent
+                  className="w-52"
+                  side="left"
+                  align="start"
+                  sideOffset={8}
+                  alignOffset={-4}
+                  avoidCollisions={true}
+                  collisionPadding={16}
+                >
+                  <DropdownMenuRadioGroup
+                    value={i18n.language}
+                    onValueChange={(lang) => i18n.changeLanguage(lang)}
+                  >
+                    {LANGUAGE_OPTIONS.map((langOption) => (
+                      <DropdownMenuRadioItem
+                        key={langOption.value}
+                        value={langOption.value}
+                        className="gap-2 p-1.5"
+                      >
+                        <Icon
+                          icon={langOption.icon}
+                          className="size-4 text-gray-500 dark:text-gray-400"
+                        />
+                        <span className="text-sm">{t(langOption.labelKey)}</span>
+                      </DropdownMenuRadioItem>
+                    ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuSubContent>
+              </DropdownMenuPortal>
+            </DropdownMenuSub>
+          )}
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
