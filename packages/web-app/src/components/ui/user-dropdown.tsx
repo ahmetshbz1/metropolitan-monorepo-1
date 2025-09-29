@@ -131,12 +131,6 @@ export const UserDropdown = ({
         action: "addresses",
         route: "/addresses",
       },
-      {
-        icon: "solar:bell-line-duotone",
-        labelKey: "dropdown.notifications",
-        action: "notifications",
-        route: "/notifications",
-      },
     ],
     settings: [
       {

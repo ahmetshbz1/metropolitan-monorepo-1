@@ -15,3 +15,6 @@ export * from './use-favorites';
 
 // Order hooks
 export * from './use-orders';
+
+// Notification hooks
+export * from './use-notifications';

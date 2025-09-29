@@ -4,7 +4,7 @@ export interface Notification {
   id: string;
   type: "order" | "promotion" | "delivery" | "system";
   title: string;
-  message: string;
+  body: string;
   createdAt: string;
   isRead: boolean;
 }
@@ -28,11 +28,11 @@ export const notificationsApi = {
   },
 
   markAsRead: async (id: string): Promise<void> => {
-    await api.patch(`/users/notifications/${id}/read`);
+    await api.put(`/users/notifications/${id}/read`);
   },
 
   markAllAsRead: async (): Promise<void> => {
-    await api.patch("/users/notifications/read-all");
+    await api.put("/users/notifications/mark-all-read");
   },
 
   deleteNotification: async (id: string): Promise<void> => {

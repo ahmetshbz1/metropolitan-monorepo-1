@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { NotificationsDropdown } from "@/components/ui/notifications-dropdown";
 import { UserDropdown } from "@/components/ui/user-dropdown";
 import { useCurrentUser, useLogout } from "@/hooks/api";
 import { useAuthInit } from "@/hooks/use-auth-init";
@@ -135,6 +136,8 @@ export function Navbar() {
                 )}
               </Link>
             </Button>
+
+            {isAuthenticated && <NotificationsDropdown />}
 
             <UserDropdown
               user={
