@@ -139,12 +139,6 @@ export const UserDropdown = ({
         action: "account-settings",
         route: "/account-settings",
       },
-      {
-        icon: "solar:palette-line-duotone",
-        labelKey: "dropdown.app_settings",
-        action: "app-settings",
-        route: "/app-settings",
-      },
     ],
     support: [
       {

@@ -73,16 +73,6 @@ export default function ProfilePage() {
       ],
     },
     {
-      title: t("profile.app_section"),
-      items: [
-        {
-          icon: Palette,
-          label: t("profile.app_settings"),
-          href: "/app-settings",
-        },
-      ],
-    },
-    {
       title: t("profile.support_section"),
       items: [
         {
