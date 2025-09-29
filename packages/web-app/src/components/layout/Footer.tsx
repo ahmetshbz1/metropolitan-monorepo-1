@@ -16,13 +16,43 @@ import {
   Smartphone,
   Search
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { QRDialog } from '@/components/ui/qr-dialog';
 
 export function Footer() {
   const { t } = useTranslation();
+  const [mounted, setMounted] = useState(false);
   const currentYear = new Date().getFullYear();
   const [qrDialogOpen, setQrDialogOpen] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <footer className="bg-background border-t border-border">
+        <div className="bg-background py-12">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="animate-pulse">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="space-y-4">
+                    <div className="h-6 bg-muted rounded w-32"></div>
+                    <div className="space-y-2">
+                      <div className="h-4 bg-muted rounded w-24"></div>
+                      <div className="h-4 bg-muted rounded w-20"></div>
+                      <div className="h-4 bg-muted rounded w-28"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    );
+  }
 
   const contactInfo = [
     {
