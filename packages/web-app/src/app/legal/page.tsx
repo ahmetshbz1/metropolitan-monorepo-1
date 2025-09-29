@@ -2,9 +2,16 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Shield, ChevronRight, ChevronDown } from "lucide-react";
+import { Shield, ChevronRight, ChevronDown, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useLegal } from "@/hooks/api/use-legal";
 import { useTranslation } from "react-i18next";
 
@@ -26,7 +33,8 @@ export default function LegalPage() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  const language = (i18n.language || "tr") as "tr" | "en" | "pl";
+  // i18n.language "tr-TR" formatında geliyor, sadece ilk 2 karakteri al
+  const language = ((i18n.language || "tr").split("-")[0]) as "tr" | "en" | "pl";
   const { data: legalData, isLoading } = useLegal(selectedType, language);
 
   useEffect(() => {
@@ -190,54 +198,82 @@ export default function LegalPage() {
       {/* Navigation Tabs */}
       <div className="sticky top-1 z-40 bg-background/95 backdrop-blur-sm border-b shadow-sm">
         <div className="container mx-auto px-4 py-2">
-          {/* Mobile: Dropdown */}
-          <div className="sm:hidden">
-            <div className="relative">
-              <button
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="w-full px-3 py-2 text-sm bg-background border rounded-lg flex items-center justify-between hover:bg-muted transition-colors"
-              >
-                <span className="font-medium text-primary">
-                  {getTitle(selectedType)}
-                </span>
-                <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
-              </button>
+          <div className="flex items-center justify-between">
+            {/* Mobile: Dropdown */}
+            <div className="sm:hidden flex-1">
+              <div className="relative">
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="w-full px-3 py-2 text-sm bg-background border rounded-lg flex items-center justify-between hover:bg-muted transition-colors"
+                >
+                  <span className="font-medium text-primary">
+                    {getTitle(selectedType)}
+                  </span>
+                  <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                </button>
 
-              {isDropdownOpen && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-background border rounded-lg shadow-lg z-50 overflow-hidden">
-                  {(["privacy-policy", "terms-of-service", "cookie-policy"] as LegalType[]).map((type) => (
-                    <button
-                      key={type}
-                      onClick={() => handleTypeChange(type)}
-                      disabled={type === selectedType}
-                      className={`w-full px-3 py-2 text-sm text-left transition-colors ${
-                        type === selectedType
-                          ? "bg-muted text-primary font-medium cursor-not-allowed"
-                          : "hover:bg-muted"
-                      }`}
-                    >
-                      {getTitle(type)}
-                    </button>
-                  ))}
-                </div>
-              )}
+                {isDropdownOpen && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-background border rounded-lg shadow-lg z-50 overflow-hidden">
+                    {(["privacy-policy", "terms-of-service", "cookie-policy"] as LegalType[]).map((type) => (
+                      <button
+                        key={type}
+                        onClick={() => handleTypeChange(type)}
+                        disabled={type === selectedType}
+                        className={`w-full px-3 py-2 text-sm text-left transition-colors ${
+                          type === selectedType
+                            ? "bg-muted text-primary font-medium cursor-not-allowed"
+                            : "hover:bg-muted"
+                        }`}
+                      >
+                        {getTitle(type)}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
 
-          {/* Desktop: Tabs */}
-          <div className="hidden sm:flex items-center space-x-4">
-            {(["privacy-policy", "terms-of-service", "cookie-policy"] as LegalType[]).map((type) => (
-              <Button
-                key={type}
-                variant="ghost"
-                size="sm"
-                onClick={() => handleTypeChange(type)}
-                disabled={type === selectedType}
-                className={type === selectedType ? "text-primary font-semibold" : "hover:bg-primary hover:text-primary-foreground"}
-              >
-                {getTitle(type)}
-              </Button>
-            ))}
+            {/* Desktop: Tabs */}
+            <div className="hidden sm:flex items-center space-x-4">
+              {(["privacy-policy", "terms-of-service", "cookie-policy"] as LegalType[]).map((type) => (
+                <Button
+                  key={type}
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleTypeChange(type)}
+                  disabled={type === selectedType}
+                  className={type === selectedType ? "text-primary font-semibold" : ""}
+                >
+                  {getTitle(type)}
+                </Button>
+              ))}
+            </div>
+
+            {/* Language Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="ml-2">
+                  <Globe className="h-4 w-4 mr-2" />
+                  {language.toUpperCase()}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-32">
+                <DropdownMenuRadioGroup
+                  value={language}
+                  onValueChange={(value) => i18n.changeLanguage(value)}
+                >
+                  <DropdownMenuRadioItem value="tr">
+                    Türkçe
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="en">
+                    English
+                  </DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="pl">
+                    Polski
+                  </DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>

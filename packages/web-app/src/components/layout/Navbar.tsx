@@ -10,7 +10,7 @@ import { useAuthStore } from "@/stores";
 import { Menu, Sparkles, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 import { CategoryMenu } from "./navbar/CategoryMenu";
 import { MobileMenu } from "./navbar/MobileMenu";
@@ -19,6 +19,12 @@ import { SearchBar } from "./navbar/SearchBar";
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+
+  // Legal sayfasında navbar'ı gösterme
+  if (pathname === "/legal") {
+    return null;
+  }
 
   // Wait for client-side hydration
   const hydrated = useHydration();
