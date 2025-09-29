@@ -2,33 +2,22 @@
 
 import { Button } from "@/components/ui/button";
 import { useAuthStore, useCartStore } from "@/stores";
+import { useAddresses } from "@/hooks/api/use-addresses";
 import { MapPin, Plus, Check } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 
-interface Address {
-  id: string;
-  title: string;
-  fullAddress: string;
-  city: string;
-  postalCode: string;
-  country: string;
-  isDefaultDelivery: boolean;
-  isDefaultBilling: boolean;
-}
-
 export default function CheckoutAddressPage() {
   const { t } = useTranslation();
   const router = useRouter();
   const { accessToken } = useAuthStore();
   const { items } = useCartStore();
-  const [addresses, setAddresses] = useState<Address[]>([]);
+  const { data: addresses = [], isLoading: loading } = useAddresses();
   const [selectedDeliveryId, setSelectedDeliveryId] = useState<string>("");
   const [selectedBillingId, setSelectedBillingId] = useState<string>("");
   const [sameAsDelivery, setSameAsDelivery] = useState(true);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!accessToken) {
@@ -40,9 +29,6 @@ export default function CheckoutAddressPage() {
       router.push("/cart");
       return;
     }
-
-    // TODO: Fetch addresses from API
-    setLoading(false);
   }, [accessToken, items, router]);
 
   const handleContinue = () => {

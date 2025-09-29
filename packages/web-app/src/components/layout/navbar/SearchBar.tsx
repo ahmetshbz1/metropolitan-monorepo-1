@@ -24,16 +24,25 @@ export function SearchBar({ onProductClick }: SearchBarProps) {
     setMounted(true);
   }, []);
 
-  // Debounce search query
+  // Debounce search query (reduced to 150ms for faster response)
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedQuery(searchQuery);
-    }, 300);
+    }, 150);
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
   const { data: searchResults = [], isLoading } =
     useProductSearch(debouncedQuery);
+
+  // Auto-show results when data arrives
+  useEffect(() => {
+    if (debouncedQuery.length > 2 && (searchResults.length > 0 || isLoading)) {
+      setShowResults(true);
+    } else if (debouncedQuery.length <= 2) {
+      setShowResults(false);
+    }
+  }, [searchResults, isLoading, debouncedQuery]);
 
   const handleProductClick = (productId: string) => {
     setSearchQuery("");
@@ -59,7 +68,11 @@ export function SearchBar({ onProductClick }: SearchBarProps) {
           type="search"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          onFocus={() => searchResults.length > 0 && setShowResults(true)}
+          onFocus={() => {
+            if (debouncedQuery.length > 2 && (searchResults.length > 0 || isLoading)) {
+              setShowResults(true);
+            }
+          }}
           onBlur={() => setTimeout(() => setShowResults(false), 150)}
           placeholder={mounted ? t("navbar.search_placeholder") : "Ara..."}
           className="w-full pl-10 pr-4 py-2 bg-muted/50 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"

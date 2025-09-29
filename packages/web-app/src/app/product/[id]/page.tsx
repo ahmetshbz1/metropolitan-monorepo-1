@@ -10,37 +10,45 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useProducts } from "@/context/ProductContext";
+import { useProducts } from "@/hooks/api/use-products";
 import { motion } from "framer-motion";
 import { ArrowLeft, Heart, Minus, Plus, ShoppingCart } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { t } = useTranslation();
-  const { products, loadingProducts, getProductById } = useProducts();
+  const { data: products = [], isLoading: loadingProducts } = useProducts();
 
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
 
-  // Get product from context using ID
-  const product = getProductById(params.id as string);
+  // Get product by ID
+  const product = useMemo(() =>
+    products.find(p => p.id === params.id as string),
+    [products, params.id]
+  );
+
   const loading = loadingProducts;
   const error = !loading && !product ? t("error.product_not_found") : null;
 
   // Get similar products (same category, excluding current product)
-  let similarProducts = products
-    .filter((p) => p.id !== params.id && p.category === product?.category)
-    .slice(0, 8);
+  const similarProducts = useMemo(() => {
+    let similar = products
+      .filter((p) => p.id !== params.id && p.category === product?.category)
+      .slice(0, 8);
 
-  // If no products in same category, get random other products
-  if (similarProducts.length === 0) {
-    similarProducts = products.filter((p) => p.id !== params.id).slice(0, 8);
-  }
+    // If no products in same category, get random other products
+    if (similar.length === 0) {
+      similar = products.filter((p) => p.id !== params.id).slice(0, 8);
+    }
+
+    return similar;
+  }, [products, params.id, product?.category]);
 
   const handleAddToCart = async () => {
     try {

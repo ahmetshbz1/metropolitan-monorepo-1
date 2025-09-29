@@ -47,11 +47,13 @@ export function useProduct(id: string) {
 export function useProductSearch(query: string) {
   const { i18n } = useTranslation();
   const lang = i18n.language?.split('-')[0] || 'tr';
-  
+
   return useQuery({
     queryKey: [...productKeys.all, 'search', query, lang],
     queryFn: () => productsApi.searchProducts(query, lang),
     enabled: query.length > 2,
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    staleTime: 5 * 60 * 1000, // Increased to 5 minutes for better caching
+    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
+    refetchOnWindowFocus: false, // Don't refetch on window focus for search
   });
 }

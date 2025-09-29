@@ -3,34 +3,17 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuthStore } from "@/stores";
+import { useNotifications, useDeleteNotification, useMarkAllAsRead } from "@/hooks/api/use-notifications";
 import { Bell, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
-
-interface Notification {
-  id: string;
-  type: "order" | "promotion" | "delivery" | "system";
-  title: string;
-  message: string;
-  createdAt: string;
-  isRead: boolean;
-}
 
 export default function NotificationsPage() {
   const { t } = useTranslation();
   const { user, accessToken } = useAuthStore();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (accessToken) {
-      // TODO: Fetch notifications from API
-      setLoading(false);
-    } else {
-      setLoading(false);
-    }
-  }, [accessToken]);
+  const { data: notifications = [], isLoading: loading } = useNotifications();
+  const deleteNotification = useDeleteNotification();
+  const markAllAsRead = useMarkAllAsRead();
 
   if (!accessToken || !user) {
     return (
@@ -102,7 +85,12 @@ export default function NotificationsPage() {
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">{t("notifications.title")}</h1>
-          <Button variant="outline" size="sm">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => markAllAsRead.mutate()}
+            disabled={markAllAsRead.isPending}
+          >
             {t("notifications.mark_all_read")}
           </Button>
         </div>
@@ -134,9 +122,8 @@ export default function NotificationsPage() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => {
-                    // TODO: Delete notification
-                  }}
+                  onClick={() => deleteNotification.mutate(notification.id)}
+                  disabled={deleteNotification.isPending}
                 >
                   <Trash2 className="h-4 w-4 text-red-500" />
                 </Button>

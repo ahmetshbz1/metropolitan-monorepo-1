@@ -3,36 +3,16 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuthStore } from "@/stores";
+import { useAddresses, useDeleteAddress } from "@/hooks/api/use-addresses";
 import { MapPin, Plus, Trash2, Edit } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
-
-interface Address {
-  id: string;
-  title: string;
-  fullAddress: string;
-  city: string;
-  postalCode: string;
-  country: string;
-  isDefaultDelivery: boolean;
-  isDefaultBilling: boolean;
-}
 
 export default function AddressesPage() {
   const { t } = useTranslation();
   const { user, accessToken } = useAuthStore();
-  const [addresses, setAddresses] = useState<Address[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (accessToken) {
-      // TODO: Fetch addresses from API
-      setLoading(false);
-    } else {
-      setLoading(false);
-    }
-  }, [accessToken]);
+  const { data: addresses = [], isLoading: loading } = useAddresses();
+  const deleteAddress = useDeleteAddress();
 
   if (!accessToken || !user) {
     return (
@@ -136,9 +116,8 @@ export default function AddressesPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => {
-                      // TODO: Delete address
-                    }}
+                    onClick={() => deleteAddress.mutate(address.id)}
+                    disabled={deleteAddress.isPending}
                   >
                     <Trash2 className="h-4 w-4 text-red-500" />
                   </Button>

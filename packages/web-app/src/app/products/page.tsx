@@ -3,7 +3,7 @@
 import { ProductCard } from "@/components/product/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useProducts } from "@/context/ProductContext";
+import { useProducts } from "@/hooks/api/use-products";
 import { Product } from "@metropolitan/shared";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { useState, useMemo } from "react";
@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 
 export default function ProductsPage() {
   const { t } = useTranslation();
-  const { products, loadingProducts } = useProducts();
+  const { data: products = [], isLoading: loadingProducts } = useProducts();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 

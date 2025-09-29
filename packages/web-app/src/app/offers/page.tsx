@@ -1,14 +1,14 @@
 "use client";
 
 import { ProductCard } from "@/components/product/ProductCard";
-import { useProducts } from "@/context/ProductContext";
+import { useProducts } from "@/hooks/api/use-products";
 import { Sparkles } from "lucide-react";
-import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function OffersPage() {
   const { t } = useTranslation();
-  const { products, loadingProducts } = useProducts();
+  const { data: products = [], isLoading: loadingProducts } = useProducts();
 
   // Filter products with discounts (originalPrice > price)
   const offerProducts = useMemo(() => {
@@ -43,7 +43,9 @@ export default function OffersPage() {
           <div className="w-24 h-24 bg-orange-100 dark:bg-orange-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
             <Sparkles className="h-12 w-12 text-orange-500" />
           </div>
-          <h2 className="text-2xl font-bold mb-2">Şu anda kampanya bulunmuyor</h2>
+          <h2 className="text-2xl font-bold mb-2">
+            Şu anda kampanya bulunmuyor
+          </h2>
           <p className="text-muted-foreground">
             Yeni kampanyalar eklendiğinde burada görünecek.
           </p>

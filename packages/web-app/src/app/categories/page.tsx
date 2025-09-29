@@ -1,14 +1,14 @@
 "use client";
 
 import { ProductCard } from "@/components/product/ProductCard";
-import { useProducts } from "@/context/ProductContext";
+import { useProducts } from "@/hooks/api/use-products";
 import { Package } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useMemo } from "react";
 
 export default function CategoriesPage() {
   const { t } = useTranslation();
-  const { products, loadingProducts } = useProducts();
+  const { data: products = [], isLoading: loadingProducts } = useProducts();
 
   const categorizedProducts = useMemo(() => {
     const grouped: Record<string, any[]> = {};
