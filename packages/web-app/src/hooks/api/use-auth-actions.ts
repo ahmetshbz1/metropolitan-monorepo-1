@@ -19,7 +19,7 @@ export function useSendOTP() {
 
 export function useVerifyOTP() {
   const queryClient = useQueryClient();
-  const { setTokens, setRegistrationToken, setGuest } = useAuthStore();
+  const { setTokens, setRegistrationToken, setGuest, setUser } = useAuthStore();
   const isGuest = useAuthStore((state) => state.isGuest);
   const guestId = useAuthStore((state) => state.guestId);
   const socialAuthData = useAuthStore((state) => (state as any).socialAuthData);
