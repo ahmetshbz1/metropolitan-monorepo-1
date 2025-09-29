@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { OTPInput } from "@/components/ui/otp-input";
 import { api } from "@/lib/api";
 import { tokenStorage } from "@/lib/token-storage";
 import { useAuthStore } from "@/stores";
@@ -20,6 +21,7 @@ export default function DeleteAccountPage() {
   const [otpCode, setOtpCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [resendTimer, setResendTimer] = useState(0);
+  const [otpError, setOtpError] = useState(false);
 
   // Show loading state while hydrating
   if (!_hasHydrated) {
@@ -100,11 +102,13 @@ export default function DeleteAccountPage() {
 
   const handleVerifyOTP = async () => {
     if (otpCode.length !== 6) {
+      setOtpError(true);
       toast.error("Doğrulama kodu 6 haneli olmalıdır");
       return;
     }
 
     setLoading(true);
+    setOtpError(false);
     try {
       const response = await api.post("/auth/account/delete/verify-otp", {
         phoneNumber,
@@ -123,10 +127,12 @@ export default function DeleteAccountPage() {
           router.push("/auth/phone-login");
         }, 2000);
       } else {
+        setOtpError(true);
         toast.error(response.data.message || "Doğrulama başarısız");
       }
     } catch (error: any) {
       console.error("Verify OTP error:", error);
+      setOtpError(true);
       toast.error(error.response?.data?.message || "Doğrulama başarısız");
     } finally {
       setLoading(false);
@@ -186,11 +192,10 @@ export default function DeleteAccountPage() {
               />
               <div>
                 <h3 className="font-semibold text-sm text-red-900 dark:text-red-100 mb-2">
-                  Uyarı: Bu İşlem Geri Alınamaz!
+                  Dikkat!
                 </h3>
                 <p className="text-xs text-red-800 dark:text-red-200 leading-relaxed">
-                  Hesabınızı sildiğinizde tüm verileriniz kalıcı olarak silinecektir.
-                  Bu işlem geri alınamaz ve verileriniz kurtarılamaz.
+                  Hesabınızı silerseniz tüm verileriniz silinecektir. 20 gün içinde tekrar giriş yaparsanız hesabınız yeniden aktif olur.
                 </p>
               </div>
             </div>
@@ -251,28 +256,23 @@ export default function DeleteAccountPage() {
           {step === "otp" && (
             <div className="bg-card rounded-xl border border-border">
               <div className="p-4">
-                <div className="mb-4">
-                  <h2 className="text-base font-semibold">Doğrulama Kodu</h2>
-                  <p className="text-xs text-muted-foreground">
+                <div className="mb-6">
+                  <h2 className="text-base font-semibold text-center">Doğrulama Kodu</h2>
+                  <p className="text-xs text-muted-foreground text-center mt-1">
                     {phoneNumber} numarasına gönderilen kodu girin
                   </p>
                 </div>
 
-                <div className="space-y-3">
-                  <div>
-                    <Label htmlFor="otp">Doğrulama Kodu</Label>
-                    <Input
-                      id="otp"
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={6}
-                      value={otpCode}
-                      onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ""))}
-                      placeholder="000000"
-                      className="mt-1.5 text-center text-2xl tracking-widest font-mono"
-                      disabled={loading}
-                    />
-                  </div>
+                <div className="space-y-4">
+                  <OTPInput
+                    value={otpCode}
+                    onChange={(value) => {
+                      setOtpCode(value);
+                      setOtpError(false);
+                    }}
+                    isError={otpError}
+                    disabled={loading}
+                  />
 
                   <Button
                     onClick={handleVerifyOTP}
