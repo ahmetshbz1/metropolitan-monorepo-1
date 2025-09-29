@@ -2,8 +2,8 @@ import { api } from "@/lib/api";
 
 export interface Address {
   id: string;
-  title: string;
-  fullAddress: string;
+  addressTitle: string;
+  street: string;
   city: string;
   postalCode: string;
   country: string;
@@ -12,8 +12,8 @@ export interface Address {
 }
 
 export interface CreateAddressRequest {
-  title: string;
-  fullAddress: string;
+  addressTitle: string;
+  street: string;
   city: string;
   postalCode: string;
   country: string;
@@ -23,31 +23,31 @@ export interface CreateAddressRequest {
 
 export const addressesApi = {
   getAddresses: async (): Promise<Address[]> => {
-    const response = await api.get("/users/addresses");
+    const response = await api.get("/users/me/addresses");
     return response.data.data || response.data;
   },
 
   createAddress: async (data: CreateAddressRequest): Promise<Address> => {
-    const response = await api.post("/users/addresses", data);
+    const response = await api.post("/users/me/addresses", data);
     return response.data.data || response.data;
   },
 
   updateAddress: async (id: string, data: Partial<CreateAddressRequest>): Promise<Address> => {
-    const response = await api.put(`/users/addresses/${id}`, data);
+    const response = await api.put(`/users/me/addresses/${id}`, data);
     return response.data.data || response.data;
   },
 
   deleteAddress: async (id: string): Promise<void> => {
-    await api.delete(`/users/addresses/${id}`);
+    await api.delete(`/users/me/addresses/${id}`);
   },
 
   setDefaultDelivery: async (id: string): Promise<Address> => {
-    const response = await api.patch(`/users/addresses/${id}/default-delivery`);
+    const response = await api.patch(`/users/me/addresses/${id}/default-delivery`);
     return response.data.data || response.data;
   },
 
   setDefaultBilling: async (id: string): Promise<Address> => {
-    const response = await api.patch(`/users/addresses/${id}/default-billing`);
+    const response = await api.patch(`/users/me/addresses/${id}/default-billing`);
     return response.data.data || response.data;
   },
 };

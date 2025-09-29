@@ -2,19 +2,27 @@
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useAuthStore } from "@/stores";
+import { useAuth } from "@/context/AuthContext";
 import { useAddresses, useDeleteAddress } from "@/hooks/api/use-addresses";
 import { MapPin, Plus, Trash2, Edit } from "lucide-react";
-import Link from "next/link";
 import { useTranslation } from "react-i18next";
+import { AddressDialog } from "@/components/address/AddressDialog";
+import { useState } from "react";
 
 export default function AddressesPage() {
   const { t } = useTranslation();
-  const { user, accessToken } = useAuthStore();
-  const { data: addresses = [], isLoading: loading } = useAddresses();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const { data: addresses = [], isLoading: addressesLoading } = useAddresses();
   const deleteAddress = useDeleteAddress();
 
-  if (!accessToken || !user) {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingAddress, setEditingAddress] = useState<any>(null);
+
+  // If addresses are loaded and we have data, show it (ignore auth loading state issue)
+  const hasLoadedAddresses = !addressesLoading && addresses !== undefined;
+  const shouldShowLoading = (authLoading && !hasLoadedAddresses) || addressesLoading;
+
+  if (!authLoading && !isAuthenticated) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="text-center">
@@ -25,15 +33,15 @@ export default function AddressesPage() {
           <p className="text-muted-foreground mb-6">
             Teslimat adreslerinizi kaydedin ve hızlı sipariş verin.
           </p>
-          <Button asChild>
-            <Link href="/auth/phone-login">Giriş Yap</Link>
+          <Button onClick={() => window.location.href = '/auth/phone-login'}>
+            Giriş Yap
           </Button>
         </div>
       </div>
     );
   }
 
-  if (loading) {
+  if (shouldShowLoading) {
     return (
       <div className="min-h-screen bg-background py-8">
         <div className="container mx-auto px-4 max-w-4xl">
@@ -50,25 +58,35 @@ export default function AddressesPage() {
 
   if (addresses.length === 0) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
-            <MapPin className="h-12 w-12 text-muted-foreground" />
-          </div>
-          <h2 className="text-2xl font-bold mb-2">
-            {t("addresses.empty.title")}
-          </h2>
-          <p className="text-muted-foreground mb-6">
-            {t("addresses.empty.subtitle")}
-          </p>
-          <Button asChild>
-            <Link href="/addresses/add">
+      <>
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
+              <MapPin className="h-12 w-12 text-muted-foreground" />
+            </div>
+            <h2 className="text-2xl font-bold mb-2">
+              {t("addresses.empty.title")}
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              {t("addresses.empty.subtitle")}
+            </p>
+            <Button onClick={() => setDialogOpen(true)}>
               <Plus className="mr-2 h-5 w-5" />
               {t("addresses.empty.add_button")}
-            </Link>
-          </Button>
+            </Button>
+          </div>
         </div>
-      </div>
+
+        <AddressDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          address={editingAddress}
+          onSuccess={() => {
+            setDialogOpen(false);
+            setEditingAddress(null);
+          }}
+        />
+      </>
     );
   }
 
@@ -77,11 +95,12 @@ export default function AddressesPage() {
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">{t("addresses.title")}</h1>
-          <Button asChild>
-            <Link href="/addresses/add">
-              <Plus className="mr-2 h-5 w-5" />
-              {t("addresses.add_new_address")}
-            </Link>
+          <Button onClick={() => {
+            setEditingAddress(null);
+            setDialogOpen(true);
+          }}>
+            <Plus className="mr-2 h-5 w-5" />
+            {t("addresses.add_new_address")}
           </Button>
         </div>
 
@@ -93,7 +112,7 @@ export default function AddressesPage() {
             >
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h3 className="font-semibold text-lg mb-1">{address.title}</h3>
+                  <h3 className="font-semibold text-lg mb-1">{address.addressTitle}</h3>
                   <div className="flex gap-2 mb-2">
                     {address.isDefaultDelivery && (
                       <Badge variant="secondary">
@@ -108,10 +127,15 @@ export default function AddressesPage() {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href={`/addresses/edit/${address.id}`}>
-                      <Edit className="h-4 w-4" />
-                    </Link>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setEditingAddress(address);
+                      setDialogOpen(true);
+                    }}
+                  >
+                    <Edit className="h-4 w-4" />
                   </Button>
                   <Button
                     variant="outline"
@@ -124,13 +148,23 @@ export default function AddressesPage() {
                 </div>
               </div>
               <p className="text-muted-foreground">
-                {address.fullAddress}
+                {address.street}
                 <br />
                 {address.postalCode} {address.city}, {address.country}
               </p>
             </div>
           ))}
         </div>
+
+        <AddressDialog
+          open={dialogOpen}
+          onOpenChange={setDialogOpen}
+          address={editingAddress}
+          onSuccess={() => {
+            setDialogOpen(false);
+            setEditingAddress(null);
+          }}
+        />
       </div>
     </div>
   );

@@ -8,10 +8,10 @@ import {
   guestStorage,
   registrationStorage,
   socialAuthStorage,
-  syncDeviceIdFromToken,
-  tokenStorage,
   userStorage,
 } from "./storage";
+import { tokenStorage } from "@/lib/token-storage";
+import { syncDeviceIdFromToken } from "@/lib/device-id";
 import { SocialAuthData, WebUser } from "./types";
 
 // Firebase auth for Google
@@ -45,36 +45,45 @@ export const useAuthHook = () => {
 
     const initAuth = async () => {
       try {
-        // Load tokens
-        const savedAccessToken = await tokenStorage.getAccessToken();
-        const savedRefreshToken = await tokenStorage.getRefreshToken();
-        const savedUser = await userStorage.get();
-        const savedGuestId = await guestStorage.getGuestId();
-        const savedSocialAuthData = await socialAuthStorage.get();
-        const savedRegistrationToken = await registrationStorage.getToken();
+        // Add timeout to prevent infinite loading
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Auth init timeout')), 3000)
+        );
 
-        if (!isMounted) return;
+        const initPromise = (async () => {
+          // Load tokens
+          const savedAccessToken = await tokenStorage.getAccessToken();
+          const savedRefreshToken = await tokenStorage.getRefreshToken();
+          const savedUser = await userStorage.get();
+          const savedGuestId = await guestStorage.getGuestId();
+          const savedSocialAuthData = await socialAuthStorage.get();
+          const savedRegistrationToken = await registrationStorage.getToken();
 
-        // Sadece user da varsa token'ları restore et
-        if (savedAccessToken && savedRefreshToken && savedUser) {
-          setAccessToken(savedAccessToken);
-          setRefreshToken(savedRefreshToken);
-          setToken(savedAccessToken);
-          setUser(savedUser);
-          setIsGuest(false);
-          await syncDeviceIdFromToken(savedAccessToken);
-        } else if (savedGuestId) {
-          setGuestId(savedGuestId);
-          setIsGuest(true);
-        }
+          if (!isMounted) return;
 
-        if (savedSocialAuthData) {
-          setSocialAuthData(savedSocialAuthData);
-        }
+          // Sadece user da varsa token'ları restore et
+          if (savedAccessToken && savedRefreshToken && savedUser) {
+            setAccessToken(savedAccessToken);
+            setRefreshToken(savedRefreshToken);
+            setToken(savedAccessToken);
+            setUser(savedUser);
+            setIsGuest(false);
+            await syncDeviceIdFromToken(savedAccessToken);
+          } else if (savedGuestId) {
+            setGuestId(savedGuestId);
+            setIsGuest(true);
+          }
 
-        if (savedRegistrationToken) {
-          setRegistrationToken(savedRegistrationToken);
-        }
+          if (savedSocialAuthData) {
+            setSocialAuthData(savedSocialAuthData);
+          }
+
+          if (savedRegistrationToken) {
+            setRegistrationToken(savedRegistrationToken);
+          }
+        })();
+
+        await Promise.race([initPromise, timeoutPromise]);
       } catch (error) {
         console.error("Auth initialization error:", error);
       } finally {
