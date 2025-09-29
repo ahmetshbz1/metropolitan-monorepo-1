@@ -310,7 +310,7 @@ export const changePhoneRoutes = createApp()
               jti: accessJTI,
               aud: "mobile-app",
               iss: "metropolitan-api",
-              exp: Math.floor(Date.now() / 1000) + 15 * 60, // 15 dakika
+              exp: Math.floor(Date.now() / 1000) + 60 * 60, // 1 saat (önceden 15 dakika)
             });
 
             // Refresh token (30 gün)

@@ -128,7 +128,7 @@ export const refreshTokenRoutes = createApp()
           jti: newAccessJTI,
           aud: "mobile-app",
           iss: "metropolitan-api",
-          exp: Math.floor(Date.now() / 1000) + 15 * 60, // 15 minutes
+          exp: Math.floor(Date.now() / 1000) + 60 * 60, // 1 hour (was 15 minutes)
         });
 
         log.info({
@@ -141,7 +141,7 @@ export const refreshTokenRoutes = createApp()
         return {
           success: true,
           accessToken: newAccessToken,
-          expiresIn: 900, // 15 minutes in seconds
+          expiresIn: 3600, // 1 hour in seconds (was 900)
         };
       } catch (error: any) {
         log.error({

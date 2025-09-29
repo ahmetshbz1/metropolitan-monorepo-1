@@ -8,12 +8,20 @@ import { getDeviceHeaders } from './device-fingerprint';
 
 let isRefreshing = false;
 let refreshSubscribers: ((token: string) => void)[] = [];
+let failedRefreshSubscribers: (() => void)[] = [];
 
 /**
  * Subscribe to token refresh
  */
 function subscribeTokenRefresh(cb: (token: string) => void) {
   refreshSubscribers.push(cb);
+}
+
+/**
+ * Subscribe to failed refresh
+ */
+function subscribeFailedRefresh(cb: () => void) {
+  failedRefreshSubscribers.push(cb);
 }
 
 /**
@@ -25,6 +33,39 @@ function onRefreshed(token: string) {
 }
 
 /**
+ * Notify all subscribers when refresh failed
+ */
+function onRefreshFailed() {
+  failedRefreshSubscribers.forEach(cb => cb());
+  failedRefreshSubscribers = [];
+  refreshSubscribers = [];
+}
+
+/**
+ * Clear all auth data and redirect to login
+ */
+async function clearAuthAndRedirect() {
+  console.warn('[API] Clearing auth and redirecting to login');
+
+  // Clear token storage
+  await tokenStorage.remove();
+
+  // Clear Zustand store (using dynamic import to avoid circular dependencies)
+  if (typeof window !== 'undefined') {
+    try {
+      // Clear localStorage manually
+      localStorage.removeItem('metropolitan-auth-storage');
+      sessionStorage.removeItem('metropolitan_session_id');
+
+      // Redirect to login page
+      window.location.href = '/auth/phone-login';
+    } catch (error) {
+      console.error('[API] Error clearing auth:', error);
+    }
+  }
+}
+
+/**
  * Refresh access token using refresh token
  */
 async function refreshAccessToken(api: AxiosInstance): Promise<string | null> {
@@ -32,8 +73,11 @@ async function refreshAccessToken(api: AxiosInstance): Promise<string | null> {
     const refreshToken = await tokenStorage.getRefreshToken();
     if (!refreshToken) {
       console.warn('[API] No refresh token available');
+      await clearAuthAndRedirect();
       return null;
     }
+
+    console.log('[API] Attempting to refresh token...');
 
     // Get device headers for fingerprinting
     const deviceHeaders = await getDeviceHeaders();
@@ -56,24 +100,18 @@ async function refreshAccessToken(api: AxiosInstance): Promise<string | null> {
       // Save new access token
       await tokenStorage.saveAccessToken(newAccessToken);
 
-      console.log('[API] Token refreshed successfully');
+      console.log('[API] ✅ Token refreshed successfully');
       return newAccessToken;
     }
 
     console.warn('[API] Token refresh failed - invalid response');
+    await clearAuthAndRedirect();
     return null;
   } catch (error: any) {
-    console.error('[API] Token refresh failed:', error.response?.data || error.message);
+    console.error('[API] ❌ Token refresh failed:', error.response?.data || error.message);
 
-    // If refresh failed with 401, clear tokens and redirect to login
-    if (error.response?.status === 401) {
-      await tokenStorage.remove();
-      // Trigger logout by redirecting to login page
-      if (typeof window !== 'undefined') {
-        window.location.href = '/login';
-      }
-    }
-
+    // Clear auth and redirect on any refresh error
+    await clearAuthAndRedirect();
     return null;
   }
 }
@@ -133,14 +171,22 @@ export function setupResponseInterceptor(api: AxiosInstance) {
     async (error) => {
       const originalRequest = error.config;
 
+      // Skip refresh for auth endpoints
+      if (originalRequest.url?.includes('/auth/')) {
+        return Promise.reject(error);
+      }
+
       // If the error is 401 and we haven't already tried to refresh
       if (error.response?.status === 401 && !originalRequest._retry) {
         if (isRefreshing) {
           // If already refreshing, queue this request
-          return new Promise((resolve) => {
+          return new Promise((resolve, reject) => {
             subscribeTokenRefresh((token: string) => {
               originalRequest.headers.Authorization = `Bearer ${token}`;
               resolve(api(originalRequest));
+            });
+            subscribeFailedRefresh(() => {
+              reject(error);
             });
           });
         }
@@ -158,10 +204,10 @@ export function setupResponseInterceptor(api: AxiosInstance) {
           // Retry original request with new token
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
           return api(originalRequest);
+        } else {
+          // Notify all queued requests that refresh failed
+          onRefreshFailed();
         }
-
-        // If refresh failed, reject all queued requests
-        refreshSubscribers = [];
       }
 
       return Promise.reject(error);

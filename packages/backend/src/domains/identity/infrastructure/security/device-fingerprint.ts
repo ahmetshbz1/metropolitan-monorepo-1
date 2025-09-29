@@ -71,22 +71,37 @@ export function generateSessionId(): string {
 /**
  * Generate device fingerprint from device info and headers
  * Creates a unique identifier for the device
+ *
+ * IMPORTANT: For web platform, we exclude IP address and volatile fields
+ * because they change frequently (Wi-Fi/mobile switching, browser updates, zoom/resize)
  */
 export function generateDeviceFingerprint(
   deviceInfo: DeviceInfo,
   headers: Record<string, string | undefined>
 ): string {
-  // Combine device characteristics
-  const fingerprintData = [
-    deviceInfo.userAgent || 'unknown',
-    deviceInfo.platform || 'unknown',
-    deviceInfo.deviceModel || 'unknown',
-    deviceInfo.appVersion || 'unknown',
-    deviceInfo.screenResolution || 'unknown',
-    deviceInfo.timezone || 'unknown',
-    deviceInfo.language || 'unknown',
-    headers['x-forwarded-for'] || headers['x-real-ip'] || 'unknown',
-  ].join('|');
+  const platform = headers['x-platform'] || deviceInfo.platform || 'unknown';
+  const isWebPlatform = platform.toLowerCase() === 'web';
+
+  // For web: Use only stable characteristics (no IP, no screen resolution, no app version)
+  // For mobile: Use all characteristics including IP for better security
+  const fingerprintData = isWebPlatform
+    ? [
+        deviceInfo.userAgent || 'unknown',
+        platform,
+        deviceInfo.deviceModel || 'unknown',
+        deviceInfo.timezone || 'unknown',
+        deviceInfo.language || 'unknown',
+      ].join('|')
+    : [
+        deviceInfo.userAgent || 'unknown',
+        platform,
+        deviceInfo.deviceModel || 'unknown',
+        deviceInfo.appVersion || 'unknown',
+        deviceInfo.screenResolution || 'unknown',
+        deviceInfo.timezone || 'unknown',
+        deviceInfo.language || 'unknown',
+        headers['x-forwarded-for'] || headers['x-real-ip'] || 'unknown',
+      ].join('|');
 
   // Generate SHA-256 hash
   const fingerprint = createHash('sha256')

@@ -320,7 +320,7 @@ export const socialAuthRoutes = createApp()
           jti: accessJTI,
           aud: "mobile-app",
           iss: "metropolitan-api",
-          exp: Math.floor(Date.now() / 1000) + 15 * 60, // 15 minutes
+          exp: Math.floor(Date.now() / 1000) + 60 * 60, // 1 hour (was 15 minutes)
         });
 
         // Refresh token (30 days)
