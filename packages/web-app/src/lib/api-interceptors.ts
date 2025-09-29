@@ -99,6 +99,9 @@ export function setupRequestInterceptor(api: AxiosInstance) {
       const token = await tokenStorage.getAccessToken();
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+        console.log('[API] 🔑 Token eklendi:', token.substring(0, 20) + '...');
+      } else {
+        console.warn('[API] ⚠️ Token bulunamadı!');
       }
 
       // Add device fingerprint headers

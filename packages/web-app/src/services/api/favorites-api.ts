@@ -3,22 +3,22 @@ import type { Product } from '@metropolitan/shared';
 
 export const favoritesApi = {
   getFavorites: async () => {
-    const response = await api.get('/favorites');
+    const response = await api.get('/users/me/favorites');
     return response.data.data as Product[];
   },
-  
+
   addFavorite: async (productId: string) => {
-    const response = await api.post('/favorites', { productId });
+    const response = await api.post('/users/me/favorites', { productId });
     return response.data;
   },
-  
+
   removeFavorite: async (productId: string) => {
-    const response = await api.delete(`/favorites/${productId}`);
+    const response = await api.delete(`/users/me/favorites/${productId}`);
     return response.data;
   },
-  
+
   getFavoriteIds: async () => {
-    const response = await api.get('/favorites/ids');
-    return response.data.data as string[];
+    const favorites = await favoritesApi.getFavorites();
+    return favorites.map(f => f.id);
   },
 };

@@ -11,6 +11,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useProducts } from "@/hooks/api/use-products";
+import { useAddFavorite, useRemoveFavorite } from "@/hooks/api/use-favorites";
+import { useFavoritesStore } from "@/stores/favorites-store";
 import { motion } from "framer-motion";
 import { ArrowLeft, Heart, Minus, Plus, ShoppingCart } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -23,8 +25,12 @@ export default function ProductDetailPage() {
   const { t } = useTranslation();
   const { data: products = [], isLoading: loadingProducts } = useProducts();
 
+  // Favorites
+  const isFavorite = useFavoritesStore((state) => state.isFavorite);
+  const addFavoriteMutation = useAddFavorite();
+  const removeFavoriteMutation = useRemoveFavorite();
+
   const [quantity, setQuantity] = useState(1);
-  const [isFavorite, setIsFavorite] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   // Get product by ID
@@ -62,12 +68,25 @@ export default function ProductDetailPage() {
     }
   };
 
-  const toggleFavorite = () => {
-    setIsFavorite(!isFavorite);
+  const toggleFavorite = async () => {
+    if (!product?.id) return;
+
+    try {
+      const isCurrentlyFavorite = isFavorite(product.id);
+
+      if (isCurrentlyFavorite) {
+        await removeFavoriteMutation.mutateAsync(product.id);
+      } else {
+        await addFavoriteMutation.mutateAsync(product.id);
+      }
+    } catch (error) {
+      console.error('Favori işlemi hatası:', error);
+    }
   };
 
-  const formatPrice = (price: number, currency = "TRY") => {
-    return new Intl.NumberFormat("tr-TR", {
+  const formatPrice = (price: number, currency: string) => {
+    const locale = currency === "PLN" ? "pl-PL" : "tr-TR";
+    return new Intl.NumberFormat(locale, {
       style: "currency",
       currency,
     }).format(price);
@@ -349,15 +368,20 @@ export default function ProductDetailPage() {
                     variant="outline"
                     size="lg"
                     onClick={toggleFavorite}
-                    className={isFavorite ? "text-red-500 border-red-200" : ""}
+                    disabled={addFavoriteMutation.isPending || removeFavoriteMutation.isPending}
+                    className={product && isFavorite(product.id) ? "text-red-500 border-red-200" : ""}
                   >
-                    <Heart
-                      className={`w-5 h-5 ${isFavorite ? "fill-current" : ""}`}
-                    />
+                    {(addFavoriteMutation.isPending || removeFavoriteMutation.isPending) ? (
+                      <div className="w-5 h-5 border-2 border-current/30 border-t-current rounded-full animate-spin" />
+                    ) : (
+                      <Heart
+                        className={`w-5 h-5 ${product && isFavorite(product.id) ? "fill-current" : ""}`}
+                      />
+                    )}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent className="hidden md:block">
-                  <p>{isFavorite ? "Favorilerden çıkar" : "Favorilere ekle"}</p>
+                  <p>{product && isFavorite(product.id) ? "Favorilerden çıkar" : "Favorilere ekle"}</p>
                 </TooltipContent>
               </Tooltip>
             </div>
