@@ -289,11 +289,6 @@ export function Navbar() {
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-2">
-            {/* Search Button - Mobile */}
-            <Button variant="ghost" size="icon" className="md:hidden">
-              <Search className="h-5 w-5" />
-            </Button>
-
             {/* Favorites */}
             <Button variant="ghost" size="icon" className="relative hover:bg-primary/10">
               <Heart className="h-5 w-5" />
