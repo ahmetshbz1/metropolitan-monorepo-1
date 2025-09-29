@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { useProducts } from "@/hooks/api/use-products";
 import { Package, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -96,9 +97,9 @@ export function SearchBar({ onProductClick }: SearchBarProps) {
 
   return (
     <div className="relative w-full">
-      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 z-10" />
       <form onSubmit={handleSubmit}>
-        <input
+        <Input
           type="search"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -109,7 +110,7 @@ export function SearchBar({ onProductClick }: SearchBarProps) {
           }}
           onBlur={() => setTimeout(() => setShowResults(false), 150)}
           placeholder={mounted ? t("navbar.search_placeholder") : "Ara..."}
-          className="w-full pl-10 pr-4 py-2 bg-muted/50 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+          className="pl-10 pr-4"
         />
       </form>
 

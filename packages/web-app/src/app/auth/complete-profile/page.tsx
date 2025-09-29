@@ -140,7 +140,6 @@ export default function CompleteProfilePage() {
                     type="text"
                     value={formData.firstName}
                     onChange={handleInputChange("firstName")}
-                    className="h-11 bg-muted/50 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     required
                   />
                 </div>
@@ -153,7 +152,6 @@ export default function CompleteProfilePage() {
                     type="text"
                     value={formData.lastName}
                     onChange={handleInputChange("lastName")}
-                    className="h-11 bg-muted/50 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     required
                   />
                 </div>
@@ -169,7 +167,6 @@ export default function CompleteProfilePage() {
                   type="email"
                   value={formData.email}
                   onChange={handleInputChange("email")}
-                  className="h-11 bg-muted/50 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   required
                 />
               </div>
@@ -185,7 +182,6 @@ export default function CompleteProfilePage() {
                     type="text"
                     value={formData.nip}
                     onChange={handleInputChange("nip")}
-                    className="h-11 bg-muted/50 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     placeholder="1234567890"
                     maxLength={10}
                   />

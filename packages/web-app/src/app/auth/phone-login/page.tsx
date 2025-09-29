@@ -134,7 +134,7 @@ export default function PhoneLoginPage() {
                         setCountryCode(cleaned);
                       }
                     }}
-                    className="h-11 bg-muted/50 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary text-center font-medium"
+                    className="text-center font-medium"
                     maxLength={5}
                   />
                 </div>
@@ -147,7 +147,6 @@ export default function PhoneLoginPage() {
                       const cleaned = e.target.value.replace(/\D/g, "");
                       setPhoneNumber(cleaned);
                     }}
-                    className="h-11 bg-muted/50 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     maxLength={15}
                   />
                 </div>
