@@ -126,15 +126,18 @@ export default function DeleteAccountPage() {
         setTimeout(() => {
           router.push("/auth/phone-login");
         }, 2000);
+
+        // Don't set loading to false, component is unmounting
+        return;
       } else {
         setOtpError(true);
         toast.error(response.data.message || "Doğrulama başarısız");
+        setLoading(false);
       }
     } catch (error: any) {
       console.error("Verify OTP error:", error);
       setOtpError(true);
       toast.error(error.response?.data?.message || "Doğrulama başarısız");
-    } finally {
       setLoading(false);
     }
   };
