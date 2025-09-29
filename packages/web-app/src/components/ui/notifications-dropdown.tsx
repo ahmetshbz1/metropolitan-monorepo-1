@@ -15,6 +15,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
+  useDeleteNotification,
   useMarkAllAsRead,
   useMarkAsRead,
   useNotifications,
@@ -38,6 +39,7 @@ export function NotificationsDropdown() {
   const { data: notifications = [], isLoading } = useNotifications();
   const markAsRead = useMarkAsRead();
   const markAllAsRead = useMarkAllAsRead();
+  const deleteNotification = useDeleteNotification();
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
@@ -49,6 +51,11 @@ export function NotificationsDropdown() {
 
   const handleMarkAllRead = () => {
     markAllAsRead.mutate();
+  };
+
+  const handleDelete = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    deleteNotification.mutate(id);
   };
 
   return (
@@ -131,7 +138,7 @@ export function NotificationsDropdown() {
                 <DropdownMenuItem
                   key={notification.id}
                   className={cn(
-                    "p-3 rounded-lg cursor-pointer transition-colors flex-col items-start gap-1",
+                    "group relative p-3 rounded-lg cursor-pointer transition-colors flex-col items-start gap-1",
                     !notification.isRead && "bg-primary/5"
                   )}
                   onClick={() =>
@@ -193,6 +200,17 @@ export function NotificationsDropdown() {
                         })}
                       </p>
                     </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={(e) => handleDelete(e, notification.id)}
+                    >
+                      <Icon
+                        icon="solar:close-circle-line-duotone"
+                        className="size-4 text-gray-400 hover:text-red-500"
+                      />
+                    </Button>
                   </div>
                 </DropdownMenuItem>
               ))}
