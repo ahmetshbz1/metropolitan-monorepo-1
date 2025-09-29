@@ -104,11 +104,26 @@ export default function VerifyOtpPage() {
       { phoneNumber, otpCode, userType },
       {
         onSuccess: (result) => {
+          console.log("✅ Verify OTP Success:", result);
+
           if (result.success) {
-            if (result.isNewUser) {
+            // Check if user has tokens (existing user) or registrationToken (new user)
+            const hasAccessToken = result.accessToken && result.refreshToken;
+            const hasRegistrationToken = result.registrationToken;
+
+            console.log("Has Access Token:", hasAccessToken);
+            console.log("Has Registration Token:", hasRegistrationToken);
+            console.log("Is New User:", result.isNewUser);
+
+            if (hasRegistrationToken || result.isNewUser) {
+              console.log("🆕 New user - redirecting to complete-profile");
               router.replace(`/auth/complete-profile?userType=${userType}`);
-            } else {
+            } else if (hasAccessToken) {
+              console.log("✅ Existing user - redirecting to home");
               router.replace("/");
+            } else {
+              console.log("⚠️ Unexpected response structure:", result);
+              setError("Beklenmeyen yanıt alındı. Lütfen tekrar deneyin.");
             }
           } else {
             setError(
