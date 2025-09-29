@@ -12,7 +12,19 @@ export interface Notification {
 export const notificationsApi = {
   getNotifications: async (): Promise<Notification[]> => {
     const response = await api.get("/users/notifications");
-    return response.data.data || response.data;
+    console.log("🔔 Notifications API Response:", response.data);
+    
+    // Try different possible response structures
+    const data = 
+      response.data.data?.notifications || 
+      response.data.notifications || 
+      response.data.data || 
+      response.data;
+    
+    console.log("🔔 Parsed notifications:", data);
+    
+    // Ensure we always return an array
+    return Array.isArray(data) ? data : [];
   },
 
   markAsRead: async (id: string): Promise<void> => {

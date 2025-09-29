@@ -4,16 +4,42 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuthStore } from "@/stores";
 import { useNotifications, useDeleteNotification, useMarkAllAsRead } from "@/hooks/api/use-notifications";
+import { useAuthInit } from "@/hooks/use-auth-init";
+import { useHydration } from "@/hooks/use-hydration";
 import { Bell, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 
 export default function NotificationsPage() {
   const { t } = useTranslation();
-  const { user, accessToken } = useAuthStore();
-  const { data: notifications = [], isLoading: loading } = useNotifications();
+  
+  // Initialize auth from localStorage
+  useAuthInit();
+  const hydrated = useHydration();
+  
+  const { user, accessToken, _hasHydrated } = useAuthStore();
+  const { data: notificationsData, isLoading: loading } = useNotifications();
   const deleteNotification = useDeleteNotification();
   const markAllAsRead = useMarkAllAsRead();
+
+  // Ensure notifications is always an array
+  const notifications = Array.isArray(notificationsData) ? notificationsData : [];
+
+  // Wait for hydration before showing auth-dependent content
+  if (!hydrated || !_hasHydrated) {
+    return (
+      <div className="min-h-screen bg-background py-8">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <div className="h-8 bg-muted rounded w-48 mb-6 animate-pulse"></div>
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-24 bg-muted rounded-xl animate-pulse"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!accessToken || !user) {
     return (
