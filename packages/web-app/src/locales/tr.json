@@ -304,7 +304,14 @@
     "gdpr_desc": "Kişisel verilerin korunması",
     "company_info_section": "Şirket Bilgileri",
     "notice_title": "Yasal Uyarı",
-    "notice_desc": "Bu uygulamadaki tüm içerik ve materyaller Metropolitan Food Group Sp. z o.o.'ya aittir ve telif hakkı ile korunmaktadır."
+    "notice_desc": "Bu uygulamadaki tüm içerik ve materyaller Metropolitan Food Group Sp. z o.o.'ya aittir ve telif hakkı ile korunmaktadır.",
+    "privacy_hero_title": "Gizliliğiniz Önemlidir",
+    "cookie_hero_title": "Çerez Politikamız",
+    "terms_hero_title": "Kullanım Koşullarımız",
+    "loading": "Yükleniyor...",
+    "error": "İçerik yüklenirken hata oluştu",
+    "copyright": "© 2025 Metropolitan Food Group. Tüm hakları saklıdır.",
+    "back_to_top": "Yukarı dön"
   },
   "checkout": {
     "steps": {

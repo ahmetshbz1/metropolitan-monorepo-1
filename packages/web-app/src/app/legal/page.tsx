@@ -1,121 +1,306 @@
 "use client";
 
-import { FileText, MapPin, Phone, Mail } from "lucide-react";
-import Link from "next/link";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Shield, ChevronRight, ChevronDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { useLegal } from "@/hooks/api/use-legal";
 import { useTranslation } from "react-i18next";
 
+type LegalType = "privacy-policy" | "cookie-policy" | "terms-of-service";
+
 export default function LegalPage() {
-  const { t } = useTranslation();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { t, i18n } = useTranslation();
 
-  const documents = [
-    {
-      title: t("legal.terms_of_service"),
-      description: t("legal.terms_desc"),
-      href: "/terms",
-      icon: FileText,
-    },
-    {
-      title: t("legal.privacy_policy"),
-      description: t("legal.privacy_desc"),
-      href: "/privacy",
-      icon: FileText,
-    },
-    {
-      title: t("legal.cookie_policy"),
-      description: t("legal.cookie_desc"),
-      href: "/cookies",
-      icon: FileText,
-    },
-    {
-      title: t("legal.gdpr"),
-      description: t("legal.gdpr_desc"),
-      href: "/gdpr",
-      icon: FileText,
-    },
-  ];
+  const [selectedType, setSelectedType] = useState<LegalType>(() => {
+    const type = searchParams.get("type");
+    if (type === "privacy-policy" || type === "cookie-policy" || type === "terms-of-service") {
+      return type;
+    }
+    return "privacy-policy";
+  });
 
-  const companyInfo = [
-    {
-      icon: MapPin,
-      label: t("footer.address"),
-      value: "ul. Aleja Krakowska 44, 05-090 Janki, Warsaw",
-    },
-    {
-      icon: Phone,
-      label: t("footer.phone"),
-      value: "+48 600 790 035",
-    },
-    {
-      icon: Mail,
-      label: t("footer.email"),
-      value: "info@metropolitanfg.pl",
-    },
-  ];
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  const language = (i18n.language || "tr") as "tr" | "en" | "pl";
+  const { data: legalData, isLoading } = useLegal(selectedType, language);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (window.scrollY / totalHeight) * 100;
+      setScrollProgress(Math.min(progress, 100));
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const handleTypeChange = (type: LegalType) => {
+    setSelectedType(type);
+    router.push(`/legal?type=${type}`, { scroll: false });
+    setIsDropdownOpen(false);
+  };
+
+  const formatContent = (text: string) => {
+    const lines = text.split("\n");
+    const elements: JSX.Element[] = [];
+    let currentSection: string[] = [];
+    let inList = false;
+    let listItems: string[] = [];
+
+    const processSection = () => {
+      if (currentSection.length > 0) {
+        const text = currentSection.join(" ").trim();
+        if (text) {
+          elements.push(
+            <p key={elements.length} className="mb-4 text-muted-foreground leading-relaxed">
+              {text}
+            </p>
+          );
+        }
+        currentSection = [];
+      }
+    };
+
+    const processList = () => {
+      if (listItems.length > 0) {
+        elements.push(
+          <ul key={elements.length} className="mb-4 ml-6 space-y-2">
+            {listItems.map((item, idx) => (
+              <li key={idx} className="flex items-start">
+                <span className="text-primary mr-2 mt-1">•</span>
+                <span className="text-muted-foreground">{item}</span>
+              </li>
+            ))}
+          </ul>
+        );
+        listItems = [];
+      }
+    };
+
+    lines.forEach((line, index) => {
+      if (index < 2) return;
+
+      if (line.startsWith("### ")) {
+        processSection();
+        processList();
+        elements.push(
+          <h3 key={elements.length} className="text-xl font-semibold mb-3 mt-6">
+            {line.substring(4)}
+          </h3>
+        );
+      } else if (line.startsWith("## ")) {
+        processSection();
+        processList();
+        elements.push(
+          <h2 key={elements.length} className="text-2xl font-bold mb-4 mt-8 pb-2 border-b">
+            {line.substring(3)}
+          </h2>
+        );
+      } else if (line.startsWith("# ")) {
+        processSection();
+        processList();
+        elements.push(
+          <h1 key={elements.length} className="text-3xl font-bold mb-6">
+            {line.substring(2)}
+          </h1>
+        );
+      } else if (line.trim().startsWith("-") || line.trim().startsWith("•")) {
+        processSection();
+        inList = true;
+        const item = line.trim().substring(1).trim();
+        if (item) listItems.push(item);
+      } else if (line.trim().match(/^\d+\./)) {
+        processSection();
+        inList = true;
+        const item = line.trim().replace(/^\d+\./, "").trim();
+        if (item) listItems.push(item);
+      } else if (line.includes("**")) {
+        processSection();
+        processList();
+        const parts = line.split("**");
+        const formatted: JSX.Element[] = [];
+        parts.forEach((part, idx) => {
+          if (idx % 2 === 1) {
+            formatted.push(<strong key={idx} className="font-semibold">{part}</strong>);
+          } else if (part) {
+            formatted.push(<span key={idx}>{part}</span>);
+          }
+        });
+        elements.push(
+          <p key={elements.length} className="mb-4 text-muted-foreground leading-relaxed">
+            {formatted}
+          </p>
+        );
+      } else if (line.trim() === "") {
+        if (inList) {
+          processList();
+          inList = false;
+        } else {
+          processSection();
+        }
+      } else if (line.trim()) {
+        if (inList) {
+          processList();
+          inList = false;
+        }
+        currentSection.push(line);
+      }
+    });
+
+    processSection();
+    processList();
+
+    return elements;
+  };
+
+  const getTitle = (type: LegalType) => {
+    const titles = {
+      "privacy-policy": t("legal.privacy_policy"),
+      "cookie-policy": t("legal.cookie_policy"),
+      "terms-of-service": t("legal.terms_of_service"),
+    };
+    return titles[type];
+  };
+
+  const getHeroTitle = (type: LegalType) => {
+    const titles = {
+      "privacy-policy": t("legal.privacy_hero_title"),
+      "cookie-policy": t("legal.cookie_hero_title"),
+      "terms-of-service": t("legal.terms_hero_title"),
+    };
+    return titles[type];
+  };
 
   return (
-    <div className="min-h-screen bg-background py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <h1 className="text-3xl font-bold mb-8">{t("legal.title")}</h1>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      {/* Progress Bar */}
+      <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-muted">
+        <div
+          className="h-full bg-gradient-to-r from-primary to-primary/60 transition-all duration-150 ease-out"
+          style={{ width: `${scrollProgress}%` }}
+        />
+      </div>
 
-        {/* Legal Documents */}
-        <div className="mb-12">
-          <h2 className="text-xl font-semibold mb-4">
-            {t("legal.documents_section")}
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {documents.map((doc, index) => (
-              <Link
-                key={index}
-                href={doc.href}
-                className="bg-card rounded-xl border border-border p-6 hover:border-primary transition-colors"
+      {/* Navigation Tabs */}
+      <div className="sticky top-1 z-40 bg-background/95 backdrop-blur-sm border-b shadow-sm">
+        <div className="container mx-auto px-4 py-2">
+          {/* Mobile: Dropdown */}
+          <div className="sm:hidden">
+            <div className="relative">
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="w-full px-3 py-2 text-sm bg-background border rounded-lg flex items-center justify-between hover:bg-muted transition-colors"
               >
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <doc.icon className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold mb-1">{doc.title}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {doc.description}
-                    </p>
-                  </div>
+                <span className="font-medium text-primary">
+                  {getTitle(selectedType)}
+                </span>
+                <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {isDropdownOpen && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-background border rounded-lg shadow-lg z-50 overflow-hidden">
+                  {(["privacy-policy", "terms-of-service", "cookie-policy"] as LegalType[]).map((type) => (
+                    <button
+                      key={type}
+                      onClick={() => handleTypeChange(type)}
+                      disabled={type === selectedType}
+                      className={`w-full px-3 py-2 text-sm text-left transition-colors ${
+                        type === selectedType
+                          ? "bg-muted text-primary font-medium cursor-not-allowed"
+                          : "hover:bg-muted"
+                      }`}
+                    >
+                      {getTitle(type)}
+                    </button>
+                  ))}
                 </div>
-              </Link>
+              )}
+            </div>
+          </div>
+
+          {/* Desktop: Tabs */}
+          <div className="hidden sm:flex items-center space-x-4">
+            {(["privacy-policy", "terms-of-service", "cookie-policy"] as LegalType[]).map((type) => (
+              <Button
+                key={type}
+                variant="ghost"
+                size="sm"
+                onClick={() => handleTypeChange(type)}
+                disabled={type === selectedType}
+                className={type === selectedType ? "text-primary font-semibold" : "hover:bg-primary hover:text-primary-foreground"}
+              >
+                {getTitle(type)}
+              </Button>
             ))}
           </div>
         </div>
+      </div>
 
-        {/* Company Information */}
-        <div className="mb-12">
-          <h2 className="text-xl font-semibold mb-4">
-            {t("legal.company_info_section")}
-          </h2>
-          <div className="bg-card rounded-xl border border-border p-6">
-            <h3 className="font-bold text-lg mb-4">
-              Metropolitan Food Group Sp. z o.o.
-            </h3>
-            <div className="space-y-4">
-              {companyInfo.map((info, index) => (
-                <div key={index} className="flex items-start gap-3">
-                  <info.icon className="h-5 w-5 text-muted-foreground mt-0.5" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">{info.label}</p>
-                    <p className="font-medium">{info.value}</p>
-                  </div>
-                </div>
-              ))}
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8 max-w-4xl">
+        <Card className="bg-card shadow-xl rounded-2xl overflow-hidden">
+          {/* Hero Section */}
+          <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-8 border-b">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-3xl font-bold mb-2">
+                  {getHeroTitle(selectedType)}
+                </h2>
+                <p className="text-muted-foreground">
+                  Metropolitan Food Group sp. z o.o.
+                </p>
+              </div>
+              <Shield className="h-16 w-16 text-primary/20" />
             </div>
           </div>
-        </div>
 
-        {/* Legal Notice */}
-        <div className="bg-muted/50 rounded-xl p-6">
-          <h3 className="font-semibold mb-2">{t("legal.notice_title")}</h3>
-          <p className="text-sm text-muted-foreground">
-            {t("legal.notice_desc")}
-          </p>
-        </div>
-      </div>
+          {/* Content Area */}
+          <div className="p-8">
+            {isLoading ? (
+              <div className="flex items-center justify-center py-16">
+                <div className="space-y-4 text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent mx-auto" />
+                  <p className="text-muted-foreground">
+                    {t("legal.loading")}
+                  </p>
+                </div>
+              </div>
+            ) : legalData ? (
+              <div className="prose prose-gray dark:prose-invert max-w-none">
+                {formatContent(legalData.content)}
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <p className="text-muted-foreground">{t("legal.error")}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="bg-muted/50 px-8 py-6 border-t">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">
+                {t("legal.copyright")}
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                className="flex items-center space-x-1"
+              >
+                <span>{t("legal.back_to_top")}</span>
+                <ChevronRight className="h-4 w-4 rotate-[-90deg]" />
+              </Button>
+            </div>
+          </div>
+        </Card>
+      </main>
     </div>
   );
 }

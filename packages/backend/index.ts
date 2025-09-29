@@ -17,6 +17,7 @@ import pretty from "pino-pretty";
 import { productRoutes } from "./src/domains/catalog/presentation/routes/products.routes";
 import { contentRoutes } from "./src/domains/content/presentation/routes/content.routes";
 import { guestRoutes } from "./src/domains/content/presentation/routes/guest.routes";
+import { legalRoutes } from "./src/domains/content/presentation/routes/legal.routes";
 import { authRoutes } from "./src/domains/identity/presentation/routes/auth.routes";
 import { changePhoneRoutes } from "./src/domains/identity/presentation/routes/change-phone.routes";
 import { refreshTokenRoutes } from "./src/domains/identity/presentation/routes/refresh-token.routes";
@@ -169,6 +170,7 @@ export const app = new Elysia()
       // Content Domain
       .use(guestRoutes)
       .use(contentRoutes)
+      .use(legalRoutes)
 
       // Shared Utils
       .use(utilsRoutes)
