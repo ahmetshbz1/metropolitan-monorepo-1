@@ -1,7 +1,7 @@
 {
   "navbar": {
     "products": "Ürünler",
-    "categories": "Kategoriler", 
+    "categories": "Kategoriler",
     "about": "Hakkımızda",
     "contact": "İletişim",
     "search_placeholder": "Ürün ara...",
@@ -20,7 +20,7 @@
   },
   "home": {
     "featured_products": "Öne Çıkan Ürünler",
-    "weekly_products": "Haftanın Özel Ürünleri", 
+    "weekly_products": "Haftanın Özel Ürünleri",
     "bestsellers": "En Çok Satanlar",
     "new_arrivals": "Yeni Gelenler",
     "discover_all": "Tüm Ürünlerimizi Keşfedin",
@@ -107,7 +107,19 @@
   "common": {
     "back": "Geri",
     "go_back": "Geri Dön",
-    "lang_code": "tr"
+    "lang_code": "tr",
+    "ok": "Tamam",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "add": "Ekle",
+    "search": "Ara",
+    "loading": "Yükleniyor...",
+    "error": "Hata",
+    "success": "Başarılı",
+    "confirm": "Onayla",
+    "close": "Kapat"
   },
   "auth": {
     "phoneLogin": {
@@ -152,5 +164,259 @@
     "download_app": "Uygulamayı İndir",
     "app_store": "App Store",
     "google_play": "Google Play"
+  },
+  "tabs": {
+    "products": "Ürünler",
+    "orders": "Siparişlerim",
+    "profile": "Profil",
+    "search_placeholder": "Ürün ara..."
+  },
+  "products": {
+    "title": "Ürünler",
+    "found": "{{count}} ürün bulundu",
+    "not_found": "Ürün bulunamadı",
+    "not_found_desc": "Aradığınız kriterlere uygun ürün bulunmamaktadır.",
+    "clear_filters": "Filtreleri Temizle"
+  },
+  "categories": {
+    "all": "Tümü",
+    "title": "Kategoriler",
+    "no_categories": "Henüz kategori bulunmuyor",
+    "no_categories_desc": "Ürünler eklendiğinde burada görünecek.",
+    "product_count": "{{count}} ürün"
+  },
+  "cart": {
+    "title": "Sepetim",
+    "empty": {
+      "title": "Sepetiniz boş",
+      "subtitle": "Alışverişe başlamak için ürün ekleyin.",
+      "button": "Alışverişe Başla"
+    },
+    "checkout": "Siparişi Tamamla",
+    "continue_shopping": "Alışverişe devam et",
+    "item_removed": "Ürün sepetten kaldırıldı"
+  },
+  "orders": {
+    "title": "Siparişlerim",
+    "empty": {
+      "title": "Henüz hiç siparişiniz yok",
+      "subtitle": "Henüz sipariş vermediniz. Alışverişe başlayın!",
+      "button": "Alışverişe Başla"
+    },
+    "guest_empty": {
+      "title": "Sipariş geçmişi için giriş yapın",
+      "subtitle": "Siparişlerinizi görüntülemek ve takip etmek için hesabınıza giriş yapmanız gerekiyor.",
+      "button": "Giriş Yap"
+    },
+    "order_number": "Sipariş #{{number}}",
+    "items": "{{count}} ürün"
+  },
+  "order_detail": {
+    "title": "Sipariş #{{number}}",
+    "not_found_title": "Sipariş Bulunamadı",
+    "not_found_body": "İstenen sipariş bulunamadı.",
+    "back_to_orders": "Siparişlerime Dön",
+    "products": {
+      "section_title": "Sipariş İçeriği",
+      "quantity": "{{count}} adet"
+    },
+    "summary": {
+      "section_title": "Sipariş Özeti",
+      "subtotal": "Ara Toplam",
+      "shipping": "Kargo",
+      "free_shipping": "Ücretsiz",
+      "total": "Toplam"
+    },
+    "delivery_payment": {
+      "delivery_address": "Teslimat Adresi"
+    },
+    "actions": {
+      "download_invoice": "Faturayı İndir"
+    },
+    "help": "Yardım"
+  },
+  "profile": {
+    "guest_title": "Misafir Kullanıcı",
+    "guest_message": "Profil bilgilerinizi görmek için giriş yapmalısınız.",
+    "login": "Giriş Yap",
+    "logout": "Çıkış Yap",
+    "account_section": "Hesap",
+    "app_section": "Uygulama",
+    "support_section": "Destek",
+    "legal_section": "Yasal",
+    "favorites": "Favorilerim",
+    "addresses": "Adreslerim",
+    "notifications": "Bildirimlerim",
+    "account_settings": "Hesap Ayarları",
+    "app_settings": "Uygulama Ayarları",
+    "help_center": "Yardım Merkezi",
+    "legal": "Yasal Bilgiler",
+    "version": "Versiyon {{version}}",
+    "header_edit": "Düzenle"
+  },
+  "favorites": {
+    "title": "Favorilerim",
+    "empty": {
+      "title": "Favori listen boş",
+      "subtitle": "Beğendiğiniz ürünleri favorilere ekleyin ve kolayca erişin.",
+      "browse_button": "Ürünlere Göz At"
+    },
+    "login_required": "Favori ürünlerinizi görmek için giriş yapın"
+  },
+  "addresses": {
+    "title": "Adreslerim",
+    "empty": {
+      "title": "Henüz adresiniz yok",
+      "subtitle": "İlk adresinizi ekleyerek alışverişe hızlıca başlayın.",
+      "add_button": "Yeni Adres Ekle"
+    },
+    "add_new_address": "Yeni Adres Ekle",
+    "default_delivery": "Varsayılan Teslimat",
+    "default_billing": "Varsayılan Fatura",
+    "login_required": "Adreslerinizi görmek için giriş yapın",
+    "login_desc": "Teslimat adreslerinizi kaydedin ve hızlı sipariş verin."
+  },
+  "notifications": {
+    "title": "Bildirimler",
+    "empty_title": "Henüz bildirim yok",
+    "empty_message": "Siparişleriniz ve özel teklifler hakkında bildirimler burada görünecek.",
+    "mark_all_read": "Hepsini Okundu Say",
+    "login_required": "Bildirimlerinizi görmek için giriş yapın",
+    "login_desc": "Sipariş güncellemeleri ve özel tekliflerden haberdar olun."
+  },
+  "help_center": {
+    "title": "Yardım Merkezi",
+    "header": "Size nasıl yardımcı olabiliriz?",
+    "search_placeholder": "Aramak için yazın...",
+    "contact": "Bize Ulaşın"
+  },
+  "legal": {
+    "title": "Yasal",
+    "documents_section": "Yasal Belgeler",
+    "terms_of_service": "Kullanım Koşulları",
+    "terms_desc": "Hizmet kullanım şartları",
+    "privacy_policy": "Gizlilik Politikası",
+    "privacy_desc": "Veri koruma ve gizlilik",
+    "cookie_policy": "Çerez Politikası",
+    "cookie_desc": "Çerez kullanım bilgileri",
+    "gdpr": "KVKK",
+    "gdpr_desc": "Kişisel verilerin korunması",
+    "company_info_section": "Şirket Bilgileri",
+    "notice_title": "Yasal Uyarı",
+    "notice_desc": "Bu uygulamadaki tüm içerik ve materyaller Metropolitan Food Group Sp. z o.o.'ya aittir ve telif hakkı ile korunmaktadır."
+  },
+  "checkout": {
+    "steps": {
+      "address": "Adres",
+      "payment": "Ödeme",
+      "summary": "Özet"
+    },
+    "delivery_address": "Teslimat Adresi",
+    "billing_address": "Fatura Adresi",
+    "same_billing_address": "Fatura adresi teslimat adresi ile aynı",
+    "add_new_address": "Yeni Adres Ekle",
+    "continue_to_payment": "Ödemeye Devam Et",
+    "payment_method": "Ödeme Yöntemi",
+    "secure_payment": "Güvenli Ödeme",
+    "secure_payment_desc": "Tüm ödemeleriniz SSL ile şifrelenir ve güvenli sunucularda işlenir.",
+    "more_payment_methods_soon": "Daha fazla ödeme seçeneği yakında eklenecektir",
+    "continue_to_summary": "Özete Devam Et",
+    "no_payment_method_selected": "Ödeme yöntemi seçilmedi",
+    "order_summary": "Sipariş Özeti",
+    "subtotal": "Ara Toplam",
+    "shipping": "Kargo",
+    "free": "Ücretsiz",
+    "total": "Genel Toplam",
+    "items": "ürün",
+    "agree_terms": "Kullanım şartlarını ve gizlilik politikasını kabul ediyorum",
+    "complete_order": "Siparişi Tamamla",
+    "missing_info": "Lütfen tüm gerekli bilgileri doldurun.",
+    "order_error": "Sipariş oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.",
+    "payment_methods": {
+      "card": {
+        "title": "Kredi / Banka Kartı",
+        "subtitle": "Visa, Mastercard, Maestro"
+      },
+      "bank_transfer": {
+        "title": "Banka Havalesi / EFT",
+        "subtitle": "Banka hesabımıza manuel ödeme yapın"
+      }
+    },
+    "address_select": {
+      "title": "Adres Ekleyin",
+      "desc": "Siparişinizi tamamlamak için önce bir teslimat adresi eklemelisiniz."
+    }
+  },
+  "order_confirmation": {
+    "title": "Siparişiniz Alındı!",
+    "description": "Siparişiniz başarıyla oluşturuldu. Sipariş detaylarınızı e-posta adresinize gönderdik.",
+    "go_to_orders": "Siparişlerime Git",
+    "continue_shopping": "Alışverişe Devam Et"
+  },
+  "account_settings": {
+    "title": "Hesap Ayarları",
+    "general": "Genel",
+    "edit_profile": "Profili Düzenle",
+    "edit_profile_desc": "İsim, email ve diğer bilgilerinizi düzenleyin",
+    "privacy": "Gizlilik",
+    "privacy_desc": "Gizlilik tercihlerinizi yönetin",
+    "security": "Güvenlik",
+    "security_desc": "Güvenlik ayarlarını yapılandırın",
+    "danger_zone": "Tehlikeli Bölge",
+    "export_data": "Verilerimi İndir",
+    "export_data_desc": "Hesap verilerinizi indirin",
+    "delete_account": "Hesabı Sil",
+    "delete_account_desc": "Hesabınızı kalıcı olarak silin",
+    "login_required": "Hesap ayarlarınızı görmek için giriş yapmalısınız."
+  },
+  "app_settings": {
+    "title": "Uygulama Ayarları",
+    "appearance": "Görünüm",
+    "theme": "Tema",
+    "theme_desc": "Uygulama temasını seçin",
+    "theme_system": "Sistem",
+    "theme_light": "Açık",
+    "theme_dark": "Koyu",
+    "language": "Dil",
+    "language_desc": "Uygulama dili seçin",
+    "info": "Daha fazla ayar seçeneği yakında eklenecek"
+  },
+  "offers": {
+    "title": "Fırsatlar",
+    "no_offers": "Şu anda kampanya bulunmuyor",
+    "no_offers_desc": "Yeni kampanyalar eklendiğinde burada görünecek.",
+    "found": "{{count}} indirimli ürün bulundu"
+  },
+  "status": {
+    "pending": "Beklemede",
+    "confirmed": "Onaylandı",
+    "preparing": "Hazırlanıyor",
+    "shipped": "Kargoya Verildi",
+    "delivered": "Teslim Edildi",
+    "cancelled": "İptal Edildi"
+  },
+  "faq": {
+    "title": "Sıkça Sorulan Sorular",
+    "q1": {
+      "question": "Siparişimi nasıl iptal edebilirim?",
+      "answer": "Siparişinizi 'Siparişlerim' bölümünden durumu 'Hazırlanıyor'a geçmeden önce iptal edebilirsiniz. Siparişiniz kargoya verildiyse iptal edilemez."
+    },
+    "q2": {
+      "question": "Ürün iade süreci nasıl işliyor?",
+      "answer": "Aldığınız ürünleri 14 gün içinde iade edebilirsiniz. Hesabım > Siparişlerim bölümünden iade talebi oluşturduktan sonra, verilen kargo kodu ile ürünü ücretsiz gönderebilirsiniz."
+    },
+    "q3": {
+      "question": "Kargo ücreti ne kadar?",
+      "answer": "Tüm siparişlerinizde kargo ücretsizdir. Minimum limit yoktur."
+    },
+    "q4": {
+      "question": "Hangi ödeme yöntemlerini kullanabilirim?",
+      "answer": "Kredi kartı, banka kartı ve PayPal ile ödeme yapabilirsiniz. Ayrıca kapıda ödeme seçeneğimiz de bulunmaktadır."
+    }
+  },
+  "support": {
+    "working_hours": "Çalışma Saatleri",
+    "working_hours_weekdays": "Pazartesi - Cuma: 09:00 - 18:00",
+    "working_hours_weekend": "Cumartesi: 09:00 - 14:00"
   }
 }

@@ -1,12 +1,13 @@
+import { Footer } from "@/components/layout/Footer";
+import { Navbar } from "@/components/layout/Navbar";
+import { I18nProvider } from "@/components/providers/I18nProvider";
+import { QueryProvider } from "@/components/providers/QueryProvider";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { ProgressBar } from "@/components/ui/progress-bar";
+import { ProductProvider } from "@/context/ProductContext";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
-import { ProgressBar } from "@/components/ui/progress-bar";
-import { I18nProvider } from "@/components/providers/I18nProvider";
-import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import { QueryProvider } from "@/components/providers/QueryProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,7 +21,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Metropolitan Food Group - Kaliteli Gıda Ürünleri",
-  description: "Doğanın en taze ürünleri kapınızda. Hızlı teslimat ve güvenli alışveriş.",
+  description:
+    "Doğanın en taze ürünleri kapınızda. Hızlı teslimat ve güvenli alışveriş.",
 };
 
 export default function RootLayout({
@@ -42,14 +44,14 @@ export default function RootLayout({
         >
           <I18nProvider>
             <QueryProvider>
-              <ProgressBar />
-              <div className="min-h-screen flex flex-col">
-                <Navbar />
-                <main className="flex-1">
-                  {children}
-                </main>
-                <Footer />
-              </div>
+              <ProductProvider>
+                <ProgressBar />
+                <div className="min-h-screen flex flex-col">
+                  <Navbar />
+                  <main className="flex-1">{children}</main>
+                  <Footer />
+                </div>
+              </ProductProvider>
             </QueryProvider>
           </I18nProvider>
         </ThemeProvider>
