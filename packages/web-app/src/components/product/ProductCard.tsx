@@ -47,98 +47,85 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
 
   if (variant === "horizontal") {
     return (
-      <div className="w-72 flex-shrink-0 bg-card rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-border">
+      <div className="w-32 h-56 flex-shrink-0 bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-border flex flex-col">
         <div className="relative">
           {/* Product Image */}
-          <div className="relative h-44 bg-muted">
+          <div className="relative h-28 bg-muted">
             {product.image ? (
               <img
                 src={product.image}
                 alt={product.name}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain p-2"
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center bg-muted">
-                <div className="w-16 h-16 bg-muted-foreground/20 rounded-2xl flex items-center justify-center">
-                  <div className="w-8 h-8 bg-muted-foreground/30 rounded-lg flex items-center justify-center text-xs text-muted-foreground">
-                    {t("product.no_image")}
-                  </div>
+                <div className="w-12 h-12 bg-muted-foreground/20 rounded-xl flex items-center justify-center">
+                  <div className="w-6 h-6 bg-muted-foreground/30 rounded-lg"></div>
                 </div>
               </div>
             )}
-            
 
-
-            {/* Favorite Button */}
+            {/* Add to Cart Button - Top Right */}
             <button
-              className={`absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm flex items-center justify-center transition-colors ${
-                isFavorite 
-                  ? "text-red-500" 
-                  : "text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
+              onClick={handleAddToCart}
+              disabled={isOutOfStock || isLoading}
+              className={`absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+                isOutOfStock
+                  ? "bg-gray-100 dark:bg-gray-800 text-gray-400"
+                  : "bg-primary hover:bg-primary/90 text-white hover:scale-105"
               }`}
-              onClick={toggleFavorite}
             >
-              <Heart className={`w-4 h-4 ${isFavorite ? "fill-current" : ""}`} />
+              {isLoading ? (
+                <div className="w-2 h-2 border border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <span className="text-sm font-bold">+</span>
+              )}
             </button>
 
             {/* Out of Stock Overlay */}
             {isOutOfStock && (
               <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                <div className="bg-white/95 text-gray-900 px-3 py-2 rounded-lg font-medium text-sm">
+                <div className="bg-white/95 text-gray-900 px-2 py-1 rounded text-xs font-medium">
                   Stokta Yok
                 </div>
               </div>
             )}
           </div>
 
-          <div className="p-4">
+          <div className="p-2 flex-1 flex flex-col">
+            {/* Price */}
+            <div className="mb-1">
+              <span className="font-bold text-base text-primary">
+                {formatPrice(product.price, product.currency)}
+              </span>
+            </div>
+
             {/* Product Name */}
             <Link href={`/product/${product.id}`}>
-              <h3 className="font-semibold text-sm text-gray-900 dark:text-white line-clamp-2 hover:text-primary transition-colors mb-3 leading-tight">
+              <h3 className="font-medium text-xs text-gray-700 dark:text-gray-300 line-clamp-2 hover:text-primary transition-colors mb-1 leading-tight flex-1">
                 {product.name}
               </h3>
             </Link>
 
-            {/* Price and Add to Cart Row */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-lg text-primary">
-                  {formatPrice(product.price, product.currency)}
-                </span>
-                {product.size && (
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {product.size}
+            {/* Bottom section */}
+            <div className="mt-auto">
+              {/* Size/Unit Info */}
+              {product.size && (
+                <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                  {product.size}
+                </div>
+              )}
+
+              {/* Stock Status */}
+              {isLowStock && !isOutOfStock && (
+                <div className="flex items-center">
+                  <div className="w-1 h-1 bg-amber-400 rounded-full mr-1"></div>
+                  <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
+                    Son {product.stock}
                   </span>
-                )}
-              </div>
-
-              {/* Simple Add Button - Mobile Style */}
-              <button
-                onClick={handleAddToCart}
-                disabled={isOutOfStock || isLoading}
-                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-                  isOutOfStock 
-                    ? "bg-gray-100 dark:bg-gray-800 text-gray-400" 
-                    : "bg-primary hover:bg-primary/90 text-white hover:scale-105"
-                }`}
-              >
-                {isLoading ? (
-                  <div className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin" />
-                ) : (
-                  <ShoppingCart className="w-4 h-4" />
-                )}
-              </button>
+                </div>
+              )}
             </div>
-
-            {/* Stock Status */}
-            {isLowStock && !isOutOfStock && (
-              <div className="flex items-center justify-center mt-3 py-1">
-                <div className="w-2 h-2 bg-amber-400 rounded-full mr-2"></div>
-                <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
-                  {t("product.low_stock", { count: product.stock })}
-                </span>
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -147,39 +134,44 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
 
   // Grid variant (default)
   return (
-    <div className="bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-border h-72 flex flex-col">
+    <div className="w-32 h-56 bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-border flex flex-col">
       {/* Product Image */}
-      <div className="relative flex-1 bg-muted">
+      <div className="relative h-28 bg-muted">
         {product.image ? (
           <img
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-contain p-3"
+            className="w-full h-full object-contain p-2"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <div className="w-16 h-16 bg-muted-foreground/20 rounded-xl flex items-center justify-center">
-              <div className="w-8 h-8 bg-muted-foreground/30 rounded-lg"></div>
+            <div className="w-12 h-12 bg-muted-foreground/20 rounded-xl flex items-center justify-center">
+              <div className="w-6 h-6 bg-muted-foreground/30 rounded-lg"></div>
             </div>
           </div>
         )}
-        
-        {/* Favorite Button */}
+
+        {/* Add to Cart Button - Top Right */}
         <button
-          className={`absolute top-2 right-2 w-8 h-8 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm flex items-center justify-center transition-colors ${
-            isFavorite 
-              ? "text-red-500" 
-              : "text-gray-400 hover:text-red-500"
+          onClick={handleAddToCart}
+          disabled={isOutOfStock || isLoading}
+          className={`absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+            isOutOfStock
+              ? "bg-gray-100 dark:bg-gray-800 text-gray-400"
+              : "bg-primary hover:bg-primary/90 text-white hover:scale-105"
           }`}
-          onClick={toggleFavorite}
         >
-          <Heart className={`w-4 h-4 ${isFavorite ? "fill-current" : ""}`} />
+          {isLoading ? (
+            <div className="w-2 h-2 border border-white/30 border-t-white rounded-full animate-spin" />
+          ) : (
+            <span className="text-sm font-bold">+</span>
+          )}
         </button>
 
         {/* Out of Stock Overlay */}
         {isOutOfStock && (
           <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-            <div className="bg-white/95 text-gray-900 px-3 py-1 rounded-lg font-medium text-sm">
+            <div className="bg-white/95 text-gray-900 px-2 py-1 rounded text-xs font-medium">
               {t("product.out_of_stock")}
             </div>
           </div>
@@ -187,46 +179,40 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
       </div>
 
       {/* Product Info */}
-      <div className="p-3 flex-shrink-0">
+      <div className="p-2 flex-1 flex flex-col">
+        {/* Price */}
+        <div className="mb-1">
+          <span className="font-bold text-base text-primary">
+            {formatPrice(product.price, product.currency)}
+          </span>
+        </div>
+
         {/* Product Name */}
         <Link href={`/product/${product.id}`}>
-          <h3 className="font-medium text-sm text-foreground line-clamp-2 hover:text-primary transition-colors mb-2 leading-tight min-h-[2.5rem]">
+          <h3 className="font-medium text-xs text-gray-700 dark:text-gray-300 line-clamp-2 hover:text-primary transition-colors mb-1 leading-tight flex-1">
             {product.name}
           </h3>
         </Link>
 
-        {/* Price and Add to Cart */}
-        <div className="flex items-center justify-between">
-          <span className="font-bold text-base text-primary">
-            {formatPrice(product.price, product.currency)}
-          </span>
+        {/* Bottom section */}
+        <div className="mt-auto">
+          {/* Size/Unit Info */}
+          {product.size && (
+            <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+              {product.size}
+            </div>
+          )}
 
-          <button
-            onClick={handleAddToCart}
-            disabled={isOutOfStock || isLoading}
-            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
-              isOutOfStock 
-                ? "bg-gray-100 dark:bg-gray-800 text-gray-400" 
-                : "bg-primary hover:bg-primary/90 text-white hover:scale-105"
-            }`}
-          >
-            {isLoading ? (
-              <div className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin" />
-            ) : (
-              <ShoppingCart className="w-4 h-4" />
-            )}
-          </button>
+          {/* Stock Status */}
+          {isLowStock && !isOutOfStock && (
+            <div className="flex items-center">
+              <div className="w-1 h-1 bg-amber-400 rounded-full mr-1"></div>
+              <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
+                Son {product.stock}
+              </span>
+            </div>
+          )}
         </div>
-
-        {/* Stock Status */}
-        {isLowStock && !isOutOfStock && (
-          <div className="flex items-center mt-2">
-            <div className="w-2 h-2 bg-amber-400 rounded-full mr-2"></div>
-            <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
-              Son {product.stock} adet
-            </span>
-          </div>
-        )}
       </div>
     </div>
   );

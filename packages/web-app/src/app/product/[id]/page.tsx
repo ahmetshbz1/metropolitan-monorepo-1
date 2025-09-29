@@ -367,9 +367,9 @@ export default function ProductDetailPage() {
                 : t("home.featured_products")}
             </h2>
             <div className="overflow-x-auto">
-              <div className="flex gap-2 pb-4" style={{ width: "max-content" }}>
+              <div className="flex gap-3 pb-4" style={{ width: "max-content" }}>
                 {similarProducts.map((similarProduct) => (
-                  <div key={similarProduct.id} className="w-40 flex-shrink-0">
+                  <div key={similarProduct.id} className="w-32 flex-shrink-0">
                     <ProductCard product={similarProduct} />
                   </div>
                 ))}

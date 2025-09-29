@@ -58,10 +58,10 @@ export default function Home() {
   }
 
   // Ürünler yok ise boş diziler döndür
-  const featuredProducts = products.length > 0 ? products.slice(0, 4) : [];
-  const weeklyProducts = products.length > 1 ? products.slice(1, 5) : [];
-  const bestSellers = products.length > 2 ? products.slice(2, 6) : [];
-  const newArrivals = products.length > 3 ? products.slice(3, 7) : [];
+  const featuredProducts = products.length > 0 ? products.slice(0, 16) : [];
+  const weeklyProducts = products.length > 1 ? products.slice(1, 17) : [];
+  const bestSellers = products.length > 2 ? products.slice(2, 18) : [];
+  const newArrivals = products.length > 3 ? products.slice(3, 19) : [];
 
   // Eğer hiç ürün yoksa mesaj göster
   if (!loading && !error && products.length === 0) {

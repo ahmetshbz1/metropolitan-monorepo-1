@@ -26,10 +26,10 @@ export function ProductSection({
 
   const scroll = (direction: "left" | "right") => {
     if (scrollContainerRef.current) {
-      const scrollAmount = 320; // Approximate card width + gap
+      const scrollAmount = 140; // Updated for new card width (128px + 12px gap)
       const currentScroll = scrollContainerRef.current.scrollLeft;
-      const targetScroll = direction === "left" 
-        ? currentScroll - scrollAmount 
+      const targetScroll = direction === "left"
+        ? currentScroll - scrollAmount
         : currentScroll + scrollAmount;
 
       scrollContainerRef.current.scrollTo({
@@ -44,11 +44,11 @@ export function ProductSection({
       <section className="py-8">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl font-bold mb-6">{title}</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
             {products.map((product) => (
-              <ProductCard 
-                key={product.id} 
-                product={product} 
+              <ProductCard
+                key={product.id}
+                product={product}
                 variant="grid"
               />
             ))}
@@ -91,7 +91,7 @@ export function ProductSection({
         <div className="relative">
           <div
             ref={scrollContainerRef}
-            className="flex gap-4 overflow-x-auto scrollbar-hide pb-4"
+            className="flex gap-3 overflow-x-auto scrollbar-hide pb-4"
             style={{
               scrollSnapType: "x mandatory",
               scrollbarWidth: "none",
@@ -100,8 +100,8 @@ export function ProductSection({
           >
             {products.map((product) => (
               <div key={product.id} style={{ scrollSnapAlign: "start" }}>
-                <ProductCard 
-                  product={product} 
+                <ProductCard
+                  product={product}
                   variant="horizontal"
                 />
               </div>
