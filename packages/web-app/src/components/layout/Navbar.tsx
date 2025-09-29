@@ -146,6 +146,7 @@ export function Navbar() {
                       avatar: user.profilePicture || "",
                       initials: `${user.firstName?.charAt(0)}${user.lastName?.charAt(0)}`,
                       isGuest: false,
+                      userType: user.userType,
                     }
                   : undefined
               }

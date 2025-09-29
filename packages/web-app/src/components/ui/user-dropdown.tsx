@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -87,6 +88,7 @@ interface UserDropdownProps {
     avatar: string;
     initials: string;
     isGuest: boolean;
+    userType?: "individual" | "corporate";
   };
   onAction?: (action: string, route?: string) => void;
   onLogin?: () => void;
@@ -251,9 +253,19 @@ export const UserDropdown = ({
               </div>
             )}
             <div className="flex-1">
-              <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100">
-                {user.name}
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100">
+                  {user.name}
+                </h3>
+                {!user.isGuest && user.userType && (
+                  <Badge
+                    variant="default"
+                    className="text-xs px-2 py-0 h-5"
+                  >
+                    {user.userType === "corporate" ? "Kurumsal" : "Bireysel"}
+                  </Badge>
+                )}
+              </div>
               {user.username && (
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   {user.username}
