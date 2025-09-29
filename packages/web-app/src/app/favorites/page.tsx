@@ -2,28 +2,18 @@
 
 import { ProductCard } from "@/components/product/ProductCard";
 import { Button } from "@/components/ui/button";
-import { useAuthStore } from "@/stores";
+import { useFavorites } from "@/hooks/api/use-favorites";
+import { useAuth } from "@/context/AuthContext";
 import { Heart } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
 
 export default function FavoritesPage() {
   const { t } = useTranslation();
-  const { user, accessToken } = useAuthStore();
-  const [favorites, setFavorites] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { user, isAuthenticated, loading: authLoading, accessToken } = useAuth();
 
-  useEffect(() => {
-    if (accessToken) {
-      // TODO: Fetch favorites from API
-      setLoading(false);
-    } else {
-      setLoading(false);
-    }
-  }, [accessToken]);
-
-  if (!accessToken || !user) {
+  // Skip loading state and show empty immediately if not authenticated
+  if (!authLoading && !isAuthenticated) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="text-center">
@@ -42,7 +32,13 @@ export default function FavoritesPage() {
     );
   }
 
-  if (loading) {
+  const { data: favorites = [], isLoading: favoritesLoading } = useFavorites();
+
+  // If favorites are loaded and we have data, show it (ignore auth loading state issue)
+  const hasLoadedFavorites = !favoritesLoading && favorites !== undefined;
+  const shouldShowLoading = (authLoading && !hasLoadedFavorites) || favoritesLoading;
+
+  if (shouldShowLoading) {
     return (
       <div className="min-h-screen bg-background py-8">
         <div className="container mx-auto px-4">

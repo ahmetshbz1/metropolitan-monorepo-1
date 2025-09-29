@@ -41,6 +41,8 @@ export const useAuthHook = () => {
 
   // Initialize auth state from storage
   useEffect(() => {
+    let isMounted = true;
+
     const initAuth = async () => {
       try {
         // Load tokens
@@ -50,6 +52,8 @@ export const useAuthHook = () => {
         const savedGuestId = await guestStorage.getGuestId();
         const savedSocialAuthData = await socialAuthStorage.get();
         const savedRegistrationToken = await registrationStorage.getToken();
+
+        if (!isMounted) return;
 
         // Sadece user da varsa token'ları restore et
         if (savedAccessToken && savedRefreshToken && savedUser) {
@@ -74,11 +78,17 @@ export const useAuthHook = () => {
       } catch (error) {
         console.error("Auth initialization error:", error);
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     initAuth();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Send OTP
