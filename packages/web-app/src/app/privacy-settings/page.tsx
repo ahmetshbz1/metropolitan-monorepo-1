@@ -5,11 +5,12 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { useCurrentUser } from "@/hooks/api/use-user";
+import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
 
 export default function PrivacySettingsPage() {
@@ -18,12 +19,23 @@ export default function PrivacySettingsPage() {
   const { data: currentUser } = useCurrentUser();
 
   const [privacySettings, setPrivacySettings] = useState({
-    shareDataWithPartners: currentUser?.shareDataWithPartners || false,
-    analyticsData: currentUser?.analyticsData || false,
-    marketingEmails: currentUser?.marketingConsent || false,
+    shareDataWithPartners: false,
+    analyticsData: false,
+    marketingEmails: false,
   });
 
   const [isSaving, setIsSaving] = useState(false);
+
+  // Load user's current privacy settings
+  React.useEffect(() => {
+    if (currentUser) {
+      setPrivacySettings({
+        shareDataWithPartners: currentUser.shareDataWithPartners || false,
+        analyticsData: currentUser.analyticsData || false,
+        marketingEmails: currentUser.marketingConsent || false,
+      });
+    }
+  }, [currentUser]);
 
   // Show loading state while hydrating
   if (!_hasHydrated) {
@@ -54,27 +66,22 @@ export default function PrivacySettingsPage() {
     );
   }
 
-  const handleToggle = (key: keyof typeof privacySettings) => {
-    setPrivacySettings((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
-  };
+  const handleToggle = async (key: keyof typeof privacySettings, value: boolean) => {
+    const newSettings = { ...privacySettings, [key]: value };
+    setPrivacySettings(newSettings);
 
-  const handleSave = async () => {
     setIsSaving(true);
-
-    // TODO: API call to save privacy settings
-    setTimeout(() => {
+    try {
+      await api.put("/privacy-settings", newSettings);
       toast.success("Gizlilik ayarları güncellendi");
+    } catch (error: any) {
+      setPrivacySettings(privacySettings); // Revert on error
+      toast.error(error.response?.data?.message || "Gizlilik ayarları güncellenemedi");
+    } finally {
       setIsSaving(false);
-    }, 1000);
+    }
   };
 
-  const isChanged =
-    privacySettings.shareDataWithPartners !== (currentUser?.shareDataWithPartners || false) ||
-    privacySettings.analyticsData !== (currentUser?.analyticsData || false) ||
-    privacySettings.marketingEmails !== (currentUser?.marketingConsent || false);
 
   return (
     <div className="min-h-screen bg-background py-6">
@@ -122,9 +129,10 @@ export default function PrivacySettingsPage() {
                   <Switch
                     id="shareData"
                     checked={privacySettings.shareDataWithPartners}
-                    onCheckedChange={() =>
-                      handleToggle("shareDataWithPartners")
+                    onCheckedChange={(checked) =>
+                      handleToggle("shareDataWithPartners", checked)
                     }
+                    disabled={isSaving}
                   />
                 </div>
 
@@ -143,7 +151,8 @@ export default function PrivacySettingsPage() {
                   <Switch
                     id="analytics"
                     checked={privacySettings.analyticsData}
-                    onCheckedChange={() => handleToggle("analyticsData")}
+                    onCheckedChange={(checked) => handleToggle("analyticsData", checked)}
+                    disabled={isSaving}
                   />
                 </div>
               </div>
@@ -174,7 +183,8 @@ export default function PrivacySettingsPage() {
                   <Switch
                     id="marketing"
                     checked={privacySettings.marketingEmails}
-                    onCheckedChange={() => handleToggle("marketingEmails")}
+                    onCheckedChange={(checked) => handleToggle("marketingEmails", checked)}
+                    disabled={isSaving}
                   />
                 </div>
               </div>
@@ -187,7 +197,7 @@ export default function PrivacySettingsPage() {
               <div className="mb-4">
                 <h2 className="text-base font-semibold">Veri Haklarınız</h2>
                 <p className="text-xs text-muted-foreground">
-                  KVKK ve GDPR kapsamında haklarınız
+                  GDPR kapsamında haklarınız
                 </p>
               </div>
 
@@ -243,49 +253,6 @@ export default function PrivacySettingsPage() {
             </div>
           </div>
 
-          {/* Save Button */}
-          {isChanged && (
-            <div className="sticky bottom-6 bg-background/80 backdrop-blur-sm p-4 rounded-xl border border-border shadow-lg">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">
-                  Yaptığınız değişiklikleri kaydetmeyi unutmayın
-                </p>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setPrivacySettings({
-                        shareDataWithPartners: currentUser?.shareDataWithPartners || false,
-                        analyticsData: currentUser?.analyticsData || false,
-                        marketingEmails: currentUser?.marketingConsent || false,
-                      });
-                    }}
-                  >
-                    İptal
-                  </Button>
-                  <Button onClick={handleSave} disabled={isSaving}>
-                    {isSaving ? (
-                      <>
-                        <Icon
-                          icon="svg-spinners:ring-resize"
-                          className="size-4 mr-2"
-                        />
-                        Kaydediliyor
-                      </>
-                    ) : (
-                      <>
-                        <Icon
-                          icon="solar:check-circle-line-duotone"
-                          className="size-4 mr-2"
-                        />
-                        Kaydet
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

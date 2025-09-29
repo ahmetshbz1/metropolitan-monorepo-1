@@ -1,9 +1,12 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { useCurrentUser } from "@/hooks/api/use-user";
+import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
@@ -11,16 +14,23 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
+interface SecuritySettings {
+  twoFactorEnabled: boolean;
+  loginAlerts: boolean;
+  deviceTracking: boolean;
+}
+
 export default function SecuritySettingsPage() {
   const router = useRouter();
   const { user, accessToken, _hasHydrated } = useAuthStore();
-  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const { data: currentUser, refetch: refetchUser } = useCurrentUser();
 
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
+  const [settings, setSettings] = useState<SecuritySettings>({
+    twoFactorEnabled: false,
+    loginAlerts: true,
+    deviceTracking: true,
   });
+  const [loading, setLoading] = useState(false);
 
   // Show loading state while hydrating
   if (!_hasHydrated) {
@@ -51,31 +61,49 @@ export default function SecuritySettingsPage() {
     );
   }
 
-  const handlePasswordChange = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error("Yeni şifreler eşleşmiyor");
+  const updateSetting = async (key: keyof SecuritySettings, value: boolean) => {
+    // İki faktörlü doğrulama henüz hazır değil
+    if (key === "twoFactorEnabled") {
+      toast.info("Bu özellik yakında eklenecek");
       return;
     }
 
-    if (passwordData.newPassword.length < 8) {
-      toast.error("Şifre en az 8 karakter olmalıdır");
-      return;
+    const newSettings = { ...settings, [key]: value };
+    setSettings(newSettings);
+
+    setLoading(true);
+    try {
+      await api.put("/users/user/security-settings", newSettings);
+      toast.success("Güvenlik ayarları güncellendi");
+    } catch (error: any) {
+      setSettings(settings); // Revert on error
+      toast.error(error.response?.data?.message || "Güvenlik ayarları güncellenemedi");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    setIsChangingPassword(true);
+  const handleLinkProvider = async (provider: 'apple' | 'google') => {
+    toast.info(`${provider === 'apple' ? 'Apple' : 'Google'} hesabı bağlama özelliği yakında eklenecek`);
+  };
 
-    // TODO: API call to change password
-    setTimeout(() => {
-      toast.success("Şifre değiştirme özelliği yakında eklenecek");
-      setIsChangingPassword(false);
-      setPasswordData({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-      });
-    }, 1000);
+  const handleUnlinkProvider = async (provider: 'apple' | 'google') => {
+    const confirmed = window.confirm(
+      `${provider === 'apple' ? 'Apple' : 'Google'} hesabınızın bağlantısını kesmek istediğinize emin misiniz?`
+    );
+
+    if (!confirmed) return;
+
+    setLoading(true);
+    try {
+      await api.delete("/users/me/social-provider");
+      toast.success(`${provider === 'apple' ? 'Apple' : 'Google'} hesabı bağlantısı kesildi`);
+      await refetchUser();
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Bağlantı kesilemedi");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -100,97 +128,101 @@ export default function SecuritySettingsPage() {
         </div>
 
         <div className="space-y-4">
-          {/* Password Change */}
+          {/* Linked Accounts */}
           <div className="bg-card rounded-xl border border-border">
             <div className="p-4">
               <div className="mb-4">
-                <h2 className="text-base font-semibold">Şifre Değiştir</h2>
+                <h2 className="text-base font-semibold">Bağlı Hesaplar</h2>
                 <p className="text-xs text-muted-foreground">
-                  Güçlü bir şifre seçin ve kimseyle paylaşmayın
+                  Sosyal medya hesaplarınızla hızlı giriş yapın
                 </p>
               </div>
 
-              <form onSubmit={handlePasswordChange} className="space-y-3">
-                <div className="space-y-2">
-                  <Label htmlFor="currentPassword">Mevcut Şifre</Label>
-                  <Input
-                    id="currentPassword"
-                    type="password"
-                    value={passwordData.currentPassword}
-                    onChange={(e) =>
-                      setPasswordData((prev) => ({
-                        ...prev,
-                        currentPassword: e.target.value,
-                      }))
-                    }
-                    placeholder="••••••••"
-                  />
+              <div className="space-y-2">
+                {/* Google */}
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
+                    <Icon
+                      icon="logos:google-icon"
+                      className="size-5"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">Google</p>
+                    <p className="text-xs text-muted-foreground">
+                      {currentUser?.authProvider === "google" && currentUser?.email
+                        ? currentUser.email
+                        : "Bağlı değil"}
+                    </p>
+                  </div>
+                  {currentUser?.authProvider === "google" ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleUnlinkProvider('google')}
+                      disabled={loading}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/10 text-xs h-7 px-2"
+                    >
+                      Bağlantıyı Kes
+                    </Button>
+                  ) : !currentUser?.authProvider ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleLinkProvider('google')}
+                      disabled={loading}
+                      className="text-primary hover:bg-primary/10 text-xs h-7 px-2"
+                    >
+                      Bağla
+                    </Button>
+                  ) : null}
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="newPassword">Yeni Şifre</Label>
-                  <Input
-                    id="newPassword"
-                    type="password"
-                    value={passwordData.newPassword}
-                    onChange={(e) =>
-                      setPasswordData((prev) => ({
-                        ...prev,
-                        newPassword: e.target.value,
-                      }))
-                    }
-                    placeholder="••••••••"
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    En az 8 karakter, büyük ve küçük harf, rakam içermelidir
-                  </p>
-                </div>
+                <Separator className="my-1" />
 
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Yeni Şifre (Tekrar)</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    value={passwordData.confirmPassword}
-                    onChange={(e) =>
-                      setPasswordData((prev) => ({
-                        ...prev,
-                        confirmPassword: e.target.value,
-                      }))
-                    }
-                    placeholder="••••••••"
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  disabled={
-                    isChangingPassword ||
-                    !passwordData.currentPassword ||
-                    !passwordData.newPassword ||
-                    !passwordData.confirmPassword
-                  }
-                  className="w-full"
-                >
-                  {isChangingPassword ? (
-                    <>
-                      <Icon
-                        icon="svg-spinners:ring-resize"
-                        className="size-4 mr-2"
-                      />
-                      Değiştiriliyor
-                    </>
+                {/* Apple */}
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                  <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                    <Icon
+                      icon="simple-icons:apple"
+                      className="size-5"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">Apple</p>
+                    <p className="text-xs text-muted-foreground">
+                      {currentUser?.authProvider === "apple"
+                        ? currentUser?.email || "Bağlı"
+                        : "Bağlı değil"}
+                    </p>
+                  </div>
+                  {currentUser?.authProvider === "apple" ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleUnlinkProvider('apple')}
+                      disabled={loading}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/10 text-xs h-7 px-2"
+                    >
+                      Bağlantıyı Kes
+                    </Button>
+                  ) : !currentUser?.authProvider ? (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleLinkProvider('apple')}
+                      disabled={loading}
+                      className="text-primary hover:bg-primary/10 text-xs h-7 px-2"
+                    >
+                      Bağla
+                    </Button>
                   ) : (
-                    <>
-                      <Icon
-                        icon="solar:shield-check-line-duotone"
-                        className="size-4 mr-2"
-                      />
-                      Şifreyi Değiştir
-                    </>
+                    <Badge variant="outline" className="text-xs">
+                      Bağlı değil
+                    </Badge>
                   )}
-                </Button>
-              </form>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -200,18 +232,31 @@ export default function SecuritySettingsPage() {
               <div className="mb-4">
                 <h2 className="text-base font-semibold">Telefon Numarası</h2>
                 <p className="text-xs text-muted-foreground">
-                  Hesabınıza kayıtlı telefon numarası
+                  Hesabınıza kayıtlı telefon numarası (OTP ile giriş)
                 </p>
               </div>
 
               <div className="space-y-3">
-                <div className="space-y-2">
-                  <Label>Telefon</Label>
-                  <Input value={user.phone || ""} disabled className="bg-muted" />
-                  <p className="text-xs text-muted-foreground">
-                    Telefon numaranızı değiştirmek için destek ile iletişime geçin
-                  </p>
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                    <Icon
+                      icon="solar:phone-calling-line-duotone"
+                      className="size-5 text-primary"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">Telefon Numarası</p>
+                    <p className="text-xs text-muted-foreground">
+                      {user.phone || "Kayıtlı değil"}
+                    </p>
+                  </div>
+                  <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                    Bağlı
+                  </Badge>
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  Telefon numaranızı değiştirmek için destek ile iletişime geçin
+                </p>
               </div>
             </div>
           </div>
@@ -252,44 +297,90 @@ export default function SecuritySettingsPage() {
             </div>
           </div>
 
-          {/* Two-Factor Authentication */}
+          {/* Security Settings */}
           <div className="bg-card rounded-xl border border-border">
             <div className="p-4">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h2 className="text-base font-semibold">İki Faktörlü Doğrulama</h2>
-                  <p className="text-xs text-muted-foreground">
-                    Hesabınız için ekstra güvenlik katmanı
-                  </p>
-                </div>
-                <Badge variant="outline" className="text-xs">
-                  Yakında
-                </Badge>
+              <div className="mb-4">
+                <h2 className="text-base font-semibold">Hesap Güvenliği</h2>
+                <p className="text-xs text-muted-foreground">
+                  Güvenlik ayarlarınızı yönetin
+                </p>
               </div>
 
-              <p className="text-sm text-muted-foreground">
-                İki faktörlü doğrulama özelliği yakında eklenecek. Bu özellik
-                aktif olduğunda, giriş yaparken telefon numaranıza gönderilen
-                kod ile hesabınızı doğrulamanız gerekecek.
-              </p>
+              <div className="space-y-4">
+                {/* Two-Factor Authentication */}
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="twoFactor" className="font-medium">
+                        İki Faktörlü Doğrulama
+                      </Label>
+                      <Badge variant="secondary" className="text-xs">
+                        Yakında
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Hesabınız için ekstra güvenlik katmanı
+                    </p>
+                  </div>
+                  <Switch
+                    id="twoFactor"
+                    checked={settings.twoFactorEnabled}
+                    onCheckedChange={(checked) =>
+                      updateSetting("twoFactorEnabled", checked)
+                    }
+                    disabled={loading}
+                  />
+                </div>
+
+                <Separator />
+
+                {/* Login Alerts */}
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <Label htmlFor="loginAlerts" className="font-medium">
+                      Giriş Bildirimleri
+                    </Label>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Yeni cihaz girişlerinde bildirim al
+                    </p>
+                  </div>
+                  <Switch
+                    id="loginAlerts"
+                    checked={settings.loginAlerts}
+                    onCheckedChange={(checked) =>
+                      updateSetting("loginAlerts", checked)
+                    }
+                    disabled={loading}
+                  />
+                </div>
+
+                <Separator />
+
+                {/* Device Tracking */}
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <Label htmlFor="deviceTracking" className="font-medium">
+                      Cihaz Takibi
+                    </Label>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Hesabınıza bağlı cihazları izleyin
+                    </p>
+                  </div>
+                  <Switch
+                    id="deviceTracking"
+                    checked={settings.deviceTracking}
+                    onCheckedChange={(checked) =>
+                      updateSetting("deviceTracking", checked)
+                    }
+                    disabled={loading}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  );
-}
-
-function Badge({ children, className, variant = "default" }: any) {
-  return (
-    <span
-      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-        variant === "outline"
-          ? "border border-border bg-background"
-          : ""
-      } ${className}`}
-    >
-      {children}
-    </span>
   );
 }
