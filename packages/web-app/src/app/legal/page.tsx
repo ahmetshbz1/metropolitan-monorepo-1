@@ -32,10 +32,15 @@ export default function LegalPage() {
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [mounted, setMounted] = useState(false);
 
   // i18n.language "tr-TR" formatında geliyor, sadece ilk 2 karakteri al
   const language = ((i18n.language || "tr").split("-")[0]) as "tr" | "en" | "pl";
   const { data: legalData, isLoading } = useLegal(selectedType, language);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -246,30 +251,32 @@ export default function LegalPage() {
             </div>
 
             {/* Language Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="ml-2">
-                  <Globe className="h-4 w-4 mr-2" />
-                  {language.toUpperCase()}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-32">
-                <DropdownMenuRadioGroup
-                  value={language}
-                  onValueChange={(value) => i18n.changeLanguage(value)}
-                >
-                  <DropdownMenuRadioItem value="tr">
-                    Türkçe
-                  </DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="en">
-                    English
-                  </DropdownMenuRadioItem>
-                  <DropdownMenuRadioItem value="pl">
-                    Polski
-                  </DropdownMenuRadioItem>
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {mounted && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="ml-2">
+                    <Globe className="h-4 w-4 mr-2" />
+                    {language.toUpperCase()}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-32">
+                  <DropdownMenuRadioGroup
+                    value={language}
+                    onValueChange={(value) => i18n.changeLanguage(value)}
+                  >
+                    <DropdownMenuRadioItem value="tr">
+                      Türkçe
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="en">
+                      English
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="pl">
+                      Polski
+                    </DropdownMenuRadioItem>
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </div>
       </div>

@@ -21,11 +21,6 @@ export function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Legal sayfasında navbar'ı gösterme
-  if (pathname === "/legal") {
-    return null;
-  }
-
   // Wait for client-side hydration
   const hydrated = useHydration();
 
@@ -40,6 +35,11 @@ export function Navbar() {
 
   // Fetch user profile when authenticated (auto-enabled when accessToken exists)
   useCurrentUser();
+
+  // Legal sayfasında navbar'ı gösterme
+  if (pathname === "/legal") {
+    return null;
+  }
 
   // Show nothing until both Next.js and auth are hydrated
   if (!hydrated || !_hasHydrated) {
