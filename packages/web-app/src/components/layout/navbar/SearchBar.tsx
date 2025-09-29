@@ -15,8 +15,14 @@ export function SearchBar({ onProductClick }: SearchBarProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [showResults, setShowResults] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { t } = useTranslation();
   const router = useRouter();
+
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Debounce search query
   useEffect(() => {
@@ -55,7 +61,7 @@ export function SearchBar({ onProductClick }: SearchBarProps) {
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => searchResults.length > 0 && setShowResults(true)}
           onBlur={() => setTimeout(() => setShowResults(false), 150)}
-          placeholder={t("navbar.search_placeholder")}
+          placeholder={mounted ? t("navbar.search_placeholder") : "Ara..."}
           className="w-full pl-10 pr-4 py-2 bg-muted/50 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
         />
       </form>

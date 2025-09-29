@@ -1,10 +1,17 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/context/AuthContext";
+import { useCompleteProfile } from "@/hooks/api";
+import { useAuthStore } from "@/stores";
 import { ArrowLeft, CheckCircle2, Circle, Loader2, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -13,11 +20,14 @@ import { useTranslation } from "react-i18next";
 
 export default function CompleteProfilePage() {
   const { t } = useTranslation();
-  const { completeProfile, socialAuthData } = useAuth();
+  const completeProfile = useCompleteProfile();
+  const socialAuthData = useAuthStore((state) => (state as any).socialAuthData);
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const userType = (searchParams.get("userType") as "individual" | "corporate") || "individual";
+  const userType =
+    (searchParams.get("userType") as "individual" | "corporate") ||
+    "individual";
 
   const [formData, setFormData] = useState({
     firstName: socialAuthData?.firstName || "",
@@ -30,13 +40,13 @@ export default function CompleteProfilePage() {
     privacyAccepted: false,
     marketingAccepted: false,
   });
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const isFormValid = () => {
     if (!formData.firstName.trim() || !formData.lastName.trim()) return false;
     if (!formData.email.trim()) return false;
-    if (formData.userType === "corporate" && formData.nip.trim().length !== 10) return false;
+    if (formData.userType === "corporate" && formData.nip.trim().length !== 10)
+      return false;
     if (!formData.termsAccepted || !formData.privacyAccepted) return false;
     return true;
   };
@@ -49,32 +59,35 @@ export default function CompleteProfilePage() {
       return;
     }
 
-    setLoading(true);
     setError("");
 
-    try {
-      const result = await completeProfile({
+    completeProfile.mutate(
+      {
         ...formData,
-        termsAccepted: formData.termsAccepted && formData.privacyAccepted
-      });
-      if (result.success) {
-        router.push("/");
-      } else {
-        setError(result.message);
+        termsAccepted: formData.termsAccepted && formData.privacyAccepted,
+      },
+      {
+        onSuccess: (result) => {
+          if (result.success) {
+            router.push("/");
+          } else {
+            setError(result.message);
+          }
+        },
+        onError: (error: any) => {
+          setError(error.message || "Profil tamamlanırken bir hata oluştu");
+        },
       }
-    } catch (error: any) {
-      setError(error.message || "Profil tamamlanırken bir hata oluştu");
-    } finally {
-      setLoading(false);
-    }
+    );
   };
 
-  const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: e.target.value
-    }));
-  };
+  const handleInputChange =
+    (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: e.target.value,
+      }));
+    };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -95,7 +108,9 @@ export default function CompleteProfilePage() {
               <User className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <CardTitle className="text-2xl font-bold">Profilinizi Tamamlayın</CardTitle>
+              <CardTitle className="text-2xl font-bold">
+                Profilinizi Tamamlayın
+              </CardTitle>
               <CardDescription className="text-base">
                 Size daha iyi hizmet verebilmek için bilgilerinizi tamamlayın
               </CardDescription>
@@ -107,7 +122,9 @@ export default function CompleteProfilePage() {
               {/* Name Fields */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName" className="text-sm font-medium">Ad *</Label>
+                  <Label htmlFor="firstName" className="text-sm font-medium">
+                    Ad *
+                  </Label>
                   <Input
                     id="firstName"
                     type="text"
@@ -118,7 +135,9 @@ export default function CompleteProfilePage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName" className="text-sm font-medium">Soyad *</Label>
+                  <Label htmlFor="lastName" className="text-sm font-medium">
+                    Soyad *
+                  </Label>
                   <Input
                     id="lastName"
                     type="text"
@@ -132,7 +151,9 @@ export default function CompleteProfilePage() {
 
               {/* Email */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium">E-posta *</Label>
+                <Label htmlFor="email" className="text-sm font-medium">
+                  E-posta *
+                </Label>
                 <Input
                   id="email"
                   type="email"
@@ -146,7 +167,9 @@ export default function CompleteProfilePage() {
               {/* Corporate Fields */}
               {formData.userType === "corporate" && (
                 <div className="space-y-2">
-                  <Label htmlFor="nip" className="text-sm font-medium">Vergi Numarası (NIP) *</Label>
+                  <Label htmlFor="nip" className="text-sm font-medium">
+                    Vergi Numarası (NIP) *
+                  </Label>
                   <Input
                     id="nip"
                     type="text"
@@ -159,16 +182,22 @@ export default function CompleteProfilePage() {
                 </div>
               )}
 
-
               {/* Terms Section - Mobile-app style */}
               <div className="space-y-4">
-                <Label className="text-sm font-medium">Sözleşmeler ve İzinler</Label>
+                <Label className="text-sm font-medium">
+                  Sözleşmeler ve İzinler
+                </Label>
 
                 {/* Terms of Service */}
                 <div className="flex items-start space-x-3 p-3 rounded-lg border">
                   <button
                     type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, termsAccepted: !prev.termsAccepted }))}
+                    onClick={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        termsAccepted: !prev.termsAccepted,
+                      }))
+                    }
                     className="mt-0.5"
                   >
                     {formData.termsAccepted ? (
@@ -178,7 +207,9 @@ export default function CompleteProfilePage() {
                     )}
                   </button>
                   <div className="flex-1 text-sm">
-                    <span className="text-gray-600 dark:text-gray-400">Kabul ediyorum: </span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Kabul ediyorum:{" "}
+                    </span>
                     <Link
                       href={`https://metropolitanfg.pl/terms-of-service?lang=${t("common.lang_code") || "tr"}`}
                       target="_blank"
@@ -194,7 +225,12 @@ export default function CompleteProfilePage() {
                 <div className="flex items-start space-x-3 p-3 rounded-lg border">
                   <button
                     type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, privacyAccepted: !prev.privacyAccepted }))}
+                    onClick={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        privacyAccepted: !prev.privacyAccepted,
+                      }))
+                    }
                     className="mt-0.5"
                   >
                     {formData.privacyAccepted ? (
@@ -204,7 +240,9 @@ export default function CompleteProfilePage() {
                     )}
                   </button>
                   <div className="flex-1 text-sm">
-                    <span className="text-gray-600 dark:text-gray-400">Kabul ediyorum: </span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Kabul ediyorum:{" "}
+                    </span>
                     <Link
                       href={`https://metropolitanfg.pl/privacy-policy?lang=${t("common.lang_code") || "tr"}`}
                       target="_blank"
@@ -220,7 +258,12 @@ export default function CompleteProfilePage() {
                 <div className="flex items-start space-x-3 p-3 rounded-lg border border-dashed">
                   <button
                     type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, marketingAccepted: !prev.marketingAccepted }))}
+                    onClick={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        marketingAccepted: !prev.marketingAccepted,
+                      }))
+                    }
                     className="mt-0.5"
                   >
                     {formData.marketingAccepted ? (
@@ -234,7 +277,8 @@ export default function CompleteProfilePage() {
                       Pazarlama iletişimlerini kabul ediyorum
                     </div>
                     <div className="text-xs text-gray-500 mt-1">
-                      Kampanya, indirim ve yeni ürün duyurularını e-posta ile almak istiyorum. (İsteğe bağlı)
+                      Kampanya, indirim ve yeni ürün duyurularını e-posta ile
+                      almak istiyorum. (İsteğe bağlı)
                     </div>
                   </div>
                 </div>
@@ -250,10 +294,10 @@ export default function CompleteProfilePage() {
               {/* Submit Button */}
               <Button
                 type="submit"
-                disabled={!isFormValid() || loading}
+                disabled={!isFormValid() || completeProfile.isPending}
                 className="w-full h-12 font-medium"
               >
-                {loading ? (
+                {completeProfile.isPending ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     Profil Tamamlanıyor...

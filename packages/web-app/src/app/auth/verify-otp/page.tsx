@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { OTPInput } from "@/components/ui/otp-input";
-import { useAuth } from "@/context/AuthContext";
+import { useSendOTP, useVerifyOTP } from "@/hooks/api";
 import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -21,7 +21,8 @@ const RESEND_DELAY_SECONDS = 60;
 
 export default function VerifyOtpPage() {
   const { t } = useTranslation();
-  const { verifyOTP, sendOTP } = useAuth();
+  const verifyOTP = useVerifyOTP();
+  const sendOTP = useSendOTP();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -36,8 +37,6 @@ export default function VerifyOtpPage() {
   const [otpCode, setOtpCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [isResending, setIsResending] = useState(false);
   const [cooldown, setCooldown] = useState(RESEND_DELAY_SECONDS);
 
   const verifyButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -74,7 +73,7 @@ export default function VerifyOtpPage() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (isVerifying) {
+    if (verifyOTP.isPending) {
       return;
     }
 
@@ -98,65 +97,83 @@ export default function VerifyOtpPage() {
       return;
     }
 
-    setIsVerifying(true);
     setError(null);
     setInfo(null);
 
-    try {
-      const result = await verifyOTP(phoneNumber, otpCode, userType);
-
-      if (result.success) {
-        if (result.isNewUser) {
-          router.replace(`/auth/complete-profile?userType=${userType}`);
-        } else {
-          router.replace("/");
-        }
-        return;
+    verifyOTP.mutate(
+      { phoneNumber, otpCode, userType },
+      {
+        onSuccess: (result) => {
+          if (result.success) {
+            if (result.isNewUser) {
+              router.replace(`/auth/complete-profile?userType=${userType}`);
+            } else {
+              router.replace("/");
+            }
+          } else {
+            setError(
+              result.message ||
+                t(
+                  "auth.verifyOtp.errors.verifyFailed",
+                  "Doğrulama kodu kontrol edilirken bir hata oluştu."
+                )
+            );
+          }
+        },
+        onError: () => {
+          setError(
+            t(
+              "auth.verifyOtp.errors.verifyFailed",
+              "Doğrulama kodu kontrol edilirken bir hata oluştu."
+            )
+          );
+        },
       }
-
-      setError(
-        result.message ||
-          t(
-            "auth.verifyOtp.errors.verifyFailed",
-            "Doğrulama kodu kontrol edilirken bir hata oluştu."
-          )
-      );
-    } finally {
-      setIsVerifying(false);
-    }
+    );
   };
 
   const handleResendCode = async () => {
-    if (isResending || cooldown > 0 || !phoneNumber) {
+    if (sendOTP.isPending || cooldown > 0 || !phoneNumber) {
       return;
     }
 
-    setIsResending(true);
     setError(null);
     setInfo(null);
     setOtpCode("");
 
-    try {
-      const result = await sendOTP(phoneNumber, userType);
-
-      if (result.success) {
-        setCooldown(RESEND_DELAY_SECONDS);
-        setInfo(
-          result.message ||
-            t("auth.verifyOtp.info.resent", "Yeni doğrulama kodu gönderildi.")
-        );
-      } else {
-        setError(
-          result.message ||
+    sendOTP.mutate(
+      { phoneNumber, userType },
+      {
+        onSuccess: (result) => {
+          if (result.success) {
+            setCooldown(RESEND_DELAY_SECONDS);
+            setInfo(
+              result.message ||
+                t(
+                  "auth.verifyOtp.info.resent",
+                  "Yeni doğrulama kodu gönderildi."
+                )
+            );
+          } else {
+            setError(
+              result.message ||
+                t(
+                  "auth.verifyOtp.errors.resendFailed",
+                  "Kod tekrar gönderilirken bir hata oluştu."
+                )
+            );
+          }
+        },
+        onError: () => {
+          setError(
             t(
               "auth.verifyOtp.errors.resendFailed",
               "Kod tekrar gönderilirken bir hata oluştu."
             )
-        );
+          );
+        },
       }
-    } finally {
-      setIsResending(false);
-    }
+    );
   };
 
   const handleOtpComplete = () => {
@@ -165,10 +182,7 @@ export default function VerifyOtpPage() {
 
   const countdownLabel = useMemo(() => {
     if (cooldown <= 0) {
-      return t(
-        "auth.verifyOtp.resendReady",
-        "Tekrar kod gönderebilirsiniz."
-      );
+      return t("auth.verifyOtp.resendReady", "Tekrar kod gönderebilirsiniz.");
     }
     return t("auth.verifyOtp.resendIn", "Tekrar kod için {{second}} sn.", {
       second: cooldown,
@@ -217,7 +231,7 @@ export default function VerifyOtpPage() {
                   }}
                   onComplete={handleOtpComplete}
                   isError={Boolean(error)}
-                  disabled={isVerifying}
+                  disabled={verifyOTP.isPending}
                 />
                 <p className="text-center text-xs text-muted-foreground">
                   {t(
@@ -244,10 +258,12 @@ export default function VerifyOtpPage() {
                 type="submit"
                 className="h-11 w-full"
                 disabled={
-                  otpCode.length !== OTP_LENGTH || isVerifying || !phoneNumber
+                  otpCode.length !== OTP_LENGTH ||
+                  verifyOTP.isPending ||
+                  !phoneNumber
                 }
               >
-                {isVerifying ? (
+                {verifyOTP.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     {t("auth.verifyOtp.verifying", "Doğrulanıyor...")}
@@ -258,15 +274,17 @@ export default function VerifyOtpPage() {
               </Button>
 
               <div className="space-y-2 text-center">
-                <p className="text-sm text-muted-foreground">{countdownLabel}</p>
+                <p className="text-sm text-muted-foreground">
+                  {countdownLabel}
+                </p>
                 <Button
                   type="button"
                   variant="ghost"
                   className="h-auto p-0 text-sm"
-                  disabled={isResending || cooldown > 0 || !phoneNumber}
+                  disabled={sendOTP.isPending || cooldown > 0 || !phoneNumber}
                   onClick={handleResendCode}
                 >
-                  {isResending ? (
+                  {sendOTP.isPending ? (
                     <>
                       <Loader2 className="mr-2 h-3 w-3 animate-spin" />
                       {t("auth.verifyOtp.resending", "Gönderiliyor...")}
@@ -278,7 +296,9 @@ export default function VerifyOtpPage() {
               </div>
 
               <div className="space-y-1 text-center text-xs text-muted-foreground">
-                <p>{t("auth.verifyOtp.notReceived.title", "Kod gelmedi mi?")}</p>
+                <p>
+                  {t("auth.verifyOtp.notReceived.title", "Kod gelmedi mi?")}
+                </p>
                 <p>
                   {t(
                     "auth.verifyOtp.notReceived.help",
