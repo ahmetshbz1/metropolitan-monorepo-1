@@ -72,7 +72,7 @@ export default function PrivacySettingsPage() {
 
     setIsSaving(true);
     try {
-      await api.put("/privacy-settings", newSettings);
+      await api.put("/users/privacy-settings", newSettings);
       toast.success("Gizlilik ayarları güncellendi");
     } catch (error: any) {
       setPrivacySettings(privacySettings); // Revert on error

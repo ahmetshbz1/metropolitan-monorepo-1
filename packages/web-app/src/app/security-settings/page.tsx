@@ -109,7 +109,7 @@ export default function SecuritySettingsPage() {
 
     setLoading(true);
     try {
-      await api.delete("/me/social-provider");
+      await api.delete("/users/me/social-provider");
       toast.success(`${providerToUnlink === 'apple' ? 'Apple' : 'Google'} hesabı bağlantısı kesildi`);
       await refetchUser();
     } catch (error: any) {
