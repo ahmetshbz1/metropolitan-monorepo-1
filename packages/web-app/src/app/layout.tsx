@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 import { I18nProvider } from "@/components/providers/I18nProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { ProductProvider } from "@/context/ProductContext";
@@ -41,8 +42,13 @@ export default function RootLayout({
           <I18nProvider>
             <AuthProvider>
               <ProductProvider>
-                <Navbar />
-                {children}
+                <div className="min-h-screen flex flex-col">
+                  <Navbar />
+                  <main className="flex-1">
+                    {children}
+                  </main>
+                  <Footer />
+                </div>
               </ProductProvider>
             </AuthProvider>
           </I18nProvider>

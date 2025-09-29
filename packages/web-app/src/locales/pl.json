@@ -1,1 +1,45 @@
-{}
+{
+  "navbar": {
+    "products": "Produkty",
+    "categories": "Kategorie", 
+    "about": "O nas",
+    "contact": "Kontakt",
+    "search_placeholder": "Szukaj produktów...",
+    "favorites": "Ulubione",
+    "cart": "Koszyk",
+    "login": "Zaloguj się"
+  },
+  "footer": {
+    "company_name": "Metropolitan Food Group",
+    "about_us": "O nas",
+    "about_description": "Zaufana platforma żywnościowa, która dostarcza najświeższe produkty natury pod Twoje drzwi. Jakość i zadowolenie klienta to nasz priorytet.",
+    "quick_links": "Szybkie linki",
+    "products": "Produkty",
+    "categories": "Kategorie",
+    "special_offers": "Oferty specjalne",
+    "new_arrivals": "Nowości",
+    "customer_service": "Obsługa klienta",
+    "help_center": "Centrum pomocy",
+    "contact_us": "Skontaktuj się z nami",
+    "faq": "FAQ",
+    "delivery_info": "Informacje o dostawie",
+    "return_policy": "Zwroty i wymiana",
+    "privacy_policy": "Polityka prywatności",
+    "terms_of_service": "Warunki użytkowania",
+    "contact_info": "Informacje kontaktowe",
+    "address": "Adres",
+    "address_value": "ul. Aleja Krakowska 44, 05-090 Janki, Warsaw",
+    "phone": "Telefon",
+    "phone_value": "+48 600 790 035",
+    "email": "Email",
+    "email_value": "info@metropolitanfg.pl",
+    "follow_us": "Śledź nas",
+    "newsletter": "Newsletter",
+    "newsletter_description": "Zapisz się do naszego newslettera, aby być na bieżąco z ofertami specjalnymi i nowościami.",
+    "newsletter_placeholder": "Twój adres email",
+    "subscribe": "Subskrybuj",
+    "copyright": "© {{year}} Metropolitan Food Group. Wszelkie prawa zastrzeżone.",
+    "working_hours": "Godziny pracy",
+    "working_hours_value": "Poniedziałek - Niedziela: 09:00 - 22:00"
+  }
+}

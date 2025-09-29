@@ -1,1 +1,45 @@
-{}
+{
+  "navbar": {
+    "products": "Products",
+    "categories": "Categories", 
+    "about": "About Us",
+    "contact": "Contact",
+    "search_placeholder": "Search products...",
+    "favorites": "Favorites",
+    "cart": "Cart",
+    "login": "Login"
+  },
+  "footer": {
+    "company_name": "Metropolitan Food Group",
+    "about_us": "About Us",
+    "about_description": "A trusted food platform that brings nature's freshest products to your doorstep. Quality and customer satisfaction are our priority.",
+    "quick_links": "Quick Links",
+    "products": "Products",
+    "categories": "Categories",
+    "special_offers": "Special Offers",
+    "new_arrivals": "New Arrivals",
+    "customer_service": "Customer Service",
+    "help_center": "Help Center",
+    "contact_us": "Contact Us",
+    "faq": "FAQ",
+    "delivery_info": "Delivery Information",
+    "return_policy": "Return & Exchange",
+    "privacy_policy": "Privacy Policy",
+    "terms_of_service": "Terms of Service",
+    "contact_info": "Contact Information",
+    "address": "Address",
+    "address_value": "ul. Aleja Krakowska 44, 05-090 Janki, Warsaw",
+    "phone": "Phone",
+    "phone_value": "+48 600 790 035",
+    "email": "Email",
+    "email_value": "info@metropolitanfg.pl",
+    "follow_us": "Follow Us",
+    "newsletter": "Newsletter",
+    "newsletter_description": "Subscribe to our newsletter to stay updated with special offers and innovations.",
+    "newsletter_placeholder": "Your email address",
+    "subscribe": "Subscribe",
+    "copyright": "© {{year}} Metropolitan Food Group. All rights reserved.",
+    "working_hours": "Working Hours",
+    "working_hours_value": "Monday - Sunday: 09:00 - 22:00"
+  }
+}

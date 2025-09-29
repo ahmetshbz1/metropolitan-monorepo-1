@@ -113,5 +113,38 @@
     "phoneLogin": {
       "b2bNote": "Kurumsal müşteriler sadece telefon numarası ile katılabilir."
     }
+  },
+  "footer": {
+    "company_name": "Metropolitan Food Group",
+    "about_us": "Hakkımızda",
+    "about_description": "Doğanın en taze ürünlerini kapınıza kadar getiren güvenilir gıda platformu. Kalite ve müşteri memnuniyeti önceliğimizdir.",
+    "quick_links": "Hızlı Erişim",
+    "products": "Ürünler",
+    "categories": "Kategoriler",
+    "special_offers": "Özel Teklifler",
+    "new_arrivals": "Yeni Gelenler",
+    "customer_service": "Müşteri Hizmetleri",
+    "help_center": "Yardım Merkezi",
+    "contact_us": "İletişim",
+    "faq": "Sık Sorulan Sorular",
+    "delivery_info": "Teslimat Bilgileri",
+    "return_policy": "İade ve Değişim",
+    "privacy_policy": "Gizlilik Politikası",
+    "terms_of_service": "Kullanım Koşulları",
+    "contact_info": "İletişim Bilgileri",
+    "address": "Adres",
+    "address_value": "ul. Aleja Krakowska 44, 05-090 Janki, Warsaw",
+    "phone": "Telefon",
+    "phone_value": "+48 600 790 035",
+    "email": "E-posta",
+    "email_value": "info@metropolitanfg.pl",
+    "follow_us": "Bizi Takip Edin",
+    "newsletter": "Bülten",
+    "newsletter_description": "Özel teklifler ve yeniliklerden haberdar olmak için bültenimize abone olun.",
+    "newsletter_placeholder": "E-posta adresiniz",
+    "subscribe": "Abone Ol",
+    "copyright": "© {{year}} Metropolitan Food Group. Tüm hakları saklıdır.",
+    "working_hours": "Çalışma Saatleri",
+    "working_hours_value": "Pazartesi - Pazar: 09:00 - 22:00"
   }
 }

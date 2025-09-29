@@ -3,6 +3,9 @@
   "workspaces": {
     "": {
       "name": "metropolitan-workspace",
+      "dependencies": {
+        "lucide-react": "^0.544.0",
+      },
       "devDependencies": {
         "concurrently": "^8.2.2",
       },
