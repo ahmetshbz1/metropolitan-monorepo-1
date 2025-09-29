@@ -85,8 +85,9 @@ export async function getDeviceHeaders(): Promise<Record<string, string>> {
 
     // Session ID from JWT token (backend-generated)
     // CRITICAL: Must match Redis session ID for validation
+    // Using sessionStorage (per-tab, cleared when tab closes)
     try {
-      const sessionId = localStorage.getItem("metropolitan_session_id");
+      const sessionId = sessionStorage.getItem("metropolitan_session_id");
       if (sessionId) {
         headers["X-Session-ID"] = sessionId;
         console.log("📋 Session ID sent:", sessionId);
@@ -94,7 +95,7 @@ export async function getDeviceHeaders(): Promise<Record<string, string>> {
         console.warn("⚠️ No session ID found - will be set after login");
       }
     } catch {
-      // Local storage might be blocked
+      // Session storage might be blocked
     }
 
     // Device ID from storage (set after successful auth)
@@ -148,24 +149,24 @@ export function extractSessionIdFromToken(token: string | null | undefined): str
 }
 
 /**
- * Save session ID to localStorage
+ * Save session ID to sessionStorage (per-tab, auto-cleared on tab close)
  */
 export function saveSessionId(sessionId: string): void {
   try {
-    localStorage.setItem('metropolitan_session_id', sessionId);
-    console.log('💾 Session ID saved:', sessionId);
+    sessionStorage.setItem('metropolitan_session_id', sessionId);
+    console.log('💾 Session ID saved to sessionStorage:', sessionId);
   } catch (error) {
     console.error('Failed to save session ID:', error);
   }
 }
 
 /**
- * Clear session ID from localStorage
+ * Clear session ID from sessionStorage
  */
 export function clearSessionId(): void {
   try {
-    localStorage.removeItem('metropolitan_session_id');
-    console.log('🧹 Session ID cleared');
+    sessionStorage.removeItem('metropolitan_session_id');
+    console.log('🧹 Session ID cleared from sessionStorage');
   } catch (error) {
     console.error('Failed to clear session ID:', error);
   }

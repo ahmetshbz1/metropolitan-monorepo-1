@@ -82,12 +82,12 @@ export const useAuthStore = create<AuthState>()(
           socialAuthData: null,
         });
 
-        // CRITICAL: Also clear from localStorage manually
+        // CRITICAL: Also clear from localStorage + sessionStorage manually
         // Because Zustand persist might not sync immediately
         if (typeof window !== "undefined") {
           localStorage.removeItem("metropolitan-auth-storage");
-          localStorage.removeItem("metropolitan_session_id"); // Backend-generated session ID
-          console.log("🧹 Cleared auth from localStorage (including session ID)");
+          sessionStorage.removeItem("metropolitan_session_id"); // Backend-generated session ID
+          console.log("🧹 Cleared auth from localStorage + sessionStorage");
         }
       },
     }),

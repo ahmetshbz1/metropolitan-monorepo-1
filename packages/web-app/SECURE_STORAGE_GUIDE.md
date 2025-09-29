@@ -141,10 +141,11 @@ export class SecureTokenStorage {
 ```typescript
 // Before ❌
 sessionId = `sess_${Date.now()}_${random()}`; // Client-generated
+sessionStorage.setItem('metropolitan_session_id', sessionId);
 
 // After ✅
 sessionId = extractSessionIdFromToken(accessToken); // From JWT
-localStorage.setItem('metropolitan_session_id', sessionId);
+sessionStorage.setItem('metropolitan_session_id', sessionId); // Per-tab, auto-cleared
 ```
 
 **Flow**:
@@ -157,7 +158,7 @@ localStorage.setItem('metropolitan_session_id', sessionId);
    ↓
 4. Frontend extracts sessionId from JWT
    ↓
-5. Saves to localStorage
+5. Saves to sessionStorage (per-tab)
    ↓
 6. Every API request sends X-Session-ID header
    ↓
@@ -169,16 +170,22 @@ localStorage.setItem('metropolitan_session_id', sessionId);
 ### Device ID Sync (Already Implemented ✅)
 
 ```typescript
-// JWT contains deviceId
+// JWT contains deviceId + sessionId
 deviceId = extractDeviceIdFromToken(accessToken);
 localStorage.setItem('metropolitan_device_id', deviceId);
 
-// Every request sends X-Device-ID header
+sessionId = extractSessionIdFromToken(accessToken);
+sessionStorage.setItem('metropolitan_session_id', sessionId); // Per-tab
+
+// Every request sends both headers
 headers['X-Device-ID'] = deviceId;
+headers['X-Session-ID'] = sessionId;
 
 // Backend validates:
 // 1. Device ID matches Redis session
 // 2. Device ID matches JWT claim
+// 3. Session ID matches Redis key
+// 4. Session ID matches JWT claim
 ```
 
 ### Logout Flow (Complete ✅)
@@ -195,9 +202,9 @@ clearAuth() {
   // - Removes device_id
   // - Removes session_id ✅ NEW
 
-  // 3. Clear localStorage manually
+  // 3. Clear storage manually
   localStorage.removeItem('metropolitan-auth-storage');
-  localStorage.removeItem('metropolitan_session_id'); ✅ NEW
+  sessionStorage.removeItem('metropolitan_session_id'); ✅ NEW (per-tab)
 
   // 4. Notify backend (blacklist)
   await api.post('/auth/logout');
@@ -268,8 +275,8 @@ await secureStorage.getItemAsync('test');
 // 2. Check console
 // → "📋 Session ID synced from token: sess_xxx"
 
-// 3. Check localStorage
-localStorage.getItem('metropolitan_session_id');
+// 3. Check sessionStorage (per-tab)
+sessionStorage.getItem('metropolitan_session_id');
 // → "sess_fb1d4f69a242369f2170955953c3d697122ec30934bc1dec" ✅
 
 // 4. Check Redis (backend)
