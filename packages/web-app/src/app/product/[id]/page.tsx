@@ -180,7 +180,7 @@ export default function ProductDetailPage() {
                 className="bg-muted rounded-xl overflow-hidden"
               >
                 {product.image ? (
-                  <Lens zoomFactor={2} lensSize={120}>
+                  <Lens zoomFactor={2} lensSize={160}>
                     <img
                       src={product.image}
                       alt={product.name}
