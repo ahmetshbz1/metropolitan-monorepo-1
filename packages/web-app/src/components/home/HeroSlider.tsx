@@ -13,21 +13,21 @@ export function HeroSlider() {
   const sliderImages = [
     {
       id: 1,
-      src: "/images/hero-1.jpg",
+      src: "/yayla.webp",
       alt: "Metropolitan Food Group - Kaliteli Gıda Ürünleri",
       titleKey: "hero.title_1",
       subtitleKey: "hero.subtitle_1"
     },
     {
       id: 2,
-      src: "/images/hero-2.jpg",
+      src: "/yayla.webp",
       alt: "Metropolitan Food Group - Hızlı Teslimat",
       titleKey: "hero.title_2",
       subtitleKey: "hero.subtitle_2"
     },
     {
       id: 3,
-      src: "/images/hero-3.jpg",
+      src: "/yayla.webp",
       alt: "Metropolitan Food Group - Güvenilir Alışveriş",
       titleKey: "hero.title_3",
       subtitleKey: "hero.subtitle_3"
@@ -79,11 +79,18 @@ export function HeroSlider() {
         {sliderImages.map((image) => (
           <div
             key={image.id}
-            className="relative w-full h-full flex-shrink-0 bg-gradient-to-br from-primary/20 to-primary/5"
+            className="relative w-full h-full flex-shrink-0"
           >
-            {/* Placeholder for image - you can replace with actual images */}
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-transparent" />
-            
+            {/* Background Image */}
+            <img
+              src={image.src}
+              alt={image.alt}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+
+            {/* Dark Overlay */}
+            <div className="absolute inset-0 bg-black/40" />
+
             {/* Content Overlay */}
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center text-white px-4 max-w-4xl">
@@ -93,9 +100,9 @@ export function HeroSlider() {
                 <p className="text-lg md:text-xl lg:text-2xl opacity-90 drop-shadow-md">
                   {t(image.subtitleKey)}
                 </p>
-                <Button 
-                  size="lg" 
-                  className="mt-6 bg-white text-primary hover:bg-white/90 shadow-lg"
+                <Button
+                  size="lg"
+                  className="mt-6 bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg"
                 >
                   {t("hero.shop_now")}
                 </Button>
