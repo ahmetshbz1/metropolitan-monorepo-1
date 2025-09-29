@@ -10,9 +10,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useCompleteProfile } from "@/hooks/api";
 import { useAuthStore } from "@/stores";
-import { ArrowLeft, CheckCircle2, Circle, Loader2, User } from "lucide-react";
+import { ArrowLeft, Loader2, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -196,93 +197,82 @@ export default function CompleteProfilePage() {
 
                 {/* Terms of Service */}
                 <div className="flex items-start space-x-3 p-3 rounded-lg border">
-                  <button
-                    type="button"
-                    onClick={() =>
+                  <Checkbox
+                    id="termsAccepted"
+                    checked={formData.termsAccepted}
+                    onCheckedChange={(checked) =>
                       setFormData((prev) => ({
                         ...prev,
-                        termsAccepted: !prev.termsAccepted,
+                        termsAccepted: checked as boolean,
                       }))
                     }
                     className="mt-0.5"
-                  >
-                    {formData.termsAccepted ? (
-                      <CheckCircle2 className="h-5 w-5 text-primary" />
-                    ) : (
-                      <Circle className="h-5 w-5 text-gray-400" />
-                    )}
-                  </button>
-                  <div className="flex-1 text-sm">
-                    <span className="text-gray-600 dark:text-gray-400">
-                      Kabul ediyorum:{" "}
-                    </span>
-                    <Link
-                      href={`https://metropolitanfg.pl/terms-of-service?lang=${t("common.lang_code") || "tr"}`}
-                      target="_blank"
-                      className="text-primary font-medium hover:underline"
-                    >
-                      Kullanım Koşulları
-                    </Link>
-                    <span className="text-red-500 ml-1">*</span>
+                  />
+                  <div className="flex-1">
+                    <Label htmlFor="termsAccepted" className="text-sm cursor-pointer">
+                      <span className="text-muted-foreground">
+                        Kabul ediyorum:{" "}
+                      </span>
+                      <Link
+                        href={`https://metropolitanfg.pl/terms-of-service?lang=${t("common.lang_code") || "tr"}`}
+                        target="_blank"
+                        className="text-primary font-medium hover:underline"
+                      >
+                        Kullanım Koşulları
+                      </Link>
+                      <span className="text-red-500 ml-1">*</span>
+                    </Label>
                   </div>
                 </div>
 
                 {/* Privacy Policy */}
                 <div className="flex items-start space-x-3 p-3 rounded-lg border">
-                  <button
-                    type="button"
-                    onClick={() =>
+                  <Checkbox
+                    id="privacyAccepted"
+                    checked={formData.privacyAccepted}
+                    onCheckedChange={(checked) =>
                       setFormData((prev) => ({
                         ...prev,
-                        privacyAccepted: !prev.privacyAccepted,
+                        privacyAccepted: checked as boolean,
                       }))
                     }
                     className="mt-0.5"
-                  >
-                    {formData.privacyAccepted ? (
-                      <CheckCircle2 className="h-5 w-5 text-primary" />
-                    ) : (
-                      <Circle className="h-5 w-5 text-gray-400" />
-                    )}
-                  </button>
-                  <div className="flex-1 text-sm">
-                    <span className="text-gray-600 dark:text-gray-400">
-                      Kabul ediyorum:{" "}
-                    </span>
-                    <Link
-                      href={`https://metropolitanfg.pl/privacy-policy?lang=${t("common.lang_code") || "tr"}`}
-                      target="_blank"
-                      className="text-primary font-medium hover:underline"
-                    >
-                      Gizlilik Politikası
-                    </Link>
-                    <span className="text-red-500 ml-1">*</span>
+                  />
+                  <div className="flex-1">
+                    <Label htmlFor="privacyAccepted" className="text-sm cursor-pointer">
+                      <span className="text-muted-foreground">
+                        Kabul ediyorum:{" "}
+                      </span>
+                      <Link
+                        href={`https://metropolitanfg.pl/privacy-policy?lang=${t("common.lang_code") || "tr"}`}
+                        target="_blank"
+                        className="text-primary font-medium hover:underline"
+                      >
+                        Gizlilik Politikası
+                      </Link>
+                      <span className="text-red-500 ml-1">*</span>
+                    </Label>
                   </div>
                 </div>
 
                 {/* Marketing Communications */}
                 <div className="flex items-start space-x-3 p-3 rounded-lg border border-dashed">
-                  <button
-                    type="button"
-                    onClick={() =>
+                  <Checkbox
+                    id="marketingAccepted"
+                    checked={formData.marketingAccepted}
+                    onCheckedChange={(checked) =>
                       setFormData((prev) => ({
                         ...prev,
-                        marketingAccepted: !prev.marketingAccepted,
+                        marketingAccepted: checked as boolean,
                       }))
                     }
                     className="mt-0.5"
-                  >
-                    {formData.marketingAccepted ? (
-                      <CheckCircle2 className="h-5 w-5 text-primary" />
-                    ) : (
-                      <Circle className="h-5 w-5 text-gray-400" />
-                    )}
-                  </button>
+                  />
                   <div className="flex-1">
-                    <div className="text-sm">
+                    <Label htmlFor="marketingAccepted" className="text-sm cursor-pointer">
                       Pazarlama iletişimlerini kabul ediyorum
-                    </div>
-                    <div className="text-xs text-gray-500 mt-1">
+                    </Label>
+                    <div className="text-xs text-muted-foreground mt-1">
                       Kampanya, indirim ve yeni ürün duyurularını e-posta ile
                       almak istiyorum. (İsteğe bağlı)
                     </div>
