@@ -69,9 +69,14 @@ export const favoritesRoutes = createApp()
       )
       .post(
         "/",
-        async ({ db, profile, body, error }) => {
+        async ({ db, profile, body, error, log }) => {
           const userId = profile?.sub || profile?.userId;
           const { productId } = body;
+
+          if (!userId) {
+            log.error({ profile }, "No userId found in profile");
+            return error(401, "Unauthorized - No user ID found");
+          }
 
           // Ürün mevcut mu kontrol et
           const productExists = await db.query.products.findFirst({
@@ -79,6 +84,7 @@ export const favoritesRoutes = createApp()
           });
 
           if (!productExists) {
+            log.error({ productId }, "Product not found");
             return error(404, "Product not found.");
           }
 
@@ -91,15 +97,22 @@ export const favoritesRoutes = createApp()
           });
 
           if (alreadyFavorite) {
+            log.info({ userId, productId }, "Product already in favorites");
             return error(409, "Product is already in favorites.");
           }
 
-          await db.insert(favorites).values({
-            userId: userId,
-            productId: productId,
-          });
+          try {
+            await db.insert(favorites).values({
+              userId: userId,
+              productId: productId,
+            });
 
-          return { success: true, message: "Product added to favorites." };
+            log.info({ userId, productId }, "Product added to favorites");
+            return { success: true, message: "Product added to favorites." };
+          } catch (err) {
+            log.error({ err, userId, productId }, "Failed to insert favorite");
+            return error(500, "Failed to add product to favorites");
+          }
         },
         {
           body: t.Object({

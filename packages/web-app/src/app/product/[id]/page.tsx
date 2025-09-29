@@ -11,7 +11,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useProducts } from "@/hooks/api/use-products";
-import { useAddFavorite, useRemoveFavorite } from "@/hooks/api/use-favorites";
+import { useAddFavorite, useFavoriteIds, useRemoveFavorite } from "@/hooks/api/use-favorites";
 import { useFavoritesStore } from "@/stores/favorites-store";
 import { motion } from "framer-motion";
 import { ArrowLeft, Heart, Minus, Plus, ShoppingCart } from "lucide-react";
@@ -26,6 +26,7 @@ export default function ProductDetailPage() {
   const { data: products = [], isLoading: loadingProducts } = useProducts();
 
   // Favorites
+  useFavoriteIds(); // Load favorites from backend
   const isFavorite = useFavoritesStore((state) => state.isFavorite);
   const addFavoriteMutation = useAddFavorite();
   const removeFavoriteMutation = useRemoveFavorite();
