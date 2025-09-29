@@ -1,10 +1,10 @@
 'use client';
 
 import { useTranslation } from 'react-i18next';
-import { 
-  MapPin, 
-  Phone, 
-  Mail, 
+import {
+  MapPin,
+  Phone,
+  Mail,
   Clock,
   Facebook,
   Instagram,
@@ -13,7 +13,8 @@ import {
   ExternalLink,
   QrCode,
   CreditCard,
-  Smartphone
+  Smartphone,
+  Search
 } from 'lucide-react';
 import { useState } from 'react';
 import { QRDialog } from '@/components/ui/qr-dialog';
@@ -213,11 +214,14 @@ export function Footer() {
               
               {/* QR Code */}
               <div className="mb-4">
-                <div 
-                  className="w-20 h-20 bg-card border border-border rounded-lg flex items-center justify-center mb-3 p-1 cursor-pointer hover:bg-muted/50 transition-colors duration-200"
+                <div
+                  className="relative w-20 h-20 bg-card border border-border rounded-lg flex items-center justify-center mb-3 p-1 cursor-pointer group overflow-hidden transition-all duration-300"
                   onClick={() => setQrDialogOpen(true)}
                 >
-                  <img src="/qr.svg" alt="QR Code" className="w-full h-full" />
+                  <img src="/qr.svg" alt="QR Code" className="w-full h-full transition-opacity duration-300 group-hover:opacity-30" />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <Search size={24} className="text-primary" />
+                  </div>
                 </div>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   {t('footer.mobile_app_description')}
