@@ -34,9 +34,9 @@ const useIsMobile = () => {
     };
 
     checkIsMobile();
-    window.addEventListener('resize', checkIsMobile);
+    window.addEventListener("resize", checkIsMobile);
 
-    return () => window.removeEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener("resize", checkIsMobile);
   }, []);
 
   return isMobile;
@@ -79,6 +79,19 @@ const LANGUAGE_OPTIONS = [
   },
 ];
 
+interface UserDropdownProps {
+  user?: {
+    name: string;
+    username: string;
+    email: string;
+    avatar: string;
+    initials: string;
+    isGuest: boolean;
+  };
+  onAction?: (action: string, route?: string) => void;
+  onLogin?: () => void;
+}
+
 export const UserDropdown = ({
   user = {
     name: "Misafir",
@@ -88,9 +101,9 @@ export const UserDropdown = ({
     initials: "M",
     isGuest: true,
   },
-  onAction = () => {},
-  onLogin = () => {},
-}) => {
+  onAction,
+  onLogin,
+}: UserDropdownProps) => {
   const { t, i18n } = useTranslation();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -167,7 +180,7 @@ export const UserDropdown = ({
         "p-2 rounded-lg cursor-pointer transition-colors font-medium",
         item.danger ? "text-red-600 dark:text-red-400" : ""
       )}
-      onClick={() => onAction(item.action, item.route)}
+      onClick={() => onAction?.(item.action, item.route)}
     >
       <span className="flex items-center gap-2">
         <Icon
@@ -259,7 +272,7 @@ export const UserDropdown = ({
           /* Guest User - Login Button */
           <DropdownMenuItem
             className="p-2 rounded-lg cursor-pointer bg-primary/10 hover:bg-primary/20 text-primary font-medium"
-            onClick={() => onLogin()}
+            onClick={() => onLogin?.()}
           >
             <span className="flex items-center gap-2">
               <Icon
@@ -323,7 +336,11 @@ export const UserDropdown = ({
                     <span className="text-sm">{t("dropdown.theme")}</span>
                   </span>
                   <Icon
-                    icon={showThemeOptions ? "solar:alt-arrow-up-line-duotone" : "solar:alt-arrow-down-line-duotone"}
+                    icon={
+                      showThemeOptions
+                        ? "solar:alt-arrow-up-line-duotone"
+                        : "solar:alt-arrow-down-line-duotone"
+                    }
                     className="size-4 text-gray-500 dark:text-gray-400"
                   />
                 </span>
@@ -380,7 +397,10 @@ export const UserDropdown = ({
                   avoidCollisions={true}
                   collisionPadding={16}
                 >
-                  <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
+                  <DropdownMenuRadioGroup
+                    value={theme}
+                    onValueChange={setTheme}
+                  >
                     {THEME_OPTIONS.map((themeOption) => (
                       <DropdownMenuRadioItem
                         key={themeOption.value}
@@ -391,7 +411,9 @@ export const UserDropdown = ({
                           icon={themeOption.icon}
                           className="size-4 text-gray-500 dark:text-gray-400"
                         />
-                        <span className="text-sm">{t(themeOption.labelKey)}</span>
+                        <span className="text-sm">
+                          {t(themeOption.labelKey)}
+                        </span>
                       </DropdownMenuRadioItem>
                     ))}
                   </DropdownMenuRadioGroup>
@@ -427,7 +449,11 @@ export const UserDropdown = ({
                     <span className="text-sm">{t("dropdown.language")}</span>
                   </span>
                   <Icon
-                    icon={showLanguageOptions ? "solar:alt-arrow-up-line-duotone" : "solar:alt-arrow-down-line-duotone"}
+                    icon={
+                      showLanguageOptions
+                        ? "solar:alt-arrow-up-line-duotone"
+                        : "solar:alt-arrow-down-line-duotone"
+                    }
                     className="size-4 text-gray-500 dark:text-gray-400"
                   />
                 </span>
@@ -498,7 +524,9 @@ export const UserDropdown = ({
                           icon={langOption.icon}
                           className="size-4 text-gray-500 dark:text-gray-400"
                         />
-                        <span className="text-sm">{t(langOption.labelKey)}</span>
+                        <span className="text-sm">
+                          {t(langOption.labelKey)}
+                        </span>
                       </DropdownMenuRadioItem>
                     ))}
                   </DropdownMenuRadioGroup>

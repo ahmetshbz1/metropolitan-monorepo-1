@@ -3,16 +3,14 @@
 import { HeroSlider } from "@/components/home/HeroSlider";
 import { ProductSection } from "@/components/home/ProductSection";
 import { Button } from "@/components/ui/button";
-import { useProducts } from "@/context/ProductContext";
+import { useProducts } from "@/hooks/api/use-products";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 
 export default function Home() {
   const { t } = useTranslation();
-  const { products, categories, loadingProducts, error } = useProducts();
-
-  const loading = loadingProducts;
+  const { data: products = [], isLoading: loading, error } = useProducts();
 
   if (loading) {
     return (
@@ -48,7 +46,7 @@ export default function Home() {
           <h2 className="text-2xl font-bold mb-4">
             {t("error.error_occurred")}
           </h2>
-          <p className="text-muted-foreground mb-6">{error}</p>
+          <p className="text-muted-foreground mb-6">{(error as Error).message}</p>
           <Button onClick={() => window.location.reload()}>
             {t("error.try_again")}
           </Button>

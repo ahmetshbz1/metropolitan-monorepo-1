@@ -6,8 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { I18nProvider } from "@/components/providers/I18nProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import { ProductProvider } from "@/context/ProductContext";
-import { AuthProvider } from "@/context/AuthContext";
+import { QueryProvider } from "@/components/providers/QueryProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,18 +41,16 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <I18nProvider>
-            <AuthProvider>
-              <ProductProvider>
-                <ProgressBar />
-                <div className="min-h-screen flex flex-col">
-                  <Navbar />
-                  <main className="flex-1">
-                    {children}
-                  </main>
-                  <Footer />
-                </div>
-              </ProductProvider>
-            </AuthProvider>
+            <QueryProvider>
+              <ProgressBar />
+              <div className="min-h-screen flex flex-col">
+                <Navbar />
+                <main className="flex-1">
+                  {children}
+                </main>
+                <Footer />
+              </div>
+            </QueryProvider>
           </I18nProvider>
         </ThemeProvider>
       </body>
