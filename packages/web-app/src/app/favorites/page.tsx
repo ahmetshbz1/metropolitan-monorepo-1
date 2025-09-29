@@ -3,10 +3,12 @@
 import { ProductCard } from "@/components/product/ProductCard";
 import { Button } from "@/components/ui/button";
 import { useFavorites } from "@/hooks/api/use-favorites";
+import { useProducts } from "@/hooks/api/use-products";
 import { useAuth } from "@/context/AuthContext";
 import { Heart } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
+import { useMemo } from "react";
 
 export default function FavoritesPage() {
   const { t } = useTranslation();
@@ -33,6 +35,14 @@ export default function FavoritesPage() {
   }
 
   const { data: favorites = [], isLoading: favoritesLoading } = useFavorites();
+  const { data: products = [] } = useProducts();
+
+  // Get suggested products (exclude favorites, random 8 products)
+  const suggestedProducts = useMemo(() => {
+    const favoriteIds = favorites.map((f: any) => f.id);
+    const filtered = products.filter((p) => !favoriteIds.includes(p.id));
+    return filtered.sort(() => Math.random() - 0.5).slice(0, 8);
+  }, [products, favorites]);
 
   // If favorites are loaded and we have data, show it (ignore auth loading state issue)
   const hasLoadedFavorites = !favoritesLoading && favorites !== undefined;
@@ -78,11 +88,23 @@ export default function FavoritesPage() {
     <div className="min-h-screen bg-background py-8">
       <div className="container mx-auto px-4">
         <h1 className="text-3xl font-bold mb-8">{t("favorites.title")}</h1>
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-3 mb-12">
           {favorites.map((product: any) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
+
+        {/* Suggested Products */}
+        {suggestedProducts.length > 0 && (
+          <div className="mt-12 pt-8 border-t border-border">
+            <h2 className="text-2xl font-bold mb-6">Önerilen Ürünler</h2>
+            <div className="flex flex-wrap gap-3">
+              {suggestedProducts.map((product: any) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
