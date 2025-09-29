@@ -21,15 +21,15 @@ export default function Home() {
           <div className="h-[300px] md:h-[500px] lg:h-[600px] bg-muted rounded-2xl animate-pulse" />
         </section>
         <div className="space-y-8">
-          {[1, 2, 3].map((i) => (
+          {[1, 2, 3, 4].map((i) => (
             <section key={i} className="py-8">
               <div className="container mx-auto px-4">
                 <div className="h-8 bg-muted rounded w-48 mb-6 animate-pulse" />
-                <div className="flex gap-4 overflow-hidden">
-                  {[1, 2, 3, 4].map((j) => (
+                <div className="flex gap-3 overflow-hidden">
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map((j) => (
                     <div
                       key={j}
-                      className="w-80 h-80 bg-muted rounded-lg animate-pulse flex-shrink-0"
+                      className="w-32 h-56 bg-muted rounded-xl animate-pulse flex-shrink-0"
                     />
                   ))}
                 </div>
