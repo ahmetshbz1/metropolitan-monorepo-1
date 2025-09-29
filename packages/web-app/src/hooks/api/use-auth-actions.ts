@@ -43,7 +43,25 @@ export function useVerifyOTP() {
         setTokens(data.accessToken, data.refreshToken);
         setGuest(false, null);
 
-        // Fetch user profile
+        // Immediately fetch user profile (like mobile-app does)
+        try {
+          console.log("🔄 Fetching user profile after OTP verification...");
+          const user = await authApi.getCurrentUser();
+          if (user) {
+            setUser(user);
+            console.log(
+              "✅ User profile loaded successfully:",
+              user.firstName,
+              user.lastName
+            );
+          } else {
+            console.log("⚠️ User profile is null");
+          }
+        } catch (error) {
+          console.error("❌ Failed to fetch user profile after OTP:", error);
+        }
+
+        // Invalidate queries to refresh
         await queryClient.invalidateQueries({ queryKey: userKeys.current() });
       } else if (data.registrationToken) {
         console.log("🆕 Setting registration token:", data.registrationToken);
@@ -61,7 +79,7 @@ export function useVerifyOTP() {
 
 export function useCompleteProfile() {
   const queryClient = useQueryClient();
-  const { setTokens, setRegistrationToken, setGuest } = useAuthStore();
+  const { setTokens, setRegistrationToken, setGuest, setUser } = useAuthStore();
   const registrationToken = useAuthStore((state) => state.registrationToken);
 
   return useMutation({
@@ -72,12 +90,26 @@ export function useCompleteProfile() {
       return authApi.completeProfile(userData, registrationToken);
     },
     onSuccess: async (data) => {
+      console.log("🎉 Complete Profile Success:", data);
+
       if (data.accessToken && data.refreshToken) {
+        console.log("✅ Setting tokens after profile completion");
         setTokens(data.accessToken, data.refreshToken);
         setRegistrationToken(null);
         setGuest(false, null);
 
-        // Fetch user profile
+        // Fetch user profile immediately after setting tokens
+        try {
+          const user = await authApi.getCurrentUser();
+          if (user) {
+            setUser(user);
+            console.log("✅ Profile completed and user loaded");
+          }
+        } catch (error) {
+          console.error("❌ Failed to fetch user profile:", error);
+        }
+
+        // Also invalidate queries to refresh any mounted useCurrentUser hooks
         await queryClient.invalidateQueries({ queryKey: userKeys.current() });
       }
     },

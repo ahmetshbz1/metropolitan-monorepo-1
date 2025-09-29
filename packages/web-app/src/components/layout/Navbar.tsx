@@ -3,29 +3,43 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { UserDropdown } from "@/components/ui/user-dropdown";
-import { useLogout } from "@/hooks/api";
+import { useCurrentUser, useLogout } from "@/hooks/api";
+import { useAuthInit } from "@/hooks/use-auth-init";
+import { useHydration } from "@/hooks/use-hydration";
 import { useAuthStore, useCartStore } from "@/stores";
 import { Heart, Menu, ShoppingCart, Sparkles, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CategoryMenu } from "./navbar/CategoryMenu";
 import { MobileMenu } from "./navbar/MobileMenu";
 import { SearchBar } from "./navbar/SearchBar";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
-  const { user, isAuthenticated } = useAuthStore();
+  // Wait for client-side hydration
+  const hydrated = useHydration();
+
+  // Initialize auth from localStorage (like mobile-app does)
+  useAuthInit();
+
+  const { user, accessToken, _hasHydrated } = useAuthStore();
   const { getTotalItems } = useCartStore();
   const logout = useLogout();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  // Direct authentication check (isAuthenticated getter is not reactive in Zustand)
+  const isAuthenticated = !!(user && accessToken);
+
+  // Fetch user profile when authenticated (auto-enabled when accessToken exists)
+  useCurrentUser();
+
+  // Show nothing until both Next.js and auth are hydrated
+  if (!hydrated || !_hasHydrated) {
+    return null;
+  }
 
   const cartItemCount = getTotalItems();
 
@@ -122,24 +136,22 @@ export function Navbar() {
               </Link>
             </Button>
 
-            {mounted && (
-              <UserDropdown
-                user={
-                  isAuthenticated && user
-                    ? {
-                        name: `${user.firstName} ${user.lastName}`,
-                        username: user.phone || "",
-                        email: user.email,
-                        avatar: user.profilePicture || "",
-                        initials: `${user.firstName?.charAt(0)}${user.lastName?.charAt(0)}`,
-                        isGuest: false,
-                      }
-                    : undefined
-                }
-                onAction={handleUserAction}
-                onLogin={handleLogin}
-              />
-            )}
+            <UserDropdown
+              user={
+                isAuthenticated && user
+                  ? {
+                      name: `${user.firstName} ${user.lastName}`,
+                      username: user.phone || "",
+                      email: user.email,
+                      avatar: user.profilePicture || "",
+                      initials: `${user.firstName?.charAt(0)}${user.lastName?.charAt(0)}`,
+                      isGuest: false,
+                    }
+                  : undefined
+              }
+              onAction={handleUserAction}
+              onLogin={handleLogin}
+            />
 
             <Button
               variant="ghost"
