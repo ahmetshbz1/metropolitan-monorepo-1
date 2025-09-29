@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@/components/ui/visually-hidden";
 
 interface QRDialogProps {
   open: boolean;
@@ -20,6 +21,11 @@ export function QRDialog({ open, onOpenChange }: QRDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md p-0 overflow-hidden" showCloseButton={false}>
+        {/* Accessibility Title */}
+        <VisuallyHidden>
+          <DialogTitle>Mobile Uygulama QR Kodu</DialogTitle>
+        </VisuallyHidden>
+
         {/* Header */}
         <div className="px-6 pt-6 pb-4">
           <div className="flex items-center justify-between">
