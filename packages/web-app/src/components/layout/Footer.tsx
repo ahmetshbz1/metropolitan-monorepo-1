@@ -9,12 +9,19 @@ import {
   Facebook,
   Instagram,
   Twitter,
-  Linkedin
+  Linkedin,
+  ExternalLink,
+  QrCode,
+  CreditCard,
+  Smartphone
 } from 'lucide-react';
+import { useState } from 'react';
+import { QRDialog } from '@/components/ui/qr-dialog';
 
 export function Footer() {
   const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
+  const [qrDialogOpen, setQrDialogOpen] = useState(false);
 
   const contactInfo = [
     {
@@ -61,6 +68,7 @@ export function Footer() {
   const legalLinks = [
     { label: t('footer.privacy_policy'), href: '/privacy' },
     { label: t('footer.terms_of_service'), href: '/terms' },
+    { label: t('footer.cookie_policy'), href: '/cookies' },
   ];
 
   const socialLinks = [
@@ -71,128 +79,176 @@ export function Footer() {
   ];
 
   return (
-    <footer className="bg-card border-t border-border">
-      {/* Main Footer Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Company Info */}
-          <div className="lg:col-span-1">
-            <h3 className="text-2xl font-bold text-foreground mb-4">
-              {t('footer.company_name')}
-            </h3>
-            <p className="text-muted-foreground mb-6 leading-relaxed">
-              {t('footer.about_description')}
-            </p>
+    <footer>
+      {/* Main Footer - Theme-aware Background */}
+      <div className="bg-background border-t border-border">
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             
-            {/* Social Media */}
+            {/* Company Info - like "Fox Hakkında" */}
             <div>
-              <h4 className="text-lg font-semibold text-foreground mb-4">{t('footer.follow_us')}</h4>
-              <div className="flex space-x-4">
-                {socialLinks.map((social) => (
-                  <a
-                    key={social.label}
-                    href={social.href}
-                    className="w-10 h-10 bg-muted rounded-full flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors duration-300"
-                    aria-label={social.label}
-                  >
-                    <social.icon size={20} />
+              <h3 className="text-lg font-bold mb-4 text-foreground">
+                {t('footer.about_us')}
+              </h3>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a href="#" className="text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center gap-1">
+                    {t('footer.company_name')}
                   </a>
-                ))}
+                </li>
+                <li>
+                  <a href="/about" className="text-muted-foreground hover:text-primary transition-colors duration-200">
+                    Faaliyet gösterdiğimiz şehirler
+                  </a>
+                </li>
+                <li>
+                  <a href="/work-with-us" className="text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center gap-1">
+                    Bizimle çalışmak <ExternalLink size={12} />
+                  </a>
+                </li>
+                <li>
+                  <a href="/media" className="text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center gap-1">
+                    Medya için <ExternalLink size={12} />
+                  </a>
+                </li>
+                <li>
+                  <a href="/corporate" className="text-muted-foreground hover:text-primary transition-colors duration-200">
+                    Kurumsal Kart
+                  </a>
+                </li>
+              </ul>
+              
+              {/* Social Media Icons */}
+              <div className="flex space-x-3 mt-6">
+                <a href="#" className="w-9 h-9 bg-muted hover:bg-primary hover:text-primary-foreground rounded-full flex items-center justify-center transition-colors duration-200">
+                  <Instagram size={18} />
+                </a>
+                <a href="#" className="w-9 h-9 bg-muted hover:bg-primary hover:text-primary-foreground rounded-full flex items-center justify-center transition-colors duration-200">
+                  <Facebook size={18} />
+                </a>
+                <a href="#" className="w-9 h-9 bg-muted hover:bg-primary hover:text-primary-foreground rounded-full flex items-center justify-center transition-colors duration-200">
+                  <Twitter size={18} />
+                </a>
+              </div>
+            </div>
+
+            {/* Help - like "Yardım" */}
+            <div>
+              <h3 className="text-lg font-bold mb-4 text-foreground">
+                {t('footer.customer_service')}
+              </h3>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a href="/help" className="text-muted-foreground hover:text-primary transition-colors duration-200">
+                    SSS
+                  </a>
+                </li>
+                <li>
+                  <a href="/delivery" className="text-muted-foreground hover:text-primary transition-colors duration-200">
+                    {t('footer.delivery_info')}
+                  </a>
+                </li>
+                <li>
+                  <a href="/working-hours" className="text-muted-foreground hover:text-primary transition-colors duration-200">
+                    Açılış saatleri
+                  </a>
+                </li>
+                <li>
+                  <a href="/complaints" className="text-muted-foreground hover:text-primary transition-colors duration-200">
+                    İadeler
+                  </a>
+                </li>
+                <li>
+                  <a href="/contact" className="text-muted-foreground hover:text-primary transition-colors duration-200">
+                    Temas etmek
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Legal - like "Bilgi" */}
+            <div>
+              <h3 className="text-lg font-bold mb-4 text-foreground">
+                Bilgi
+              </h3>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  <a href="/store-management" className="text-muted-foreground hover:text-primary transition-colors duration-200">
+                    Mağaza yöneticileri
+                  </a>
+                </li>
+                <li>
+                  <a href="/promotions" className="text-muted-foreground hover:text-primary transition-colors duration-200">
+                    Promosyon ve yarışma kuralları
+                  </a>
+                </li>
+                <li>
+                  <a href="/privacy" className="text-muted-foreground hover:text-primary transition-colors duration-200">
+                    {t('footer.privacy_policy')}
+                  </a>
+                </li>
+                <li>
+                  <a href="/accessibility" className="text-muted-foreground hover:text-primary transition-colors duration-200">
+                    Erişilebilirlik Beyanı
+                  </a>
+                </li>
+                <li>
+                  <a href="/discontinued-products" className="text-muted-foreground hover:text-primary transition-colors duration-200">
+                    Üretimi durdurulan ürünler
+                  </a>
+                </li>
+                <li>
+                  <a href="/cookies" className="text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center gap-1">
+                    Çerezler <ExternalLink size={12} />
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Mobile App - like "Uygulama" */}
+            <div>
+              <h3 className="text-lg font-bold mb-4 text-foreground">
+                {t('footer.mobile_app')}
+              </h3>
+              
+              {/* QR Code */}
+              <div className="mb-4">
+                <div 
+                  className="w-20 h-20 bg-card border border-border rounded-lg flex items-center justify-center mb-3 p-1 cursor-pointer hover:bg-muted/50 transition-colors duration-200"
+                  onClick={() => setQrDialogOpen(true)}
+                >
+                  <img src="/qr.svg" alt="QR Code" className="w-full h-full" />
+                </div>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  {t('footer.mobile_app_description')}
+                </p>
+              </div>
+
+              {/* App Store Buttons */}
+              <div className="flex space-x-2">
+                <a
+                  href="#"
+                  className="hover:opacity-80 transition-opacity duration-200"
+                >
+                  <img src="/app-store-badge.svg" alt="App Store'dan İndir" className="h-10 w-auto" />
+                </a>
+                <a
+                  href="#"
+                  className="hover:opacity-80 transition-opacity duration-200"
+                >
+                  <img src="/google-play-badge.svg" alt="Google Play'den İndir" className="h-10 w-auto" />
+                </a>
               </div>
             </div>
           </div>
-
-          {/* Quick Links */}
-          <div>
-            <h4 className="text-lg font-semibold text-foreground mb-6">{t('footer.quick_links')}</h4>
-            <ul className="space-y-3">
-              {quickLinks.map((link) => (
-                <li key={link.href}>
-                  <a
-                    href={link.href}
-                    className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Customer Service */}
-          <div>
-            <h4 className="text-lg font-semibold text-foreground mb-6">{t('footer.customer_service')}</h4>
-            <ul className="space-y-3">
-              {customerServiceLinks.map((link) => (
-                <li key={link.href}>
-                  <a
-                    href={link.href}
-                    className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-            
-            {/* Legal Links */}
-            <div className="mt-6">
-              <ul className="space-y-3">
-                {legalLinks.map((link) => (
-                  <li key={link.href}>
-                    <a
-                      href={link.href}
-                      className="text-muted-foreground hover:text-primary transition-colors duration-200 text-sm"
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Contact Info & Newsletter */}
-          <div>
-            <h4 className="text-lg font-semibold text-foreground mb-6">{t('footer.contact_info')}</h4>
-            
-            {/* Contact Details */}
-            <div className="space-y-4">
-              {contactInfo.map((info) => (
-                <div key={info.label} className="flex items-start space-x-3">
-                  <info.icon size={18} className="text-primary mt-0.5 flex-shrink-0" />
-                  <div className="min-w-0">
-                    <p className="text-sm text-muted-foreground">{info.label}</p>
-                    {info.link ? (
-                      <a
-                        href={info.link}
-                        className="text-foreground hover:text-primary transition-colors duration-200 text-sm"
-                        {...(info.link.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                      >
-                        {info.value}
-                      </a>
-                    ) : (
-                      <p className="text-foreground text-sm">{info.value}</p>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-          </div>
         </div>
       </div>
-
-      {/* Copyright */}
-      <div className="border-t border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex justify-center items-center">
-            <p className="text-muted-foreground text-sm">
-              {t('footer.copyright', { year: currentYear })}
-            </p>
-          </div>
-        </div>
-      </div>
+      
+      {/* QR Dialog */}
+      <QRDialog 
+        open={qrDialogOpen} 
+        onOpenChange={setQrDialogOpen} 
+      />
     </footer>
   );
 }

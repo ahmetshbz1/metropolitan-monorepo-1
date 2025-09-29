@@ -131,6 +131,7 @@
     "return_policy": "İade ve Değişim",
     "privacy_policy": "Gizlilik Politikası",
     "terms_of_service": "Kullanım Koşulları",
+    "cookie_policy": "Çerez Politikası",
     "contact_info": "İletişim Bilgileri",
     "address": "Adres",
     "address_value": "ul. Aleja Krakowska 44, 05-090 Janki, Warsaw",
@@ -145,6 +146,11 @@
     "subscribe": "Abone Ol",
     "copyright": "© {{year}} Metropolitan Food Group. Tüm hakları saklıdır.",
     "working_hours": "Çalışma Saatleri",
-    "working_hours_value": "Pazartesi - Pazar: 09:00 - 22:00"
+    "working_hours_value": "Pazartesi - Cuma: 08:00 - 18:00\nCumartesi - Pazar: Kapalı",
+    "mobile_app": "Uygulama",
+    "mobile_app_description": "Büyütmek için QR koduna tıklayın. Mağazaya gitmek için telefonunuzla tarayın.",
+    "download_app": "Uygulamayı İndir",
+    "app_store": "App Store",
+    "google_play": "Google Play"
   }
 }

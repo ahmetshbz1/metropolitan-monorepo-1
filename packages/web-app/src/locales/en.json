@@ -26,6 +26,7 @@
     "return_policy": "Return & Exchange",
     "privacy_policy": "Privacy Policy",
     "terms_of_service": "Terms of Service",
+    "cookie_policy": "Cookie Policy",
     "contact_info": "Contact Information",
     "address": "Address",
     "address_value": "ul. Aleja Krakowska 44, 05-090 Janki, Warsaw",
@@ -40,6 +41,11 @@
     "subscribe": "Subscribe",
     "copyright": "© {{year}} Metropolitan Food Group. All rights reserved.",
     "working_hours": "Working Hours",
-    "working_hours_value": "Monday - Sunday: 09:00 - 22:00"
+    "working_hours_value": "Monday - Friday: 08:00 - 18:00\nSaturday - Sunday: Closed",
+    "mobile_app": "Mobile App",
+    "mobile_app_description": "Click on QR code to enlarge. Scan with your phone to go to the store.",
+    "download_app": "Download App",
+    "app_store": "App Store",
+    "google_play": "Google Play"
   }
 }

@@ -26,6 +26,7 @@
     "return_policy": "Zwroty i wymiana",
     "privacy_policy": "Polityka prywatności",
     "terms_of_service": "Warunki użytkowania",
+    "cookie_policy": "Polityka cookies",
     "contact_info": "Informacje kontaktowe",
     "address": "Adres",
     "address_value": "ul. Aleja Krakowska 44, 05-090 Janki, Warsaw",
@@ -40,6 +41,11 @@
     "subscribe": "Subskrybuj",
     "copyright": "© {{year}} Metropolitan Food Group. Wszelkie prawa zastrzeżone.",
     "working_hours": "Godziny pracy",
-    "working_hours_value": "Poniedziałek - Niedziela: 09:00 - 22:00"
+    "working_hours_value": "Poniedziałek - Piątek: 08:00 - 18:00\nSobota - Niedziela: Zamknięte",
+    "mobile_app": "Aplikacja mobilna",
+    "mobile_app_description": "Kliknij kod QR, aby powiększyć. Zeskanuj telefonem, aby przejść do sklepu.",
+    "download_app": "Pobierz aplikację",
+    "app_store": "App Store",
+    "google_play": "Google Play"
   }
 }
