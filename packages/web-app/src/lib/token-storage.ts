@@ -2,25 +2,36 @@
 // Browser localStorage based token management
 // Based on mobile-app's token storage but adapted for web
 
-import {
-  deviceIdStorage,
-  isServerGeneratedDeviceId,
-  syncDeviceIdFromToken,
-} from './device-id';
+import { deviceIdStorage, syncDeviceIdFromToken } from "./device-id";
+import { extractSessionIdFromToken, saveSessionId, clearSessionId } from "./device-fingerprint";
 
 export class TokenStorage {
-  private readonly ACCESS_TOKEN_KEY = 'metropolitan_access_token';
-  private readonly REFRESH_TOKEN_KEY = 'metropolitan_refresh_token';
+  private readonly ACCESS_TOKEN_KEY = "metropolitan_access_token";
+  private readonly REFRESH_TOKEN_KEY = "metropolitan_refresh_token";
 
   /**
-   * Save access token
+   * Save access token and sync device ID + session ID from JWT
    */
   async saveAccessToken(token: string): Promise<void> {
     try {
       localStorage.setItem(this.ACCESS_TOKEN_KEY, token);
-      await syncDeviceIdFromToken(token);
+
+      // Sync device ID from token (for Redis session matching)
+      const deviceId = await syncDeviceIdFromToken(token);
+      if (deviceId) {
+        console.log("📱 Device ID synced from token:", deviceId);
+      }
+
+      // Sync session ID from token (CRITICAL: Must match Redis session)
+      const sessionId = extractSessionIdFromToken(token);
+      if (sessionId) {
+        saveSessionId(sessionId);
+        console.log("📋 Session ID synced from token:", sessionId);
+      } else {
+        console.warn("⚠️ No session ID in token");
+      }
     } catch (error) {
-      console.error('Failed to save access token:', error);
+      console.error("Failed to save access token:", error);
     }
   }
 
@@ -31,7 +42,7 @@ export class TokenStorage {
     try {
       localStorage.setItem(this.REFRESH_TOKEN_KEY, token);
     } catch (error) {
-      console.error('Failed to save refresh token:', error);
+      console.error("Failed to save refresh token:", error);
     }
   }
 
@@ -41,7 +52,7 @@ export class TokenStorage {
   async saveTokens(accessToken: string, refreshToken: string): Promise<void> {
     await Promise.all([
       this.saveAccessToken(accessToken),
-      this.saveRefreshToken(refreshToken)
+      this.saveRefreshToken(refreshToken),
     ]);
   }
 
@@ -52,7 +63,7 @@ export class TokenStorage {
     try {
       return localStorage.getItem(this.ACCESS_TOKEN_KEY);
     } catch (error) {
-      console.error('Failed to get access token:', error);
+      console.error("Failed to get access token:", error);
       return null;
     }
   }
@@ -64,7 +75,7 @@ export class TokenStorage {
     try {
       return localStorage.getItem(this.REFRESH_TOKEN_KEY);
     } catch (error) {
-      console.error('Failed to get refresh token:', error);
+      console.error("Failed to get refresh token:", error);
       return null;
     }
   }
@@ -75,24 +86,32 @@ export class TokenStorage {
   async hasTokens(): Promise<boolean> {
     const [accessToken, refreshToken] = await Promise.all([
       this.getAccessToken(),
-      this.getRefreshToken()
+      this.getRefreshToken(),
     ]);
     return !!(accessToken && refreshToken);
   }
 
   /**
-   * Clear all tokens
+   * Clear all tokens, device ID, and session ID
    */
   async remove(): Promise<void> {
     try {
       localStorage.removeItem(this.ACCESS_TOKEN_KEY);
       localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+
+      // Always clear device ID on logout (to force new session on next login)
       const currentDeviceId = await deviceIdStorage.get();
-      if (currentDeviceId && !isServerGeneratedDeviceId(currentDeviceId)) {
+      if (currentDeviceId) {
+        console.log("🧹 Clearing device ID:", currentDeviceId);
         await deviceIdStorage.clear();
       }
+
+      // Clear session ID (prevents Redis session mismatch)
+      clearSessionId();
+
+      console.log("✅ All tokens, device ID, and session ID cleared");
     } catch (error) {
-      console.error('Failed to remove tokens:', error);
+      console.error("Failed to remove tokens:", error);
     }
   }
 

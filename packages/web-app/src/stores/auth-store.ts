@@ -1,7 +1,7 @@
 import type { SocialAuthData, WebUser } from "@/context/auth/types";
 import { tokenStorage } from "@/lib/token-storage";
 import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 interface AuthState {
   // State
@@ -81,13 +81,21 @@ export const useAuthStore = create<AuthState>()(
           phoneNumber: null,
           socialAuthData: null,
         });
+
+        // CRITICAL: Also clear from localStorage manually
+        // Because Zustand persist might not sync immediately
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("metropolitan-auth-storage");
+          localStorage.removeItem("metropolitan_session_id"); // Backend-generated session ID
+          console.log("🧹 Cleared auth from localStorage (including session ID)");
+        }
       },
     }),
     {
       name: "metropolitan-auth-storage",
       storage: createJSONStorage(() => {
         // Only use localStorage on client side
-        if (typeof window !== 'undefined') {
+        if (typeof window !== "undefined") {
           return localStorage;
         }
         // Return a dummy storage for SSR
