@@ -78,12 +78,28 @@ export const authApi = {
 
   getCurrentUser: async () => {
     const response = await api.get("/users/me");
-    return response.data.data as WebUser;
+    const userData = response.data.data;
+
+    // Convert relative profilePhotoUrl to absolute URL (like mobile-app does)
+    if (userData.profilePhotoUrl && !userData.profilePhotoUrl.startsWith('http')) {
+      const baseURL = api.defaults.baseURL?.replace('/api', '') || '';
+      userData.profilePhotoUrl = `${baseURL}${userData.profilePhotoUrl}`;
+    }
+
+    return userData as WebUser;
   },
 
   updateProfile: async (data: Partial<WebUser>) => {
     const response = await api.put("/users/me", data);
-    return response.data.data as WebUser;
+    const userData = response.data.data;
+
+    // Convert relative profilePhotoUrl to absolute URL
+    if (userData.profilePhotoUrl && !userData.profilePhotoUrl.startsWith('http')) {
+      const baseURL = api.defaults.baseURL?.replace('/api', '') || '';
+      userData.profilePhotoUrl = `${baseURL}${userData.profilePhotoUrl}`;
+    }
+
+    return userData as WebUser;
   },
 
   uploadProfilePhoto: async (file: File) => {

@@ -5,7 +5,7 @@ import type {
 
 // Extended User type for web-specific fields
 export interface WebUser extends User {
-  profilePicture?: string; // Bileşenlerde kullanılacak tam, işlenmiş URL
+  profilePhotoUrl?: string; // Backend'in kullandığı alan adı
   nip?: string;
   userType?: "individual" | "corporate";
   authProvider?: string | null; // 'google' or null for phone-only
@@ -46,14 +46,14 @@ export type AuthContextType = {
     isNewUser: boolean;
   }>;
   completeProfile: (
-    userData: Omit<WebUser, "phone" | "profilePicture"> & {
+    userData: Omit<WebUser, "phone" | "profilePhotoUrl"> & {
       userType: "individual" | "corporate";
       nip?: string;
       termsAccepted: boolean;
     }
   ) => Promise<{ success: boolean; message: string }>;
   updateUserProfile: (
-    userData: Partial<Omit<WebUser, "phone" | "profilePicture">>
+    userData: Partial<Omit<WebUser, "phone" | "profilePhotoUrl">>
   ) => Promise<{ success: boolean; message: string }>;
   uploadProfilePhoto: (
     file: File

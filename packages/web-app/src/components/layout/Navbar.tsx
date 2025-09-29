@@ -112,7 +112,7 @@ export function Navbar() {
                       name: `${user.firstName} ${user.lastName}`,
                       username: user.phone || "",
                       email: user.email,
-                      avatar: user.profilePicture || "",
+                      avatar: user.profilePhotoUrl || "",
                       initials: `${user.firstName?.charAt(0)}${user.lastName?.charAt(0)}`,
                       isGuest: false,
                       userType: user.userType,

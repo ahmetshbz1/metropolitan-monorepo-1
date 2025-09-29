@@ -204,8 +204,11 @@ export const UserDropdown = ({
               {user.avatar ? (
                 <Avatar className="size-8">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="text-xs">
-                    {user.initials}
+                  <AvatarFallback className="bg-transparent">
+                    <Icon
+                      icon="solar:user-bold-duotone"
+                      className="size-6 text-primary"
+                    />
                   </AvatarFallback>
                 </Avatar>
               ) : (
@@ -236,7 +239,12 @@ export const UserDropdown = ({
             {user.avatar ? (
               <Avatar className="size-10">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback>{user.initials}</AvatarFallback>
+                <AvatarFallback className="bg-primary/20">
+                  <Icon
+                    icon="solar:user-bold-duotone"
+                    className="size-6 text-primary"
+                  />
+                </AvatarFallback>
               </Avatar>
             ) : (
               <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">

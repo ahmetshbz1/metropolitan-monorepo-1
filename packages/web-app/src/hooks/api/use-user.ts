@@ -42,11 +42,23 @@ export function useUpdateProfile() {
 
 export function useUploadProfilePhoto() {
   const queryClient = useQueryClient();
+  const setUser = useAuthStore((state) => state.setUser);
 
   return useMutation({
     mutationFn: authApi.uploadProfilePhoto,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: userKeys.current() });
+    onSuccess: async () => {
+      // Invalidate and refetch user data
+      await queryClient.invalidateQueries({ queryKey: userKeys.current() });
+
+      // Force refetch to get updated profile photo
+      const updatedUser = await queryClient.fetchQuery({
+        queryKey: userKeys.current(),
+        queryFn: authApi.getCurrentUser,
+      });
+
+      if (updatedUser) {
+        setUser(updatedUser);
+      }
     },
   });
 }
