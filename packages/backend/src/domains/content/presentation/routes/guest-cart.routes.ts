@@ -27,6 +27,8 @@ export const guestCartRoutes = createApp()
           quantity: guestCartItems.quantity,
           productName: productTranslations.name,
           productPrice: products.price,
+          productIndividualPrice: products.individualPrice,
+          productCorporatePrice: products.corporatePrice,
           productCurrency: products.currency,
           productStock: products.stock,
           productImage: products.imageUrl,
@@ -47,20 +49,27 @@ export const guestCartRoutes = createApp()
       const host = request.headers.get('host');
       const baseUrl = xfProto && host ? `${xfProto}://${host}` : new URL(request.url).origin;
 
-      const formattedItems = cartItems.map((item) => ({
-        id: item.id,
-        product: {
-          id: item.productId,
-          name: item.productName,
-          price: Number(item.productPrice) || 0,
-          currency: item.productCurrency,
-          stock: item.productStock || 0,
-          image: item.productImage ? `${baseUrl}${item.productImage}` : "",
-          brand: item.productBrand,
-        },
-        quantity: item.quantity,
-        totalPrice: (Number(item.productPrice) || 0) * item.quantity,
-      }));
+      const formattedItems = cartItems.map((item) => {
+        // Misafir kullanıcılar için bireysel fiyat (individualPrice varsa, yoksa price)
+        const finalPrice = item.productIndividualPrice
+          ? Number(item.productIndividualPrice)
+          : Number(item.productPrice) || 0;
+
+        return {
+          id: item.id,
+          product: {
+            id: item.productId,
+            name: item.productName,
+            price: finalPrice,
+            currency: item.productCurrency,
+            stock: item.productStock || 0,
+            image: item.productImage ? `${baseUrl}${item.productImage}` : "",
+            brand: item.productBrand,
+          },
+          quantity: item.quantity,
+          totalPrice: finalPrice * item.quantity,
+        };
+      });
 
       const totalAmount = formattedItems.reduce(
         (sum, item) => sum + item.totalPrice,

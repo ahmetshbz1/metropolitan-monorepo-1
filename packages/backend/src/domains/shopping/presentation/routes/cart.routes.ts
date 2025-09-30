@@ -42,7 +42,7 @@ export const createCartApp = () =>
 
     // Sepet öğelerini listele
     .get("/", async ({ user }: AuthenticatedContext) => {
-      return await CartItemService.getUserCartItems(user.id);
+      return await CartItemService.getUserCartItems(user.id, user.userType);
     }, {
       query: t.Object({
         lang: t.Optional(t.String({ pattern: "^(tr|en|pl)$" }))

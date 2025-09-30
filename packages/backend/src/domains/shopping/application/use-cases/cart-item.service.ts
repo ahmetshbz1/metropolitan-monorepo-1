@@ -33,13 +33,21 @@ export class CartItemService {
   /**
    * Maps raw cart item data to CartItem type
    */
-  private static mapCartItem(item: any): CartItem {
+  private static mapCartItem(item: any, userType?: "individual" | "corporate"): CartItem {
+    // Kullanıcı tipine göre doğru fiyatı seç
+    let finalPrice = Number(item.product.price);
+    if (userType === "corporate" && item.product.corporatePrice) {
+      finalPrice = Number(item.product.corporatePrice);
+    } else if (userType === "individual" && item.product.individualPrice) {
+      finalPrice = Number(item.product.individualPrice);
+    }
+
     return {
       ...item,
       createdAt: item.createdAt.toISOString(),
       product: {
         ...item.product,
-        price: Number(item.product.price),
+        price: finalPrice,
         image: item.product.image || "",
         category: item.product.category || "",
         brand: item.product.brand || "",
@@ -50,7 +58,7 @@ export class CartItemService {
     };
   }
 
-  static async getUserCartItems(userId: string): Promise<CartResponse> {
+  static async getUserCartItems(userId: string, userType?: "individual" | "corporate"): Promise<CartResponse> {
     const userCartItems = await db
       .select({
         id: cartItems.id,
@@ -63,6 +71,8 @@ export class CartItemService {
           size: products.size,
           image: products.imageUrl,
           price: products.price,
+          individualPrice: products.individualPrice,
+          corporatePrice: products.corporatePrice,
           currency: products.currency,
           stock: products.stock,
           name: productTranslations.name,
@@ -81,7 +91,7 @@ export class CartItemService {
       .where(eq(cartItems.userId, userId))
       .orderBy(desc(cartItems.createdAt));
 
-    const mappedItems = userCartItems.map(this.mapCartItem);
+    const mappedItems = userCartItems.map(item => this.mapCartItem(item, userType));
     const summary = CartCalculationService.generateCartSummary(mappedItems);
 
     return {
@@ -127,7 +137,7 @@ export class CartItemService {
         })
         .where(eq(cartItems.id, existingItem.id));
 
-      const updatedCartItems = await this.getUserCartItems(userId);
+      const updatedCartItems = await this.getUserCartItems(userId, userType);
       const summary = CartCalculationService.generateCartSummary(
         updatedCartItems.items
       );
@@ -153,7 +163,7 @@ export class CartItemService {
       const newItem = newItems[0];
       if (!newItem) throw new Error("Sepet öğesi oluşturulamadı");
 
-      const updatedCartItems = await this.getUserCartItems(userId);
+      const updatedCartItems = await this.getUserCartItems(userId, userType);
       const summary = CartCalculationService.generateCartSummary(
         updatedCartItems.items
       );
