@@ -69,8 +69,8 @@ export function Navbar() {
   };
 
   const formatPrice = (price: number, currency: string) => {
-    return new Intl.NumberFormat('pl-PL', {
-      style: 'currency',
+    return new Intl.NumberFormat("pl-PL", {
+      style: "currency",
       currency: currency,
       minimumFractionDigits: 2,
     }).format(price);
@@ -80,6 +80,7 @@ export function Navbar() {
     <>
       <nav className="sticky top-0 z-50 w-full bg-background border-b border-border/40 backdrop-blur-md supports-[backdrop-filter]:bg-background/95">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          {/* First Row - Main Navigation */}
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center">
@@ -94,94 +95,98 @@ export function Navbar() {
               </div>
             </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1">
-            <CategoryMenu />
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-1">
+              <CategoryMenu />
 
-            <Button
-              variant="ghost"
-              className="flex items-center gap-2 font-medium hover:bg-primary/10"
-              asChild
-            >
-              <Link href="/offers">
-                <Sparkles className="h-4 w-4 text-orange-500" />
-                <span className="text-orange-500">Fırsatlar</span>
-              </Link>
-            </Button>
-
-            <Button
-              variant="ghost"
-              className="flex items-center gap-2 font-medium hover:bg-primary/10"
-              asChild
-            >
-              <Link href="/fast-delivery">
-                <Truck className="h-4 w-4 text-green-500" />
-                <span>Hızlı Teslimat</span>
-              </Link>
-            </Button>
-          </div>
-
-          {/* Search Bar - Desktop */}
-          <div className="hidden md:flex items-center flex-1 max-w-lg mx-8">
-            <SearchBar />
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex items-center space-x-2">
-            {/* Cart Button */}
-            {isAuthenticated && (
-              <button
-                onClick={() => setIsCartOpen(true)}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-orange-50 hover:bg-orange-100 dark:bg-orange-900/20 dark:hover:bg-orange-900/30 transition-colors border border-orange-200 dark:border-orange-800"
+              <Button
+                variant="ghost"
+                className="flex items-center gap-2 font-medium hover:bg-primary/10"
+                asChild
               >
-                <span className="font-semibold text-orange-600 dark:text-orange-400">
-                  {formatPrice(
-                    typeof cartSummary?.totalAmount === 'string'
-                      ? parseFloat(cartSummary.totalAmount)
-                      : (cartSummary?.totalAmount ?? 0),
-                    cartSummary?.currency ?? 'PLN'
-                  )}
-                </span>
-                <div className="relative">
-                  <ShoppingBag className="h-5 w-5 text-orange-600 dark:text-orange-400" />
-                </div>
-              </button>
-            )}
+                <Link href="/offers">
+                  <Sparkles className="h-4 w-4 text-orange-500" />
+                  <span className="text-orange-500">Fırsatlar</span>
+                </Link>
+              </Button>
 
-            {isAuthenticated && <NotificationsDropdown />}
+              <Button
+                variant="ghost"
+                className="flex items-center gap-2 font-medium hover:bg-primary/10"
+                asChild
+              >
+                <Link href="/fast-delivery">
+                  <Truck className="h-4 w-4 text-green-500" />
+                  <span>Hızlı Teslimat</span>
+                </Link>
+              </Button>
+            </div>
 
-            <UserDropdown
-              user={
-                isAuthenticated && user
-                  ? {
-                      name: `${user.firstName} ${user.lastName}`,
-                      username: user.phone || "",
-                      email: user.email,
-                      avatar: user.profilePhotoUrl || "",
-                      initials: `${user.firstName?.charAt(0)}${user.lastName?.charAt(0)}`,
-                      isGuest: false,
-                      userType: user.userType,
-                    }
-                  : undefined
-              }
-              onAction={handleUserAction}
-              onLogin={handleLogin}
-            />
+            {/* Search Bar - Desktop */}
+            <div className="hidden md:flex items-center flex-1 max-w-lg mx-8">
+              <SearchBar />
+            </div>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="md:hidden"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
+            {/* Action Buttons */}
+            <div className="flex items-center space-x-2">
+              {isAuthenticated && <NotificationsDropdown />}
+
+              <UserDropdown
+                user={
+                  isAuthenticated && user
+                    ? {
+                        name: `${user.firstName} ${user.lastName}`,
+                        username: user.phone || "",
+                        email: user.email,
+                        avatar: user.profilePhotoUrl || "",
+                        initials: `${user.firstName?.charAt(0)}${user.lastName?.charAt(0)}`,
+                        isGuest: false,
+                        userType: user.userType,
+                      }
+                    : undefined
+                }
+                onAction={handleUserAction}
+                onLogin={handleLogin}
+              />
+
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            </div>
           </div>
-        </div>
 
-        <MobileMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
-      </div>
-    </nav>
+          {/* Second Row - Cart Button under profile */}
+          {isAuthenticated && (
+            <div className="pb-2">
+              <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-end -mr-4 sm:-mr-6 lg:-mr-8">
+                  <button
+                    onClick={() => setIsCartOpen(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-orange-50 hover:bg-orange-100 dark:bg-orange-900/20 dark:hover:bg-orange-900/30 transition-colors border border-orange-200 dark:border-orange-800"
+                  >
+                    <span className="font-semibold text-sm text-orange-600 dark:text-orange-400">
+                      {formatPrice(
+                        typeof cartSummary?.totalAmount === "string"
+                          ? parseFloat(cartSummary.totalAmount)
+                          : cartSummary?.totalAmount ?? 0,
+                        cartSummary?.currency ?? "PLN"
+                      )}
+                    </span>
+                    <ShoppingBag className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <MobileMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+        </div>
+      </nav>
 
       <CartDrawer open={isCartOpen} onOpenChange={setIsCartOpen} />
     </>
