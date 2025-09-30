@@ -7,10 +7,12 @@ import { useTranslation } from "react-i18next";
 import { ActionSheetIOS, Alert, Platform } from "react-native";
 
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/hooks/useToast";
 
 export function useImagePicker() {
   const { t } = useTranslation();
   const { uploadProfilePhoto } = useAuth();
+  const { showToast } = useToast();
   const [photoLoading, setPhotoLoading] = useState(false);
 
   const pickImage = async (source: "camera" | "gallery") => {
@@ -26,9 +28,9 @@ export function useImagePicker() {
       if (source === "camera") {
         const { status } = await ImagePicker.requestCameraPermissionsAsync();
         if (status !== "granted") {
-          Alert.alert(
-            t("permissions.camera_required_title"),
-            t("permissions.camera_required_message")
+          showToast(
+            t("permissions.camera_required_message"),
+            "warning"
           );
           return;
         }
@@ -37,9 +39,9 @@ export function useImagePicker() {
         const { status } =
           await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== "granted") {
-          Alert.alert(
-            t("permissions.gallery_required_title"),
-            t("permissions.gallery_required_message")
+          showToast(
+            t("permissions.gallery_required_message"),
+            "warning"
           );
           return;
         }
@@ -54,12 +56,12 @@ export function useImagePicker() {
         setPhotoLoading(false);
 
         if (!success) {
-          Alert.alert(t("edit_profile.photo_error_title"), message);
+          showToast(message, "error");
         }
       }
     } catch (error) {
       // Removed console statement
-      Alert.alert(t("common.error"), t("edit_profile.photo_error_generic"));
+      showToast(t("edit_profile.photo_error_generic"), "error");
       setPhotoLoading(false);
     }
   };

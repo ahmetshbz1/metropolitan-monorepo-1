@@ -5,14 +5,17 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Alert, Text, View } from "react-native";
+import { Text, View } from "react-native";
 
 import { BaseButton } from "@/components/base/BaseButton";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import Colors from "@/constants/Colors";
 import { useCart } from "@/context/CartContext";
 import { FullOrderPayload, OrderItem, useOrders } from "@/context/OrderContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useConfirmationDialog } from "@/hooks/useConfirmationDialog";
 import { useHaptics } from "@/hooks/useHaptics";
+import { useToast } from "@/hooks/useToast";
 
 interface ActionsSectionProps {
   orderData: FullOrderPayload;
@@ -34,12 +37,14 @@ export function ActionsSection({
   const { triggerHaptic } = useHaptics();
   const { t } = useTranslation();
   const { cancelOrder, loading } = useOrders();
+  const { dialogState, showDialog, hideDialog, handleConfirm } = useConfirmationDialog();
+  const { showToast } = useToast();
 
   const handleDownloadInvoice = () => {
     if (onDownloadInvoice) {
       onDownloadInvoice();
     } else {
-      Alert.alert(t("general.under_construction"), t("general.feature_soon"));
+      showToast(t("general.feature_soon"), "info");
     }
   };
 
@@ -52,33 +57,30 @@ export function ActionsSection({
   };
 
   const handleCancel = () => {
-    Alert.alert(
-      t("order_detail.cancel_confirm_title"),
-      t("order_detail.cancel_confirm_message"),
-      [
-        { text: t("general.no"), style: "cancel" },
-        {
-          text: t("general.yes"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              if (onCancelOrder) {
-                await onCancelOrder();
-              } else {
-                await cancelOrder(orderData.order.id);
-                Alert.alert(t("order_detail.cancel_success_title"));
-                router.back();
-              }
-            } catch (error: any) {
-              const errorMessage =
-                error.response?.data?.message ||
-                t("order_detail.cancel_error_message");
-              Alert.alert(t("order_detail.cancel_error_title"), errorMessage);
-            }
-          },
-        },
-      ]
-    );
+    showDialog({
+      title: t("order_detail.cancel_confirm_title"),
+      message: t("order_detail.cancel_confirm_message"),
+      icon: "close-circle-outline",
+      confirmText: t("general.yes"),
+      cancelText: t("general.no"),
+      destructive: true,
+      onConfirm: async () => {
+        try {
+          if (onCancelOrder) {
+            await onCancelOrder();
+          } else {
+            await cancelOrder(orderData.order.id);
+            showToast(t("order_detail.cancel_success_title"), "success");
+            router.back();
+          }
+        } catch (error: any) {
+          const errorMessage =
+            error.response?.data?.message ||
+            t("order_detail.cancel_error_message");
+          showToast(errorMessage, "error");
+        }
+      },
+    });
   };
 
   const canBeCancelled = ["pending", "confirmed"].includes(
@@ -134,6 +136,19 @@ export function ActionsSection({
           style={{ backgroundColor: "#D70040" }}
         />
       )}
+
+      <ConfirmationDialog
+        visible={dialogState.visible}
+        title={dialogState.title}
+        message={dialogState.message}
+        icon={dialogState.icon}
+        confirmText={dialogState.confirmText}
+        cancelText={dialogState.cancelText}
+        destructive={dialogState.destructive}
+        loading={dialogState.loading}
+        onConfirm={handleConfirm}
+        onCancel={hideDialog}
+      />
     </View>
   );
 }

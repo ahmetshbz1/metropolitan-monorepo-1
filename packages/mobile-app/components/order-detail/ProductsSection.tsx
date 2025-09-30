@@ -4,6 +4,7 @@
 
 import { ThemedText } from "@/components/ThemedText";
 import { BaseCard } from "@/components/base/BaseCard";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import Colors from "@/constants/Colors";
 import { OrderItem } from "@/context/OrderContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -31,6 +32,9 @@ export const ProductsSection = ({ items }: ProductsSectionProps) => {
     getProductImage,
     handleProductPress,
     handleReorder,
+    dialogState,
+    hideDialog,
+    handleConfirm,
     t,
   } = useProductsSection(items);
 
@@ -77,6 +81,19 @@ export const ProductsSection = ({ items }: ProductsSectionProps) => {
           {t("order_detail.products.total_items", { count: items.length })}
         </ThemedText>
       </View>
+
+      <ConfirmationDialog
+        visible={dialogState.visible}
+        title={dialogState.title}
+        message={dialogState.message}
+        icon={dialogState.icon}
+        confirmText={dialogState.confirmText}
+        cancelText={dialogState.cancelText}
+        destructive={dialogState.destructive}
+        loading={dialogState.loading}
+        onConfirm={handleConfirm}
+        onCancel={hideDialog}
+      />
     </BaseCard>
   );
 };

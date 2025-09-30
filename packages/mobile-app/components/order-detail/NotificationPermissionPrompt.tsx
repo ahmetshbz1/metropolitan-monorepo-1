@@ -1,16 +1,19 @@
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { View, Alert } from "react-native";
+import { View } from "react-native";
 import * as Linking from "expo-linking";
 import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { HapticButton } from "@/components/HapticButton";
 import { ThemedText } from "@/components/ThemedText";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import Colors from "@/constants/Colors";
 import { useAuth } from "@/context/AuthContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useConfirmationDialog } from "@/hooks/useConfirmationDialog";
+import { useToast } from "@/hooks/useToast";
 import notificationService from "@/core/firebase/notifications/notificationService";
 import { showHaptic } from "@/utils/haptic";
 
@@ -19,6 +22,8 @@ export function NotificationPermissionPrompt() {
   const { user, isAuthenticated, updateUserProfile } = useAuth();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
+  const { dialogState, showDialog, hideDialog, handleConfirm } = useConfirmationDialog();
+  const { showToast } = useToast();
 
   const [loading, setLoading] = useState(false);
   const [hasPermission, setHasPermission] = useState(false);
@@ -65,17 +70,15 @@ export function NotificationPermissionPrompt() {
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
 
       if (existingStatus === "denied") {
-        Alert.alert(
-          t("order_notification.permission_denied_title"),
-          t("order_notification.permission_denied_message"),
-          [
-            { text: t("common.cancel"), style: "cancel" },
-            {
-              text: t("order_notification.open_settings"),
-              onPress: () => Linking.openSettings(),
-            },
-          ]
-        );
+        showDialog({
+          title: t("order_notification.permission_denied_title"),
+          message: t("order_notification.permission_denied_message"),
+          icon: "settings-outline",
+          confirmText: t("order_notification.open_settings"),
+          cancelText: t("common.cancel"),
+          destructive: false,
+          onConfirm: () => Linking.openSettings(),
+        });
         return;
       }
 
@@ -92,16 +95,16 @@ export function NotificationPermissionPrompt() {
         }
 
         showHaptic("success");
-        Alert.alert(
-          t("order_notification.permission_granted_title"),
-          t("order_notification.permission_granted_message")
+        showToast(
+          t("order_notification.permission_granted_message"),
+          "success"
         );
       }
     } catch (error) {
       // Removed console statement
-      Alert.alert(
-        t("common.error"),
-        t("order_notification.permission_error")
+      showToast(
+        t("order_notification.permission_error"),
+        "error"
       );
     } finally {
       setLoading(false);
@@ -192,6 +195,19 @@ export function NotificationPermissionPrompt() {
           </ThemedText>
         </HapticButton>
       </View>
+
+      <ConfirmationDialog
+        visible={dialogState.visible}
+        title={dialogState.title}
+        message={dialogState.message}
+        icon={dialogState.icon}
+        confirmText={dialogState.confirmText}
+        cancelText={dialogState.cancelText}
+        destructive={dialogState.destructive}
+        loading={dialogState.loading}
+        onConfirm={handleConfirm}
+        onCancel={hideDialog}
+      />
     </View>
   );
 }

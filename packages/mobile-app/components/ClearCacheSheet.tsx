@@ -6,14 +6,16 @@ import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from "expo-file-system";
-import React, { forwardRef, useCallback } from "react";
+import React, { forwardRef, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, View } from "react-native";
+import { View } from "react-native";
 
 import Colors from "@/constants/Colors";
 import { clearAllAuthData } from "@/context/auth/storage";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useToast } from "@/hooks/useToast";
+import { useConfirmationDialog } from "@/hooks/useConfirmationDialog";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import {
   offlineCache,
   orderCache,
@@ -28,6 +30,7 @@ type Ref = BottomSheetModal;
 
 const ClearCacheSheet = forwardRef<Ref>((_, ref) => {
   const { t } = useTranslation();
+  const { dialogState, showDialog, hideDialog, handleConfirm } = useConfirmationDialog();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
   const { showToast } = useToast();
@@ -95,18 +98,14 @@ const ClearCacheSheet = forwardRef<Ref>((_, ref) => {
   }, [ref, showToast, t]);
 
   const clearAllData = useCallback(() => {
-    Alert.alert(
-      t("app_settings.clear_all_data_confirm_title"),
-      t("app_settings.clear_all_data_confirm_message"),
-      [
-        {
-          text: t("common.cancel"),
-          style: "cancel",
-        },
-        {
-          text: t("app_settings.clear_all_data_confirm_button"),
-          style: "destructive",
-          onPress: async () => {
+    showDialog({
+      title: t("app_settings.clear_all_data_confirm_title"),
+      message: t("app_settings.clear_all_data_confirm_message"),
+      icon: "trash-outline",
+      confirmText: t("app_settings.clear_all_data_confirm_button"),
+      cancelText: t("common.cancel"),
+      destructive: true,
+      onConfirm: async () => {
             try {
               // Tüm auth verilerini temizle
               await clearAllAuthData();
@@ -151,27 +150,14 @@ const ClearCacheSheet = forwardRef<Ref>((_, ref) => {
                 ref.current?.dismiss();
               }
 
-              // Başarı mesajını göster ve kullanıcıdan uygulamayı yeniden başlatmasını iste
-              setTimeout(() => {
-                Alert.alert(
-                  t("app_settings.success"),
-                  t("app_settings.clear_all_data_success"),
-                  [
-                    {
-                      text: t("common.ok"),
-                      style: "default",
-                    },
-                  ]
-                );
-              }, 500);
+              // Başarı mesajını göster
+              showToast(t("app_settings.clear_all_data_success"), "success");
             } catch (error) {
               showToast(t("app_settings.clear_cache_error"), "error");
             }
-          },
-        },
-      ]
-    );
-  }, [ref, showToast, t]);
+      },
+    });
+  }, [ref, showToast, showDialog, t]);
 
   return (
     <CustomBottomSheet
@@ -257,6 +243,19 @@ const ClearCacheSheet = forwardRef<Ref>((_, ref) => {
           </View>
         </View>
       </View>
+
+      <ConfirmationDialog
+        visible={dialogState.visible}
+        title={dialogState.title}
+        message={dialogState.message}
+        icon={dialogState.icon}
+        confirmText={dialogState.confirmText}
+        cancelText={dialogState.cancelText}
+        destructive={dialogState.destructive}
+        loading={dialogState.loading}
+        onConfirm={handleConfirm}
+        onCancel={hideDialog}
+      />
     </CustomBottomSheet>
   );
 });

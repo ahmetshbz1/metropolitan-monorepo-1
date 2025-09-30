@@ -1,4 +1,4 @@
-//  "MinimumQuantityDialog.tsx"
+//  "ConfirmationDialog.tsx"
 //  metropolitan app
 
 import React from "react";
@@ -10,25 +10,44 @@ import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { BlurView } from "expo-blur";
 
-interface MinimumQuantityDialogProps {
+type IconName = React.ComponentProps<typeof Ionicons>['name'];
+
+interface ConfirmationDialogProps {
   visible: boolean;
-  minQuantity: number;
-  productName: string;
+  title: string;
+  message: string;
+  icon?: IconName;
+  iconColor?: string;
+  confirmText?: string;
+  cancelText?: string;
+  confirmButtonColor?: string;
+  destructive?: boolean;
   loading?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 }
 
-export const MinimumQuantityDialog: React.FC<MinimumQuantityDialogProps> = ({
+export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   visible,
-  minQuantity,
-  productName,
+  title,
+  message,
+  icon = "alert-circle-outline",
+  iconColor,
+  confirmText,
+  cancelText,
+  confirmButtonColor,
+  destructive = false,
   loading = false,
   onConfirm,
   onCancel,
 }) => {
   const { t } = useTranslation();
   const { colors, colorScheme } = useTheme();
+
+  const defaultConfirmText = confirmText || t("common.ok");
+  const defaultCancelText = cancelText || t("common.cancel");
+  const defaultIconColor = iconColor || (destructive ? colors.danger : colors.tint);
+  const defaultConfirmColor = confirmButtonColor || (destructive ? colors.danger : colors.tint);
 
   return (
     <Modal
@@ -56,21 +75,17 @@ export const MinimumQuantityDialog: React.FC<MinimumQuantityDialogProps> = ({
           <View className="items-center mb-4">
             <View
               className="w-16 h-16 rounded-full items-center justify-center mb-4"
-              style={{ backgroundColor: `${colors.tint}15` }}
+              style={{ backgroundColor: `${defaultIconColor}15` }}
             >
-              <Ionicons name="cart-outline" size={32} color={colors.tint} />
+              <Ionicons name={icon} size={32} color={defaultIconColor} />
             </View>
 
-            <ThemedText className="text-xl font-bold text-center mb-2">
-              {t("product_card.minimum_quantity_dialog.title")}
+            <ThemedText className="text-xl font-bold text-center mb-3">
+              {title}
             </ThemedText>
 
-            <ThemedText className="text-center opacity-70 mb-1">
-              {productName}
-            </ThemedText>
-
-            <ThemedText className="text-center opacity-60 text-sm">
-              {t("errors.MIN_QUANTITY_NOT_MET", { minQuantity })}
+            <ThemedText className="text-center opacity-70">
+              {message}
             </ThemedText>
           </View>
 
@@ -85,7 +100,7 @@ export const MinimumQuantityDialog: React.FC<MinimumQuantityDialogProps> = ({
               }}
             >
               <ThemedText className="font-semibold">
-                {t("common.cancel")}
+                {defaultCancelText}
               </ThemedText>
             </HapticButton>
 
@@ -94,7 +109,7 @@ export const MinimumQuantityDialog: React.FC<MinimumQuantityDialogProps> = ({
               disabled={loading}
               className="flex-1 py-3.5 rounded-xl items-center justify-center"
               style={{
-                backgroundColor: colors.tint,
+                backgroundColor: defaultConfirmColor,
                 opacity: loading ? 0.7 : 1,
               }}
             >
@@ -102,7 +117,7 @@ export const MinimumQuantityDialog: React.FC<MinimumQuantityDialogProps> = ({
                 <ActivityIndicator color="#fff" />
               ) : (
                 <ThemedText className="font-semibold" style={{ color: "#fff" }}>
-                  {t("product_detail.purchase.add_min_quantity", { count: minQuantity })}
+                  {defaultConfirmText}
                 </ThemedText>
               )}
             </HapticButton>

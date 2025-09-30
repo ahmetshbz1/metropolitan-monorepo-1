@@ -9,6 +9,7 @@ import { Platform } from "react-native";
 
 import { useTabScreenOptions } from "@/components/tabs/TabScreenOptions";
 import { TabScreens } from "@/components/tabs/TabScreens";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { ProductsSearchProvider } from "@/context/ProductsSearchContext";
 import { ScrollToTopProvider } from "@/context/ScrollToTopContext";
 import { CartContext } from "@/context/CartContext";
@@ -30,6 +31,9 @@ export default function TabLayout() {
     handleNotification,
     getTabBarHeight,
     getTabBarPaddingBottom,
+    dialogState,
+    hideDialog,
+    handleConfirm,
   } = useTabLayout();
 
   const screenOptions = useTabScreenOptions(
@@ -98,6 +102,19 @@ export default function TabLayout() {
         </ScrollToTopProvider>
       </ProductsSearchProvider>
       <OnboardingModal />
+
+      <ConfirmationDialog
+        visible={dialogState.visible}
+        title={dialogState.title}
+        message={dialogState.message}
+        icon={dialogState.icon}
+        confirmText={dialogState.confirmText}
+        cancelText={dialogState.cancelText}
+        destructive={dialogState.destructive}
+        loading={dialogState.loading}
+        onConfirm={handleConfirm}
+        onCancel={hideDialog}
+      />
     </>
   );
 }

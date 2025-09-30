@@ -8,7 +8,8 @@ import { useProducts } from "@/context/ProductContext";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Alert } from "react-native";
+import { useConfirmationDialog } from "@/hooks/useConfirmationDialog";
+import { useToast } from "@/hooks/useToast";
 
 export const useProductsSection = (items: OrderItem[]) => {
   const router = useRouter();
@@ -17,6 +18,8 @@ export const useProductsSection = (items: OrderItem[]) => {
   const { selectedOrder } = useOrders();
   const { addToCart } = useCart();
   const { triggerHaptic } = useHaptics();
+  const { dialogState, showDialog, hideDialog, handleConfirm } = useConfirmationDialog();
+  const { showToast } = useToast();
 
   const getProductImage = (productId: string) => {
     const product = products.find((p) => p.id === productId);
@@ -74,26 +77,24 @@ export const useProductsSection = (items: OrderItem[]) => {
           });
         }
 
-        Alert.alert(
-          t("order_detail.reorder.stock_warning_title"),
-          message,
-          [
-            {
-              text: t("order_detail.reorder.add_available_stock"),
-              onPress: async () => {
-                await addAvailableStock(stockChecks);
-              },
-            },
-            { text: t("common.cancel"), style: "cancel" },
-          ]
-        );
+        showDialog({
+          title: t("order_detail.reorder.stock_warning_title"),
+          message: message,
+          icon: "warning-outline",
+          confirmText: t("order_detail.reorder.add_available_stock"),
+          cancelText: t("common.cancel"),
+          destructive: false,
+          onConfirm: async () => {
+            await addAvailableStock(stockChecks);
+          },
+        });
       } else {
         // Tüm ürünler için stok yeterli
         await addAllItemsToCart(items);
       }
     } catch (error) {
       // Removed console statement
-      Alert.alert(t("common.error"), t("order_detail.reorder.error_message"));
+      showToast(t("order_detail.reorder.error_message"), "error");
     }
   };
 
@@ -115,20 +116,16 @@ export const useProductsSection = (items: OrderItem[]) => {
         }
       }
 
-      Alert.alert(
-        t("order_detail.reorder.success_title"),
+      showToast(
         t("order_detail.reorder.partial_success_message"),
-        [
-          {
-            text: t("order_detail.reorder.go_to_cart"),
-            onPress: () => router.push("/(tabs)/cart"),
-          },
-          { text: t("common.ok"), style: "cancel" },
-        ]
+        "success",
+        5000,
+        t("order_detail.reorder.go_to_cart"),
+        () => router.push("/(tabs)/cart")
       );
     } catch (error) {
       // Removed console statement
-      Alert.alert(t("common.error"), t("order_detail.reorder.error_message"));
+      showToast(t("order_detail.reorder.error_message"), "error");
     }
   };
 
@@ -138,20 +135,16 @@ export const useProductsSection = (items: OrderItem[]) => {
         items.map((item) => addToCart(item.product.id, item.quantity))
       );
 
-      Alert.alert(
-        t("order_detail.reorder.success_title"),
+      showToast(
         t("order_detail.reorder.success_message"),
-        [
-          {
-            text: t("order_detail.reorder.go_to_cart"),
-            onPress: () => router.push("/(tabs)/cart"),
-          },
-          { text: t("common.ok"), style: "cancel" },
-        ]
+        "success",
+        5000,
+        t("order_detail.reorder.go_to_cart"),
+        () => router.push("/(tabs)/cart")
       );
     } catch (error) {
       // Removed console statement
-      Alert.alert(t("common.error"), t("order_detail.reorder.error_message"));
+      showToast(t("order_detail.reorder.error_message"), "error");
     }
   };
 
@@ -160,6 +153,9 @@ export const useProductsSection = (items: OrderItem[]) => {
     getProductImage,
     handleProductPress,
     handleReorder,
+    dialogState,
+    hideDialog,
+    handleConfirm,
     t,
   };
 };

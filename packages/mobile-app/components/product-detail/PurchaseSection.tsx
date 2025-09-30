@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { BaseButton } from "@/components/base/BaseButton";
 import { ThemedView } from "@/components/ThemedView";
+import { MinimumQuantityDialog } from "@/components/products/MinimumQuantityDialog";
 import Colors from "@/constants/Colors";
 import { useCart } from "@/context/CartContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -49,6 +50,8 @@ export const PurchaseSection = memo<PurchaseSectionProps>(function PurchaseSecti
   const [isAdded, setIsAdded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
+  const [showMinQuantityDialog, setShowMinQuantityDialog] = useState(false);
+  const [minQuantityToAdd, setMinQuantityToAdd] = useState(0);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Cleanup için useEffect
@@ -77,12 +80,8 @@ export const PurchaseSection = memo<PurchaseSectionProps>(function PurchaseSecti
         : (product.minQuantityIndividual ?? 1);
 
       if (numQuantity < minQuantity) {
-        showToast(
-          t("errors.MIN_QUANTITY_NOT_MET", { minQuantity }),
-          "warning",
-          5000
-        );
-        onUpdateQuantity(minQuantity - numQuantity); // Miktarı minimum'a ayarla
+        setMinQuantityToAdd(minQuantity);
+        setShowMinQuantityDialog(true);
         throw new Error("Minimum quantity not met");
       }
 
@@ -144,7 +143,7 @@ export const PurchaseSection = memo<PurchaseSectionProps>(function PurchaseSecti
         setIsLoading(false);
       });
     }
-  }, [quantity, cartItems, product.id, product.stock, addToCart, triggerHaptic, showToast, t]);
+  }, [quantity, cartItems, product.id, product.stock, addToCart, triggerHaptic, showToast, t, user]);
 
 
 
@@ -208,6 +207,24 @@ export const PurchaseSection = memo<PurchaseSectionProps>(function PurchaseSecti
           </Text>
         </BaseButton>
       )}
+
+      <MinimumQuantityDialog
+        visible={showMinQuantityDialog}
+        minQuantity={minQuantityToAdd}
+        productName={product.name}
+        loading={isLoading}
+        onConfirm={async () => {
+          onUpdateQuantity(minQuantityToAdd - (parseInt(quantity, 10) || 0));
+          setShowMinQuantityDialog(false);
+
+          setTimeout(async () => {
+            await handleAddToCart();
+          }, 100);
+        }}
+        onCancel={() => {
+          setShowMinQuantityDialog(false);
+        }}
+      />
     </ThemedView>
   );
 }, (prevProps, nextProps) => {

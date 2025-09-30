@@ -5,14 +5,17 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
 import { BaseCard } from "@/components/base/BaseCard";
 import { ThemedText } from "@/components/ThemedText";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import Colors from "@/constants/Colors";
 import { usePaymentMethods, PaymentMethod } from "@/context/PaymentMethodContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useConfirmationDialog } from "@/hooks/useConfirmationDialog";
+import { useToast } from "@/hooks/useToast";
 
 const VisaIcon = () => (
   <Svg width="38" height="24" viewBox="0 0 38 24" fill="none">
@@ -60,29 +63,25 @@ export const PaymentMethodCard = ({ method }: { method: PaymentMethod }) => {
   const colors = Colors[colorScheme];
   const { t } = useTranslation();
   const { deletePaymentMethod } = usePaymentMethods();
+  const { dialogState, showDialog, hideDialog, handleConfirm } = useConfirmationDialog();
+  const { showToast } = useToast();
 
   const handleDelete = () => {
-    Alert.alert(
-      t("payment_methods.delete.confirm_title"),
-      t("payment_methods.delete.confirm_message"),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("common.delete"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await deletePaymentMethod(method.id);
-            } catch {
-              Alert.alert(
-                t("payment_methods.delete.error_title"),
-                t("payment_methods.delete.error_message")
-              );
-            }
-          },
-        },
-      ]
-    );
+    showDialog({
+      title: t("payment_methods.delete.confirm_title"),
+      message: t("payment_methods.delete.confirm_message"),
+      icon: "card-outline",
+      confirmText: t("common.delete"),
+      cancelText: t("common.cancel"),
+      destructive: true,
+      onConfirm: async () => {
+        try {
+          await deletePaymentMethod(method.id);
+        } catch {
+          showToast(t("payment_methods.delete.error_message"), "error");
+        }
+      },
+    });
   };
 
   return (
@@ -130,6 +129,19 @@ export const PaymentMethodCard = ({ method }: { method: PaymentMethod }) => {
           </View>
         </View>
       )}
+
+      <ConfirmationDialog
+        visible={dialogState.visible}
+        title={dialogState.title}
+        message={dialogState.message}
+        icon={dialogState.icon}
+        confirmText={dialogState.confirmText}
+        cancelText={dialogState.cancelText}
+        destructive={dialogState.destructive}
+        loading={dialogState.loading}
+        onConfirm={handleConfirm}
+        onCancel={hideDialog}
+      />
     </BaseCard>
   );
 };

@@ -6,17 +6,20 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
   ActionSheetIOS,
-  Alert,
   Platform,
 } from "react-native";
 
 import { useAddresses } from "@/context/AddressContext";
+import { useConfirmationDialog } from "@/hooks/useConfirmationDialog";
+import { useToast } from "@/hooks/useToast";
 import type { Address } from "@metropolitan/shared";
 
 export const useAddressActions = (address: Address) => {
   const { t } = useTranslation();
   const router = useRouter();
   const { deleteAddress, setDefaultAddress } = useAddresses();
+  const { dialogState, showDialog, hideDialog, handleConfirm } = useConfirmationDialog();
+  const { showToast } = useToast();
 
   const handleEdit = () => {
     router.push({
@@ -26,27 +29,21 @@ export const useAddressActions = (address: Address) => {
   };
 
   const handleDelete = () => {
-    Alert.alert(
-      t("addresses.delete.confirm_title"),
-      t("addresses.delete.confirm_message"),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("common.delete"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await deleteAddress(address.id);
-            } catch {
-              Alert.alert(
-                t("addresses.delete.error_title"),
-                t("addresses.delete.error_message")
-              );
-            }
-          },
-        },
-      ]
-    );
+    showDialog({
+      title: t("addresses.delete.confirm_title"),
+      message: t("addresses.delete.confirm_message"),
+      icon: "trash-outline",
+      confirmText: t("common.delete"),
+      cancelText: t("common.cancel"),
+      destructive: true,
+      onConfirm: async () => {
+        try {
+          await deleteAddress(address.id);
+        } catch {
+          showToast(t("addresses.delete.error_message"), "error");
+        }
+      },
+    });
   };
 
   const handleSetDefault = () => {
@@ -62,7 +59,7 @@ export const useAddressActions = (address: Address) => {
       try {
         await setDefaultAddress(address.id, type);
       } catch {
-        Alert.alert(t("common.error"), t("addresses.set_default_error"));
+        showToast(t("addresses.set_default_error"), "error");
       }
     };
 
@@ -102,5 +99,8 @@ export const useAddressActions = (address: Address) => {
     handleEdit,
     handleDelete,
     handleSetDefault,
+    dialogState,
+    hideDialog,
+    handleConfirm,
   };
 };

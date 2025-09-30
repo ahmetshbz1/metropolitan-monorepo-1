@@ -3,14 +3,17 @@
 //  Created by Ahmet on 27.07.2025.
 
 import { useRouter } from "expo-router";
-import { Alert } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useOrders } from "@/context/OrderContext";
+import { useConfirmationDialog } from "@/hooks/useConfirmationDialog";
+import { useToast } from "@/hooks/useToast";
 
 export function useOrderDetailActions(orderId: string) {
   const router = useRouter();
   const { t } = useTranslation();
   const { cancelOrder, selectedOrder } = useOrders();
+  const { dialogState, showDialog, hideDialog, handleConfirm } = useConfirmationDialog();
+  const { showToast } = useToast();
 
   const downloadInvoice = () => {
     if (!selectedOrder || !orderId) return;
@@ -20,25 +23,29 @@ export function useOrderDetailActions(orderId: string) {
   const handleCancelOrder = async () => {
     if (!selectedOrder) return;
 
-    Alert.alert(t("order.cancelOrder"), t("order.cancelOrderConfirmation"), [
-      { text: t("common.cancel"), style: "cancel" },
-      {
-        text: t("order.cancelOrder"),
-        style: "destructive",
-        onPress: async () => {
-          try {
-            await cancelOrder(selectedOrder.order.id);
-            router.back();
-          } catch {
-            Alert.alert(t("common.error"), t("order.cancelOrderError"));
-          }
-        },
+    showDialog({
+      title: t("order.cancelOrder"),
+      message: t("order.cancelOrderConfirmation"),
+      icon: "close-circle-outline",
+      confirmText: t("order.cancelOrder"),
+      cancelText: t("common.cancel"),
+      destructive: true,
+      onConfirm: async () => {
+        try {
+          await cancelOrder(selectedOrder.order.id);
+          router.back();
+        } catch {
+          showToast(t("order.cancelOrderError"), "error");
+        }
       },
-    ]);
+    });
   };
 
   return {
     downloadInvoice,
     handleCancelOrder,
+    dialogState,
+    hideDialog,
+    handleConfirm,
   };
 }

@@ -4,9 +4,10 @@
 
 import { CartContext } from "@/context/CartContext";
 import { useNavigationProtection } from "@/hooks/useNavigationProtection";
+import { useConfirmationDialog } from "@/hooks/useConfirmationDialog";
 import { useContext, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert, Platform } from "react-native";
+import { Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const useTabLayout = () => {
@@ -15,6 +16,7 @@ export const useTabLayout = () => {
   const { clearCart } = useContext(CartContext);
   const scrollHandlers = useRef<Record<string, () => void>>({});
   const { push: safePush } = useNavigationProtection({ debounceTime: 700 });
+  const { dialogState, showDialog, hideDialog, handleConfirm } = useConfirmationDialog();
 
   const scrollToTop = (routeName: string) => {
     const handler = scrollHandlers.current[routeName];
@@ -32,21 +34,15 @@ export const useTabLayout = () => {
   };
 
   const handleClearCart = () => {
-    Alert.alert(
-      t("tabs.cart.clear_alert_title"),
-      t("tabs.cart.clear_alert_message"),
-      [
-        {
-          text: t("tabs.cart.clear_alert_cancel"),
-          style: "cancel",
-        },
-        {
-          text: t("tabs.cart.clear_alert_confirm"),
-          onPress: clearCart,
-          style: "destructive",
-        },
-      ]
-    );
+    showDialog({
+      title: t("tabs.cart.clear_alert_title"),
+      message: t("tabs.cart.clear_alert_message"),
+      icon: "trash-outline",
+      confirmText: t("tabs.cart.clear_alert_confirm"),
+      cancelText: t("tabs.cart.clear_alert_cancel"),
+      destructive: true,
+      onConfirm: clearCart,
+    });
   };
 
   const handleNotification = () => {
@@ -77,5 +73,8 @@ export const useTabLayout = () => {
     handleNotification,
     getTabBarHeight,
     getTabBarPaddingBottom,
+    dialogState,
+    hideDialog,
+    handleConfirm,
   };
 };

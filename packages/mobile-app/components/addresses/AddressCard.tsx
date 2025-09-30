@@ -8,6 +8,7 @@ import { TouchableOpacity, View } from "react-native";
 
 import { BaseCard } from "@/components/base/BaseCard";
 import { ThemedText } from "@/components/ThemedText";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import { AddressInfoLine } from "./AddressInfoLine";
 import { AddressDefaultBadges } from "./AddressDefaultBadges";
 import Colors from "@/constants/Colors";
@@ -22,7 +23,7 @@ interface AddressCardProps {
 export const AddressCard = ({ address }: AddressCardProps) => {
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
-  const { handleEdit, handleDelete, handleSetDefault } = useAddressActions(address);
+  const { handleEdit, handleDelete, handleSetDefault, dialogState, hideDialog, handleConfirm } = useAddressActions(address);
   const isDefault = address.isDefaultDelivery || address.isDefaultBilling;
 
   return (
@@ -68,6 +69,19 @@ export const AddressCard = ({ address }: AddressCardProps) => {
       <AddressDefaultBadges
         isDeliveryDefault={address.isDefaultDelivery}
         isBillingDefault={address.isDefaultBilling}
+      />
+
+      <ConfirmationDialog
+        visible={dialogState.visible}
+        title={dialogState.title}
+        message={dialogState.message}
+        icon={dialogState.icon}
+        confirmText={dialogState.confirmText}
+        cancelText={dialogState.cancelText}
+        destructive={dialogState.destructive}
+        loading={dialogState.loading}
+        onConfirm={handleConfirm}
+        onCancel={hideDialog}
       />
     </BaseCard>
   );

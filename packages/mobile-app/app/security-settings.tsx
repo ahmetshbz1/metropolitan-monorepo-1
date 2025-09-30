@@ -5,17 +5,19 @@
 import { HapticButton } from "@/components/HapticButton";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import Colors from "@/constants/Colors";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/core/api";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useConfirmationDialog } from "@/hooks/useConfirmationDialog";
 import { useNavigationProtection } from "@/hooks/useNavigationProtection";
 import { useToast } from "@/hooks/useToast";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import React, { useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, Alert, ScrollView, Switch, View } from "react-native";
+import { ActivityIndicator, ScrollView, Switch, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface SecuritySettings {
@@ -33,6 +35,7 @@ export default function SecuritySettingsScreen() {
   const insets = useSafeAreaInsets();
   const { showToast } = useToast();
   const { isAuthenticated, user, isGuest, refreshUserProfile } = useAuth();
+  const { dialogState, showDialog, hideDialog, handleConfirm } = useConfirmationDialog();
 
   const [settings, setSettings] = useState<SecuritySettings>({
     twoFactorEnabled: false,
@@ -129,37 +132,31 @@ export default function SecuritySettingsScreen() {
   };
 
   const handleUnlinkProvider = (provider: 'apple' | 'google') => {
-    Alert.alert(
-      t("security_settings.disconnect_title"),
-      t("security_settings.disconnect_message", { provider: provider === 'apple' ? 'Apple' : 'Google' }),
-      [
-        {
-          text: t("general.cancel"),
-          style: "cancel",
-        },
-        {
-          text: t("security_settings.disconnect_confirm"),
-          style: "destructive",
-          onPress: async () => {
-            setLoading(true);
-            try {
-              await api.delete("/users/me/social-provider");
-              showToast(
-                t("security_settings.disconnect_success", { provider: provider === 'apple' ? 'Apple' : 'Google' }),
-                "success"
-              );
-              // Refresh user data
-              await refreshUserProfile();
-            } catch (error) {
-              // Removed console statement
-              showToast(t("security_settings.disconnect_failed"), "error");
-            } finally {
-              setLoading(false);
-            }
-          },
-        },
-      ]
-    );
+    showDialog({
+      title: t("security_settings.disconnect_title"),
+      message: t("security_settings.disconnect_message", { provider: provider === 'apple' ? 'Apple' : 'Google' }),
+      icon: "unlink-outline",
+      confirmText: t("security_settings.disconnect_confirm"),
+      cancelText: t("general.cancel"),
+      destructive: true,
+      onConfirm: async () => {
+        setLoading(true);
+        try {
+          await api.delete("/users/me/social-provider");
+          showToast(
+            t("security_settings.disconnect_success", { provider: provider === 'apple' ? 'Apple' : 'Google' }),
+            "success"
+          );
+          // Refresh user data
+          await refreshUserProfile();
+        } catch (error) {
+          // Removed console statement
+          showToast(t("security_settings.disconnect_failed"), "error");
+        } finally {
+          setLoading(false);
+        }
+      },
+    });
   };
 
   const securityItems = [
@@ -635,6 +632,19 @@ export default function SecuritySettingsScreen() {
           </View>
         )}
       </ScrollView>
+
+      <ConfirmationDialog
+        visible={dialogState.visible}
+        title={dialogState.title}
+        message={dialogState.message}
+        icon={dialogState.icon}
+        confirmText={dialogState.confirmText}
+        cancelText={dialogState.cancelText}
+        destructive={dialogState.destructive}
+        loading={dialogState.loading}
+        onConfirm={handleConfirm}
+        onCancel={hideDialog}
+      />
     </ThemedView>
   );
 }

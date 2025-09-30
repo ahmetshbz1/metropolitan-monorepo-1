@@ -9,6 +9,7 @@ import { FlatList, RefreshControl } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { ThemedView } from "@/components/ThemedView";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import {
   EmptyNotifications,
   NotificationActionButtons,
@@ -33,6 +34,12 @@ export default function NotificationsScreen() {
     markAllAsRead,
     deleteAllNotifications,
     onRefresh,
+    deleteDialogState,
+    hideDeleteDialog,
+    handleDeleteConfirm,
+    deleteAllDialogState,
+    hideDeleteAllDialog,
+    handleDeleteAllConfirm,
   } = useNotifications();
 
   // Bildirim öğesi render fonksiyonu
@@ -94,6 +101,32 @@ export default function NotificationsScreen() {
             )}
           />
         )}
+
+        <ConfirmationDialog
+          visible={deleteDialogState.visible}
+          title={deleteDialogState.title}
+          message={deleteDialogState.message}
+          icon={deleteDialogState.icon}
+          confirmText={deleteDialogState.confirmText}
+          cancelText={deleteDialogState.cancelText}
+          destructive={deleteDialogState.destructive}
+          loading={deleteDialogState.loading}
+          onConfirm={handleDeleteConfirm}
+          onCancel={hideDeleteDialog}
+        />
+
+        <ConfirmationDialog
+          visible={deleteAllDialogState.visible}
+          title={deleteAllDialogState.title}
+          message={deleteAllDialogState.message}
+          icon={deleteAllDialogState.icon}
+          confirmText={deleteAllDialogState.confirmText}
+          cancelText={deleteAllDialogState.cancelText}
+          destructive={deleteAllDialogState.destructive}
+          loading={deleteAllDialogState.loading}
+          onConfirm={handleDeleteAllConfirm}
+          onCancel={hideDeleteAllDialog}
+        />
       </ThemedView>
     </GestureHandlerRootView>
   );

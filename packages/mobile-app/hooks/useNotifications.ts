@@ -3,6 +3,7 @@
 //  Created by Ahmet on 19.06.2025.
 
 import { useHaptics } from "@/hooks/useHaptics";
+import { useConfirmationDialog } from "@/hooks/useConfirmationDialog";
 import {
   Notification,
   UseNotificationsReturn,
@@ -11,12 +12,23 @@ import { getUnreadCount } from "@/utils/notifications.utils";
 import { router } from "expo-router";
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert } from "react-native";
 import api from "@/core/api";
 
 export function useNotifications(): UseNotificationsReturn {
   const { t } = useTranslation();
   const { triggerHaptic } = useHaptics();
+  const {
+    dialogState: deleteDialogState,
+    showDialog: showDeleteDialog,
+    hideDialog: hideDeleteDialog,
+    handleConfirm: handleDeleteConfirm
+  } = useConfirmationDialog();
+  const {
+    dialogState: deleteAllDialogState,
+    showDialog: showDeleteAllDialog,
+    hideDialog: hideDeleteAllDialog,
+    handleConfirm: handleDeleteAllConfirm
+  } = useConfirmationDialog();
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -84,52 +96,46 @@ export function useNotifications(): UseNotificationsReturn {
 
   // Tekil bildirim silme fonksiyonu
   const deleteNotification = (notificationId: string) => {
-    Alert.alert(
-      t("notifications.delete_confirm_title"),
-      t("notifications.delete_confirm_message"),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("common.delete"),
-          style: "destructive",
-          onPress: async () => {
-            triggerHaptic();
-            try {
-              await api.delete(`/users/notifications/${notificationId}`);
-              setNotifications((prev) =>
-                prev.filter((n) => n.id !== notificationId)
-              );
-            } catch (error) {
-              // Removed console statement
-            }
-          },
-        },
-      ]
-    );
+    showDeleteDialog({
+      title: t("notifications.delete_confirm_title"),
+      message: t("notifications.delete_confirm_message"),
+      icon: "trash-outline",
+      confirmText: t("common.delete"),
+      cancelText: t("common.cancel"),
+      destructive: true,
+      onConfirm: async () => {
+        triggerHaptic();
+        try {
+          await api.delete(`/users/notifications/${notificationId}`);
+          setNotifications((prev) =>
+            prev.filter((n) => n.id !== notificationId)
+          );
+        } catch (error) {
+          // Removed console statement
+        }
+      },
+    });
   };
 
   // Tüm bildirimleri sil
   const deleteAllNotifications = () => {
     triggerHaptic();
-    Alert.alert(
-      t("notifications.delete_all_confirm_title"),
-      t("notifications.delete_all_confirm_message"),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("common.delete"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await api.delete("/users/notifications");
-              setNotifications([]);
-            } catch (error) {
-              // Removed console statement
-            }
-          },
-        },
-      ]
-    );
+    showDeleteAllDialog({
+      title: t("notifications.delete_all_confirm_title"),
+      message: t("notifications.delete_all_confirm_message"),
+      icon: "trash-outline",
+      confirmText: t("common.delete"),
+      cancelText: t("common.cancel"),
+      destructive: true,
+      onConfirm: async () => {
+        try {
+          await api.delete("/users/notifications");
+          setNotifications([]);
+        } catch (error) {
+          // Removed console statement
+        }
+      },
+    });
   };
 
   // Bildirime tıklama işlemi
@@ -169,5 +175,11 @@ export function useNotifications(): UseNotificationsReturn {
     deleteAllNotifications,
     handleNotificationPress,
     onRefresh,
+    deleteDialogState,
+    hideDeleteDialog,
+    handleDeleteConfirm,
+    deleteAllDialogState,
+    hideDeleteAllDialog,
+    handleDeleteAllConfirm,
   };
 }
