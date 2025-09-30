@@ -20,6 +20,10 @@ const sortProductsByStock = (products: Product[]): Product[] => {
   });
 };
 
+// Cache için Map - her kategori için ayrı cache
+const productCache = new Map<string, { products: Product[]; timestamp: number }>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 dakika
+
 export function useProductState() {
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
@@ -31,6 +35,18 @@ export function useProductState() {
 
   const fetchProducts = useCallback(
     async (categorySlug: string | null = null) => {
+      const cacheKey = categorySlug || 'all';
+      const cached = productCache.get(cacheKey);
+
+      // Cache'de varsa ve süresi dolmamışsa cache'den dön
+      if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+        setProducts(cached.products);
+        setPage(1);
+        setHasMore(cached.products.length === PAGE_SIZE);
+        setLoading(false);
+        return;
+      }
+
       setError(null);
       setLoading(true);
       setProducts([]);
@@ -43,8 +59,15 @@ export function useProductState() {
         const { data } = await api.get("/products", { params });
 
         if (data.success) {
-          setProducts(sortProductsByStock(data.data));
+          const sortedProducts = sortProductsByStock(data.data);
+          setProducts(sortedProducts);
           setHasMore(data.data.length === PAGE_SIZE);
+
+          // Cache'e kaydet
+          productCache.set(cacheKey, {
+            products: sortedProducts,
+            timestamp: Date.now()
+          });
         } else {
           setHasMore(false);
           setError("Could not fetch products.");

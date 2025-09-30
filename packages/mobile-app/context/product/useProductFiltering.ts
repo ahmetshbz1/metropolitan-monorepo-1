@@ -21,6 +21,8 @@ export function useProductFiltering(products: Product[]) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const filteredProducts = useMemo(() => {
+    // NOT: Kategori filtresi backend'de yapılıyor (fetchProducts'ta category parametresi)
+    // Bu hook sadece search query için kullanılıyor
     if (!searchQuery.trim()) {
       return products;
     }

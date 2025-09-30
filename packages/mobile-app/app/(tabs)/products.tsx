@@ -48,6 +48,7 @@ export default function ProductsScreen() {
     (slug: string) => {
       const newCategory = selectedCategory === slug ? null : slug;
       setSelectedCategory(newCategory);
+      // Kategori değişince backend'den o kategorinin ürünlerini çek
       fetchProducts(newCategory);
     },
     [selectedCategory, setSelectedCategory, fetchProducts]
