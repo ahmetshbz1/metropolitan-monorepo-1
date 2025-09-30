@@ -14,7 +14,6 @@ import { useProducts } from "@/hooks/api/use-products";
 import { useAddFavorite, useFavoriteIds, useRemoveFavorite } from "@/hooks/api/use-favorites";
 import { useFavoritesStore } from "@/stores/favorites-store";
 import { useAddToCart } from "@/hooks/api/use-cart";
-import { useAuthStore } from "@/stores";
 import { motion } from "framer-motion";
 import { ArrowLeft, Heart, Minus, Plus, ShoppingCart } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -35,7 +34,6 @@ export default function ProductDetailPage() {
 
   // Cart
   const addToCartMutation = useAddToCart();
-  const accessToken = useAuthStore((state) => state.accessToken);
 
   const [quantity, setQuantity] = useState(1);
 
@@ -65,11 +63,8 @@ export default function ProductDetailPage() {
   const handleAddToCart = async () => {
     if (!product || product.stock === 0) return;
 
-    // Check if user is authenticated
-    if (!accessToken) {
-      router.push("/auth/phone-login");
-      return;
-    }
+    // NOT: Guest kullanıcılar da sepete ekleyebilir artık
+    // Login kontrolü kaldırıldı, useCart hook otomatik guest session oluşturacak
 
     try {
       await addToCartMutation.mutateAsync({
