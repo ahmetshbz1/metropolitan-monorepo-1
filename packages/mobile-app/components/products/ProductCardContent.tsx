@@ -32,36 +32,43 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
   const { t } = useTranslation();
 
   return (
-    <View className="px-1.5 py-1" style={{ backgroundColor: colors.cardBackground, height: 75, position: 'relative' }}>
+    <View className="px-2 py-2" style={{ backgroundColor: colors.cardBackground, minHeight: 75 }}>
       {/* Price - Top */}
       <ThemedText
-        className="font-bold text-sm"
-        style={{ color: colors.primary, marginBottom: 2 }}
+        className="text-base font-extrabold"
+        style={{
+          color: colors.primary,
+          marginBottom: 4,
+          letterSpacing: -0.3,
+        }}
       >
         {formatPrice(product.price, product.currency)}
       </ThemedText>
 
-      {/* Product Name - Middle */}
+      {/* Product Name */}
       <ThemedText
-        className="text-xs font-semibold"
+        className="text-xs font-bold"
         numberOfLines={2}
         style={{
-          lineHeight: 13,
-          color: colorScheme === "dark" ? "#f3f4f6" : "#1f2937",
-          letterSpacing: -0.1,
-          marginBottom: 2,
+          lineHeight: 14,
+          color: colorScheme === "dark" ? "#ffffff" : "#000000",
+          letterSpacing: -0.2,
+          marginBottom: 4,
+          minHeight: 28,
         }}
       >
         {product.name}
       </ThemedText>
 
-      {/* Bottom Section - Fixed at bottom */}
-      <View style={{ position: 'absolute', bottom: 4, left: 6 }}>
+      {/* Bottom Section - Size and Stock */}
+      <View className="flex-row items-center justify-between" style={{ marginTop: 'auto' }}>
         {/* Size/Unit Info */}
         {product.size && (
           <ThemedText
-            className="text-xs"
-            style={{ color: colorScheme === "dark" ? "#a3a3a3" : "#737373" }}
+            className="text-xs font-semibold"
+            style={{
+              color: colorScheme === "dark" ? "#a3a3a3" : "#737373",
+            }}
           >
             {product.size}
           </ThemedText>
@@ -69,13 +76,13 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
 
         {/* Stock Status */}
         {isLowStock && !isOutOfStock && (
-          <View className="flex-row items-center" style={{ marginTop: 2 }}>
-            <View className="w-1 h-1 bg-amber-400 rounded-full mr-1.5" />
+          <View className="flex-row items-center">
+            <View className="w-1.5 h-1.5 bg-amber-400 rounded-full mr-1" />
             <ThemedText
-              className="text-xs font-medium"
+              className="text-xs font-bold"
               style={{ color: colorScheme === "dark" ? "#fbbf24" : "#d97706" }}
             >
-              Son {product.stock}
+              {product.stock}
             </ThemedText>
           </View>
         )}

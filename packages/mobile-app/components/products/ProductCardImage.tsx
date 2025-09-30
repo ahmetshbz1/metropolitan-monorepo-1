@@ -61,14 +61,20 @@ export const ProductCardImage: React.FC<ProductCardImageProps> = ({
           className="absolute top-1.5 right-1.5 rounded-full justify-center items-center z-20"
           style={{
             backgroundColor: colors.primary,
-            width: 28,
-            height: 28,
+            width: 32,
+            height: 32,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            elevation: 5,
           }}
         >
           <Ionicons
-            name="add-circle"
-            size={18}
+            name="add"
+            size={20}
             color="#fff"
+            style={{ fontWeight: 'bold' }}
           />
         </HapticIconButton>
       )}
@@ -80,12 +86,12 @@ export const ProductCardImage: React.FC<ProductCardImageProps> = ({
           style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
         >
           <View
-            className="px-3 py-1.5 rounded"
+            className="px-3 py-1.5 rounded-lg"
             style={{
               backgroundColor: 'rgba(255, 255, 255, 0.95)',
             }}
           >
-            <ThemedText className="text-xs font-medium" style={{ color: '#1a1a1a' }}>
+            <ThemedText className="text-xs font-bold" style={{ color: '#1a1a1a' }}>
               {t("product.out_of_stock")}
             </ThemedText>
           </View>
