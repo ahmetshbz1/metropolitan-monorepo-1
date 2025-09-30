@@ -138,6 +138,46 @@ export class CartValidationService {
   }
 
   /**
+   * Kullanıcı tipine göre minimum miktar kontrolü yapar
+   */
+  static async validateMinQuantity(
+    productId: string,
+    quantity: number,
+    userType: "individual" | "corporate"
+  ) {
+    const product = await db
+      .select({
+        id: products.id,
+        minQuantityIndividual: products.minQuantityIndividual,
+        minQuantityCorporate: products.minQuantityCorporate,
+      })
+      .from(products)
+      .where(eq(products.id, productId))
+      .limit(1);
+
+    if (!product.length) {
+      throw new Error(JSON.stringify(CartValidationErrors.PRODUCT_NOT_FOUND(productId)));
+    }
+
+    const productData = product[0];
+    const minQuantity = userType === "corporate"
+      ? (productData.minQuantityCorporate ?? 1)
+      : (productData.minQuantityIndividual ?? 1);
+
+    if (quantity < minQuantity) {
+      throw new Error(
+        JSON.stringify({
+          key: "MIN_QUANTITY_NOT_MET",
+          params: { minQuantity, userType },
+          message: `Minimum ${minQuantity} adet alım zorunludur`,
+        })
+      );
+    }
+
+    return productData;
+  }
+
+  /**
    * Stok kontrolü yapar (mevcut sepet öğesi için)
    */
 }

@@ -50,6 +50,12 @@ export const products = pgTable("products", {
   manufacturerInfo: text("manufacturer_info"), // JSON string olarak üretici bilgileri
   originCountry: text("origin_country"), // Menşe ülkesi
   badges: text("badges"), // JSON string olarak badge bilgileri (halal, vegan, vs.)
+  // User type bazlı fiyatlandırma ve miktar kontrolleri
+  individualPrice: decimal("individual_price", { precision: 10, scale: 2 }), // Bireysel kullanıcı fiyatı
+  corporatePrice: decimal("corporate_price", { precision: 10, scale: 2 }), // Kurumsal kullanıcı fiyatı
+  minQuantityIndividual: integer("min_quantity_individual").default(1), // Bireysel min adet
+  minQuantityCorporate: integer("min_quantity_corporate").default(1), // Kurumsal min adet
+  quantityPerBox: integer("quantity_per_box"), // Karton/koli başına adet
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

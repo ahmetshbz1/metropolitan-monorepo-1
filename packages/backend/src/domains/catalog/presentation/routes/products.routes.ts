@@ -3,6 +3,7 @@
 //  Created by Ahmet on 22.06.2025.
 
 import { and, eq, like, or } from "drizzle-orm";
+import { jwt } from "@elysiajs/jwt";
 import { t } from "elysia";
 
 import {
@@ -10,17 +11,52 @@ import {
   categoryTranslations,
   productTranslations,
   products,
+  users,
 } from "../../../../shared/infrastructure/database/schema";
+import { isTokenBlacklisted } from "../../../../shared/infrastructure/database/redis";
 import { AllergenTranslationService } from "../../../../shared/infrastructure/database/services/allergen-translation.service";
 import { StorageConditionTranslationService } from "../../../../shared/infrastructure/database/services/storage-condition-translation.service";
 import { createApp } from "../../../../shared/infrastructure/web/app";
 
-export const productRoutes = createApp().group("/products", (app) =>
+export const productRoutes = createApp()
+  .use(jwt({ name: "jwt", secret: process.env.JWT_SECRET! }))
+  .derive(async ({ jwt: jwtInstance, headers, db }) => {
+    const token = headers.authorization?.replace("Bearer ", "");
+    if (!token) return { profile: null };
+
+    try {
+      const isBlacklisted = await isTokenBlacklisted(token);
+      if (isBlacklisted) return { profile: null };
+
+      const decoded = (await jwtInstance.verify(token)) as any;
+      if (!decoded) return { profile: null };
+
+      const userId = decoded.sub || decoded.userId;
+      if (!userId) return { profile: null };
+
+      const user = await db.query.users.findFirst({
+        where: eq(users.id, userId),
+        columns: { userType: true, id: true }
+      });
+
+      if (!user) return { profile: null };
+
+      const profile = {
+        userId,
+        userType: user.userType as "individual" | "corporate",
+      };
+
+      return { profile };
+    } catch (_error) {
+      return { profile: null };
+    }
+  })
+  .group("/products", (app) =>
   app
     // GET /api/products/search - Fast search endpoint
     .get(
       "/search",
-      async ({ db, query, request }) => {
+      async ({ db, query, request, profile }) => {
         const lang = query.lang || "tr";
         const searchQuery = query.q || "";
 
@@ -29,6 +65,7 @@ export const productRoutes = createApp().group("/products", (app) =>
         }
 
         const searchPattern = `%${searchQuery}%`;
+        const userType = profile?.userType || "individual";
 
         const searchResults = await db
           .select({
@@ -37,6 +74,11 @@ export const productRoutes = createApp().group("/products", (app) =>
             description: productTranslations.description,
             imageUrl: products.imageUrl,
             price: products.price,
+            individualPrice: products.individualPrice,
+            corporatePrice: products.corporatePrice,
+            minQuantityIndividual: products.minQuantityIndividual,
+            minQuantityCorporate: products.minQuantityCorporate,
+            quantityPerBox: products.quantityPerBox,
             currency: products.currency,
             stock: products.stock,
             categorySlug: categories.slug,
@@ -58,7 +100,7 @@ export const productRoutes = createApp().group("/products", (app) =>
               )
             )
           )
-          .limit(10); // Limit to 10 results for faster response
+          .limit(10);
 
         const xfProto = request.headers.get('x-forwarded-proto');
         const host = request.headers.get('host');
@@ -66,17 +108,28 @@ export const productRoutes = createApp().group("/products", (app) =>
           ? `${xfProto}://${host}`
           : new URL(request.url).origin;
 
-        const formattedResults = searchResults.map((p) => ({
-          id: p.id,
-          name: p.name,
-          description: p.description,
-          image: p.imageUrl ? `${baseUrl}${p.imageUrl}` : "",
-          price: Number(p.price) || 0,
-          currency: p.currency,
-          stock: p.stock ?? 0,
-          category: p.categorySlug,
-          brand: p.brand || "Yayla",
-        }));
+        const formattedResults = searchResults.map((p) => {
+          const finalPrice = userType === "corporate"
+            ? (p.corporatePrice ? Number(p.corporatePrice) : Number(p.price) || 0)
+            : (p.individualPrice ? Number(p.individualPrice) : Number(p.price) || 0);
+
+          return {
+            id: p.id,
+            name: p.name,
+            description: p.description,
+            image: p.imageUrl ? `${baseUrl}${p.imageUrl}` : "",
+            price: finalPrice,
+            individualPrice: p.individualPrice ? Number(p.individualPrice) : undefined,
+            corporatePrice: p.corporatePrice ? Number(p.corporatePrice) : undefined,
+            minQuantityIndividual: p.minQuantityIndividual ?? 1,
+            minQuantityCorporate: p.minQuantityCorporate ?? 1,
+            quantityPerBox: p.quantityPerBox ?? undefined,
+            currency: p.currency,
+            stock: p.stock ?? 0,
+            category: p.categorySlug,
+            brand: p.brand || "Yayla",
+          };
+        });
 
         return { success: true, data: formattedResults };
       },
@@ -91,7 +144,7 @@ export const productRoutes = createApp().group("/products", (app) =>
     .get(
       "/categories",
       async ({ db, query }) => {
-        const lang = query.lang || "tr"; // Default to Turkish if no language is specified
+        const lang = query.lang || "tr";
 
         const allCategories = await db
           .select({
@@ -118,9 +171,10 @@ export const productRoutes = createApp().group("/products", (app) =>
     // GET /api/products
     .get(
       "/",
-      async ({ db, query, request }) => {
+      async ({ db, query, request, profile }) => {
         const lang = query.lang || "tr";
         const categorySlug = query.category;
+        const userType = profile?.userType || "individual";
 
         const conditions = [eq(productTranslations.languageCode, lang)];
 
@@ -135,12 +189,16 @@ export const productRoutes = createApp().group("/products", (app) =>
             description: productTranslations.description,
             imageUrl: products.imageUrl,
             price: products.price,
+            individualPrice: products.individualPrice,
+            corporatePrice: products.corporatePrice,
+            minQuantityIndividual: products.minQuantityIndividual,
+            minQuantityCorporate: products.minQuantityCorporate,
+            quantityPerBox: products.quantityPerBox,
             currency: products.currency,
             stock: products.stock,
             categorySlug: categories.slug,
             brand: products.brand,
             size: products.size,
-            // Yeni eklenen alanlar
             allergens: products.allergens,
             nutritionalValues: products.nutritionalValues,
             netQuantity: products.netQuantity,
@@ -158,7 +216,6 @@ export const productRoutes = createApp().group("/products", (app) =>
           .leftJoin(categories, eq(products.categoryId, categories.id))
           .where(and(...conditions));
 
-        // Derive base URL using forwarded headers when behind proxy (nginx)
         const xfProto = request.headers.get('x-forwarded-proto');
         const host = request.headers.get('host');
         const baseUrl = xfProto && host
@@ -170,7 +227,6 @@ export const productRoutes = createApp().group("/products", (app) =>
 
         const formattedProducts = await Promise.all(
           allProducts.map(async (p) => {
-            // Alerjen çevirisini al
             let translatedAllergens = p.allergens;
             if (p.allergens) {
               const allergenTranslation = await allergenService.getTranslation(
@@ -180,7 +236,6 @@ export const productRoutes = createApp().group("/products", (app) =>
               translatedAllergens = allergenTranslation || p.allergens;
             }
 
-            // Saklama koşulları çevirisini al
             let translatedStorageConditions = p.storageConditions;
             if (p.storageConditions) {
               const storageConditionTranslation =
@@ -192,18 +247,26 @@ export const productRoutes = createApp().group("/products", (app) =>
                 storageConditionTranslation || p.storageConditions;
             }
 
+            const finalPrice = userType === "corporate"
+              ? (p.corporatePrice ? Number(p.corporatePrice) : Number(p.price) || 0)
+              : (p.individualPrice ? Number(p.individualPrice) : Number(p.price) || 0);
+
             return {
               id: p.id,
               name: p.name,
               description: p.description,
               image: p.imageUrl ? `${baseUrl}${p.imageUrl}` : "",
-              price: Number(p.price) || 0,
+              price: finalPrice,
+              individualPrice: p.individualPrice ? Number(p.individualPrice) : undefined,
+              corporatePrice: p.corporatePrice ? Number(p.corporatePrice) : undefined,
+              minQuantityIndividual: p.minQuantityIndividual ?? 1,
+              minQuantityCorporate: p.minQuantityCorporate ?? 1,
+              quantityPerBox: p.quantityPerBox ?? undefined,
               currency: p.currency,
               stock: p.stock ?? 0,
               category: p.categorySlug,
-              brand: p.brand || "Yayla", // Use brand from DB, fallback just in case
+              brand: p.brand || "Yayla",
               size: p.size || undefined,
-              // Yeni eklenen alanlar
               allergens: translatedAllergens || undefined,
               nutritionalValues: p.nutritionalValues
                 ? JSON.parse(p.nutritionalValues)
@@ -232,9 +295,10 @@ export const productRoutes = createApp().group("/products", (app) =>
     // GET /api/products/:id
     .get(
       "/:id",
-      async ({ db, params, query, request }) => {
+      async ({ db, params, query, request, profile }) => {
         const lang = query.lang || "tr";
         const productId = params.id;
+        const userType = profile?.userType || "individual";
 
         const product = await db
           .select({
@@ -243,12 +307,16 @@ export const productRoutes = createApp().group("/products", (app) =>
             description: productTranslations.description,
             imageUrl: products.imageUrl,
             price: products.price,
+            individualPrice: products.individualPrice,
+            corporatePrice: products.corporatePrice,
+            minQuantityIndividual: products.minQuantityIndividual,
+            minQuantityCorporate: products.minQuantityCorporate,
+            quantityPerBox: products.quantityPerBox,
             currency: products.currency,
             stock: products.stock,
             categorySlug: categories.slug,
             brand: products.brand,
             size: products.size,
-            // Yeni eklenen alanlar
             allergens: products.allergens,
             nutritionalValues: products.nutritionalValues,
             netQuantity: products.netQuantity,
@@ -278,17 +346,15 @@ export const productRoutes = createApp().group("/products", (app) =>
 
         const p = product[0];
 
-        // Derive base URL using forwarded headers when behind proxy (nginx)
         const xfProto = request.headers.get('x-forwarded-proto');
         const host = request.headers.get('host');
         const baseUrl = xfProto && host
           ? `${xfProto}://${host}`
           : new URL(request.url).origin;
-        
+
         const allergenService = new AllergenTranslationService();
         const storageConditionService = new StorageConditionTranslationService();
 
-        // Alerjen çevirisini al
         let translatedAllergens = p.allergens;
         if (p.allergens) {
           const allergenTranslation = await allergenService.getTranslation(
@@ -298,7 +364,6 @@ export const productRoutes = createApp().group("/products", (app) =>
           translatedAllergens = allergenTranslation || p.allergens;
         }
 
-        // Saklama koşulları çevirisini al
         let translatedStorageConditions = p.storageConditions;
         if (p.storageConditions) {
           const storageConditionTranslation =
@@ -310,20 +375,27 @@ export const productRoutes = createApp().group("/products", (app) =>
             storageConditionTranslation || p.storageConditions;
         }
 
+        const finalPrice = userType === "corporate"
+          ? (p.corporatePrice ? Number(p.corporatePrice) : Number(p.price) || 0)
+          : (p.individualPrice ? Number(p.individualPrice) : Number(p.price) || 0);
+
         const formattedProduct = {
           id: p.id,
           name: p.name,
           description: p.description,
           image: p.imageUrl ? `${baseUrl}${p.imageUrl}` : "",
-          price: Number(p.price) || 0,
+          price: finalPrice,
+          individualPrice: p.individualPrice ? Number(p.individualPrice) : undefined,
+          corporatePrice: p.corporatePrice ? Number(p.corporatePrice) : undefined,
+          minQuantityIndividual: p.minQuantityIndividual ?? 1,
+          minQuantityCorporate: p.minQuantityCorporate ?? 1,
+          quantityPerBox: p.quantityPerBox ?? undefined,
           currency: p.currency,
           stock: p.stock ?? 0,
           category: p.categorySlug,
           brand: p.brand || "Yayla",
           size: p.size || undefined,
-          // Rating ekleyelim (şimdilik static)
-          rating: Math.random() * 2 + 3, // 3-5 arası random rating
-          // Yeni eklenen alanlar
+          rating: Math.random() * 2 + 3,
           allergens: translatedAllergens || undefined,
           nutritionalValues: p.nutritionalValues
             ? JSON.parse(p.nutritionalValues)

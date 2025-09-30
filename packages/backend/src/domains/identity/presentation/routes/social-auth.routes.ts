@@ -233,6 +233,7 @@ export const socialAuthRoutes = createApp()
         const accessToken = await jwt.sign({
           sub: user.id,
           type: "access",
+          userType: user.userType,
           sessionId,
           deviceId,
           jti: accessJTI,
@@ -245,6 +246,7 @@ export const socialAuthRoutes = createApp()
         const refreshToken = await jwt.sign({
           sub: user.id,
           type: "refresh",
+          userType: user.userType,
           sessionId,
           deviceId,
           jti: refreshJTI,

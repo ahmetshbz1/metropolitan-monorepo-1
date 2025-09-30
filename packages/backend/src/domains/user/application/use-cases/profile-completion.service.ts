@@ -154,6 +154,7 @@ export class ProfileCompletionService {
     const accessTokenPayload = {
       sub: updatedUser.id,
       type: "access",
+      userType: updatedUser.userType,
       sessionId,
       deviceId,
       jti: accessJTI,
@@ -169,6 +170,7 @@ export class ProfileCompletionService {
     const refreshToken = await jwt.sign({
       sub: updatedUser.id,
       type: "refresh",
+      userType: updatedUser.userType,
       sessionId,
       deviceId,
       jti: refreshJTI,

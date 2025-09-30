@@ -118,11 +118,15 @@ export const refreshTokenRoutes = createApp()
         // Update session activity
         await updateSessionActivity(payload.sub, payload.deviceId);
 
+        // Get userType from payload if available, otherwise fallback to "individual"
+        const userType = (payload as any).userType || "individual";
+
         // Generate new access token with fresh JTI
         const newAccessJTI = generateJTI();
         const newAccessToken = await jwt.sign({
           sub: payload.sub,
           type: "access",
+          userType,
           sessionId: payload.sessionId,
           deviceId: payload.deviceId,
           jti: newAccessJTI,

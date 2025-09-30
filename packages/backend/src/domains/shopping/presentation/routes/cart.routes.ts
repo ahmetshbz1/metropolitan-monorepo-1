@@ -18,7 +18,7 @@ import { CartItemService } from "../../application/use-cases/cart-item.service";
 interface AuthenticatedContext {
   user: {
     id: string;
-    // ... diğer user alanları
+    userType: "individual" | "corporate";
   };
 }
 
@@ -37,7 +37,7 @@ export const createCartApp = () =>
 
       if (!user) throw new Error("User not found");
 
-      return { user };
+      return { user: { id: user.id, userType: user.userType as "individual" | "corporate" } };
     })
 
     // Sepet öğelerini listele
@@ -58,7 +58,7 @@ export const createCartApp = () =>
       }: AuthenticatedContext & {
         body: AddToCartRequest;
       }) => {
-        return await CartItemService.addItemToCart(user.id, body);
+        return await CartItemService.addItemToCart(user.id, body, user.userType);
       },
       {
         body: t.Object({
@@ -85,7 +85,7 @@ export const createCartApp = () =>
         const { itemId } = params;
         const { quantity } = body;
 
-        return await CartItemService.updateCartItem(user.id, itemId, quantity);
+        return await CartItemService.updateCartItem(user.id, itemId, quantity, user.userType);
       },
       {
         params: t.Object({
@@ -134,7 +134,7 @@ export const createCartApp = () =>
       }: AuthenticatedContext & {
         body: { updates: Array<{ itemId: string; quantity: number }> };
       }) => {
-        return await CartItemService.batchUpdateCartItems(user.id, body.updates);
+        return await CartItemService.batchUpdateCartItems(user.id, body.updates, user.userType);
       },
       {
         body: t.Object({

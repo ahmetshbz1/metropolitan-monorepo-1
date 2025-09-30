@@ -191,6 +191,7 @@ export const otpRoutes = createApp()
               const accessToken = await jwt.sign({
                 sub: user.id,
                 type: "access",
+                userType: user.userType,
                 sessionId,
                 deviceId,
                 jti: accessJTI,
@@ -203,6 +204,7 @@ export const otpRoutes = createApp()
               const refreshToken = await jwt.sign({
                 sub: user.id,
                 type: "refresh",
+                userType: user.userType,
                 sessionId,
                 deviceId,
                 jti: refreshJTI,

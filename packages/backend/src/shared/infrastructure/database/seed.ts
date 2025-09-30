@@ -351,6 +351,13 @@ const main = async () => {
         lactoseFree: categoryName !== "SÜT ÜRÜNLERİ", // Süt ürünleri dışında laktozsuz
       };
 
+      // User type bazlı fiyatlandırma ve minimum adet
+      const individualPrice = price;
+      const corporatePrice = Number((price * 0.85).toFixed(2)); // %15 indirimli kurumsal fiyat
+      const minQuantityIndividual = 1;
+      const minQuantityCorporate = Math.random() > 0.5 ? 6 : 12; // Rastgele 6 veya 12 (yarım/tam karton)
+      const quantityPerBox = minQuantityCorporate;
+
       const [newProduct] = await db
         .insert(products)
         .values({
@@ -362,6 +369,12 @@ const main = async () => {
           price: price,
           currency: "PLN",
           stock: stock,
+          // User type bazlı fiyatlandırma
+          individualPrice: individualPrice,
+          corporatePrice: corporatePrice,
+          minQuantityIndividual: minQuantityIndividual,
+          minQuantityCorporate: minQuantityCorporate,
+          quantityPerBox: quantityPerBox,
           // Yeni eklenen alanlar - Kategoriye göre doğru alerjen
           allergens:
             categoryName === "SÜT ÜRÜNLERİ"

@@ -36,6 +36,7 @@ export const isAuthenticated = (app: Elysia) =>
           sub: decoded.sub, // Include original sub field for compatibility
           exp: decoded.exp,
           type: decoded.type,
+          userType: decoded.userType || "individual",
           sessionId: decoded.sessionId,
           deviceId: decoded.deviceId,
         };

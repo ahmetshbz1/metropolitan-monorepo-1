@@ -95,9 +95,13 @@ export class CartItemService {
    */
   static async addItemToCart(
     userId: string,
-    request: AddToCartRequest
+    request: AddToCartRequest,
+    userType: "individual" | "corporate"
   ): Promise<CartOperationResponse> {
     const { productId, quantity = 1 } = request;
+
+    // Minimum quantity kontrolü
+    await CartValidationService.validateMinQuantity(productId, quantity, userType);
 
     // Mevcut sepet öğesi var mı kontrol et
     const existingItem = await CartValidationService.getExistingCartItem(
@@ -108,6 +112,7 @@ export class CartItemService {
     if (existingItem) {
       // Mevcut öğeyi güncelle
       const newQuantity = existingItem.quantity + quantity;
+      await CartValidationService.validateMinQuantity(productId, newQuantity, userType);
       await CartValidationService.validateStock(
         productId,
         newQuantity,
@@ -166,7 +171,8 @@ export class CartItemService {
   static async updateCartItem(
     userId: string,
     itemId: string,
-    quantity: number
+    quantity: number,
+    userType: "individual" | "corporate"
   ): Promise<{ message: string }> {
     // Sepet öğesinin kullanıcıya ait olduğunu kontrol et
     await CartValidationService.validateCartOwnership(itemId, userId);
@@ -176,6 +182,9 @@ export class CartItemService {
     });
 
     if (!cartItem) throw new Error("Sepet öğesi bulunamadı");
+
+    // Minimum quantity kontrolü
+    await CartValidationService.validateMinQuantity(cartItem.productId, quantity, userType);
 
     // Stok kontrolü
     await CartValidationService.validateStock(
@@ -228,7 +237,8 @@ export class CartItemService {
    */
   static async batchUpdateCartItems(
     userId: string,
-    updates: Array<{ itemId: string; quantity: number }>
+    updates: Array<{ itemId: string; quantity: number }>,
+    userType: "individual" | "corporate"
   ): Promise<{
     message: string;
     updatedCount: number;
@@ -270,6 +280,14 @@ export class CartItemService {
 
         const availableStock = product.stock || 0;
         let finalQuantity = quantity;
+
+        // Minimum quantity kontrolü
+        try {
+          await CartValidationService.validateMinQuantity(cartItem.productId, quantity, userType);
+        } catch (error) {
+          console.error(`Min quantity kontrolü başarısız ${cartItem.productId}:`, error);
+          continue;
+        }
 
         // Eğer istenen miktar stoktan fazlaysa, otomatik olarak stok limitine ayarla
         if (quantity > availableStock) {

@@ -286,6 +286,7 @@
   "errors": {
     "INSUFFICIENT_STOCK": "Bu üründen en fazla {{stock}} adet ekleyebilirsiniz.",
     "INSUFFICIENT_STOCK_ALREADY_IN_CART": "Sepetinizde bu üründen {{inCart}} adet var. En fazla {{canAdd}} adet daha ekleyebilirsiniz.",
+    "MIN_QUANTITY_NOT_MET": "Bu ürün için minimum {{minQuantity}} adet alım zorunludur.",
     "PRODUCT_NOT_FOUND": "Ürün bulunamadı.",
     "CART_ITEM_NOT_FOUND": "Sepet öğesi bulunamadı.",
     "CART_ADD_ERROR": "Ürün sepete eklenirken beklenmedik bir hata oluştu. Lütfen tekrar deneyin.",

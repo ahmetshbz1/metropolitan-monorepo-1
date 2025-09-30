@@ -48,6 +48,12 @@ export interface Product {
   manufacturerInfo?: ManufacturerInfo; // Üretici bilgileri
   originCountry?: string; // Menşe ülkesi
   badges?: ProductBadges; // Ürün sertifikaları ve özellikleri
+  // User type bazlı fiyatlandırma
+  individualPrice?: number; // Bireysel kullanıcı fiyatı
+  corporatePrice?: number; // Kurumsal kullanıcı fiyatı
+  minQuantityIndividual?: number; // Bireysel kullanıcı için min adet
+  minQuantityCorporate?: number; // Kurumsal kullanıcı için min adet
+  quantityPerBox?: number; // Karton/koli başına adet sayısı
 }
 
 export interface Category {
