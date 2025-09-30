@@ -18,12 +18,19 @@ import type { Address } from "@metropolitan/shared";
 
 interface AddressCardProps {
   address: Address;
+  onSetDefault: (address: Address) => void;
 }
 
-export const AddressCard = ({ address }: AddressCardProps) => {
+export const AddressCard = ({ address, onSetDefault }: AddressCardProps) => {
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
-  const { handleEdit, handleDelete, handleSetDefault, dialogState, hideDialog, handleConfirm } = useAddressActions(address);
+  const {
+    handleEdit,
+    handleDelete,
+    dialogState,
+    hideDialog,
+    handleConfirm,
+  } = useAddressActions(address);
   const isDefault = address.isDefaultDelivery || address.isDefaultBilling;
 
   return (
@@ -38,7 +45,7 @@ export const AddressCard = ({ address }: AddressCardProps) => {
           <ThemedText className="text-lg font-bold">{address.addressTitle}</ThemedText>
         </View>
         <View className="flex-row items-center gap-4">
-          <TouchableOpacity onPress={handleSetDefault} hitSlop={10}>
+          <TouchableOpacity onPress={() => onSetDefault(address)} hitSlop={10}>
             <Ionicons
               name={isDefault ? "star" : "star-outline"}
               size={24}

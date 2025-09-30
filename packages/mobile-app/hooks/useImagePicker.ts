@@ -4,7 +4,6 @@
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActionSheetIOS, Alert, Platform } from "react-native";
 
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/hooks/useToast";
@@ -66,49 +65,22 @@ export function useImagePicker() {
     }
   };
 
-  const handleChoosePhoto = () => {
-    const options = [
-      t("edit_profile.camera"),
-      t("edit_profile.gallery"),
-      t("common.cancel"),
-    ];
-
-    if (Platform.OS === "ios") {
-      ActionSheetIOS.showActionSheetWithOptions(
-        {
-          options,
-          cancelButtonIndex: 2,
-        },
-        (buttonIndex) => {
-          if (buttonIndex === 0) {
-            pickImage("camera");
-          } else if (buttonIndex === 1) {
-            pickImage("gallery");
-          }
-        }
-      );
-    } else {
-      Alert.alert(
-        t("edit_profile.change_photo"),
-        "",
-        [
-          {
-            text: t("edit_profile.camera"),
-            onPress: () => pickImage("camera"),
-          },
-          {
-            text: t("edit_profile.gallery"),
-            onPress: () => pickImage("gallery"),
-          },
-          { text: t("common.cancel"), style: "cancel" },
-        ],
-        { cancelable: true }
-      );
-    }
-  };
+  const getSelectionOptions = () => [
+    {
+      label: t("edit_profile.camera"),
+      icon: "camera-outline" as const,
+      onPress: () => pickImage("camera"),
+    },
+    {
+      label: t("edit_profile.gallery"),
+      icon: "images-outline" as const,
+      onPress: () => pickImage("gallery"),
+    },
+  ];
 
   return {
     photoLoading,
-    handleChoosePhoto,
+    pickImage,
+    getSelectionOptions,
   };
 }

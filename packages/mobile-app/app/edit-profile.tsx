@@ -5,9 +5,10 @@
 
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRouter } from "expo-router";
-import React, { useLayoutEffect, useState } from "react";
+import React, { useLayoutEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
+import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import {
   KeyboardAwareScrollView,
   KeyboardStickyView,
@@ -18,6 +19,7 @@ import { HapticButton } from "@/components/HapticButton";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { BaseButton } from "@/components/base/BaseButton";
+import { SelectionBottomSheet } from "@/components/common/SelectionBottomSheet";
 import { PhotoPreviewModal } from "@/components/profile/edit/PhotoPreviewModal";
 import { ProfileForm } from "@/components/profile/edit/ProfileForm";
 import { ProfilePhoto } from "@/components/profile/edit/ProfilePhoto";
@@ -58,10 +60,17 @@ export default function EditProfileScreen() {
     isSaveDisabled,
   } = useProfileForm();
 
-  const { photoLoading, handleChoosePhoto } = useImagePicker();
+  const { photoLoading, pickImage, getSelectionOptions } = useImagePicker();
   const { showToast } = useToast();
 
   const [isPhotoPreviewVisible, setPhotoPreviewVisible] = useState(false);
+  const imagePickerSheetRef = useRef<BottomSheetModal>(null);
+
+  const handleChoosePhoto = () => {
+    imagePickerSheetRef.current?.present();
+  };
+
+  const selectionOptions = getSelectionOptions();
 
   const handleEditPhoto = () => {
     setPhotoPreviewVisible(false);
@@ -70,11 +79,11 @@ export default function EditProfileScreen() {
 
   return (
     <ThemedView className="flex-1">
-      <PhotoPreviewModal
-        visible={isPhotoPreviewVisible}
-        onClose={() => setPhotoPreviewVisible(false)}
-        onEdit={handleEditPhoto}
-      />
+        <PhotoPreviewModal
+          visible={isPhotoPreviewVisible}
+          onClose={() => setPhotoPreviewVisible(false)}
+          onEdit={handleEditPhoto}
+        />
 
       <KeyboardAwareScrollView
         style={{ flex: 1 }}
@@ -190,6 +199,12 @@ export default function EditProfileScreen() {
           </View>
         </KeyboardStickyView>
       )}
+
+      <SelectionBottomSheet
+        ref={imagePickerSheetRef}
+        title={t("edit_profile.change_photo")}
+        options={selectionOptions}
+      />
     </ThemedView>
   );
 }
