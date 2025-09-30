@@ -9,10 +9,12 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@/context/AuthContext";
 
 interface ProductContextType {
   products: Product[];
@@ -41,6 +43,7 @@ const CACHE_DURATION = 5 * 60 * 1000;
 export const ProductProvider = ({ children }: { children: ReactNode }) => {
   const { i18n } = useTranslation();
   const lang = i18n.language;
+  const { user, isGuest } = useAuth();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -102,6 +105,10 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
       setLoadingCategories(false);
     }
   }, [lang]);
+
+  useEffect(() => {
+    refreshAllProducts();
+  }, [user?.id, isGuest]);
 
   const value = useMemo(
     () => ({
