@@ -28,6 +28,7 @@ export default function VerifyOtpPage() {
 
   const phoneParam = searchParams.get("phone") || "";
   const userTypeParam = searchParams.get("userType");
+  const returnToCart = searchParams.get("returnToCart") === "true";
 
   const phoneNumber = phoneParam;
   const userType = useMemo<"individual" | "corporate">(() => {
@@ -117,10 +118,15 @@ export default function VerifyOtpPage() {
 
             if (hasRegistrationToken || result.isNewUser) {
               console.log("🆕 New user - redirecting to complete-profile");
-              router.replace(`/auth/complete-profile?userType=${userType}`);
+              const returnParam = returnToCart ? "&returnToCart=true" : "";
+              router.replace(`/auth/complete-profile?userType=${userType}${returnParam}`);
             } else if (hasAccessToken) {
               console.log("✅ Existing user - redirecting to home");
-              router.replace("/");
+              if (returnToCart) {
+                router.replace("/?openCart=true");
+              } else {
+                router.replace("/");
+              }
             } else {
               console.log("⚠️ Unexpected response structure:", result);
               setError("Beklenmeyen yanıt alındı. Lütfen tekrar deneyin.");

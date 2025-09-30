@@ -29,6 +29,7 @@ export default function CompleteProfilePage() {
   const userType =
     (searchParams.get("userType") as "individual" | "corporate") ||
     "individual";
+  const returnToCart = searchParams.get("returnToCart") === "true";
 
   const [formData, setFormData] = useState({
     firstName: socialAuthData?.firstName || "",
@@ -80,7 +81,11 @@ export default function CompleteProfilePage() {
       {
         onSuccess: (result) => {
           if (result.success) {
-            router.push("/");
+            if (returnToCart) {
+              router.push("/?openCart=true");
+            } else {
+              router.push("/");
+            }
           } else {
             setError(result.message);
           }

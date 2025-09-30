@@ -32,6 +32,10 @@ export default function PhoneLoginPage() {
   const fullPhoneNumber = `+${countryCode}${phoneNumber}`;
   const isValidPhoneNumber = countryCode.length >= 2 && phoneNumber.length >= 7;
 
+  // Check if user came from cart
+  const searchParams = new URLSearchParams(window.location.search);
+  const returnToCart = searchParams.get("returnToCart") === "true";
+
   const handleSendOTP = async () => {
     if (!isValidPhoneNumber) {
       setError("Lütfen geçerli bir telefon numarası giriniz");
@@ -44,8 +48,9 @@ export default function PhoneLoginPage() {
       {
         onSuccess: (data) => {
           if (data.success) {
+            const returnParam = returnToCart ? "&returnToCart=true" : "";
             router.push(
-              `/auth/verify-otp?phone=${encodeURIComponent(fullPhoneNumber)}&userType=${userType}`
+              `/auth/verify-otp?phone=${encodeURIComponent(fullPhoneNumber)}&userType=${userType}${returnParam}`
             );
           } else {
             setError(data.message);

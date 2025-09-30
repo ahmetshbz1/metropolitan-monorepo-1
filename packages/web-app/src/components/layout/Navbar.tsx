@@ -18,8 +18,8 @@ import { useCartStore } from "@/stores/cart-store";
 import { Menu, ShoppingBag, Sparkles, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import { CategoryMenu } from "./navbar/CategoryMenu";
 import { MobileMenu } from "./navbar/MobileMenu";
 import { SearchBar } from "./navbar/SearchBar";
@@ -29,6 +29,7 @@ export function Navbar() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   // Wait for client-side hydration
   const hydrated = useHydration();
@@ -53,6 +54,19 @@ export function Navbar() {
 
   // Get cart summary for display (directly access summary for reactivity)
   const cartSummary = useCartStore((state) => state.summary);
+
+  // Check if user came from cart after authentication
+  useEffect(() => {
+    if (hydrated && _hasHydrated && hasSession) {
+      const openCart = searchParams.get("openCart") === "true";
+      if (openCart) {
+        // Open cart after auth
+        setIsCartOpen(true);
+        // Remove query param from URL
+        router.replace("/");
+      }
+    }
+  }, [hydrated, _hasHydrated, hasSession, searchParams, router]);
 
   // Legal sayfasında navbar'ı gösterme
   if (pathname === "/legal") {

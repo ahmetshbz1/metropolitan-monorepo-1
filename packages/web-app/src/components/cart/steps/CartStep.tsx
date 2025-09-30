@@ -2,10 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/stores/cart-store";
+import { useAuthStore } from "@/stores/auth-store";
 import { useUpdateCartItem, useRemoveFromCart } from "@/hooks/api/use-cart";
 import { useProducts } from "@/hooks/api/use-products";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { useMemo } from "react";
+import { useRouter } from "next/navigation";
 
 interface CartStepProps {
   onNext: () => void;
@@ -15,8 +17,15 @@ interface CartStepProps {
 export function CartStep({ onNext, canProceed }: CartStepProps) {
   const items = useCartStore((state) => state.items);
   const summary = useCartStore((state) => state.summary);
+  const isGuest = useAuthStore((state) => state.isGuest);
+  const user = useAuthStore((state) => state.user);
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const router = useRouter();
   const updateItemMutation = useUpdateCartItem();
   const removeItemMutation = useRemoveFromCart();
+
+  // Kullanıcı authenticated mi kontrol et
+  const isAuthenticated = !!(user && accessToken);
 
   // Frontend'deki tüm ürünleri al
   const { data: products = [] } = useProducts();
@@ -159,8 +168,19 @@ export function CartStep({ onNext, canProceed }: CartStepProps) {
           </div>
 
           {/* Next Button */}
-          <Button onClick={onNext} size="lg" className="w-full" disabled={!canProceed}>
-            Devam Et
+          <Button
+            onClick={() => {
+              if (!isAuthenticated) {
+                router.push("/auth/phone-login?returnToCart=true");
+              } else {
+                onNext();
+              }
+            }}
+            size="lg"
+            className="w-full"
+            disabled={!canProceed}
+          >
+            {!isAuthenticated ? "Giriş Yap" : "Devam Et"}
           </Button>
         </div>
       )}
