@@ -1,8 +1,8 @@
 //  "MinimumQuantityDialog.tsx"
 //  metropolitan app
 
-import React from "react";
-import { Modal, View, ActivityIndicator } from "react-native";
+import React, { useEffect, useRef } from "react";
+import { Modal, View, ActivityIndicator, Animated } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
 import { HapticButton } from "@/components/HapticButton";
@@ -30,19 +30,44 @@ export const MinimumQuantityDialog: React.FC<MinimumQuantityDialogProps> = ({
   const { t } = useTranslation();
   const { colors, colorScheme } = useTheme();
 
+  const scaleAnim = useRef(new Animated.Value(0.9)).current;
+  const opacityAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (visible) {
+      Animated.parallel([
+        Animated.spring(scaleAnim, {
+          toValue: 1,
+          useNativeDriver: true,
+          speed: 20,
+          bounciness: 4,
+        }),
+        Animated.timing(opacityAnim, {
+          toValue: 1,
+          duration: 150,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      scaleAnim.setValue(0.9);
+      opacityAnim.setValue(0);
+    }
+  }, [visible, scaleAnim, opacityAnim]);
+
   return (
     <Modal
       visible={visible}
       transparent
-      animationType="fade"
+      animationType="none"
       onRequestClose={onCancel}
+      statusBarTranslucent
     >
       <BlurView
         intensity={colorScheme === "dark" ? 80 : 60}
         tint={colorScheme === "dark" ? "dark" : "light"}
         className="flex-1 justify-center items-center px-6"
       >
-        <View
+        <Animated.View
           className="w-full max-w-sm rounded-2xl p-6"
           style={{
             backgroundColor: colors.cardBackground,
@@ -51,6 +76,8 @@ export const MinimumQuantityDialog: React.FC<MinimumQuantityDialogProps> = ({
             shadowOpacity: 0.2,
             shadowRadius: 16,
             elevation: 8,
+            transform: [{ scale: scaleAnim }],
+            opacity: opacityAnim,
           }}
         >
           <View className="items-center mb-4">
@@ -107,7 +134,7 @@ export const MinimumQuantityDialog: React.FC<MinimumQuantityDialogProps> = ({
               )}
             </HapticButton>
           </View>
-        </View>
+        </Animated.View>
       </BlurView>
     </Modal>
   );
