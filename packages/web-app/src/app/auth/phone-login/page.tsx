@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { useGoogleAuth, useSendOTP } from "@/hooks/api";
 import { Loader2, Phone } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -22,6 +22,7 @@ export default function PhoneLoginPage() {
   const sendOTP = useSendOTP();
   const googleAuth = useGoogleAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [countryCode, setCountryCode] = useState("48");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [userType, setUserType] = useState<"individual" | "corporate">(
@@ -33,7 +34,6 @@ export default function PhoneLoginPage() {
   const isValidPhoneNumber = countryCode.length >= 2 && phoneNumber.length >= 7;
 
   // Check if user came from cart
-  const searchParams = new URLSearchParams(window.location.search);
   const returnToCart = searchParams.get("returnToCart") === "true";
 
   const handleSendOTP = async () => {

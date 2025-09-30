@@ -219,7 +219,7 @@ export default function VerifyOtpPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md mx-auto flex flex-col justify-center">
         <Card className="border-0 shadow-lg">
           <CardHeader className="space-y-4 text-center">
             <div className="flex justify-start">

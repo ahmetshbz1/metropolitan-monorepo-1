@@ -112,7 +112,7 @@ export default function CompleteProfilePage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md mx-auto flex flex-col justify-center">
         <Card className="border shadow-lg">
           <CardHeader className="text-center space-y-4">
             <div className="flex justify-start">

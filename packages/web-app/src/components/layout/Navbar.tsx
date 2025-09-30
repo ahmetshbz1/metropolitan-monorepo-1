@@ -19,7 +19,7 @@ import { Menu, ShoppingBag, Sparkles, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { CategoryMenu } from "./navbar/CategoryMenu";
 import { MobileMenu } from "./navbar/MobileMenu";
 import { SearchBar } from "./navbar/SearchBar";
@@ -73,10 +73,8 @@ export function Navbar() {
     return null;
   }
 
-  // Show nothing until both Next.js and auth are hydrated
-  if (!hydrated || !_hasHydrated) {
-    return null;
-  }
+  // Show loading state for dynamic content only
+  const isLoading = !hydrated || !_hasHydrated;
 
   const handleUserAction = (action: string, route?: string) => {
     if (action === "logout") {
@@ -151,25 +149,35 @@ export function Navbar() {
 
             {/* Action Buttons */}
             <div className="flex items-center space-x-2">
-              {isAuthenticated && <NotificationsDropdown />}
-
-              <UserDropdown
-                user={
-                  isAuthenticated && user
-                    ? {
-                        name: `${user.firstName} ${user.lastName}`,
-                        username: user.phone || "",
-                        email: user.email,
-                        avatar: user.profilePhotoUrl || "",
-                        initials: `${user.firstName?.charAt(0)}${user.lastName?.charAt(0)}`,
-                        isGuest: false,
-                        userType: user.userType,
-                      }
-                    : undefined
-                }
-                onAction={handleUserAction}
-                onLogin={handleLogin}
-              />
+              {isLoading ? (
+                <>
+                  {isAuthenticated && (
+                    <div className="h-9 w-9 bg-gray-200 rounded-full animate-pulse" />
+                  )}
+                  <div className="h-10 w-10 bg-gray-200 rounded-full animate-pulse" />
+                </>
+              ) : (
+                <>
+                  {isAuthenticated && <NotificationsDropdown />}
+                  <UserDropdown
+                    user={
+                      isAuthenticated && user
+                        ? {
+                            name: `${user.firstName} ${user.lastName}`,
+                            username: user.phone || "",
+                            email: user.email,
+                            avatar: user.profilePhotoUrl || "",
+                            initials: `${user.firstName?.charAt(0)}${user.lastName?.charAt(0)}`,
+                            isGuest: false,
+                            userType: user.userType,
+                          }
+                        : undefined
+                    }
+                    onAction={handleUserAction}
+                    onLogin={handleLogin}
+                  />
+                </>
+              )}
 
               <Button
                 variant="ghost"
@@ -183,11 +191,11 @@ export function Navbar() {
           </div>
 
           {/* Second Row - Cart Button under profile */}
-          {hasSession && (
+          {(hasSession || isLoading) && (
             <div className="pb-2">
               <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-end -mr-4 sm:-mr-6 lg:-mr-8">
-                  {cartLoading ? (
+                  {isLoading || cartLoading ? (
                     // Skeleton loader while cart is loading
                     <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-orange-50/50 dark:bg-orange-900/10 border border-orange-200/50 dark:border-orange-800/50">
                       <div className="h-4 w-16 bg-orange-200/50 dark:bg-orange-800/50 rounded animate-pulse" />
