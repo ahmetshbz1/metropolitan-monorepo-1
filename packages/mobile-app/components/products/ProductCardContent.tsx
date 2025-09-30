@@ -3,12 +3,10 @@
 //  Created by Ahmet on 26.06.2025. Edited on 23.07.2025.
 
 import { formatPrice } from "@/core/utils";
-import { useToast } from "@/hooks/useToast";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { ColorSchemeName, View, GestureResponderEvent } from "react-native";
 import { ThemedText } from "../ThemedText";
-import { SimpleAddToCartButton } from "./SimpleAddToCartButton";
 import type { Product } from "@metropolitan/shared";
 import type { ThemeColors } from "@/types/theme";
 
@@ -32,61 +30,55 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
   handleAddToCart,
 }) => {
   const { t } = useTranslation();
-  const { showToast } = useToast();
-
-  const handleNotifyMe = async () => {
-    showToast(
-      t("product_detail.purchase.notify_success_message", {
-        productName: product.name,
-      }),
-      "success"
-    );
-  };
 
   return (
-    <View className="p-2" style={{ backgroundColor: colors.cardBackground }}>
-      {/* Product Name */}
+    <View className="p-2 flex-1" style={{ backgroundColor: colors.cardBackground }}>
+      {/* Price - Top */}
       <ThemedText
-        className="text-sm font-bold mb-3"
+        className="font-bold text-base mb-1"
+        style={{ color: colors.primary }}
+      >
+        {formatPrice(product.price, product.currency)}
+      </ThemedText>
+
+      {/* Product Name - Middle */}
+      <ThemedText
+        className="text-xs mb-auto"
         numberOfLines={2}
         style={{
-          lineHeight: 20,
-          height: 40,
-          color: colorScheme === "dark" ? "#fff" : "#1a1a1a",
-          letterSpacing: -0.2,
+          lineHeight: 16,
+          color: colorScheme === "dark" ? "#e5e5e5" : "#3f3f3f",
+          letterSpacing: -0.1,
         }}
       >
         {product.name}
       </ThemedText>
 
-      {/* Price and Add to Cart - Separated */}
-      <View className="flex-row items-center justify-between">
-        <ThemedText
-          className="font-bold text-base"
-          style={{ color: colors.primary }}
-        >
-          {formatPrice(product.price, product.currency)}
-        </ThemedText>
-
-        <SimpleAddToCartButton
-          onPress={isOutOfStock ? handleNotifyMe : handleAddToCart}
-          colors={colors}
-          outOfStock={isOutOfStock}
-        />
-      </View>
-
-      {/* Stock Status */}
-      {isLowStock && !isOutOfStock && (
-        <View className="mt-3 flex-row items-center justify-center">
-          <View className="w-2 h-2 bg-amber-500 rounded-full mr-2" />
+      {/* Bottom Section */}
+      <View className="mt-2">
+        {/* Size/Unit Info */}
+        {product.size && (
           <ThemedText
-            className="text-xs font-semibold text-amber-500"
-            style={{ letterSpacing: 0.3 }}
+            className="text-xs mb-1"
+            style={{ color: colorScheme === "dark" ? "#a3a3a3" : "#737373" }}
           >
-            {t("product.low_stock")}
+            {product.size}
           </ThemedText>
-        </View>
-      )}
+        )}
+
+        {/* Stock Status */}
+        {isLowStock && !isOutOfStock && (
+          <View className="flex-row items-center">
+            <View className="w-1 h-1 bg-amber-400 rounded-full mr-1.5" />
+            <ThemedText
+              className="text-xs font-medium"
+              style={{ color: colorScheme === "dark" ? "#fbbf24" : "#d97706" }}
+            >
+              Son {product.stock}
+            </ThemedText>
+          </View>
+        )}
+      </View>
     </View>
   );
 };

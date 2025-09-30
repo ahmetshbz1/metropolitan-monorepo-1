@@ -139,8 +139,8 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
 
   return (
     <View
-      className={isHorizontal ? "mr-3" : "mb-3"}
-      style={isHorizontal ? { width: 180 } : { flex: 1/3 }}
+      className={isHorizontal ? "mr-3" : ""}
+      style={isHorizontal ? { width: 180 } : { flex: 1 }}
     >
       <ContextMenu
         actions={contextMenuActions}
@@ -182,15 +182,16 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
               }
             }}
             activeOpacity={0.85}
-            className="overflow-hidden rounded-3xl border"
+            className="overflow-hidden rounded-xl border"
             style={{
               backgroundColor: colors.cardBackground,
               borderColor: colors.border,
               shadowColor: colorScheme === "dark" ? "#000" : colors.tint,
-              shadowOffset: { width: 0, height: 6 },
-              shadowOpacity: colorScheme === "dark" ? 0.3 : 0.12,
-              shadowRadius: 12,
-              elevation: 6,
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.08,
+              shadowRadius: 4,
+              elevation: 2,
+              height: 200,
             }}
           >
 
@@ -199,6 +200,9 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
             colorScheme={colorScheme}
             isOutOfStock={isOutOfStock}
             colors={colors}
+            isProductFavorite={isProductFavorite}
+            handleToggleFavorite={handleToggleFavorite}
+            handleAddToCart={handleAddToCart}
           />
 
           <ProductCardContent
@@ -210,17 +214,6 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
             isLowStock={isLowStock}
             handleAddToCart={handleAddToCart}
           />
-
-          <HapticIconButton
-            onPress={handleToggleFavorite}
-            className="absolute top-1 right-3 w-8 h-8 justify-center items-center z-10"
-          >
-            <Ionicons
-              name={isProductFavorite ? "heart" : "heart-outline"}
-              size={20}
-              color={getFavoriteIconColor(isProductFavorite, colorScheme, colors)}
-            />
-          </HapticIconButton>
         </TouchableOpacity>
       </ContextMenu>
     </View>

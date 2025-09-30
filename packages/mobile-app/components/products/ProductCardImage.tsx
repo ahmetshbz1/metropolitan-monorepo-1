@@ -7,14 +7,19 @@ import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ColorSchemeName, View } from "react-native";
+import { ColorSchemeName, View, GestureResponderEvent } from "react-native";
 import { ThemedText } from "../ThemedText";
+import { Ionicons } from "@expo/vector-icons";
+import { HapticIconButton } from "../HapticButton";
 
 interface ProductCardImageProps {
   product: Product;
   colorScheme: ColorSchemeName;
   isOutOfStock: boolean;
   colors: any;
+  isProductFavorite: boolean;
+  handleToggleFavorite: (e: GestureResponderEvent) => void;
+  handleAddToCart: (e: GestureResponderEvent) => Promise<void>;
 }
 
 export const ProductCardImage: React.FC<ProductCardImageProps> = ({
@@ -22,23 +27,26 @@ export const ProductCardImage: React.FC<ProductCardImageProps> = ({
   colorScheme,
   isOutOfStock,
   colors,
+  isProductFavorite,
+  handleToggleFavorite,
+  handleAddToCart,
 }) => {
   const { t } = useTranslation();
 
   return (
-    <View 
+    <View
       className="relative items-center justify-center overflow-hidden"
-      style={{ 
+      style={{
         aspectRatio: 1,
         backgroundColor: colorScheme === 'dark' ? '#1f1f1f' : '#f8f8f8',
-        borderTopLeftRadius: 16,
-        borderTopRightRadius: 16,
+        borderTopLeftRadius: 12,
+        borderTopRightRadius: 12,
       }}
     >
       {/* Enhanced gradient background */}
       <LinearGradient
         colors={
-          colorScheme === 'dark' 
+          colorScheme === 'dark'
             ? ['#2a2a2a', '#1a1a1a', '#0f0f0f']
             : ['#ffffff', '#f8f9fa', '#f1f3f4']
         }
@@ -46,7 +54,7 @@ export const ProductCardImage: React.FC<ProductCardImageProps> = ({
         end={{ x: 1, y: 1 }}
         className="absolute inset-0"
       />
-      
+
       <Image
         source={{ uri: product.image }}
         style={{
@@ -71,24 +79,51 @@ export const ProductCardImage: React.FC<ProductCardImageProps> = ({
         pointerEvents="none"
       />
 
-      {/* Stock status overlay - modernized */}
+      {/* Favorite Button - Top Right */}
+      <HapticIconButton
+        onPress={handleToggleFavorite}
+        className="absolute top-2 right-2 w-7 h-7 rounded-full justify-center items-center z-20"
+        style={{
+          backgroundColor: colorScheme === 'dark' ? 'rgba(40, 40, 40, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+        }}
+      >
+        <Ionicons
+          name={isProductFavorite ? "heart" : "heart-outline"}
+          size={14}
+          color={isProductFavorite ? colors.danger : (colorScheme === "dark" ? "#fff" : "#000")}
+        />
+      </HapticIconButton>
+
+      {/* Add to Cart Button - Below Favorite */}
+      {!isOutOfStock && (
+        <HapticIconButton
+          onPress={handleAddToCart}
+          className="absolute top-11 right-2 w-7 h-7 rounded-full justify-center items-center z-20"
+          style={{
+            backgroundColor: colors.primary,
+          }}
+        >
+          <Ionicons
+            name="add"
+            size={16}
+            color="#fff"
+          />
+        </HapticIconButton>
+      )}
+
+      {/* Out of Stock Overlay */}
       {isOutOfStock && (
         <View
           className="absolute inset-0 items-center justify-center"
           style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
         >
           <View
-            className="px-4 py-2 rounded-full backdrop-blur-sm"
-            style={{ 
-              backgroundColor: colors.danger,
-              shadowColor: colors.danger,
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.3,
-              shadowRadius: 8,
-              elevation: 6,
+            className="px-3 py-1.5 rounded"
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
             }}
           >
-            <ThemedText className="text-sm font-semibold text-white">
+            <ThemedText className="text-xs font-medium" style={{ color: '#1a1a1a' }}>
               {t("product.out_of_stock")}
             </ThemedText>
           </View>
