@@ -12,9 +12,10 @@ import { useRouter } from "next/navigation";
 interface CartStepProps {
   onNext: () => void;
   canProceed: boolean;
+  onClose?: () => void;
 }
 
-export function CartStep({ onNext, canProceed }: CartStepProps) {
+export function CartStep({ onNext, canProceed, onClose }: CartStepProps) {
   const items = useCartStore((state) => state.items);
   const summary = useCartStore((state) => state.summary);
   const isGuest = useAuthStore((state) => state.isGuest);
@@ -171,6 +172,7 @@ export function CartStep({ onNext, canProceed }: CartStepProps) {
           <Button
             onClick={() => {
               if (!isAuthenticated) {
+                onClose?.();
                 router.push("/auth/phone-login?returnToCart=true");
               } else {
                 onNext();

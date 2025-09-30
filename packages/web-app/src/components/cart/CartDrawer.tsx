@@ -72,7 +72,13 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
   const getStepComponent = () => {
     switch (state.currentStep) {
       case "cart":
-        return <CartStep onNext={handleNext} canProceed={items.length > 0} />;
+        return (
+          <CartStep
+            onNext={handleNext}
+            canProceed={items.length > 0}
+            onClose={() => onOpenChange(false)}
+          />
+        );
       case "address":
         return <AddressStep />;
       case "payment":
