@@ -10,10 +10,12 @@ interface ToastMessage {
   message: string;
   type?: 'success' | 'error' | 'warning' | 'info';
   duration?: number;
+  actionLabel?: string;
+  onActionPress?: () => void;
 }
 
 interface ToastContextType {
-  showToast: (message: string, type?: 'success' | 'error' | 'warning' | 'info', duration?: number) => void;
+  showToast: (message: string, type?: 'success' | 'error' | 'warning' | 'info', duration?: number, actionLabel?: string, onActionPress?: () => void) => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -22,13 +24,15 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   const showToast = useCallback((
-    message: string, 
+    message: string,
     type: 'success' | 'error' | 'warning' | 'info' = 'info',
-    duration: number = 3000
+    duration: number = 3000,
+    actionLabel?: string,
+    onActionPress?: () => void
   ) => {
     const id = Date.now().toString();
     // Yeni toast geldiğinde eskileri temizle, sadece yeni toast'ı göster
-    setToasts([{ id, message, type, duration }]);
+    setToasts([{ id, message, type, duration, actionLabel, onActionPress }]);
   }, []);
 
   const removeToast = useCallback((id: string) => {
@@ -46,6 +50,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           duration={toast.duration}
           visible={true}
           onClose={() => removeToast(toast.id)}
+          actionLabel={toast.actionLabel}
+          onActionPress={toast.onActionPress}
         />
       ))}
     </ToastContext.Provider>

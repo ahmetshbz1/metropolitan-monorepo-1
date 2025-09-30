@@ -286,6 +286,7 @@
   "errors": {
     "INSUFFICIENT_STOCK": "You can add a maximum of {{stock}} units of this product.",
     "INSUFFICIENT_STOCK_ALREADY_IN_CART": "You have {{inCart}} units of this product in your cart. You can add a maximum of {{canAdd}} more units.",
+    "MIN_QUANTITY_NOT_MET": "Minimum {{minQuantity}} pieces required for this product.",
     "PRODUCT_NOT_FOUND": "Product not found.",
     "CART_ITEM_NOT_FOUND": "Cart item not found.",
     "CART_ADD_ERROR": "An unexpected error occurred while adding the product to the cart. Please try again.",
@@ -751,12 +752,15 @@
       "stock_error_title": "Stock Limit Exceeded",
       "stock_error_message": "You can add a maximum of {{count}} units of this product.",
       "generic_error_title": "Error",
-      "generic_error_message": "An error occurred while adding to cart. Please try again."
+      "generic_error_message": "An error occurred while adding to cart. Please try again.",
+      "add_min_quantity": "Add {{count}} Pieces"
     },
     "add_to_cart": "Add to Cart",
     "stock_available": "{{count}}: In stock",
     "category": "Category: {{category}}",
-    "out_of_stock": "Out of stock"
+    "out_of_stock": "Out of stock",
+    "min_quantity": "Minimum {{count}} pieces",
+    "box_quantity": "{{count}} pieces/carton"
   },
   "product_card": {
     "add_to_cart": "Add to Cart",

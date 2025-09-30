@@ -5,12 +5,13 @@
 import { useCart } from "@/context/CartContext";
 import { useFavorites } from "@/context/FavoritesContext";
 import { useProducts } from "@/context/ProductContext";
+import { useAuth } from "@/context/AuthContext";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useTheme } from "@/hooks/useTheme";
 import { useToast } from "@/hooks/useToast";
 import { Product } from "@metropolitan/shared";
 import { useRouter } from "expo-router";
-import { getErrorMessage } from "@/types/error";
+import { getErrorMessage, StructuredError } from "@/types/error";
 import { useTranslation } from "react-i18next";
 import type { GestureResponderEvent } from "react-native";
 
@@ -23,6 +24,7 @@ export const useProductCard = (product: Product) => {
   const { categories } = useProducts();
   const { showToast } = useToast();
   const router = useRouter();
+  const { user } = useAuth();
 
   // Computed values
   const isProductFavorite = isFavorite(product.id);
@@ -47,7 +49,22 @@ export const useProductCard = (product: Product) => {
     } catch (error) {
       // Handle structured errors and fallback to generic error message
       const errorMessage = getErrorMessage(error);
-      if (errorMessage === "UNEXPECTED_ERROR") {
+      const structuredError = error as StructuredError;
+
+      // Check if it's a minimum quantity error
+      if (structuredError.key === "MIN_QUANTITY_NOT_MET" && structuredError.params?.minQuantity) {
+        const minQty = structuredError.params.minQuantity;
+        showToast(
+          errorMessage,
+          "warning",
+          5000, // 5 seconds duration
+          t("product_detail.purchase.add_min_quantity", { count: minQty }),
+          () => {
+            // Navigate to product detail with minimum quantity pre-filled
+            router.push(`/product/${product.id}`);
+          }
+        );
+      } else if (errorMessage === "UNEXPECTED_ERROR") {
         showToast(t("errors.UNEXPECTED_ERROR"), "error");
       } else {
         showToast(errorMessage || t("errors.CART_ADD_ERROR"), "error");

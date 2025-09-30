@@ -13,6 +13,7 @@ import Colors from "@/constants/Colors";
 import { useCart } from "@/context/CartContext";
 import { useProducts } from "@/context/ProductContext";
 import { useFavorites } from "@/context/FavoritesContext";
+import { useAuth } from "@/context/AuthContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useLocalSearchParams, useNavigation } from "expo-router";
@@ -33,6 +34,7 @@ export default function ProductDetailScreen() {
   const navigation = useNavigation();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
+  const { user } = useAuth();
 
   // Memoize product lookup for better performance
   const product = useMemo(() =>
@@ -46,11 +48,20 @@ export default function ProductDetailScreen() {
     [cartItems, product?.id]
   );
 
+  // Kullanıcı tipine göre minimum adet
+  const minQuantity = useMemo(() => {
+    if (!product) return 1;
+    const userType = user?.userType || "individual";
+    return userType === "corporate"
+      ? (product.minQuantityCorporate ?? 1)
+      : (product.minQuantityIndividual ?? 1);
+  }, [product, user?.userType]);
+
   const [quantity, setQuantity] = useState(
-    existingCartItem ? String(existingCartItem.quantity) : "1"
+    existingCartItem ? String(existingCartItem.quantity) : String(minQuantity)
   );
 
-  // Update quantity when cart changes
+  // Update quantity when cart changes or minQuantity changes
   useEffect(() => {
     const currentCartItem = cartItems.find(
       (item) => item.product.id === product?.id
@@ -58,9 +69,9 @@ export default function ProductDetailScreen() {
     if (currentCartItem) {
       setQuantity(String(currentCartItem.quantity));
     } else {
-      setQuantity("1");
+      setQuantity(String(minQuantity));
     }
-  }, [cartItems, product?.id]);
+  }, [cartItems, product?.id, minQuantity]);
 
   // Optimize quantity handlers
   const handleQuantityChange = useCallback((text: string) => {
@@ -70,21 +81,21 @@ export default function ProductDetailScreen() {
   const handleQuantityBlur = useCallback(() => {
     if (!product) return;
     const num = parseInt(quantity, 10);
-    if (isNaN(num) || num < 1) {
-      setQuantity("1");
+    if (isNaN(num) || num < minQuantity) {
+      setQuantity(String(minQuantity));
     } else if (num > product.stock) {
       setQuantity(String(product.stock));
     }
-  }, [product, quantity]);
+  }, [product, quantity, minQuantity]);
 
   const updateQuantity = useCallback((amount: number) => {
     if (!product) return;
     const currentQuantity = parseInt(quantity, 10) || 0;
     const newQuantity = currentQuantity + amount;
-    if (newQuantity >= 1 && newQuantity <= product.stock) {
+    if (newQuantity >= minQuantity && newQuantity <= product.stock) {
       setQuantity(String(newQuantity));
     }
-  }, [product, quantity]);
+  }, [product, quantity, minQuantity]);
 
   const handleToggleFavorite = useCallback(() => {
     if (!product) return;

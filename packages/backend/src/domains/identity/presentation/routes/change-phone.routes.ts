@@ -290,6 +290,14 @@ export const changePhoneRoutes = createApp()
               })
               .where(eq(phoneChangeRequests.id, request[0].id));
 
+            // Kullanıcının userType'ını çek
+            const updatedUser = await db.query.users.findFirst({
+              where: eq(users.id, userId),
+              columns: { userType: true },
+            });
+
+            const userType = updatedUser?.userType || "individual";
+
             // Önce yeni session oluştur
             const deviceInfo = extractDeviceInfo(headers);
             // IMPORTANT: Telefon değişiminde aynı device'ı koruyoruz
@@ -305,6 +313,7 @@ export const changePhoneRoutes = createApp()
             const accessToken = await jwt.sign({
               sub: userId,
               type: "access",
+              userType,
               sessionId,
               deviceId,
               jti: accessJTI,
@@ -317,6 +326,7 @@ export const changePhoneRoutes = createApp()
             const refreshToken = await jwt.sign({
               sub: userId,
               type: "refresh",
+              userType,
               sessionId,
               deviceId,
               jti: refreshJTI,

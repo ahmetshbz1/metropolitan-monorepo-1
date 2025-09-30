@@ -16,6 +16,7 @@ import Colors from "@/constants/Colors";
 import { formatPrice } from "@/core/utils";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useHaptics } from "@/hooks/useHaptics";
+import { useAuth } from "@/context/AuthContext";
 import type { Product } from "@metropolitan/shared";
 
 interface ProductInfoProps {
@@ -37,6 +38,7 @@ export const ProductInfo = memo<ProductInfoProps>(function ProductInfo({
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
   const { triggerHaptic } = useHaptics();
+  const { user } = useAuth();
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [sheetReady, setSheetReady] = useState(false);
@@ -87,6 +89,27 @@ export const ProductInfo = memo<ProductInfoProps>(function ProductInfo({
     () => parseInt(quantity, 10) || 0,
     [quantity]
   );
+
+  // Kullanıcı tipine göre minimum adet
+  const minQuantity = useMemo(() => {
+    if (!product) return 1;
+    const userType = user?.userType || "individual";
+    return userType === "corporate"
+      ? (product.minQuantityCorporate ?? 1)
+      : (product.minQuantityIndividual ?? 1);
+  }, [product, user?.userType]);
+
+  // Kullanıcı tipine göre fiyat
+  const displayPrice = useMemo(() => {
+    if (!product) return 0;
+    const userType = user?.userType || "individual";
+    if (userType === "corporate" && product.corporatePrice !== undefined) {
+      return product.corporatePrice;
+    } else if (userType === "individual" && product.individualPrice !== undefined) {
+      return product.individualPrice;
+    }
+    return product.price;
+  }, [product, user?.userType]);
 
   if (!product) {
     return null;
@@ -140,8 +163,35 @@ export const ProductInfo = memo<ProductInfoProps>(function ProductInfo({
               color: colors.primary,
             }}
           >
-            {formatPrice(product.price, product.currency)}
+            {formatPrice(displayPrice, product.currency)}
           </ThemedText>
+
+          {/* Minimum adet bilgisi - kurumsal kullanıcılar için */}
+          {minQuantity > 1 && (
+            <View
+              className="mt-2 px-2 py-1.5 rounded"
+              style={{
+                backgroundColor: colors.tint + "15",
+                borderWidth: 1,
+                borderColor: colors.tint + "30"
+              }}
+            >
+              <ThemedText
+                className="text-sm font-semibold"
+                style={{ color: colors.tint }}
+              >
+                {t("product_detail.min_quantity", { count: minQuantity })}
+              </ThemedText>
+              {product.quantityPerBox && product.quantityPerBox > 1 && (
+                <ThemedText
+                  className="text-xs mt-0.5"
+                  style={{ color: colors.tint }}
+                >
+                  {t("product_detail.box_quantity", { count: product.quantityPerBox })}
+                </ThemedText>
+              )}
+            </View>
+          )}
 
           {/* Quantity Selector - Fiyatın altında */}
           {product.stock > 0 && (
@@ -160,12 +210,12 @@ export const ProductInfo = memo<ProductInfoProps>(function ProductInfo({
               <HapticIconButton
                 className="w-9 h-9 items-center justify-center"
                 onPress={() => onUpdateQuantity(-1)}
-                disabled={numericQuantity <= 1}
+                disabled={numericQuantity <= minQuantity}
               >
                 <Ionicons
                   name="remove"
                   size={16}
-                  color={numericQuantity <= 1 ? colors.mediumGray : colors.text}
+                  color={numericQuantity <= minQuantity ? colors.mediumGray : colors.text}
                 />
               </HapticIconButton>
               <TextInput

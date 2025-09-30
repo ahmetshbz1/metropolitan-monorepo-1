@@ -71,6 +71,8 @@ export type AuthContextType = {
   signInWithApple: () => Promise<{ success: boolean; error?: string }>;
   signInWithGoogle: () => Promise<{ success: boolean; error?: string }>;
   isAppleSignInAvailable: boolean;
+  setGuestId?: (id: string | null) => void;
+  setIsGuest?: (value: boolean) => void;
 };
 
 // Re-export shared CompleteProfilePayload for consistency

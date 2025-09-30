@@ -286,6 +286,7 @@
   "errors": {
     "INSUFFICIENT_STOCK": "Możesz dodać maksymalnie {{stock}} sztuk tego produktu.",
     "INSUFFICIENT_STOCK_ALREADY_IN_CART": "Masz {{inCart}} sztuk tego produktu w koszyku. Możesz dodać maksymalnie {{canAdd}} sztuk więcej.",
+    "MIN_QUANTITY_NOT_MET": "Minimalna ilość zamówienia dla tego produktu to {{minQuantity}} sztuk.",
     "PRODUCT_NOT_FOUND": "Produkt nie znaleziony.",
     "CART_ITEM_NOT_FOUND": "Element koszyka nie znaleziony.",
     "CART_ADD_ERROR": "Podczas dodawania produktu do koszyka wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
@@ -758,12 +759,15 @@
       "stock_error_title": "Przekroczono Limit Stanu Magazynowego",
       "stock_error_message": "Możesz dodać maksymalnie {{count}} sztuk tego produktu.",
       "generic_error_title": "Błąd",
-      "generic_error_message": "Wystąpił błąd podczas dodawania do koszyka. Proszę spróbować ponownie."
+      "generic_error_message": "Wystąpił błąd podczas dodawania do koszyka. Proszę spróbować ponownie.",
+      "add_min_quantity": "Dodaj {{count}} sztuk"
     },
     "add_to_cart": "Dodaj do koszyka",
     "stock_available": "{{count}}: Dostępne w magazynie",
     "category": "Kategoria: {{category}}",
-    "out_of_stock": "Brak w magazynie"
+    "out_of_stock": "Brak w magazynie",
+    "min_quantity": "Minimum {{count}} sztuk",
+    "box_quantity": "{{count}} sztuk/karton"
   },
   "product_card": {
     "add_to_cart": "Dodaj do koszyka",

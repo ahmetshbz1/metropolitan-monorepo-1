@@ -16,6 +16,8 @@ export const useCartState = () => {
     hasValidSession: cartData.hasValidSession,
     guestId: cartData.guestId,
     cartItems: cartData.cartItems,
+    setGuestId: cartData.setGuestId,
+    setIsGuest: cartData.setIsGuest,
   });
 
   return {

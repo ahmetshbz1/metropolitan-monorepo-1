@@ -752,12 +752,15 @@
       "stock_error_title": "Stok Limiti Aşıldı",
       "stock_error_message": "Bu üründen en fazla {{count}} adet alabilirsiniz.",
       "generic_error_title": "Hata",
-      "generic_error_message": "Sepete eklenirken bir sorun oluştu. Lütfen tekrar deneyin."
+      "generic_error_message": "Sepete eklenirken bir sorun oluştu. Lütfen tekrar deneyin.",
+      "add_min_quantity": "{{count}} Adet Ekle"
     },
     "add_to_cart": "Sepete Ekle",
     "stock_available": "{{count}}: Stokta var",
     "category": "Kategori: {{category}}",
-    "out_of_stock": "Stokta yok"
+    "out_of_stock": "Stokta yok",
+    "min_quantity": "Minimum {{count}} adet",
+    "box_quantity": "{{count}} adet/karton"
   },
   "product_card": {
     "add_to_cart": "Sepete Ekle",

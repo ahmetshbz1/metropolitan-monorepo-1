@@ -9,7 +9,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export const useCartData = () => {
-  const { isGuest, guestId, user } = useAuth();
+  const { isGuest, guestId, user, setGuestId, setIsGuest } = useAuth();
   const { t, i18n } = useTranslation();
 
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -77,5 +77,7 @@ export const useCartData = () => {
     isAuthenticated,
     hasValidSession,
     guestId,
+    setGuestId,
+    setIsGuest,
   };
 };

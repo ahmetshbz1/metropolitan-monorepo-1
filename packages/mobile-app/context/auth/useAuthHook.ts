@@ -289,5 +289,9 @@ export const useAuthHook = () => {
     logout,
     signInWithApple,
     signInWithGoogle,
+
+    // State setters (for cart)
+    setGuestId,
+    setIsGuest,
   };
 };

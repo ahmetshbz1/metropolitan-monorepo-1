@@ -17,6 +17,7 @@ import { useHaptics } from "@/hooks/useHaptics";
 import { useToast } from "@/hooks/useToast";
 import type { Product } from "@metropolitan/shared";
 import { StructuredError } from "@/types/error.types";
+import { useAuth } from "@/context/AuthContext";
 
 interface PurchaseSectionProps {
   product: Product;
@@ -42,6 +43,7 @@ export const PurchaseSection = memo<PurchaseSectionProps>(function PurchaseSecti
   const { showToast } = useToast();
   const { triggerHaptic } = useHaptics();
   const router = useRouter();
+  const { user } = useAuth();
 
 
   const [isAdded, setIsAdded] = useState(false);
@@ -67,6 +69,22 @@ export const PurchaseSection = memo<PurchaseSectionProps>(function PurchaseSecti
 
     try {
       const numQuantity = parseInt(quantity, 10) || 1;
+
+      // Minimum adet kontrolü
+      const userType = user?.userType || "individual";
+      const minQuantity = userType === "corporate"
+        ? (product.minQuantityCorporate ?? 1)
+        : (product.minQuantityIndividual ?? 1);
+
+      if (numQuantity < minQuantity) {
+        showToast(
+          t("errors.MIN_QUANTITY_NOT_MET", { minQuantity }),
+          "warning",
+          5000
+        );
+        onUpdateQuantity(minQuantity - numQuantity); // Miktarı minimum'a ayarla
+        throw new Error("Minimum quantity not met");
+      }
 
       const cartItem = cartItems.find((item) => item.product.id === product.id);
       const existingQuantity = cartItem ? cartItem.quantity : 0;

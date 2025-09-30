@@ -8,6 +8,8 @@ import { useTranslation } from "react-i18next";
 import { APIError, StructuredError } from "@/types/error.types";
 import { useRef, useCallback } from "react";
 import { useToast } from "@/hooks/useToast";
+import { createGuestSession, generateGuestId } from "@/context/auth/guestUtils";
+import { guestStorage } from "@/context/auth/storage";
 
 interface UseCartActionsProps {
   refreshCart: () => Promise<void>;
@@ -18,6 +20,8 @@ interface UseCartActionsProps {
   hasValidSession: boolean;
   guestId?: string;
   cartItems: CartItem[];
+  setGuestId?: (id: string | null) => void;
+  setIsGuest?: (value: boolean) => void;
 }
 
 export const useCartActions = ({
@@ -29,6 +33,8 @@ export const useCartActions = ({
   hasValidSession,
   guestId,
   cartItems,
+  setGuestId,
+  setIsGuest,
 }: UseCartActionsProps) => {
   const { t, i18n } = useTranslation();
   const { showToast } = useToast();
@@ -38,10 +44,24 @@ export const useCartActions = ({
 
   // Sepete ürün ekle (hybrid)
   const addToCart = async (productId: string, quantity: number = 1) => {
-    if (!hasValidSession) {
-      const error: StructuredError = new Error(t("auth.login_to_continue"));
-      error.code = "AUTH_REQUIRED";
-      throw error;
+    // Eğer ne kullanıcı ne de guest session yoksa, otomatik guest session oluştur
+    let currentGuestId = guestId;
+
+    if (!isAuthenticated && !guestId) {
+      // Guest session oluştur
+      const newGuestId = generateGuestId();
+      const result = await createGuestSession(newGuestId);
+
+      if (result.success) {
+        currentGuestId = newGuestId;
+        await guestStorage.saveGuestId(newGuestId);
+
+        // State'i güncelle (eğer setters varsa)
+        if (setGuestId) setGuestId(newGuestId);
+        if (setIsGuest) setIsGuest(true);
+      } else {
+        throw new Error(t("errors.CART_ADD_ERROR"));
+      }
     }
 
     try {
@@ -50,7 +70,7 @@ export const useCartActions = ({
         isAuthenticated,
         productId,
         quantity,
-        guestId || undefined,
+        currentGuestId || undefined,
         i18n.language
       );
       await refreshCart();

@@ -34,16 +34,23 @@ export const productRoutes = createApp()
       const userId = decoded.sub || decoded.userId;
       if (!userId) return { profile: null };
 
-      const user = await db.query.users.findFirst({
-        where: eq(users.id, userId),
-        columns: { userType: true, id: true }
-      });
+      // Hibrit çözüm: Önce token'a bak, yoksa DB'den çek
+      let userType = decoded.userType;
 
-      if (!user) return { profile: null };
+      if (!userType) {
+        // Sadece eski token'lar için DB sorgusu
+        const user = await db.query.users.findFirst({
+          where: eq(users.id, userId),
+          columns: { userType: true }
+        });
+
+        if (!user) return { profile: null };
+        userType = user.userType;
+      }
 
       const profile = {
         userId,
-        userType: user.userType as "individual" | "corporate",
+        userType: userType as "individual" | "corporate",
       };
 
       return { profile };

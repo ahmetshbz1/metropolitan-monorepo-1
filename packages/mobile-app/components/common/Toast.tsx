@@ -13,6 +13,8 @@ interface ToastProps {
   duration?: number;
   onClose?: () => void;
   visible: boolean;
+  actionLabel?: string;
+  onActionPress?: () => void;
 }
 
 export function Toast({
@@ -20,7 +22,9 @@ export function Toast({
   type = 'info',
   duration = 3000,
   onClose,
-  visible
+  visible,
+  actionLabel,
+  onActionPress
 }: ToastProps) {
   const insets = useSafeAreaInsets();
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -178,14 +182,27 @@ export function Toast({
         zIndex: 999,
       }}
     >
-      <View className={`${getBackgroundColor()} rounded-lg shadow-lg flex-row items-center p-4`}>
-        <Ionicons name={getIcon()} size={24} color="white" />
-        <Text className="text-white flex-1 ml-3 text-base font-medium">
-          {message}
-        </Text>
-        <TouchableOpacity onPress={handleClose} className="ml-2">
-          <Ionicons name="close" size={20} color="white" />
-        </TouchableOpacity>
+      <View className={`${getBackgroundColor()} rounded-lg shadow-lg p-4`}>
+        <View className="flex-row items-center">
+          <Ionicons name={getIcon()} size={24} color="white" />
+          <Text className="text-white flex-1 ml-3 text-base font-medium">
+            {message}
+          </Text>
+          <TouchableOpacity onPress={handleClose} className="ml-2">
+            <Ionicons name="close" size={20} color="white" />
+          </TouchableOpacity>
+        </View>
+        {actionLabel && onActionPress && (
+          <TouchableOpacity
+            onPress={() => {
+              onActionPress();
+              handleClose();
+            }}
+            className="mt-3 bg-white/20 rounded-md py-2 px-4 self-start"
+          >
+            <Text className="text-white font-semibold text-sm">{actionLabel}</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </Animated.View>
   );
