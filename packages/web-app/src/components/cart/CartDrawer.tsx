@@ -195,7 +195,12 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                 <div className="flex items-center justify-between">
                   <span className="font-semibold">Ara Toplam:</span>
                   <span className="text-xl font-bold text-primary">
-                    {formatPrice(summary.subtotal, summary.currency)}
+                    {formatPrice(
+                      typeof summary.totalAmount === 'string'
+                        ? parseFloat(summary.totalAmount)
+                        : summary.totalAmount,
+                      summary.currency ?? 'PLN'
+                    )}
                   </span>
                 </div>
               </div>

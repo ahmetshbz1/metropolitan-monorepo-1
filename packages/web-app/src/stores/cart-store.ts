@@ -1,20 +1,14 @@
 import { create } from 'zustand';
-import type { CartItem } from '@metropolitan/shared';
-
-interface CartSummary {
-  totalItems: number;
-  subtotal: number;
-  currency: string;
-}
+import type { CartItem, CartSummary as SharedCartSummary } from '@metropolitan/shared';
 
 interface CartState {
   items: CartItem[];
-  summary: CartSummary | null;
+  summary: SharedCartSummary | null;
   isLoading: boolean;
   error: string | null;
 
   // Actions
-  setCart: (items: CartItem[], summary: CartSummary) => void;
+  setCart: (items: CartItem[], summary: SharedCartSummary) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   clearCart: () => void;
@@ -45,6 +39,8 @@ export const useCartStore = create<CartState>()((set, get) => ({
 
   getTotalPrice: () => {
     const state = get();
-    return state.summary?.subtotal ?? 0;
+    const totalAmount = state.summary?.totalAmount ?? 0;
+    // totalAmount string olabilir, number'a çevir
+    return typeof totalAmount === 'string' ? parseFloat(totalAmount) : totalAmount;
   },
 }));

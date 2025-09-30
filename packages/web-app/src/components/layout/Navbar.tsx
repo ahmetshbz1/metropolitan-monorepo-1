@@ -136,7 +136,9 @@ export function Navbar() {
               >
                 <span className="font-semibold text-orange-600 dark:text-orange-400">
                   {formatPrice(
-                    cartSummary?.subtotal ?? 0,
+                    typeof cartSummary?.totalAmount === 'string'
+                      ? parseFloat(cartSummary.totalAmount)
+                      : (cartSummary?.totalAmount ?? 0),
                     cartSummary?.currency ?? 'PLN'
                   )}
                 </span>

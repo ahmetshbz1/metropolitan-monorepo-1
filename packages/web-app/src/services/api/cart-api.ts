@@ -1,5 +1,5 @@
 import api from '@/lib/api';
-import type { CartItem } from '@metropolitan/shared';
+import type { CartItem, CartSummary } from '@metropolitan/shared';
 
 interface AddToCartRequest {
   productId: string;
@@ -12,11 +12,7 @@ interface UpdateCartItemRequest {
 
 interface CartResponse {
   items: CartItem[];
-  summary: {
-    totalItems: number;
-    subtotal: number;
-    currency: string;
-  };
+  summary: CartSummary;
 }
 
 export const cartApi = {
