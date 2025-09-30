@@ -118,10 +118,13 @@ export class CartService {
 
   static async batchUpdateGuestCart(
     guestId: string,
-    updates: Array<{ itemId: string; quantity: number }>
+    updates: Array<{ itemId: string; quantity: number }>,
+    lang: string = 'tr'
   ) {
     try {
-      const response = await api.patch("/guest/cart/batch", { guestId, updates });
+      const response = await api.patch("/guest/cart/batch", { guestId, updates }, {
+        params: { lang }
+      });
       return response;
     } catch (error: any) {
       throw error;
@@ -195,12 +198,13 @@ export class CartService {
   static async batchUpdateCart(
     isUser: boolean,
     updates: Array<{ itemId: string; quantity: number }>,
-    guestId?: string
+    guestId?: string,
+    lang?: string
   ) {
     if (isUser) {
       return this.batchUpdateUserCart(updates);
     } else if (guestId) {
-      return this.batchUpdateGuestCart(guestId, updates);
+      return this.batchUpdateGuestCart(guestId, updates, lang || 'tr');
     }
   }
 }

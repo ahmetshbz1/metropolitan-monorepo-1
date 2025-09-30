@@ -107,7 +107,8 @@ export const useCartActions = ({
       const response = await CartService.batchUpdateCart(
         isAuthenticated,
         updatesArray,
-        guestId || undefined
+        guestId || undefined,
+        i18n.language
       );
 
       // Sepeti yenile
