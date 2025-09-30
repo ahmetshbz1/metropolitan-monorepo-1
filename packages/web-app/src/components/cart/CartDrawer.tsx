@@ -1,22 +1,22 @@
 "use client";
 
+import { ProgressIndicator } from "@/components/checkout/ProgressIndicator";
+import { Button } from "@/components/ui/button";
 import {
   Drawer,
+  DrawerBody,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-  DrawerBody,
 } from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
-import { useCartStore } from "@/stores/cart-store";
-import { X, ArrowLeft } from "lucide-react";
-import { useEffect } from "react";
 import { useCheckout } from "@/context/CheckoutContext";
-import { ProgressIndicator } from "@/components/checkout/ProgressIndicator";
+import { useCartStore } from "@/stores/cart-store";
+import { ArrowLeft, X } from "lucide-react";
+import { useEffect } from "react";
 
 // Step Components
-import { CartStep } from "./steps/CartStep";
 import { AddressStep } from "./steps/AddressStep";
+import { CartStep } from "./steps/CartStep";
 import { PaymentStep } from "./steps/PaymentStep";
 import { SummaryStep } from "./steps/SummaryStep";
 
@@ -26,7 +26,8 @@ interface CartDrawerProps {
 }
 
 export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
-  const { state, nextStep, prevStep, canProceedToNext, resetCheckout } = useCheckout();
+  const { state, nextStep, prevStep, canProceedToNext, resetCheckout } =
+    useCheckout();
   const items = useCartStore((state) => state.items);
 
   // Drawer kapandığında checkout'u resetle
@@ -85,7 +86,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[90vh] flex flex-col">
+      <DrawerContent className="h-[80vh] max-h-[80vh] min-h-[80vh] flex flex-col">
         {/* Header */}
         <DrawerHeader className="border-b flex-shrink-0">
           <div className="flex items-center justify-between">
@@ -97,7 +98,9 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                   <ArrowLeft className="h-5 w-5" />
                 )}
               </Button>
-              <DrawerTitle className="text-xl font-bold">{getStepTitle()}</DrawerTitle>
+              <DrawerTitle className="text-xl font-bold">
+                {getStepTitle()}
+              </DrawerTitle>
             </div>
           </div>
         </DrawerHeader>
