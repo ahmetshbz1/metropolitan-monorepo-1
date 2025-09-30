@@ -51,9 +51,9 @@ export function PaymentStep() {
 
               {/* Info */}
               <div className="flex-1">
-                <h4 className="font-semibold mb-1">{method.name}</h4>
-                {method.description && (
-                  <p className="text-sm text-muted-foreground">{method.description}</p>
+                <h4 className="font-semibold mb-1">{method.title}</h4>
+                {method.subtitle && (
+                  <p className="text-sm text-muted-foreground">{method.subtitle}</p>
                 )}
               </div>
 

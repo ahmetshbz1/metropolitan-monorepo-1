@@ -84,10 +84,10 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
           </div>
           {state.selectedPaymentMethod ? (
             <div className="bg-muted/50 rounded-lg p-3 text-sm">
-              <p className="font-medium">{state.selectedPaymentMethod.name}</p>
-              {state.selectedPaymentMethod.description && (
+              <p className="font-medium">{state.selectedPaymentMethod.title}</p>
+              {state.selectedPaymentMethod.subtitle && (
                 <p className="text-muted-foreground mt-1">
-                  {state.selectedPaymentMethod.description}
+                  {state.selectedPaymentMethod.subtitle}
                 </p>
               )}
             </div>

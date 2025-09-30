@@ -1,20 +1,15 @@
 "use client";
 
-import React, { createContext, useContext, useReducer, useMemo, useCallback, ReactNode } from "react";
+import React, { createContext, useContext, useReducer, useMemo, useCallback, ReactNode, useEffect } from "react";
 import { useAuthStore } from "@/stores";
-import type { Address } from "@metropolitan/shared";
+import type { Address, CheckoutPaymentMethod } from "@metropolitan/shared";
+import { PaymentType } from "@metropolitan/shared";
 
 // Checkout Steps
 export type CheckoutStep = "cart" | "address" | "payment" | "summary";
 
-// Payment Methods
-export interface PaymentMethod {
-  id: string;
-  name: string;
-  type: "card" | "bank_transfer" | "cash_on_delivery";
-  icon: string;
-  description?: string;
-}
+// Re-export payment types
+export type { CheckoutPaymentMethod };
 
 // Checkout State
 export interface CheckoutState {
@@ -22,10 +17,10 @@ export interface CheckoutState {
   deliveryAddress: Address | null;
   billingAddress: Address | null;
   billingAddressSameAsDelivery: boolean;
-  selectedPaymentMethod: PaymentMethod | null;
+  selectedPaymentMethod: CheckoutPaymentMethod | null;
   agreedToTerms: boolean;
   notes: string;
-  paymentMethods: PaymentMethod[];
+  paymentMethods: CheckoutPaymentMethod[];
 }
 
 // Actions
@@ -36,7 +31,8 @@ type CheckoutAction =
   | { type: "SET_DELIVERY_ADDRESS"; payload: Address | null }
   | { type: "SET_BILLING_ADDRESS"; payload: Address | null }
   | { type: "SET_BILLING_SAME_AS_DELIVERY"; payload: boolean }
-  | { type: "SET_PAYMENT_METHOD"; payload: PaymentMethod | null }
+  | { type: "SET_PAYMENT_METHOD"; payload: CheckoutPaymentMethod | null }
+  | { type: "UPDATE_PAYMENT_METHODS"; payload: CheckoutPaymentMethod[] }
   | { type: "SET_AGREED_TO_TERMS"; payload: boolean }
   | { type: "SET_NOTES"; payload: string }
   | { type: "RESET_CHECKOUT" };
@@ -50,7 +46,7 @@ interface CheckoutContextType {
   setDeliveryAddress: (address: Address | null) => void;
   setBillingAddress: (address: Address | null) => void;
   setBillingAddressSameAsDelivery: (same: boolean) => void;
-  setPaymentMethod: (method: PaymentMethod | null) => void;
+  setPaymentMethod: (method: CheckoutPaymentMethod | null) => void;
   setAgreedToTerms: (agreed: boolean) => void;
   setNotes: (notes: string) => void;
   resetCheckout: () => void;
@@ -59,30 +55,40 @@ interface CheckoutContextType {
 
 const CheckoutContext = createContext<CheckoutContextType | undefined>(undefined);
 
-// Available payment methods
-const getAvailablePaymentMethods = (): PaymentMethod[] => [
-  {
-    id: "card",
-    name: "Kredi/Banka Kartı",
-    type: "card",
-    icon: "solar:card-line-duotone",
-    description: "Stripe ile güvenli ödeme",
-  },
-  {
-    id: "bank_transfer",
-    name: "Banka Havalesi",
-    type: "bank_transfer",
-    icon: "solar:bank-line-duotone",
-    description: "Havale/EFT ile ödeme",
-  },
-  {
-    id: "cash_on_delivery",
-    name: "Kapıda Ödeme",
-    type: "cash_on_delivery",
-    icon: "solar:wallet-line-duotone",
-    description: "Teslimat sırasında nakit/kart",
-  },
-];
+// Available payment methods - based on user type
+const getAvailablePaymentMethods = (userType?: "individual" | "corporate"): CheckoutPaymentMethod[] => {
+  const allMethods: CheckoutPaymentMethod[] = [
+    // Stripe Kartı - Herkes için
+    {
+      id: "stripe",
+      type: PaymentType.STRIPE,
+      title: "Kredi/Banka Kartı",
+      subtitle: "Stripe ile güvenli ödeme",
+      icon: "solar:card-line-duotone",
+      isAvailable: true,
+    },
+    // BLIK - Herkes için (Polonya pazarı için)
+    {
+      id: "blik",
+      type: PaymentType.BLIK,
+      title: "BLIK",
+      subtitle: "Hızlı mobil ödeme",
+      icon: "solar:phone-line-duotone",
+      isAvailable: true,
+    },
+    // Banka Havalesi - Sadece kurumsal müşteriler
+    {
+      id: "bank_transfer",
+      type: PaymentType.BANK_TRANSFER,
+      title: "Banka Havalesi",
+      subtitle: "Havale/EFT ile ödeme (Kurumsal)",
+      icon: "solar:bank-line-duotone",
+      isAvailable: userType === "corporate",
+    },
+  ];
+
+  return allMethods.filter((method) => method.isAvailable);
+};
 
 // Step order
 const STEP_ORDER: CheckoutStep[] = ["cart", "address", "payment", "summary"];
@@ -127,6 +133,9 @@ function checkoutReducer(state: CheckoutState, action: CheckoutAction): Checkout
     case "SET_PAYMENT_METHOD":
       return { ...state, selectedPaymentMethod: action.payload };
 
+    case "UPDATE_PAYMENT_METHODS":
+      return { ...state, paymentMethods: action.payload };
+
     case "SET_AGREED_TO_TERMS":
       return { ...state, agreedToTerms: action.payload };
 
@@ -152,6 +161,8 @@ function checkoutReducer(state: CheckoutState, action: CheckoutAction): Checkout
 
 // Provider
 export function CheckoutProvider({ children }: { children: ReactNode }) {
+  const user = useAuthStore((state) => state.user);
+
   const initialState: CheckoutState = useMemo(
     () => ({
       currentStep: "cart",
@@ -161,12 +172,18 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
       selectedPaymentMethod: null,
       agreedToTerms: false,
       notes: "",
-      paymentMethods: getAvailablePaymentMethods(),
+      paymentMethods: [],
     }),
     []
   );
 
   const [state, dispatch] = useReducer(checkoutReducer, initialState);
+
+  // Update payment methods when user type changes
+  useEffect(() => {
+    const methods = getAvailablePaymentMethods(user?.userType);
+    dispatch({ type: "UPDATE_PAYMENT_METHODS", payload: methods });
+  }, [user?.userType]);
 
   const setStep = useCallback((step: CheckoutStep) => {
     dispatch({ type: "SET_STEP", payload: step });
@@ -192,7 +209,7 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "SET_BILLING_SAME_AS_DELIVERY", payload: same });
   }, []);
 
-  const setPaymentMethod = useCallback((method: PaymentMethod | null) => {
+  const setPaymentMethod = useCallback((method: CheckoutPaymentMethod | null) => {
     dispatch({ type: "SET_PAYMENT_METHOD", payload: method });
   }, []);
 
