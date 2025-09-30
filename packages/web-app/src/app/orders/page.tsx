@@ -8,17 +8,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
-import { api } from "@/services/api/client";
-
-interface Order {
-  id: string;
-  orderNumber: string;
-  status: string;
-  totalAmount: number;
-  currency: string;
-  createdAt: string;
-  itemCount: number;
-}
+import { ordersApi } from "@/services/api/orders-api";
+import type { Order } from "@metropolitan/shared";
 
 export default function OrdersPage() {
   const { t } = useTranslation();
@@ -39,20 +30,23 @@ export default function OrdersPage() {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await api.get("/orders");
-      setOrders(response.data || []);
+      const data = await ordersApi.getOrders();
+      console.log("📦 Orders data received:", data);
+      setOrders(data || []);
     } catch (error) {
       console.error("Failed to fetch orders:", error);
+      setOrders([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const formatPrice = (price: number, currency = "TRY") => {
-    return new Intl.NumberFormat("tr-TR", {
+  const formatPrice = (price: string | number, currency = "PLN") => {
+    const numPrice = typeof price === "string" ? parseFloat(price) : price;
+    return new Intl.NumberFormat("pl-PL", {
       style: "currency",
       currency,
-    }).format(price);
+    }).format(numPrice);
   };
 
   const formatDate = (dateString: string) => {
@@ -65,14 +59,14 @@ export default function OrdersPage() {
 
   const getStatusColor = (status: string) => {
     const statusMap: Record<string, string> = {
-      pending: "bg-yellow-100 text-yellow-800",
-      confirmed: "bg-blue-100 text-blue-800",
-      preparing: "bg-purple-100 text-purple-800",
-      shipped: "bg-indigo-100 text-indigo-800",
-      delivered: "bg-green-100 text-green-800",
-      cancelled: "bg-red-100 text-red-800",
+      pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400",
+      confirmed: "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400",
+      preparing: "bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400",
+      shipped: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400",
+      delivered: "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400",
+      cancelled: "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400",
     };
-    return statusMap[status] || "bg-gray-100 text-gray-800";
+    return statusMap[status] || "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
   };
 
   if (!accessToken || !user) {
@@ -114,7 +108,7 @@ export default function OrdersPage() {
     );
   }
 
-  if (orders.length === 0) {
+  if (!orders || orders.length === 0) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="text-center">
@@ -163,9 +157,9 @@ export default function OrdersPage() {
 
               <div className="flex items-center justify-between">
                 <div className="text-sm text-muted-foreground">
-                  {order.itemCount} ürün
+                  Toplam Tutar
                 </div>
-                <div className="font-bold text-lg">
+                <div className="font-bold text-lg text-primary">
                   {formatPrice(order.totalAmount, order.currency)}
                 </div>
               </div>

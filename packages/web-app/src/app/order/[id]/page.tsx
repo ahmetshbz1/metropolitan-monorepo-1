@@ -3,13 +3,16 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuthStore } from "@/stores";
-import { Package, Download, HelpCircle, ArrowLeft } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { Package, Download, HelpCircle, ArrowLeft, ShoppingCart } from "lucide-react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import api from "@/lib/api";
 import Image from "next/image";
 import type { OrderDetail } from "@metropolitan/shared";
+import { toast } from "sonner";
+import { ordersApi } from "@/services/api/orders-api";
+import { useAddToCart } from "@/hooks/api/use-cart";
 
 type Order = OrderDetail & {
   items?: Array<{
@@ -31,9 +34,13 @@ export default function OrderDetailPage() {
   const { t } = useTranslation();
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { accessToken } = useAuthStore();
+  const addToCart = useAddToCart();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
+  const [downloadingInvoice, setDownloadingInvoice] = useState(false);
+  const [reordering, setReordering] = useState(false);
 
   useEffect(() => {
     if (!accessToken) {
@@ -41,8 +48,20 @@ export default function OrderDetailPage() {
       return;
     }
 
+    // Ödeme durumu kontrolü
+    const paymentStatus = searchParams.get("payment");
+    if (paymentStatus === "success") {
+      toast.success("Ödeme Başarılı!", {
+        description: "Siparişiniz başarıyla oluşturuldu. Kısa sürede hazırlanacak.",
+      });
+    } else if (paymentStatus === "cancelled") {
+      toast.error("Ödeme İptal Edildi", {
+        description: "Ödeme işlemi iptal edildi. Tekrar deneyebilirsiniz.",
+      });
+    }
+
     fetchOrderDetail();
-  }, [accessToken, params.id]);
+  }, [accessToken, params.id, searchParams]);
 
   const fetchOrderDetail = async () => {
     try {
@@ -57,6 +76,68 @@ export default function OrderDetailPage() {
       console.error("Failed to fetch order:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDownloadInvoice = async () => {
+    if (!order) return;
+
+    try {
+      setDownloadingInvoice(true);
+      const blob = await ordersApi.downloadInvoice(order.id);
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `fatura-${order.orderNumber}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast.success("Fatura indiriliyor", {
+        description: "Faturanız indirildi.",
+      });
+    } catch (error) {
+      console.error("Failed to download invoice:", error);
+      toast.error("Fatura indirilemedi", {
+        description: "Fatura indirilirken bir hata oluştu.",
+      });
+    } finally {
+      setDownloadingInvoice(false);
+    }
+  };
+
+  const handleReorder = async () => {
+    if (!order || !order.items) return;
+
+    try {
+      setReordering(true);
+
+      // Add all items to cart sequentially
+      for (const item of order.items) {
+        await addToCart.mutateAsync({
+          productId: item.product.id,
+          quantity: item.quantity,
+        });
+      }
+
+      toast.success("Ürünler sepete eklendi", {
+        description: `${order.items.length} ürün sepetinize eklendi.`,
+      });
+
+      // Navigate to cart after a short delay
+      setTimeout(() => {
+        router.push("/?openCart=true");
+      }, 1000);
+    } catch (error) {
+      console.error("Failed to reorder:", error);
+      toast.error("Yeniden sipariş verilemedi", {
+        description: "Ürünler sepete eklenirken bir hata oluştu.",
+      });
+    } finally {
+      setReordering(false);
     }
   };
 
@@ -249,12 +330,24 @@ export default function OrderDetailPage() {
         )}
 
         {/* Action Buttons */}
-        <div className="flex gap-3">
-          <Button variant="outline" className="flex-1">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <Button
+            variant="outline"
+            onClick={handleDownloadInvoice}
+            disabled={downloadingInvoice}
+          >
             <Download className="mr-2 h-4 w-4" />
-            {t("order_detail.actions.download_invoice")}
+            {downloadingInvoice ? "İndiriliyor..." : t("order_detail.actions.download_invoice")}
           </Button>
-          <Button variant="outline" className="flex-1">
+          <Button
+            variant="outline"
+            onClick={handleReorder}
+            disabled={reordering}
+          >
+            <ShoppingCart className="mr-2 h-4 w-4" />
+            {reordering ? "Ekleniyor..." : "Yeniden Sipariş Ver"}
+          </Button>
+          <Button variant="outline">
             <HelpCircle className="mr-2 h-4 w-4" />
             {t("order_detail.help")}
           </Button>

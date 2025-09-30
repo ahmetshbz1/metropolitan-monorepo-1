@@ -3,6 +3,7 @@ import { Navbar } from "@/components/layout/Navbar";
 import { I18nProvider } from "@/components/providers/I18nProvider";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { ToasterProvider } from "@/components/providers/toaster-provider";
 import { CheckoutProvider } from "@/context/CheckoutContext";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import type { Metadata } from "next";
@@ -45,6 +46,7 @@ export default function RootLayout({
           <I18nProvider>
             <QueryProvider>
               <CheckoutProvider>
+                <ToasterProvider />
                 <ProgressBar />
                 <div className="min-h-screen flex flex-col">
                   <Navbar />

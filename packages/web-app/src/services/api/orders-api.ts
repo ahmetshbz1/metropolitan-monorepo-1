@@ -34,4 +34,11 @@ export const ordersApi = {
     const response = await api.post(`/orders/${id}/cancel`);
     return response.data.data as Order;
   },
+
+  downloadInvoice: async (orderId: string) => {
+    const response = await api.get(`/invoices/${orderId}/download`, {
+      responseType: 'blob',
+    });
+    return response.data;
+  },
 };

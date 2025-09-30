@@ -120,6 +120,12 @@ export const UserDropdown = ({
   const MENU_ITEMS = {
     account: [
       {
+        icon: "solar:bag-4-line-duotone",
+        labelKey: "dropdown.orders",
+        action: "orders",
+        route: "/orders",
+      },
+      {
         icon: "solar:heart-line-duotone",
         labelKey: "dropdown.favorites",
         action: "favorites",
