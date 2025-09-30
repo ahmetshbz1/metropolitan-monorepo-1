@@ -3,7 +3,7 @@
 // Created by Ahmet on 21.07.2025.
 
 import React, { useEffect, useRef, useCallback } from 'react';
-import { Animated, Text, View, TouchableOpacity } from 'react-native';
+import { Animated, Text, View, TouchableOpacity, PanResponder } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -25,6 +25,7 @@ export function Toast({
   const insets = useSafeAreaInsets();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(-100)).current;
+  const gestureTranslateY = useRef(new Animated.Value(0)).current;
 
   const handleClose = useCallback(() => {
     Animated.parallel([
@@ -38,10 +39,15 @@ export function Toast({
         duration: 200,
         useNativeDriver: true,
       }),
+      Animated.timing(gestureTranslateY, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }),
     ]).start(() => {
       onClose?.();
     });
-  }, [fadeAnim, translateY, onClose]);
+  }, [fadeAnim, translateY, gestureTranslateY, onClose]);
 
   useEffect(() => {
     if (visible) {
@@ -113,17 +119,62 @@ export function Toast({
     }
   };
 
+  // PanResponder for swipe to dismiss
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        // Sadece yukarı kaydırma hareketine cevap ver
+        return Math.abs(gestureState.dy) > 5;
+      },
+      onPanResponderMove: (_, gestureState) => {
+        // Sadece yukarı kaydırmaya izin ver
+        if (gestureState.dy < 0) {
+          gestureTranslateY.setValue(gestureState.dy);
+        }
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        // Eğer yeterince yukarı kaydırıldıysa (50px) toast'ı kapat
+        if (gestureState.dy < -50 || gestureState.vy < -0.5) {
+          Animated.parallel([
+            Animated.timing(fadeAnim, {
+              toValue: 0,
+              duration: 200,
+              useNativeDriver: true,
+            }),
+            Animated.timing(gestureTranslateY, {
+              toValue: -200,
+              duration: 200,
+              useNativeDriver: true,
+            }),
+          ]).start(() => {
+            onClose?.();
+          });
+        } else {
+          // Geri döndür
+          Animated.spring(gestureTranslateY, {
+            toValue: 0,
+            useNativeDriver: true,
+            damping: 15,
+            stiffness: 150,
+          }).start();
+        }
+      },
+    })
+  ).current;
+
   if (!visible) return null;
 
   return (
     <Animated.View
+      {...panResponder.panHandlers}
       style={{
         position: 'absolute',
         top: insets.top + 10,
         left: 16,
         right: 16,
         opacity: fadeAnim,
-        transform: [{ translateY }],
+        transform: [{ translateY }, { translateY: gestureTranslateY }],
         zIndex: 999,
       }}
     >
