@@ -617,7 +617,10 @@
     "4": "İçecekler",
     "5": "Tatlılar",
     "6": "Temel Gıda",
-    "all": "Tümü"
+    "all": "Tümü",
+    "select": "Kategori Seç",
+    "category": "Kategori",
+    "products": "ürün"
   },
   "status": {
     "pending": "Beklemede",

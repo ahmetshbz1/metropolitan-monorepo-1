@@ -617,7 +617,10 @@
     "4": "Beverages",
     "5": "Desserts",
     "6": "Staple Food",
-    "all": "All"
+    "all": "All",
+    "select": "Select Category",
+    "category": "Category",
+    "products": "products"
   },
   "status": {
     "pending": "Pending",

@@ -624,7 +624,10 @@
     "4": "Napoje",
     "5": "Desery",
     "6": "Podstawowe produkty spożywcze",
-    "all": "Wszystkie"
+    "all": "Wszystkie",
+    "select": "Wybierz kategorię",
+    "category": "Kategoria",
+    "products": "produkty"
   },
   "status": {
     "pending": "Oczekujące",
