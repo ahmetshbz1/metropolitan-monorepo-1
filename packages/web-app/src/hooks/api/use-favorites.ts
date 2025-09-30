@@ -1,94 +1,187 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { favoritesApi } from '@/services/api/favorites-api';
 import { useFavoritesStore } from '@/stores/favorites-store';
+import { useAuthStore } from '@/stores';
+import { useGuestAuth } from '../use-guest-auth';
+import { useEffect } from 'react';
 
 export const favoriteKeys = {
   all: ['favorites'] as const,
-  items: () => [...favoriteKeys.all, 'items'] as const,
-  ids: () => [...favoriteKeys.all, 'ids'] as const,
+  items: (userId?: string, guestId?: string) => [
+    ...favoriteKeys.all,
+    'items',
+    userId || guestId || 'anonymous',
+  ] as const,
+  ids: (userId?: string, guestId?: string) => [
+    ...favoriteKeys.all,
+    'ids',
+    userId || guestId || 'anonymous',
+  ] as const,
 };
 
+/**
+ * Hybrid Favorites Hook
+ * Kullanıcı ve misafir favorilerini yönetir
+ */
 export function useFavorites() {
+  const user = useAuthStore((state) => state.user);
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const isAuthenticated = Boolean(user && accessToken);
+  const { isGuest, guestId, loginAsGuest } = useGuestAuth();
+
+  const hasValidSession = Boolean(isAuthenticated || (isGuest && guestId));
+
+  // Eğer ne user ne de guest session varsa, otomatik guest session oluştur
+  useEffect(() => {
+    if (!isAuthenticated && !isGuest && !guestId) {
+      loginAsGuest();
+    }
+  }, [isAuthenticated, isGuest, guestId, loginAsGuest]);
+
   return useQuery({
-    queryKey: favoriteKeys.items(),
-    queryFn: favoritesApi.getFavorites,
+    queryKey: favoriteKeys.items(user?.id, guestId || undefined),
+    queryFn: () => favoritesApi.getFavorites(isAuthenticated, guestId || undefined, 'pl'),
+    enabled: hasValidSession,
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
 }
 
+/**
+ * Favorite ID'lerini getir (isFavorite kontrolü için)
+ */
 export function useFavoriteIds() {
   const setFavorites = useFavoritesStore((state) => state.setFavorites);
-  
+  const user = useAuthStore((state) => state.user);
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const isAuthenticated = Boolean(user && accessToken);
+  const { isGuest, guestId } = useGuestAuth();
+
+  const hasValidSession = Boolean(isAuthenticated || (isGuest && guestId));
+
   return useQuery({
-    queryKey: favoriteKeys.ids(),
+    queryKey: favoriteKeys.ids(user?.id, guestId || undefined),
     queryFn: async () => {
-      const ids = await favoritesApi.getFavoriteIds();
+      const ids = await favoritesApi.getFavoriteIds(
+        isAuthenticated,
+        guestId || undefined,
+        'pl'
+      );
       setFavorites(ids);
       return ids;
     },
+    enabled: hasValidSession,
     staleTime: 2 * 60 * 1000,
   });
 }
 
+/**
+ * Favorilere ürün ekle (Hybrid)
+ */
 export function useAddFavorite() {
   const queryClient = useQueryClient();
   const addFavorite = useFavoritesStore((state) => state.addFavorite);
-  
+
+  const user = useAuthStore((state) => state.user);
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const isAuthenticated = Boolean(user && accessToken);
+  const { guestId } = useGuestAuth();
+
   return useMutation({
-    mutationFn: favoritesApi.addFavorite,
+    mutationFn: async (productId: string) => {
+      return favoritesApi.addFavorite(isAuthenticated, productId, guestId || undefined);
+    },
     onMutate: async (productId) => {
-      await queryClient.cancelQueries({ queryKey: favoriteKeys.ids() });
-      const previousIds = queryClient.getQueryData<string[]>(favoriteKeys.ids());
-      
+      // Cancel outgoing queries
+      await queryClient.cancelQueries({
+        queryKey: favoriteKeys.ids(user?.id, guestId || undefined),
+      });
+
+      const previousIds = queryClient.getQueryData<string[]>(
+        favoriteKeys.ids(user?.id, guestId || undefined)
+      );
+
       // Optimistic update
       if (previousIds) {
-        queryClient.setQueryData<string[]>(favoriteKeys.ids(), [...previousIds, productId]);
+        queryClient.setQueryData<string[]>(
+          favoriteKeys.ids(user?.id, guestId || undefined),
+          [...previousIds, productId]
+        );
       }
       addFavorite(productId);
-      
+
       return { previousIds };
     },
     onError: (err, productId, context) => {
       // Rollback on error
       if (context?.previousIds) {
-        queryClient.setQueryData(favoriteKeys.ids(), context.previousIds);
+        queryClient.setQueryData(
+          favoriteKeys.ids(user?.id, guestId || undefined),
+          context.previousIds
+        );
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: favoriteKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: favoriteKeys.all,
+      });
     },
   });
 }
 
+/**
+ * Favorilerden ürün sil (Hybrid)
+ */
 export function useRemoveFavorite() {
   const queryClient = useQueryClient();
   const removeFavorite = useFavoritesStore((state) => state.removeFavorite);
-  
+
+  const user = useAuthStore((state) => state.user);
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const isAuthenticated = Boolean(user && accessToken);
+  const { guestId } = useGuestAuth();
+
   return useMutation({
-    mutationFn: favoritesApi.removeFavorite,
+    mutationFn: async (productId: string) => {
+      return favoritesApi.removeFavorite(
+        isAuthenticated,
+        productId,
+        guestId || undefined
+      );
+    },
     onMutate: async (productId) => {
-      await queryClient.cancelQueries({ queryKey: favoriteKeys.ids() });
-      const previousIds = queryClient.getQueryData<string[]>(favoriteKeys.ids());
-      
+      // Cancel outgoing queries
+      await queryClient.cancelQueries({
+        queryKey: favoriteKeys.ids(user?.id, guestId || undefined),
+      });
+
+      const previousIds = queryClient.getQueryData<string[]>(
+        favoriteKeys.ids(user?.id, guestId || undefined)
+      );
+
       // Optimistic update
       if (previousIds) {
         queryClient.setQueryData<string[]>(
-          favoriteKeys.ids(),
-          previousIds.filter(id => id !== productId)
+          favoriteKeys.ids(user?.id, guestId || undefined),
+          previousIds.filter((id) => id !== productId)
         );
       }
       removeFavorite(productId);
-      
+
       return { previousIds };
     },
     onError: (err, productId, context) => {
       // Rollback on error
       if (context?.previousIds) {
-        queryClient.setQueryData(favoriteKeys.ids(), context.previousIds);
+        queryClient.setQueryData(
+          favoriteKeys.ids(user?.id, guestId || undefined),
+          context.previousIds
+        );
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: favoriteKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: favoriteKeys.all,
+      });
     },
   });
 }

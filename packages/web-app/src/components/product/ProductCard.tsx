@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import { Heart, ShoppingCart, Eye, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { Product } from "@metropolitan/shared";
 import { useTranslation } from "react-i18next";
 import { useAddToCart } from "@/hooks/api/use-cart";
-import { useAuthStore } from "@/stores";
+import { useAddFavorite, useRemoveFavorite, useFavoriteIds } from "@/hooks/api/use-favorites";
+import { useFavoritesStore } from "@/stores/favorites-store";
 import { useRouter } from "next/navigation";
 
 interface ProductCardProps {
@@ -15,11 +15,18 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
-  const [isFavorite, setIsFavorite] = useState(false);
   const { t } = useTranslation();
   const router = useRouter();
   const addToCartMutation = useAddToCart();
-  const accessToken = useAuthStore((state) => state.accessToken);
+  const addFavoriteMutation = useAddFavorite();
+  const removeFavoriteMutation = useRemoveFavorite();
+
+  // Favorite durumunu store'dan al
+  const favoriteIds = useFavoritesStore((state) => state.favoriteIds);
+  const isFavorite = favoriteIds.includes(product.id);
+
+  // Favorite ID'lerini fetch et
+  useFavoriteIds();
 
   const isOutOfStock = product.stock === 0;
   const isLowStock = product.stock > 0 && product.stock <= 5;
@@ -43,8 +50,19 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
     }
   };
 
-  const toggleFavorite = () => {
-    setIsFavorite(!isFavorite);
+  const toggleFavorite = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    try {
+      if (isFavorite) {
+        await removeFavoriteMutation.mutateAsync(product.id);
+      } else {
+        await addFavoriteMutation.mutateAsync(product.id);
+      }
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+    }
   };
 
   const formatPrice = (price: number, currency = "TRY") => {
@@ -74,6 +92,21 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
                   </div>
                 </div>
               )}
+
+              {/* Favorite Button - Top Left */}
+              <button
+                onClick={toggleFavorite}
+                disabled={addFavoriteMutation.isPending || removeFavoriteMutation.isPending}
+                className="absolute top-2 left-2 w-6 h-6 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm flex items-center justify-center transition-all z-10 hover:scale-110"
+              >
+                <Heart
+                  className={`w-3.5 h-3.5 transition-colors ${
+                    isFavorite
+                      ? "fill-red-500 text-red-500"
+                      : "text-gray-600 dark:text-gray-400"
+                  }`}
+                />
+              </button>
 
               {/* Add to Cart Button - Top Right */}
               <button
@@ -160,6 +193,21 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
               </div>
             </div>
           )}
+
+          {/* Favorite Button - Top Left */}
+          <button
+            onClick={toggleFavorite}
+            disabled={addFavoriteMutation.isPending || removeFavoriteMutation.isPending}
+            className="absolute top-2 left-2 w-6 h-6 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm flex items-center justify-center transition-all z-10 hover:scale-110"
+          >
+            <Heart
+              className={`w-3.5 h-3.5 transition-colors ${
+                isFavorite
+                  ? "fill-red-500 text-red-500"
+                  : "text-gray-600 dark:text-gray-400"
+              }`}
+            />
+          </button>
 
           {/* Add to Cart Button - Top Right */}
           <button
