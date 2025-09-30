@@ -24,7 +24,7 @@ async function sendRealPushNotifications() {
     // İlk push
     console.log("\n🚀 İlk push gönderiliyor...");
     const result1 = await PushNotificationService.sendToUser(user.id, {
-      title: "📦 Yeni Siparişiniz Var!",
+      title: "Yeni Siparişiniz Var!",
       body: "Siparişiniz başarıyla oluşturuldu ve hazırlanıyor.",
       type: "order",
       data: {
@@ -42,7 +42,7 @@ async function sendRealPushNotifications() {
     // İkinci push
     console.log("\n💎 İkinci push gönderiliyor...");
     const result2 = await PushNotificationService.sendToUser(user.id, {
-      title: "🎊 Özel İndirim!",
+      title: "Özel İndirim!",
       body: "Size özel %25 indirim kodu: METRO25 - Hemen kullanın!",
       type: "promotion",
       data: {

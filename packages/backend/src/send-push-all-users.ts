@@ -28,7 +28,7 @@ async function sendPushToAllTokenUsers() {
       console.log(`👤 Gönderiliyor: ${user.phoneNumber} (${user.email || 'Email yok'})`);
 
       const result = await PushNotificationService.sendToUser(user.userId, {
-        title: "🎯 Test Push - Tüm Hesaplar",
+        title: "Test Push - Tüm Hesaplar",
         body: `${user.firstName}, bildirimler sayfanızı kontrol edin! Bu mesaj ${user.phoneNumber} numaranıza özel.`,
         type: "system",
         data: {

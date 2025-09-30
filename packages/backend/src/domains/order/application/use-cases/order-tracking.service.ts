@@ -269,31 +269,31 @@ export class OrderTrackingService {
   private static getNotificationData(status: string, orderNumber: string) {
     const notifications: Record<string, { title: string; body: string }> = {
       confirmed: {
-        title: "✅ Siparişiniz Onaylandı",
+        title: "Siparişiniz Onaylandı",
         body: `${orderNumber} numaralı siparişiniz onaylandı ve hazırlanıyor.`,
       },
       preparing: {
-        title: "📦 Siparişiniz Hazırlanıyor",
+        title: "Siparişiniz Hazırlanıyor",
         body: `${orderNumber} numaralı siparişiniz hazırlanıyor.`,
       },
       shipped: {
-        title: "🚚 Kargoya Verildi",
+        title: "Kargoya Verildi",
         body: `${orderNumber} numaralı siparişiniz kargoya verildi. Takip kodunuzu kontrol edebilirsiniz.`,
       },
       out_for_delivery: {
-        title: "🚛 Dağıtıma Çıktı",
+        title: "Dağıtıma Çıktı",
         body: `${orderNumber} numaralı siparişiniz bugün teslim edilecek.`,
       },
       delivered: {
-        title: "✨ Teslim Edildi",
+        title: "Teslim Edildi",
         body: `${orderNumber} numaralı siparişiniz başarıyla teslim edildi. Afiyet olsun!`,
       },
       cancelled: {
-        title: "❌ Sipariş İptal Edildi",
+        title: "Sipariş İptal Edildi",
         body: `${orderNumber} numaralı siparişiniz iptal edildi.`,
       },
       refunded: {
-        title: "💳 İade Edildi",
+        title: "İade Edildi",
         body: `${orderNumber} numaralı siparişiniz için ödeme iadesi yapıldı.`,
       },
     };

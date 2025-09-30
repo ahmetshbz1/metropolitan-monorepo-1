@@ -143,7 +143,7 @@ export class PushNotificationService {
   // Test bildirimi gönder (backend'den manuel)
   static async sendTestNotification(userId: string): Promise<boolean> {
     return await this.sendToUser(userId, {
-      title: '🧪 Test Bildirimi',
+      title: 'Test Bildirimi',
       body: 'Bu bir test bildirimidir. Sistem düzgün çalışıyor!',
       type: 'system',
       data: { test: true, timestamp: new Date().toISOString() },

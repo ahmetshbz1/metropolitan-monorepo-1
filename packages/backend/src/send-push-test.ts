@@ -50,7 +50,7 @@ async function sendRealPushNotifications() {
     // İlk push gönder
     console.log("\n📱 İlk push gönderiliyor...");
     const result1 = await PushNotificationService.sendToUser(userId, {
-      title: "Selam Umut 👋",
+      title: "Selam Umut",
       body: "TestFlight'a hoş geldin! Metropolitan uygulamasını test edebilirsin.",
       type: "test",
       data: {
@@ -68,7 +68,7 @@ async function sendRealPushNotifications() {
     // İkinci push gönder
     console.log("\n📱 İkinci push gönderiliyor...");
     const result2 = await PushNotificationService.sendToUser(userId, {
-      title: "🛍️ Yeni Siparişler",
+      title: "Yeni Siparişler",
       body: "Uygulamada yeni ürünler var, keşfetmeye başla!",
       type: "test",
       data: {

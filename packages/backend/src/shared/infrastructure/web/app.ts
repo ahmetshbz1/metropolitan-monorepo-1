@@ -126,11 +126,34 @@ export const createApp = () =>
     })
 
     // Startup logging
-    .onStart(() => {
+    .onStart(async () => {
       globalLogger.info("🚀 Metropolitan Backend starting...", {
         environment: envConfig.NODE_ENV,
         version: process.env.npm_package_version || "1.0.0",
       });
+
+      const { OverduePaymentService } = await import("../../../domains/payment/application/services/overdue-payment.service");
+
+      const checkInterval = 24 * 60 * 60 * 1000;
+
+      const runCheck = async () => {
+        try {
+          const result = await OverduePaymentService.checkAndNotifyOverduePayments();
+          globalLogger.info("Vadesi geçmiş ödeme kontrolü tamamlandı", {
+            checked: result.checked,
+            notified: result.notified,
+            errors: result.errors,
+          });
+        } catch (error) {
+          globalLogger.error("Vadesi geçmiş ödeme kontrolü hatası", error);
+        }
+      };
+
+      await runCheck();
+
+      setInterval(runCheck, checkInterval);
+
+      globalLogger.info("Vadesi geçmiş ödeme kontrolü başlatıldı (her 24 saatte bir)");
     })
 
     // Shutdown logging

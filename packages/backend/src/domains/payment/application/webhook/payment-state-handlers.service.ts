@@ -65,7 +65,7 @@ export class PaymentStateHandlersService {
       if (order) {
         // Send payment success notification
         await PushNotificationService.sendToUser(order.userId, {
-          title: "✅ Ödeme Başarılı",
+          title: "Ödeme Başarılı",
           body: `${order.orderNumber} numaralı siparişiniz için ödemeniz alındı. Siparişiniz hazırlanıyor.`,
           type: "payment_success",
           data: {
@@ -123,7 +123,7 @@ export class PaymentStateHandlersService {
       if (order) {
         // Send payment failed notification
         await PushNotificationService.sendToUser(order.userId, {
-          title: "❌ Ödeme Başarısız",
+          title: "Ödeme Başarısız",
           body: `${order.orderNumber} numaralı siparişinizin ödemesi alınamadı. Lütfen tekrar deneyin.`,
           type: "payment_failed",
           data: {
@@ -218,7 +218,7 @@ export class PaymentStateHandlersService {
       if (order) {
         // Send payment canceled notification
         await PushNotificationService.sendToUser(order.userId, {
-          title: "🚫 Ödeme İptal Edildi",
+          title: "Ödeme İptal Edildi",
           body: `${order.orderNumber} numaralı siparişinizin ödemesi iptal edildi.`,
           type: "payment_canceled",
           data: {
