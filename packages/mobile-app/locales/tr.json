@@ -771,7 +771,10 @@
     "add_to_favorites": "Favorilere Ekle",
     "remove_from_favorites": "Favorilerden Çıkar",
     "share": "Paylaş",
-    "view_details": "Detayları Görüntüle"
+    "view_details": "Detayları Görüntüle",
+    "minimum_quantity_dialog": {
+      "title": "Minimum Alım Miktarı"
+    }
   },
   "common": {
     "ok": "Tamam",

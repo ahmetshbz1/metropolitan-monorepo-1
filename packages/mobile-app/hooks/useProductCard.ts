@@ -14,6 +14,7 @@ import { useRouter } from "expo-router";
 import { getErrorMessage, StructuredError } from "@/types/error";
 import { useTranslation } from "react-i18next";
 import type { GestureResponderEvent } from "react-native";
+import { useState } from "react";
 
 export const useProductCard = (product: Product) => {
   const { t } = useTranslation();
@@ -25,6 +26,10 @@ export const useProductCard = (product: Product) => {
   const { showToast } = useToast();
   const router = useRouter();
   const { user } = useAuth();
+
+  const [showMinQuantityDialog, setShowMinQuantityDialog] = useState(false);
+  const [minQuantityError, setMinQuantityError] = useState<number | null>(null);
+  const [isAddingMinQuantity, setIsAddingMinQuantity] = useState(false);
 
   // Computed values
   const userType = user?.userType || "individual";
@@ -54,39 +59,45 @@ export const useProductCard = (product: Product) => {
     e.stopPropagation();
 
     triggerHaptic();
-    
+
     try {
       await addToCart(product.id, 1);
     } catch (error) {
-      // Handle structured errors and fallback to generic error message
       const errorMessage = getErrorMessage(error);
       const structuredError = error as StructuredError;
 
-      // Check if it's a minimum quantity error
       if (structuredError.key === "MIN_QUANTITY_NOT_MET" && structuredError.params?.minQuantity) {
         const minQty = structuredError.params.minQuantity;
-        showToast(
-          errorMessage,
-          "warning",
-          5000, // 5 seconds duration
-          t("product_detail.purchase.add_min_quantity", { count: minQty }),
-          async () => {
-            // Direkt sepete minimum miktarı ekle
-            try {
-              await addToCart(product.id, minQty);
-              showToast(t("cart.item_added"), "success", 3000);
-            } catch (addError) {
-              const addErrorMessage = getErrorMessage(addError);
-              showToast(addErrorMessage || t("errors.CART_ADD_ERROR"), "error", 3000);
-            }
-          }
-        );
+        setMinQuantityError(minQty);
+        setShowMinQuantityDialog(true);
       } else if (errorMessage === "UNEXPECTED_ERROR") {
         showToast(t("errors.UNEXPECTED_ERROR"), "error");
       } else {
         showToast(errorMessage || t("errors.CART_ADD_ERROR"), "error");
       }
     }
+  };
+
+  const handleAddMinQuantity = async () => {
+    if (!minQuantityError) return;
+
+    setIsAddingMinQuantity(true);
+    try {
+      await addToCart(product.id, minQuantityError);
+      showToast(t("cart.item_added"), "success", 3000);
+      setShowMinQuantityDialog(false);
+      setMinQuantityError(null);
+    } catch (addError) {
+      const addErrorMessage = getErrorMessage(addError);
+      showToast(addErrorMessage || t("errors.CART_ADD_ERROR"), "error", 3000);
+    } finally {
+      setIsAddingMinQuantity(false);
+    }
+  };
+
+  const handleCloseDialog = () => {
+    setShowMinQuantityDialog(false);
+    setMinQuantityError(null);
   };
 
   const handleToggleFavorite = (e?: GestureResponderEvent) => {
@@ -110,8 +121,15 @@ export const useProductCard = (product: Product) => {
     displayPrice,
     minQuantity,
 
+    // Dialog state
+    showMinQuantityDialog,
+    minQuantityError,
+    isAddingMinQuantity,
+
     // Actions
     handleAddToCart,
     handleToggleFavorite,
+    handleAddMinQuantity,
+    handleCloseDialog,
   };
 };

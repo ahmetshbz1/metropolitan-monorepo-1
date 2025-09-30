@@ -16,6 +16,7 @@ import * as Haptics from "expo-haptics";
 import { HapticIconButton } from "../HapticButton";
 import { ProductCardContent } from "./ProductCardContent";
 import { ProductCardImage } from "./ProductCardImage";
+import { MinimumQuantityDialog } from "./MinimumQuantityDialog";
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const NUM_COLUMNS = 3;
@@ -52,6 +53,11 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
     displayPrice,
     handleAddToCart,
     handleToggleFavorite,
+    showMinQuantityDialog,
+    minQuantityError,
+    isAddingMinQuantity,
+    handleAddMinQuantity,
+    handleCloseDialog,
   } = useProductCard(product);
   const { t } = useTranslation();
   const router = useRouter();
@@ -189,6 +195,15 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
           />
         </TouchableOpacity>
       </ContextMenu>
+
+      <MinimumQuantityDialog
+        visible={showMinQuantityDialog}
+        minQuantity={minQuantityError || 1}
+        productName={product.name}
+        loading={isAddingMinQuantity}
+        onConfirm={handleAddMinQuantity}
+        onCancel={handleCloseDialog}
+      />
     </View>
   );
 });

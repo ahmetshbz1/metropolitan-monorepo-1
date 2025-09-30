@@ -110,8 +110,6 @@ export function useCheckoutSummary() {
       }
       // Bank transfer flow (existing logic)
       else if (isBankTransfer) {
-        console.log("🔍 Payment Term Days:", state.paymentTermDays);
-
         const orderData = await createOrder({
           shippingAddressId: deliveryAddress.id,
           billingAddressId: state.billingAddressSameAsDelivery

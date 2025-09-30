@@ -778,7 +778,10 @@
     "add_to_favorites": "Dodaj do ulubionych",
     "remove_from_favorites": "Usuń z ulubionych",
     "share": "Udostępnij",
-    "view_details": "Zobacz szczegóły"
+    "view_details": "Zobacz szczegóły",
+    "minimum_quantity_dialog": {
+      "title": "Minimalna ilość zamówienia"
+    }
   },
   "common": {
     "ok": "OK",

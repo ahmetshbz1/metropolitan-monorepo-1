@@ -5,6 +5,7 @@ import axios, { AxiosInstance } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { tokenStorage } from '../context/auth/storage';
 import { getDeviceHeaders } from '../utils/deviceFingerprint';
+import i18n from './i18n';
 
 let isRefreshing = false;
 let refreshSubscribers: ((token: string) => void)[] = [];
@@ -101,6 +102,9 @@ export function setupRequestInterceptor(api: AxiosInstance) {
       // Add device fingerprint headers
       const deviceHeaders = await getDeviceHeaders();
       Object.assign(config.headers, deviceHeaders);
+
+      // Add Accept-Language header for i18n
+      config.headers['Accept-Language'] = i18n.language || 'tr';
 
       return config;
     },

@@ -12,8 +12,9 @@ import { isAuthenticated } from "../../../../shared/application/guards/auth.guar
 export const paymentTermsRoutes = new Elysia({ prefix: "/payment-terms" })
   .get(
     "/available",
-    async ({ query }) => {
+    async ({ query, headers }) => {
       const { userId } = query;
+      const acceptLanguage = headers['accept-language'] || 'tr';
 
       let terms: number[] = [7, 14, 21];
 
@@ -52,9 +53,20 @@ export const paymentTermsRoutes = new Elysia({ prefix: "/payment-terms" })
         }
       }
 
+      const getDayLabel = (days: number, lang: string): string => {
+        const labels: Record<string, string> = {
+          'tr': `${days} gün`,
+          'en': `${days} days`,
+          'pl': `${days} dni`,
+        };
+
+        const langCode = lang.split('-')[0].toLowerCase();
+        return labels[langCode] || labels['tr'];
+      };
+
       const termOptions = terms.map((days) => ({
         days,
-        label: `${days} gün`,
+        label: getDayLabel(days, acceptLanguage),
       }));
 
       return {
