@@ -16,7 +16,7 @@ import { showHaptic } from "@/utils/haptic";
 
 export function NotificationPermissionPrompt() {
   const { t } = useTranslation();
-  const { user, updateUserProfile } = useAuth();
+  const { user, isAuthenticated, updateUserProfile } = useAuth();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
 
@@ -27,10 +27,16 @@ export function NotificationPermissionPrompt() {
 
   useEffect(() => {
     checkShouldShowPrompt();
-  }, []);
+  }, [isAuthenticated]);
 
   const checkShouldShowPrompt = async () => {
     try {
+      // Guest kullanıcıya gösterme
+      if (!isAuthenticated) {
+        setShouldShow(false);
+        return;
+      }
+
       // Check if already dismissed
       const wasDismissed = await AsyncStorage.getItem(
         "order_notification_prompt_dismissed"
@@ -44,8 +50,8 @@ export function NotificationPermissionPrompt() {
       const hasPermission = await notificationService.hasNotificationPermission();
       setHasPermission(hasPermission);
 
-      // Show only if no permission and not guest
-      setShouldShow(!hasPermission && !user?.isGuest);
+      // Show only if no permission and authenticated
+      setShouldShow(!hasPermission && isAuthenticated);
     } catch (error) {
       // Removed console statement
       setShouldShow(false);
@@ -115,56 +121,59 @@ export function NotificationPermissionPrompt() {
 
   return (
     <View
-      className="mx-4 mb-4 p-4 rounded-2xl"
+      className="mx-4 mb-4 p-5 rounded-xl"
       style={{
-        backgroundColor: colors.primary + "10",
-        borderWidth: 1,
-        borderColor: colors.primary + "20",
+        backgroundColor: colors.card,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
       }}
     >
-      <View className="flex-row items-start mb-3">
+      <View className="flex-row items-start mb-4">
         <View
-          className="mr-3 p-2 rounded-full"
+          className="mr-3 p-2.5 rounded-full"
           style={{
-            backgroundColor: colors.primary + "20",
+            backgroundColor: colors.primary + "15",
           }}
         >
           <Ionicons
-            name="notifications-outline"
-            size={24}
+            name="notifications"
+            size={22}
             color={colors.primary}
           />
         </View>
 
         <View className="flex-1">
-          <ThemedText className="font-semibold text-base mb-1">
+          <ThemedText className="font-bold text-base mb-1.5">
             {t("order_notification.title")}
           </ThemedText>
-          <ThemedText className="text-sm opacity-80">
+          <ThemedText className="text-sm opacity-70 leading-5">
             {t("order_notification.description")}
           </ThemedText>
         </View>
 
-        <HapticButton onPress={handleDismiss} className="ml-2">
+        <HapticButton onPress={handleDismiss} className="ml-1 p-1">
           <Ionicons
-            name="close"
-            size={20}
+            name="close-circle"
+            size={22}
             color={colors.mediumGray}
           />
         </HapticButton>
       </View>
 
-      <View className="flex-row gap-3">
+      <View className="gap-2">
         <HapticButton
           onPress={handleRequestPermission}
           disabled={loading}
-          className="flex-1 py-3 rounded-xl"
+          className="py-3.5 rounded-xl"
           style={{
             backgroundColor: colors.primary,
             opacity: loading ? 0.6 : 1,
           }}
         >
-          <ThemedText className="text-center font-semibold text-white">
+          <ThemedText className="text-center font-semibold text-base text-white">
             {loading
               ? t("common.loading")
               : t("order_notification.enable_notifications")}
@@ -173,14 +182,12 @@ export function NotificationPermissionPrompt() {
 
         <HapticButton
           onPress={handleDismiss}
-          className="px-4 py-3 rounded-xl"
+          className="py-2.5 rounded-xl"
           style={{
-            backgroundColor: colors.card,
-            borderWidth: 1,
-            borderColor: colors.border,
+            backgroundColor: "transparent",
           }}
         >
-          <ThemedText className="text-center">
+          <ThemedText className="text-center text-sm opacity-60">
             {t("order_notification.later")}
           </ThemedText>
         </HapticButton>

@@ -59,116 +59,110 @@ export function NotificationPermissionScreen({ onContinue }: NotificationPermiss
 
   return (
     <View className="flex-1" style={{ backgroundColor: colors.background }}>
-      <LinearGradient
-        colors={[colors.primary + "20", colors.background]}
-        style={{ flex: 1 }}
+      <View
+        className="flex-1 px-6"
+        style={{ paddingTop: insets.top + 60, paddingBottom: insets.bottom + 20 }}
       >
-        <View
-          className="flex-1 px-6"
-          style={{ paddingTop: insets.top + 60, paddingBottom: insets.bottom + 20 }}
-        >
-          {/* İllüstrasyon Alanı */}
-          <View className="flex-1 items-center justify-center">
-            <View
-              className="w-32 h-32 rounded-full items-center justify-center mb-8"
-              style={{
-                backgroundColor: colors.primary + "20",
-              }}
-            >
-              <Ionicons
-                name="notifications"
-                size={64}
-                color={colors.primary}
-              />
-            </View>
-
-            {/* Başlık ve Açıklama */}
-            <ThemedText className="text-3xl font-bold text-center mb-4">
-              {t("onboarding.notification_title")}
-            </ThemedText>
-
-            <ThemedText className="text-base text-center opacity-80 px-4">
-              {t("onboarding.notification_description")}
-            </ThemedText>
+        {/* İllüstrasyon Alanı */}
+        <View className="flex-1 items-center justify-center">
+          <View
+            className="w-36 h-36 rounded-full items-center justify-center mb-8"
+            style={{
+              backgroundColor: colors.primary + "15",
+            }}
+          >
+            <Ionicons
+              name="notifications"
+              size={72}
+              color={colors.primary}
+            />
           </View>
 
-          {/* Özellikler */}
-          <View className="mb-8">
-            {[
-              {
-                icon: "cart",
-                title: t("onboarding.notification_feature_orders"),
-              },
-              {
-                icon: "pricetag",
-                title: t("onboarding.notification_feature_deals"),
-              },
-              {
-                icon: "rocket",
-                title: t("onboarding.notification_feature_shipping"),
-              },
-            ].map((feature, index) => (
-              <View
-                key={index}
-                className="flex-row items-center mb-4"
-              >
-                <View
-                  className="w-12 h-12 rounded-full items-center justify-center mr-4"
-                  style={{
-                    backgroundColor: colors.primary + "15",
-                  }}
-                >
-                  <Ionicons
-                    name={feature.icon as any}
-                    size={24}
-                    color={colors.primary}
-                  />
-                </View>
-                <ThemedText className="flex-1 text-base">
-                  {feature.title}
-                </ThemedText>
-              </View>
-            ))}
-          </View>
+          {/* Başlık ve Açıklama */}
+          <ThemedText className="text-3xl font-bold text-center mb-4">
+            {t("onboarding.notification_title")}
+          </ThemedText>
 
-          {/* Butonlar */}
-          <View>
-            <HapticButton
-              onPress={handleEnableNotifications}
-              disabled={loading}
-              className="py-4 rounded-2xl mb-3"
-              style={{
-                backgroundColor: colors.primary,
-                opacity: loading ? 0.6 : 1,
-              }}
-            >
-              {loading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <ThemedText className="text-center text-lg font-semibold text-white">
-                  {t("onboarding.enable_notifications")}
-                </ThemedText>
-              )}
-            </HapticButton>
-
-            <HapticButton
-              onPress={handleSkip}
-              disabled={loading}
-              className="py-4 rounded-2xl"
-              style={{
-                backgroundColor: "transparent",
-              }}
-            >
-              <ThemedText
-                className="text-center text-base"
-                style={{ color: colors.mediumGray }}
-              >
-                {t("onboarding.skip_for_now")}
-              </ThemedText>
-            </HapticButton>
-          </View>
+          <ThemedText className="text-base text-center opacity-70 px-4 leading-6">
+            {t("onboarding.notification_description")}
+          </ThemedText>
         </View>
-      </LinearGradient>
+
+        {/* Özellikler */}
+        <View className="mb-8">
+          {[
+            {
+              icon: "cart",
+              title: t("onboarding.notification_feature_orders"),
+            },
+            {
+              icon: "pricetag",
+              title: t("onboarding.notification_feature_deals"),
+            },
+            {
+              icon: "rocket",
+              title: t("onboarding.notification_feature_shipping"),
+            },
+          ].map((feature, index) => (
+            <View
+              key={index}
+              className="flex-row items-center mb-3.5"
+            >
+              <View
+                className="w-11 h-11 rounded-full items-center justify-center mr-3.5"
+                style={{
+                  backgroundColor: colors.primary + "15",
+                }}
+              >
+                <Ionicons
+                  name={feature.icon as any}
+                  size={22}
+                  color={colors.primary}
+                />
+              </View>
+              <ThemedText className="flex-1 text-base opacity-90">
+                {feature.title}
+              </ThemedText>
+            </View>
+          ))}
+        </View>
+
+        {/* Butonlar */}
+        <View>
+          <HapticButton
+            onPress={handleEnableNotifications}
+            disabled={loading}
+            className="py-4 rounded-xl mb-3"
+            style={{
+              backgroundColor: colors.primary,
+              opacity: loading ? 0.6 : 1,
+            }}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <ThemedText className="text-center text-lg font-semibold text-white">
+                {t("onboarding.enable_notifications")}
+              </ThemedText>
+            )}
+          </HapticButton>
+
+          <HapticButton
+            onPress={handleSkip}
+            disabled={loading}
+            className="py-3 rounded-xl"
+            style={{
+              backgroundColor: "transparent",
+            }}
+          >
+            <ThemedText
+              className="text-center text-base opacity-60"
+            >
+              {t("onboarding.skip_for_now")}
+            </ThemedText>
+          </HapticButton>
+        </View>
+      </View>
     </View>
   );
 }
