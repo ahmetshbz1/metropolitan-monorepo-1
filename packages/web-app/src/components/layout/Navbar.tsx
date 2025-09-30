@@ -49,7 +49,7 @@ export function Navbar() {
   useCurrentUser();
 
   // Fetch cart data when authenticated or guest
-  useCart();
+  const { isLoading: cartLoading } = useCart();
 
   // Get cart summary for display (directly access summary for reactivity)
   const cartSummary = useCartStore((state) => state.summary);
@@ -173,27 +173,35 @@ export function Navbar() {
             <div className="pb-2">
               <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-end -mr-4 sm:-mr-6 lg:-mr-8">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={() => setIsCartOpen(true)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-orange-50 hover:bg-orange-100 dark:bg-orange-900/20 dark:hover:bg-orange-900/30 transition-colors border border-orange-200 dark:border-orange-800"
-                      >
-                        <span className="font-semibold text-sm text-orange-600 dark:text-orange-400">
-                          {formatPrice(
-                            typeof cartSummary?.totalAmount === "string"
-                              ? parseFloat(cartSummary.totalAmount)
-                              : (cartSummary?.totalAmount ?? 0),
-                            cartSummary?.currency ?? "PLN"
-                          )}
-                        </span>
-                        <ShoppingBag className="h-4 w-4 text-orange-600 dark:text-orange-400" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom">
-                      <p>Sepetimi Görüntüle</p>
-                    </TooltipContent>
-                  </Tooltip>
+                  {cartLoading ? (
+                    // Skeleton loader while cart is loading
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-orange-50/50 dark:bg-orange-900/10 border border-orange-200/50 dark:border-orange-800/50">
+                      <div className="h-4 w-16 bg-orange-200/50 dark:bg-orange-800/50 rounded animate-pulse" />
+                      <div className="h-4 w-4 bg-orange-200/50 dark:bg-orange-800/50 rounded animate-pulse" />
+                    </div>
+                  ) : (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => setIsCartOpen(true)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-orange-50 hover:bg-orange-100 dark:bg-orange-900/20 dark:hover:bg-orange-900/30 transition-colors border border-orange-200 dark:border-orange-800"
+                        >
+                          <span className="font-semibold text-sm text-orange-600 dark:text-orange-400">
+                            {formatPrice(
+                              typeof cartSummary?.totalAmount === "string"
+                                ? parseFloat(cartSummary.totalAmount)
+                                : (cartSummary?.totalAmount ?? 0),
+                              cartSummary?.currency ?? "PLN"
+                            )}
+                          </span>
+                          <ShoppingBag className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        <p>Sepetimi Görüntüle</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
                 </div>
               </div>
             </div>
