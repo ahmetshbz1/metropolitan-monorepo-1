@@ -22,6 +22,7 @@ export const useOrderOperations = ({
       billingAddressId?: string;
       paymentMethodId: string;
       notes?: string;
+      paymentTermDays?: number;
     }) => {
       setLoading(true);
       setError(null);
@@ -32,8 +33,10 @@ export const useOrderOperations = ({
           billingAddressId: data.billingAddressId || data.shippingAddressId,
           paymentMethodId: data.paymentMethodId,
           ...(data.notes && { notes: data.notes }),
+          ...(data.paymentTermDays !== undefined && { paymentTermDays: data.paymentTermDays }),
         };
 
+        console.log("📤 Sending order payload:", payload);
         const response = await api.post("/orders", payload);
         await fetchOrders(); // Re-fetch orders list
         return response.data;

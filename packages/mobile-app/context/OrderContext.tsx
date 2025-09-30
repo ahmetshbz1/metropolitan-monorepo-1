@@ -38,6 +38,7 @@ interface IOrderContext {
     billingAddressId?: string;
     paymentMethodId: string;
     notes?: string;
+    paymentTermDays?: number;
   }) => Promise<OrderCreationResult>;
   cancelOrder: (orderId: string) => Promise<void>;
   rollbackStock: (orderId: string) => Promise<any>;

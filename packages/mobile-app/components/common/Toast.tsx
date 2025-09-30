@@ -49,7 +49,9 @@ export function Toast({
         useNativeDriver: true,
       }),
     ]).start(() => {
-      onClose?.();
+      setTimeout(() => {
+        onClose?.();
+      }, 0);
     });
   }, [fadeAnim, translateY, gestureTranslateY, onClose]);
 
@@ -152,7 +154,9 @@ export function Toast({
               useNativeDriver: true,
             }),
           ]).start(() => {
-            onClose?.();
+            setTimeout(() => {
+              onClose?.();
+            }, 0);
           });
         } else {
           // Geri döndür

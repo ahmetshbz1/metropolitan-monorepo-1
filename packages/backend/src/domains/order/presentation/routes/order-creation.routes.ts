@@ -117,6 +117,7 @@ export const orderCreationRoutes = new Elysia()
         billingAddressId: t.Optional(t.String()),
         paymentMethodId: t.String(),
         notes: t.Optional(t.String()),
+        paymentTermDays: t.Optional(t.Number()),
       }),
     }
   );

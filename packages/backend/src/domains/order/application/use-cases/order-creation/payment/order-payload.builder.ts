@@ -37,9 +37,13 @@ export class OrderPayloadBuilder {
     // Billing address defaults to shipping if not provided
     orderPayload.billingAddressId =
       request.billingAddressId || request.shippingAddressId;
-    
+
     if (request.notes) {
       orderPayload.notes = request.notes;
+    }
+
+    if (request.paymentTermDays !== undefined) {
+      orderPayload.paymentTermDays = request.paymentTermDays;
     }
 
     return orderPayload;

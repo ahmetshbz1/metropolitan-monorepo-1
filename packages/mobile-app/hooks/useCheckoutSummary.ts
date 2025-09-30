@@ -110,7 +110,7 @@ export function useCheckoutSummary() {
       }
       // Bank transfer flow (existing logic)
       else if (isBankTransfer) {
-        // Removed console statement
+        console.log("🔍 Payment Term Days:", state.paymentTermDays);
 
         const orderData = await createOrder({
           shippingAddressId: deliveryAddress.id,
@@ -119,7 +119,7 @@ export function useCheckoutSummary() {
             : state.billingAddress?.id,
           paymentMethodId: selectedPaymentMethod.id,
           notes: state.notes || undefined,
-          paymentTermDays: state.paymentTermDays ?? undefined,
+          paymentTermDays: state.paymentTermDays !== null ? state.paymentTermDays : undefined,
         });
 
         // Removed console statement

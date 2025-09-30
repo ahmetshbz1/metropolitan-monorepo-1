@@ -31,8 +31,10 @@ export const PaymentTermSelector: React.FC = () => {
         });
 
         if (data.success && data.data) {
+          console.log("✅ Payment terms loaded:", data.data);
           setAvailableTerms(data.data);
           if (data.data.length > 0 && !state.paymentTermDays) {
+            console.log("🎯 Auto-selecting first term:", data.data[0].days);
             setPaymentTermDays(data.data[0].days);
           }
         }
@@ -44,7 +46,7 @@ export const PaymentTermSelector: React.FC = () => {
     };
 
     fetchPaymentTerms();
-  }, [user?.id, user?.userType, state.selectedPaymentMethod?.id, setPaymentTermDays, state.paymentTermDays]);
+  }, [user?.id, user?.userType, state.selectedPaymentMethod?.id]);
 
   if (user?.userType !== "corporate") return null;
   if (state.selectedPaymentMethod?.id !== "bank_transfer") return null;
@@ -70,7 +72,11 @@ export const PaymentTermSelector: React.FC = () => {
             return (
               <TouchableOpacity
                 key={term.days}
-                onPress={() => setPaymentTermDays(term.days)}
+                onPress={() => {
+                  console.log("👆 User selected term:", term.days);
+                  setPaymentTermDays(term.days);
+                  console.log("📊 Current state after selection:", state.paymentTermDays);
+                }}
                 className="px-4 py-2 rounded-lg border"
                 style={{
                   backgroundColor: isSelected ? `${colors.tint}15` : colors.cardBackground,
@@ -91,10 +97,13 @@ export const PaymentTermSelector: React.FC = () => {
         </View>
       )}
 
-      {state.paymentTermDays && (
+      {state.paymentTermDays !== null && (
         <View className="mt-3 p-3 rounded-lg" style={{ backgroundColor: `${colors.tint}10` }}>
           <ThemedText className="text-xs opacity-70">
             {t("checkout.payment_term.info", { days: state.paymentTermDays })}
+          </ThemedText>
+          <ThemedText className="text-xs opacity-50 mt-1">
+            Debug: {state.paymentTermDays} gün
           </ThemedText>
         </View>
       )}
