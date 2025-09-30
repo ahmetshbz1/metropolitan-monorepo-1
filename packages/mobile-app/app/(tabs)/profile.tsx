@@ -38,7 +38,7 @@ type ProfileMenuSection = {
 export default function ProfileScreen() {
   const { t } = useTranslation();
   const safeRouter = useNavigationProtection();
-  const { refreshUserProfile, user, isGuest } = useAuth();
+  const { refreshUserProfile, user, isAuthenticated } = useAuth();
   const { paddingBottom } = useTabBarHeight();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
@@ -267,7 +267,7 @@ export default function ProfileScreen() {
                 <ThemedText className="text-xl font-bold">
                   {user?.firstName || t("profile.guest")} {user?.lastName || ""}
                 </ThemedText>
-                {user && !isGuest && (
+                {isAuthenticated && (
                   <ProfileBadge
                     type={user?.userType === "corporate" ? "b2b" : "b2c"}
                   />
@@ -285,7 +285,7 @@ export default function ProfileScreen() {
 
         {/* Login/Logout Button */}
         <View className="mb-4">
-          {isGuest ? (
+          {!isAuthenticated ? (
             <HapticButton
               className="flex-row items-center justify-center mx-5 mt-5 p-4 rounded-2xl"
               style={{ backgroundColor: colors.primary + "10" }}

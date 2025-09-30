@@ -328,3 +328,4 @@ mobile-app de sadece tr.json dosyasına çevirileri ekle kullanıcı en sonunda 
   1. Main'de çalış
   2. Test et
   3. Prod'a merge et
+- ben izin vermeden sakın commit , push yapma

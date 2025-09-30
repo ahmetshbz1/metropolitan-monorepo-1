@@ -44,13 +44,22 @@ export const useAuthState = () => {
           setAccessToken(authState.token); // Use same token for access token
         }
 
+        // Load refresh token separately
+        if (authState.refreshToken) {
+          setRefreshToken(authState.refreshToken);
+        }
+
         if (authState.user) {
           setUser(authState.user);
         }
 
-        if (authState.guestId) {
+        // Only set isGuest if there's a guestId AND no user token
+        if (authState.guestId && !authState.token) {
           setGuestId(authState.guestId);
           setIsGuest(true);
+        } else if (authState.token) {
+          // If there's a token, user is not a guest
+          setIsGuest(false);
         }
 
         if (authState.socialAuthData) {

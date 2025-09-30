@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import { router } from "expo-router";
 import api from "@/core/api";
-import { socialAuthStorage, tokenStorage, userStorage } from "@/context/auth/storage";
+import { socialAuthStorage, tokenStorage, userStorage, guestStorage } from "@/context/auth/storage";
 import { useToast } from "@/hooks/useToast";
 
 // Custom hooks
@@ -121,14 +121,21 @@ export const useAuthHook = () => {
             if (response.data.userExists && response.data.profileComplete && response.data.accessToken) {
               // User exists with complete profile, login successful
               // Removed console statement
+
+              // First save to storage
+              await tokenStorage.saveTokens(response.data.accessToken, response.data.refreshToken);
+              await userStorage.save(response.data.user);
+
+              // Clear guest status if exists
+              await guestStorage.clearGuest();
+
+              // Then update state
               setUser(response.data.user);
               setAccessToken(response.data.accessToken);
               setRefreshToken(response.data.refreshToken);
               setToken(response.data.accessToken); // Backward compatibility
-
-              // Save tokens to storage
-              await tokenStorage.saveTokens(response.data.accessToken, response.data.refreshToken);
-              await userStorage.save(response.data.user);
+              setIsGuest(false); // Explicitly set not guest
+              setGuestId(null); // Clear guest ID
 
               router.replace("/(tabs)");
             } else {
@@ -203,14 +210,21 @@ export const useAuthHook = () => {
             if (response.data.userExists && response.data.profileComplete && response.data.accessToken) {
               // User exists with complete profile, login successful
               // Removed console statement
+
+              // First save to storage
+              await tokenStorage.saveTokens(response.data.accessToken, response.data.refreshToken);
+              await userStorage.save(response.data.user);
+
+              // Clear guest status if exists
+              await guestStorage.clearGuest();
+
+              // Then update state
               setUser(response.data.user);
               setAccessToken(response.data.accessToken);
               setRefreshToken(response.data.refreshToken);
               setToken(response.data.accessToken); // Backward compatibility
-
-              // Save tokens to storage
-              await tokenStorage.saveTokens(response.data.accessToken, response.data.refreshToken);
-              await userStorage.save(response.data.user);
+              setIsGuest(false); // Explicitly set not guest
+              setGuestId(null); // Clear guest ID
 
               router.replace("/(tabs)");
             } else {

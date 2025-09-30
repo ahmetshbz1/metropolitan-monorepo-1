@@ -119,9 +119,19 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
       if (guestId) {
         try {
           await migrateGuestToUser(phone, guestId);
+          // Misafir verisi başarıyla taşındı, artık authenticated user'ız
+          setIsGuest(false);
+          setGuestId(null);
+          // Storage'dan da temizle
+          const { guestStorage } = await import('@/context/auth/storage');
+          await guestStorage.clearGuest();
         } catch (error) {
           // Removed console statement
         }
+      } else {
+        // Guest verisi yoksa bile, authenticated olduk
+        setIsGuest(false);
+        setGuestId(null);
       }
 
       // Sadece mevcut kullanıcı (token dönen) için profil çek
@@ -205,9 +215,19 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
       if (guestId && phoneNumber) {
         try {
           await migrateGuestToUser(phoneNumber, guestId);
+          // Misafir verisi başarıyla taşındı, artık authenticated user'ız
+          setIsGuest(false);
+          setGuestId(null);
+          // Storage'dan da temizle
+          const { guestStorage } = await import('@/context/auth/storage');
+          await guestStorage.clearGuest();
         } catch (error) {
           // Removed console statement
         }
+      } else {
+        // Guest verisi yoksa bile, authenticated olduk
+        setIsGuest(false);
+        setGuestId(null);
       }
 
       // Clear social auth data after successful profile completion
@@ -255,8 +275,8 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
       // Removed console statement
     }
 
-    // Tüm kimlik doğrulama verilerini temizle
-    await clearAllAuthData();
+    // Authenticated user verilerini temizle (guest ID'yi koru)
+    await clearAllAuthData(true); // keepGuest = true
 
     // Local state'i temizle
     setUser(null);
@@ -267,8 +287,8 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
     setPhoneNumber(null);
     setSocialAuthData(null);
 
-    // Logout sonrası yeni misafir kullanıcı oluştur
-    await loginAsGuest();
+    // Guest moduna geri dön (mevcut guest ID'yi kullan)
+    setIsGuest(true);
 
     // Ana sayfaya yönlendir
     router.replace('/(tabs)');

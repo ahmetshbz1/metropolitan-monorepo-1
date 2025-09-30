@@ -130,14 +130,20 @@ export const socialAuthStorage = {
 };
 
 // Tüm auth verilerini temizle
-export const clearAllAuthData = async (): Promise<void> => {
+export const clearAllAuthData = async (keepGuest: boolean = false): Promise<void> => {
   try {
-    await Promise.all([
+    const operations = [
       tokenStorage.remove(),
       userStorage.remove(),
-      guestStorage.clearGuest(),
       socialAuthStorage.remove(),
-    ]);
+    ];
+
+    // Guest ID'yi sadece istenirse temizle
+    if (!keepGuest) {
+      operations.push(guestStorage.clearGuest());
+    }
+
+    await Promise.all(operations);
   } catch (error) {
     // Removed console statement
   }
@@ -146,8 +152,9 @@ export const clearAllAuthData = async (): Promise<void> => {
 // Auth durumunu yükle
 export const loadAuthState = async () => {
   try {
-    const [token, user, guestId, isGuestFlag, socialAuthData] = await Promise.all([
+    const [token, refreshToken, user, guestId, isGuestFlag, socialAuthData] = await Promise.all([
       tokenStorage.get(),
+      tokenStorage.getRefreshToken(),
       userStorage.get(),
       guestStorage.getGuestId(),
       guestStorage.isGuest(),
@@ -156,6 +163,7 @@ export const loadAuthState = async () => {
 
     return {
       token,
+      refreshToken,
       user,
       guestId,
       isGuest: isGuestFlag,
@@ -165,6 +173,7 @@ export const loadAuthState = async () => {
     // Removed console statement
     return {
       token: null,
+      refreshToken: null,
       user: null,
       guestId: null,
       isGuest: false,
