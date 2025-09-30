@@ -44,7 +44,7 @@ export const PaymentTermSelector: React.FC = () => {
     };
 
     fetchPaymentTerms();
-  }, [user?.id, user?.userType, state.selectedPaymentMethod?.id]);
+  }, [user?.id, user?.userType, state.selectedPaymentMethod?.id, setPaymentTermDays, state.paymentTermDays]);
 
   if (user?.userType !== "corporate") return null;
   if (state.selectedPaymentMethod?.id !== "bank_transfer") return null;

@@ -15,12 +15,13 @@ export class StockManagementService {
    */
   static async validateAndReserveStock(
     tx: any,
-    orderItemsData: OrderItemData[]
+    orderItemsData: OrderItemData[],
+    userId: string
   ): Promise<void> {
     try {
       // Try Redis-based reservation first (faster + distributed locking)
       const { reservations, allSuccessful } = await StockRedisOperationsService
-        .reserveStockInRedis(orderItemsData);
+        .reserveStockInRedis(orderItemsData, userId);
 
       if (!allSuccessful) {
         // Rollback any successful reservations before throwing

@@ -41,7 +41,7 @@ export class OrderCreationService {
   ): Promise<OrderCreationResult> {
     const result = await db.transaction(async (tx) => {
       // 1. CRITICAL: Stock validation and reservation (delegated)
-      await StockManagementService.validateAndReserveStock(tx, orderItemsData);
+      await StockManagementService.validateAndReserveStock(tx, orderItemsData, userId);
 
       const isStripePayment = PaymentProcessingService.isStripePayment(request.paymentMethodId);
       const isBankTransfer = request.paymentMethodId === "bank_transfer";
