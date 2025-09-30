@@ -5,6 +5,9 @@ import { Heart, ShoppingCart, Eye, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { Product } from "@metropolitan/shared";
 import { useTranslation } from "react-i18next";
+import { useAddToCart } from "@/hooks/api/use-cart";
+import { useAuthStore } from "@/stores";
+import { useRouter } from "next/navigation";
 
 interface ProductCardProps {
   product: Product;
@@ -13,24 +16,33 @@ interface ProductCardProps {
 
 export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
   const [isFavorite, setIsFavorite] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation();
+  const router = useRouter();
+  const addToCartMutation = useAddToCart();
+  const accessToken = useAuthStore((state) => state.accessToken);
 
   const isOutOfStock = product.stock === 0;
   const isLowStock = product.stock > 0 && product.stock <= 5;
 
-  const handleAddToCart = async () => {
-    if (isOutOfStock || isLoading) return;
-    
-    setIsLoading(true);
+  const handleAddToCart = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isOutOfStock) return;
+
+    // Check if user is authenticated
+    if (!accessToken) {
+      router.push("/auth/phone-login");
+      return;
+    }
+
     try {
-      // API call için - gerçek implementation eklenecek
-      console.log("Adding to cart:", product.id);
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await addToCartMutation.mutateAsync({
+        productId: product.id,
+        quantity: 1,
+      });
     } catch (error) {
       console.error("Error adding to cart:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -68,19 +80,15 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
 
               {/* Add to Cart Button - Top Right */}
               <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleAddToCart();
-                }}
-                disabled={isOutOfStock || isLoading}
+                onClick={handleAddToCart}
+                disabled={isOutOfStock || addToCartMutation.isPending}
                 className={`absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center transition-all z-10 ${
                   isOutOfStock
                     ? "bg-gray-100 dark:bg-gray-800 text-gray-400"
                     : "bg-primary hover:bg-primary/90 text-white hover:scale-105"
                 }`}
               >
-                {isLoading ? (
+                {addToCartMutation.isPending ? (
                   <div className="w-2 h-2 border border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
                   <span className="text-sm font-bold">+</span>
@@ -158,19 +166,15 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
 
           {/* Add to Cart Button - Top Right */}
           <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleAddToCart();
-            }}
-            disabled={isOutOfStock || isLoading}
+            onClick={handleAddToCart}
+            disabled={isOutOfStock || addToCartMutation.isPending}
             className={`absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center transition-all z-10 ${
               isOutOfStock
                 ? "bg-gray-100 dark:bg-gray-800 text-gray-400"
                 : "bg-primary hover:bg-primary/90 text-white hover:scale-105"
             }`}
           >
-            {isLoading ? (
+            {addToCartMutation.isPending ? (
               <div className="w-2 h-2 border border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
               <span className="text-sm font-bold">+</span>

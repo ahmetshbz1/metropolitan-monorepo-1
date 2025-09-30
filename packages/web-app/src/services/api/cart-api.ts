@@ -10,34 +10,43 @@ interface UpdateCartItemRequest {
   quantity: number;
 }
 
+interface CartResponse {
+  items: CartItem[];
+  summary: {
+    totalItems: number;
+    subtotal: number;
+    currency: string;
+  };
+}
+
 export const cartApi = {
-  getCart: async () => {
-    const response = await api.get('/cart');
-    return response.data.data as CartItem[];
+  getCart: async (): Promise<CartResponse> => {
+    const response = await api.get('/me/cart');
+    return response.data as CartResponse;
   },
-  
-  addToCart: async (data: AddToCartRequest) => {
-    const response = await api.post('/cart/items', data);
-    return response.data.data as CartItem[];
+
+  addToCart: async (data: AddToCartRequest): Promise<CartResponse> => {
+    const response = await api.post('/me/cart', data);
+    // Backend returns CartOperationResponse, we need to fetch full cart
+    const cartResponse = await api.get('/me/cart');
+    return cartResponse.data as CartResponse;
   },
-  
-  updateCartItem: async (productId: string, data: UpdateCartItemRequest) => {
-    const response = await api.put(`/cart/items/${productId}`, data);
-    return response.data.data as CartItem[];
+
+  updateCartItem: async (itemId: string, data: UpdateCartItemRequest): Promise<CartResponse> => {
+    await api.put(`/me/cart/${itemId}`, data);
+    // Fetch updated cart
+    const response = await api.get('/me/cart');
+    return response.data as CartResponse;
   },
-  
-  removeFromCart: async (productId: string) => {
-    const response = await api.delete(`/cart/items/${productId}`);
-    return response.data.data as CartItem[];
+
+  removeFromCart: async (itemId: string): Promise<CartResponse> => {
+    await api.delete(`/me/cart/${itemId}`);
+    // Fetch updated cart
+    const response = await api.get('/me/cart');
+    return response.data as CartResponse;
   },
-  
-  clearCart: async () => {
-    const response = await api.delete('/cart');
-    return response.data;
-  },
-  
-  syncCart: async (items: CartItem[]) => {
-    const response = await api.post('/cart/sync', { items });
-    return response.data.data as CartItem[];
+
+  clearCart: async (): Promise<void> => {
+    await api.delete('/me/cart');
   },
 };

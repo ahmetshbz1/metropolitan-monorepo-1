@@ -13,6 +13,8 @@ import {
 import { useProducts } from "@/hooks/api/use-products";
 import { useAddFavorite, useFavoriteIds, useRemoveFavorite } from "@/hooks/api/use-favorites";
 import { useFavoritesStore } from "@/stores/favorites-store";
+import { useAddToCart } from "@/hooks/api/use-cart";
+import { useAuthStore } from "@/stores";
 import { motion } from "framer-motion";
 import { ArrowLeft, Heart, Minus, Plus, ShoppingCart } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -31,8 +33,11 @@ export default function ProductDetailPage() {
   const addFavoriteMutation = useAddFavorite();
   const removeFavoriteMutation = useRemoveFavorite();
 
+  // Cart
+  const addToCartMutation = useAddToCart();
+  const accessToken = useAuthStore((state) => state.accessToken);
+
   const [quantity, setQuantity] = useState(1);
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   // Get product by ID
   const product = useMemo(() =>
@@ -58,14 +63,23 @@ export default function ProductDetailPage() {
   }, [products, params.id, product?.category]);
 
   const handleAddToCart = async () => {
+    if (!product || product.stock === 0) return;
+
+    // Check if user is authenticated
+    if (!accessToken) {
+      router.push("/auth/phone-login");
+      return;
+    }
+
     try {
-      setIsAddingToCart(true);
-      // TODO: Implement add to cart API call
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
+      await addToCartMutation.mutateAsync({
+        productId: product.id,
+        quantity: quantity,
+      });
+      // Reset quantity after successful add
+      setQuantity(1);
     } catch (error) {
       console.error("Error adding to cart:", error);
-    } finally {
-      setIsAddingToCart(false);
     }
   };
 
@@ -349,11 +363,11 @@ export default function ProductDetailPage() {
             <div className="flex gap-2 pt-3">
               <Button
                 onClick={handleAddToCart}
-                disabled={isOutOfStock || isAddingToCart}
+                disabled={isOutOfStock || addToCartMutation.isPending}
                 size="lg"
                 className="flex-1"
               >
-                {isAddingToCart ? (
+                {addToCartMutation.isPending ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
                   <ShoppingCart className="mr-2 h-5 w-5" />

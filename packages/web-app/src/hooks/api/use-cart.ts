@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { cartApi } from '@/services/api/cart-api';
 import { useCartStore } from '@/stores/cart-store';
+import { useAuthStore } from '@/stores';
 
 export const cartKeys = {
   all: ['cart'] as const,
@@ -8,58 +9,59 @@ export const cartKeys = {
 };
 
 export function useCart() {
-  const setItems = useCartStore((state) => state.setItems);
+  const setCart = useCartStore((state) => state.setCart);
   const setLoading = useCartStore((state) => state.setLoading);
-  
+  const accessToken = useAuthStore((state) => state.accessToken);
+
   return useQuery({
     queryKey: cartKeys.items(),
     queryFn: async () => {
-      const items = await cartApi.getCart();
-      setItems(items);
-      return items;
+      const response = await cartApi.getCart();
+      setCart(response.items, response.summary);
+      return response;
     },
-    onSuccess: () => setLoading(false),
-    onError: () => setLoading(false),
-    staleTime: 1 * 60 * 1000, // 1 minute
+    enabled: !!accessToken,
+    staleTime: 30 * 1000, // 30 seconds
+    onSettled: () => setLoading(false),
   });
 }
 
 export function useAddToCart() {
   const queryClient = useQueryClient();
-  const addItem = useCartStore((state) => state.addItem);
-  
+  const setCart = useCartStore((state) => state.setCart);
+
   return useMutation({
     mutationFn: cartApi.addToCart,
-    onSuccess: (data) => {
-      queryClient.setQueryData(cartKeys.items(), data);
-      addItem(data[data.length - 1]); // Add last item to local store
+    onSuccess: (response) => {
+      queryClient.setQueryData(cartKeys.items(), response);
+      setCart(response.items, response.summary);
     },
   });
 }
 
 export function useUpdateCartItem() {
   const queryClient = useQueryClient();
-  const updateQuantity = useCartStore((state) => state.updateQuantity);
-  
+  const setCart = useCartStore((state) => state.setCart);
+
   return useMutation({
-    mutationFn: ({ productId, quantity }: { productId: string; quantity: number }) =>
-      cartApi.updateCartItem(productId, { quantity }),
-    onSuccess: (data, variables) => {
-      queryClient.setQueryData(cartKeys.items(), data);
-      updateQuantity(variables.productId, variables.quantity);
+    mutationFn: ({ itemId, quantity }: { itemId: string; quantity: number }) =>
+      cartApi.updateCartItem(itemId, { quantity }),
+    onSuccess: (response) => {
+      queryClient.setQueryData(cartKeys.items(), response);
+      setCart(response.items, response.summary);
     },
   });
 }
 
 export function useRemoveFromCart() {
   const queryClient = useQueryClient();
-  const removeItem = useCartStore((state) => state.removeItem);
-  
+  const setCart = useCartStore((state) => state.setCart);
+
   return useMutation({
     mutationFn: cartApi.removeFromCart,
-    onSuccess: (data, productId) => {
-      queryClient.setQueryData(cartKeys.items(), data);
-      removeItem(productId);
+    onSuccess: (response) => {
+      queryClient.setQueryData(cartKeys.items(), response);
+      setCart(response.items, response.summary);
     },
   });
 }
@@ -67,11 +69,11 @@ export function useRemoveFromCart() {
 export function useClearCart() {
   const queryClient = useQueryClient();
   const clearCart = useCartStore((state) => state.clearCart);
-  
+
   return useMutation({
     mutationFn: cartApi.clearCart,
     onSuccess: () => {
-      queryClient.setQueryData(cartKeys.items(), []);
+      queryClient.setQueryData(cartKeys.items(), { items: [], summary: null });
       clearCart();
     },
   });
