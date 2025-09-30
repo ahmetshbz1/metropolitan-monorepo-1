@@ -51,9 +51,17 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
     }).format(price);
   };
 
-  const handleUpdateQuantity = async (itemId: string, newQuantity: number) => {
+  const handleUpdateQuantity = async (
+    itemId: string,
+    productId: string,
+    newQuantity: number
+  ) => {
     if (newQuantity < 1) return;
-    await updateItemMutation.mutateAsync({ itemId, quantity: newQuantity });
+    await updateItemMutation.mutateAsync({
+      itemId,
+      quantity: newQuantity,
+      productId, // Guest için gerekli
+    });
   };
 
   const handleRemoveItem = async (itemId: string) => {
@@ -79,7 +87,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
           </div>
         </DrawerHeader>
 
-        <DrawerBody className="flex flex-col h-[calc(80vh-140px)]">
+        <DrawerBody className="flex flex-col flex-1 overflow-hidden">
           {enrichedItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center mb-4">
@@ -94,7 +102,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
               </Button>
             </div>
           ) : (
-            <div className="flex-1 overflow-y-auto space-y-4">
+            <div className="overflow-y-auto space-y-4 px-1">
               {enrichedItems.map((item) => (
                 <div
                   key={item.id}
@@ -140,7 +148,11 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                           size="icon"
                           className="h-7 w-7"
                           onClick={() =>
-                            handleUpdateQuantity(item.id, item.quantity - 1)
+                            handleUpdateQuantity(
+                              item.id,
+                              item.product.id,
+                              item.quantity - 1
+                            )
                           }
                           disabled={
                             item.quantity <= 1 || updateItemMutation.isPending
@@ -156,7 +168,11 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                           size="icon"
                           className="h-7 w-7"
                           onClick={() =>
-                            handleUpdateQuantity(item.id, item.quantity + 1)
+                            handleUpdateQuantity(
+                              item.id,
+                              item.product.id,
+                              item.quantity + 1
+                            )
                           }
                           disabled={
                             item.quantity >= item.product.stock ||
