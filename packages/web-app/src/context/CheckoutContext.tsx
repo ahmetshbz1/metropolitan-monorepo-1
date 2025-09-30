@@ -58,9 +58,9 @@ const CheckoutContext = createContext<CheckoutContextType | undefined>(undefined
 // Available payment methods - based on user type
 const getAvailablePaymentMethods = (userType?: "individual" | "corporate"): CheckoutPaymentMethod[] => {
   const allMethods: CheckoutPaymentMethod[] = [
-    // Stripe Kartı - Herkes için
+    // Stripe Kartı - Herkes için (mobile-app ile aynı ID)
     {
-      id: "stripe",
+      id: "card",
       type: PaymentType.STRIPE,
       title: "Kredi/Banka Kartı",
       subtitle: "Stripe ile güvenli ödeme",

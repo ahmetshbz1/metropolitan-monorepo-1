@@ -116,6 +116,7 @@ export class OrderCreationService {
         ...order,
         stripePaymentIntentId: stripeInfo.paymentIntentId,
         stripeClientSecret: stripeInfo.clientSecret,
+        stripeCheckoutUrl: stripeInfo.checkoutUrl, // Web için Stripe Checkout URL
       };
     });
 
@@ -208,6 +209,11 @@ export class OrderCreationService {
     if (order.stripePaymentIntentId) {
       (baseResult.order as any).stripePaymentIntentId = order.stripePaymentIntentId;
       (baseResult.order as any).stripeClientSecret = order.stripeClientSecret;
+    }
+
+    // Add Stripe Checkout URL if available (for web)
+    if (order.stripeCheckoutUrl) {
+      (baseResult.order as any).stripeCheckoutUrl = order.stripeCheckoutUrl;
     }
 
     return baseResult;

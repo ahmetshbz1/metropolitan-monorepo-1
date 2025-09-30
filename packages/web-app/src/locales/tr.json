@@ -339,7 +339,10 @@
     "agree_terms": "Kullanım şartlarını ve gizlilik politikasını kabul ediyorum",
     "complete_order": "Siparişi Tamamla",
     "missing_info": "Lütfen tüm gerekli bilgileri doldurun.",
+    "missing_fields": "Lütfen tüm gerekli bilgileri doldurun.",
     "order_error": "Sipariş oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.",
+    "order_creation_failed": "Sipariş oluşturulamadı. Lütfen tekrar deneyin.",
+    "payment_error": "Ödeme işlemi başarısız oldu. Lütfen tekrar deneyin.",
     "payment_methods": {
       "card": {
         "title": "Kredi / Banka Kartı",
@@ -354,6 +357,16 @@
       "title": "Adres Ekleyin",
       "desc": "Siparişinizi tamamlamak için önce bir teslimat adresi eklemelisiniz."
     }
+  },
+  "payment": {
+    "stripe_load_failed": "Ödeme sistemi yüklenemedi. Lütfen sayfayı yenileyin.",
+    "payment_failed": "Ödeme başarısız oldu. Lütfen tekrar deneyin.",
+    "unsupported_payment_method": "Bu ödeme yöntemi henüz desteklenmiyor.",
+    "unknown_error": "Bilinmeyen bir hata oluştu. Lütfen tekrar deneyin.",
+    "client_secret_missing": "Ödeme bilgileri eksik. Lütfen tekrar deneyin."
+  },
+  "order": {
+    "creation_failed": "Sipariş oluşturulamadı. Lütfen tekrar deneyin."
   },
   "order_confirmation": {
     "title": "Siparişiniz Alındı!",

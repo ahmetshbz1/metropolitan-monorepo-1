@@ -7,16 +7,25 @@ import { useCheckout } from "@/context/CheckoutContext";
 import { useCartStore } from "@/stores/cart-store";
 import { MapPin, CreditCard, Package } from "lucide-react";
 import { useState } from "react";
+import { useOrders } from "@/hooks/use-orders";
+import { useStripePayment } from "@/hooks/use-stripe-payment";
+import { useTranslation } from "react-i18next";
+import { useRouter } from "next/navigation";
 
 interface SummaryStepProps {
   onComplete: () => void;
 }
 
 export function SummaryStep({ onComplete }: SummaryStepProps) {
-  const { state, setAgreedToTerms, setNotes, canProceedToNext } = useCheckout();
+  const { state, setAgreedToTerms, setNotes, canProceedToNext, resetCheckout } = useCheckout();
   const items = useCartStore((state) => state.items);
   const summary = useCartStore((state) => state.summary);
+  const clearCart = useCartStore((state) => state.clearCart);
   const [isProcessing, setIsProcessing] = useState(false);
+  const { t } = useTranslation();
+  const { createOrder, loading: orderLoading } = useOrders();
+  const { processPayment, loading: paymentLoading } = useStripePayment();
+  const router = useRouter();
 
   const formatPrice = (price: number, currency: string) => {
     return new Intl.NumberFormat("pl-PL", {
@@ -27,25 +36,87 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
   };
 
   const handleCompleteOrder = async () => {
-    if (!canProceedToNext()) return;
+    if (!canProceedToNext() || !state.deliveryAddress || !state.selectedPaymentMethod) {
+      return;
+    }
 
     setIsProcessing(true);
     try {
-      // TODO: Sipariş oluşturma API çağrısı
-      // const order = await createOrder({ ... });
+      const orderData = {
+        shippingAddressId: state.deliveryAddress.id,
+        billingAddressId: state.billingAddressSameAsDelivery
+          ? state.deliveryAddress.id
+          : state.billingAddress?.id,
+        paymentMethodId: state.selectedPaymentMethod.id,
+        notes: state.notes || undefined,
+      };
 
-      // Stripe ödeme için redirect
-      // if (state.selectedPaymentMethod?.type === "card") {
-      //   window.location.href = checkoutUrl;
-      // }
+      console.log("🛒 Starting order creation with data:", orderData);
 
-      // Şimdilik sadece drawer'ı kapat
-      setTimeout(() => {
+      // Sipariş oluştur (mobile-app ile aynı flow)
+      const orderResponse = await createOrder(orderData);
+
+      console.log("📦 Order response received:", orderResponse);
+
+      if (!orderResponse || !orderResponse.order) {
+        throw new Error(t("order.creation_failed"));
+      }
+
+      const { order } = orderResponse;
+
+      // Stripe Checkout URL kontrolü (Web için)
+      if (order.stripeCheckoutUrl) {
+        console.log("🌐 Redirecting to Stripe Checkout:", order.stripeCheckoutUrl);
+
+        // Stripe Checkout'a yönlendir
+        window.location.href = order.stripeCheckoutUrl;
+        return;
+      }
+
+      // Stripe ödeme kontrolü (Mobile için - Payment Intent)
+      const isStripePayment = ["apple_pay", "google_pay", "blik"].includes(
+        state.selectedPaymentMethod.id
+      );
+
+      console.log("💳 Payment method:", state.selectedPaymentMethod.id, "Is Stripe:", isStripePayment);
+
+      if (isStripePayment && order.stripeClientSecret) {
+        console.log("🔐 Processing Stripe payment with clientSecret");
+
+        // Stripe ile ödeme işlemi
+        const paymentResult = await processPayment(
+          order.stripeClientSecret,
+          state.selectedPaymentMethod.id
+        );
+
+        if (!paymentResult.success) {
+          console.error("❌ Payment failed:", paymentResult.error);
+          throw new Error(paymentResult.error || t("checkout.payment_error"));
+        }
+
+        console.log("✅ Payment successful");
+
+        // Ödeme başarılı
+        await clearCart();
+        resetCheckout();
         onComplete();
-        setIsProcessing(false);
-      }, 1000);
-    } catch (error) {
-      console.error("Order creation failed:", error);
+
+        // Sipariş detay sayfasına yönlendir
+        router.push(`/order/${order.id}`);
+      } else {
+        console.log("🏦 Processing bank transfer payment");
+
+        // Banka havalesi gibi diğer ödeme yöntemleri
+        await clearCart();
+        resetCheckout();
+        onComplete();
+
+        // Sipariş detay sayfasına yönlendir
+        router.push(`/order/${order.id}`);
+      }
+    } catch (error: any) {
+      console.error("❌ Order creation failed:", error);
+      alert(error?.message || t("checkout.order_creation_failed"));
       setIsProcessing(false);
     }
   };
@@ -191,9 +262,9 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
           onClick={handleCompleteOrder}
           size="lg"
           className="w-full"
-          disabled={!canProceedToNext() || isProcessing}
+          disabled={!canProceedToNext() || isProcessing || orderLoading || paymentLoading}
         >
-          {isProcessing ? "İşleniyor..." : "Siparişi Tamamla"}
+          {isProcessing || orderLoading || paymentLoading ? "İşleniyor..." : "Siparişi Tamamla"}
         </Button>
       </div>
     </div>

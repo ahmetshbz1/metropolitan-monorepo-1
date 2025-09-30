@@ -81,6 +81,7 @@ export interface OrderCreationResult {
     // Stripe payment fields (optional)
     stripePaymentIntentId?: string;
     stripeClientSecret?: string;
+    stripeCheckoutUrl?: string; // Web için Stripe Checkout URL
     paymentStatus?: string;
   };
 }

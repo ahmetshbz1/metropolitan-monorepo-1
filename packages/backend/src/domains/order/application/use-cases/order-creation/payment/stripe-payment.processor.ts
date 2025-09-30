@@ -12,6 +12,7 @@ import { PaymentCalculatorService } from "./payment-calculator.service";
 export interface StripePaymentResult {
   paymentIntentId: string;
   clientSecret: string;
+  checkoutUrl?: string; // Web için Stripe Checkout URL
 }
 
 export class StripePaymentProcessor {
@@ -40,16 +41,35 @@ export class StripePaymentProcessor {
     userId: string
   ): Promise<StripePaymentResult> {
     const amountInCents = PaymentCalculatorService.calculateAmountFromCart(cartItems);
-    
+
+    // Web için Checkout Session oluştur
+    if (request.paymentMethodId === "card") {
+      const checkoutSession = await StripeService.createCheckoutSession({
+        amount: amountInCents,
+        currency: "pln",
+        orderId: order.id,
+        userId,
+        successUrl: `${process.env.WEB_APP_URL || 'http://localhost:3001'}/order/${order.id}?payment=success`,
+        cancelUrl: `${process.env.WEB_APP_URL || 'http://localhost:3001'}/order/${order.id}?payment=cancelled`,
+      });
+
+      return {
+        paymentIntentId: checkoutSession.payment_intent as string,
+        clientSecret: '', // Checkout Session için client secret gerekmiyor
+        checkoutUrl: checkoutSession.url!,
+      };
+    }
+
+    // Mobile için Payment Intent oluştur (Apple Pay, Google Pay, BLIK)
     const paymentIntentParams = this.buildPaymentIntentParams(
       amountInCents,
       order.id,
       userId,
       request.paymentMethodId
     );
-    
+
     const paymentIntent = await StripeService.createPaymentIntent(paymentIntentParams);
-    
+
     return {
       paymentIntentId: paymentIntent.id,
       clientSecret: paymentIntent.client_secret,

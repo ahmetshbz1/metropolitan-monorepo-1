@@ -49,6 +49,55 @@ class StripeService {
     }
   }
 
+  async createCheckoutSession({
+    amount,
+    currency = "pln",
+    orderId,
+    userId,
+    successUrl,
+    cancelUrl,
+  }: {
+    amount: number;
+    currency?: string;
+    orderId: string;
+    userId: string;
+    successUrl: string;
+    cancelUrl: string;
+  }): Promise<Stripe.Checkout.Session> {
+    try {
+      const session = await this.stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: [
+          {
+            price_data: {
+              currency,
+              product_data: {
+                name: `Sipariş #${orderId.slice(0, 8)}`,
+                description: "Metropolitan Food Group",
+              },
+              unit_amount: amount,
+            },
+            quantity: 1,
+          },
+        ],
+        mode: "payment",
+        success_url: successUrl,
+        cancel_url: cancelUrl,
+        metadata: {
+          order_id: orderId,
+          user_id: userId,
+          source: "metropolitan_web",
+        },
+      });
+
+      console.log("✅ Stripe Checkout Session created:", session.id);
+      return session;
+    } catch (error) {
+      console.error("Stripe Checkout Session creation error:", error);
+      throw new Error("Checkout session creation failed");
+    }
+  }
+
   async getPaymentIntent(
     paymentIntentId: string
   ): Promise<Stripe.PaymentIntent> {

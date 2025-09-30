@@ -7,36 +7,25 @@ import { Package, Download, HelpCircle, ArrowLeft } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
-import { api } from "@/services/api/client";
+import api from "@/lib/api";
 import Image from "next/image";
+import type { OrderDetail } from "@metropolitan/shared";
 
-interface OrderItem {
-  id: string;
-  productId: string;
-  name: string;
-  image: string | null;
-  quantity: number;
-  price: number;
-  currency: string;
-}
-
-interface Order {
-  id: string;
-  orderNumber: string;
-  status: string;
-  totalAmount: number;
-  subtotal: number;
-  shippingCost: number;
-  currency: string;
-  createdAt: string;
-  items: OrderItem[];
-  shippingAddress: {
-    fullAddress: string;
-    city: string;
-    postalCode: string;
-    country: string;
-  };
-}
+type Order = OrderDetail & {
+  items?: Array<{
+    id: string;
+    quantity: number;
+    unitPrice: string;
+    totalPrice: string;
+    product: {
+      id: string;
+      name: string;
+      image: string | null;
+      price: string;
+      currency: string;
+    };
+  }>;
+};
 
 export default function OrderDetailPage() {
   const { t } = useTranslation();
@@ -59,7 +48,11 @@ export default function OrderDetailPage() {
     try {
       setLoading(true);
       const response = await api.get(`/orders/${params.id}`);
-      setOrder(response.data);
+      console.log("📦 Order data received:", response.data);
+
+      // Backend response: { order, items, trackingEvents }
+      const { order: orderData, items } = response.data;
+      setOrder({ ...orderData, items });
     } catch (error) {
       console.error("Failed to fetch order:", error);
     } finally {
@@ -234,18 +227,26 @@ export default function OrderDetailPage() {
         </div>
 
         {/* Delivery Address */}
-        <div className="bg-card rounded-xl border border-border p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">
-            {t("order_detail.delivery_payment.delivery_address")}
-          </h2>
-          <p className="text-muted-foreground">
-            {order.shippingAddress.fullAddress}
-            <br />
-            {order.shippingAddress.postalCode} {order.shippingAddress.city}
-            <br />
-            {order.shippingAddress.country}
-          </p>
-        </div>
+        {order.shippingAddress && (
+          <div className="bg-card rounded-xl border border-border p-6 mb-6">
+            <h2 className="text-xl font-semibold mb-4">
+              {t("order_detail.delivery_payment.delivery_address")}
+            </h2>
+            <p className="text-muted-foreground">
+              {order.shippingAddress.addressTitle && (
+                <>
+                  <strong>{order.shippingAddress.addressTitle}</strong>
+                  <br />
+                </>
+              )}
+              {order.shippingAddress.street}
+              <br />
+              {order.shippingAddress.postalCode} {order.shippingAddress.city}
+              <br />
+              {order.shippingAddress.country}
+            </p>
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="flex gap-3">
