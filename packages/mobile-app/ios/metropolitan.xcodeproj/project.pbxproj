@@ -8,33 +8,33 @@
 
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		27FF7C2C35304D96A2F694CA /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C61E020F62CE4D64B54A0C1E /* GoogleService-Info.plist */; };
-		2EBB1C3E79EB6228A5213B7D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 655F5F8A410500654567983B /* PrivacyInfo.xcprivacy */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
-		9D1390E1BB674A19B995ED33 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8AFB074B62934AA1B2234D50 /* InfoPlist.strings */; };
+		49A012D7F0E94D302664A5FB /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 9796858B821C57643958930C /* PrivacyInfo.xcprivacy */; };
+		5B3709DDBAE44EED9872F19B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 84E2E43B05A94DCFB79551EB /* InfoPlist.strings */; };
+		6910DD7674AECDCE575BE844 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8AA98FADA4BF5C4D303348A /* ExpoModulesProvider.swift */; };
+		82E95AD001E144C0BBC3BEA4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 2AE3093E8D6B45E087D349D5 /* InfoPlist.strings */; };
+		8588BA88F27F487B7FFF2306 /* libPods-metropolitan.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 86C6320B327B55FA922C02F1 /* libPods-metropolitan.a */; };
+		B5FCFA29C7F540EA91B0B2DF /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 3E70FEA9CA8B406AAAFF97C1 /* InfoPlist.strings */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		C80D954012A21B6BD93F1AF6 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3969157983851C325A00D3B3 /* ExpoModulesProvider.swift */; };
-		E51446792F584A658D2F2161 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 820DD4926C334101A026239A /* InfoPlist.strings */; };
-		E5E178A02B7341DDA60761E6 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 940579B72B9B45339EAC7660 /* InfoPlist.strings */; };
+		BF7A5B2322FF4585BA41121C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 51519E2A45B84D68B8E80441 /* GoogleService-Info.plist */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
-		F7FCD60285160B012266E38A /* libPods-metropolitan.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E81F43CC852C87E4ECDD647 /* libPods-metropolitan.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		13B07F961A680F5B00A75B9A /* metropolitan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = metropolitan.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = metropolitan/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = metropolitan/Info.plist; sourceTree = "<group>"; };
-		3969157983851C325A00D3B3 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-metropolitan/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		3E81F43CC852C87E4ECDD647 /* libPods-metropolitan.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-metropolitan.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		55238CAA33639F0C4A63FF06 /* Pods-metropolitan.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-metropolitan.release.xcconfig"; path = "Target Support Files/Pods-metropolitan/Pods-metropolitan.release.xcconfig"; sourceTree = "<group>"; };
-		655F5F8A410500654567983B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = metropolitan/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		7D629925A83019EC9C809CA6 /* Pods-metropolitan.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-metropolitan.debug.xcconfig"; path = "Target Support Files/Pods-metropolitan/Pods-metropolitan.debug.xcconfig"; sourceTree = "<group>"; };
-		820DD4926C334101A026239A /* InfoPlist.strings */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = tr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		8AFB074B62934AA1B2234D50 /* InfoPlist.strings */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = pl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		940579B72B9B45339EAC7660 /* InfoPlist.strings */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		2AE3093E8D6B45E087D349D5 /* InfoPlist.strings */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		3E70FEA9CA8B406AAAFF97C1 /* InfoPlist.strings */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = pl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		41D6C220BBD6D3551B50E26E /* Pods-metropolitan.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-metropolitan.debug.xcconfig"; path = "Target Support Files/Pods-metropolitan/Pods-metropolitan.debug.xcconfig"; sourceTree = "<group>"; };
+		51519E2A45B84D68B8E80441 /* GoogleService-Info.plist */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "metropolitan/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		84E2E43B05A94DCFB79551EB /* InfoPlist.strings */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = tr.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		86C6320B327B55FA922C02F1 /* libPods-metropolitan.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-metropolitan.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9796858B821C57643958930C /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = metropolitan/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = metropolitan/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
-		C61E020F62CE4D64B54A0C1E /* GoogleService-Info.plist */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "metropolitan/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		E71CC2B806B6FB3D745FC84C /* Pods-metropolitan.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-metropolitan.release.xcconfig"; path = "Target Support Files/Pods-metropolitan/Pods-metropolitan.release.xcconfig"; sourceTree = "<group>"; };
+		E8AA98FADA4BF5C4D303348A /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-metropolitan/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = metropolitan/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* metropolitan-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "metropolitan-Bridging-Header.h"; path = "metropolitan/metropolitan-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -45,19 +45,21 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7FCD60285160B012266E38A /* libPods-metropolitan.a in Frameworks */,
+				8588BA88F27F487B7FFF2306 /* libPods-metropolitan.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0706030553B5D680E289D2E4 /* ExpoModulesProviders */ = {
+		072208165E5BD2B3ACE398BB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				8037C5957A72E5DF5E42E2C4 /* metropolitan */,
+				41D6C220BBD6D3551B50E26E /* Pods-metropolitan.debug.xcconfig */,
+				E71CC2B806B6FB3D745FC84C /* Pods-metropolitan.release.xcconfig */,
 			);
-			name = ExpoModulesProviders;
+			name = Pods;
+			path = Pods;
 			sourceTree = "<group>";
 		};
 		13B07FAE1A68108700A75B9A /* metropolitan */ = {
@@ -69,8 +71,8 @@
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				C61E020F62CE4D64B54A0C1E /* GoogleService-Info.plist */,
-				655F5F8A410500654567983B /* PrivacyInfo.xcprivacy */,
+				51519E2A45B84D68B8E80441 /* GoogleService-Info.plist */,
+				9796858B821C57643958930C /* PrivacyInfo.xcprivacy */,
 			);
 			name = metropolitan;
 			sourceTree = "<group>";
@@ -79,34 +81,27 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				3E81F43CC852C87E4ECDD647 /* libPods-metropolitan.a */,
+				86C6320B327B55FA922C02F1 /* libPods-metropolitan.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		558FFD3AEB30443F8CBAC988 /* pl.lproj */ = {
+		6CC496B1406D49E7A4783FEB /* en.lproj */ = {
 			isa = PBXGroup;
 			children = (
-				8AFB074B62934AA1B2234D50 /* InfoPlist.strings */,
+				2AE3093E8D6B45E087D349D5 /* InfoPlist.strings */,
 			);
-			name = pl.lproj;
+			name = en.lproj;
+			path = "";
 			sourceTree = "<group>";
 		};
-		8037C5957A72E5DF5E42E2C4 /* metropolitan */ = {
+		7544A198E4B94F1381DCC0E5 /* tr.lproj */ = {
 			isa = PBXGroup;
 			children = (
-				3969157983851C325A00D3B3 /* ExpoModulesProvider.swift */,
+				84E2E43B05A94DCFB79551EB /* InfoPlist.strings */,
 			);
-			name = metropolitan;
-			sourceTree = "<group>";
-		};
-		8160EA842F743C0AB0D7523D /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				7D629925A83019EC9C809CA6 /* Pods-metropolitan.debug.xcconfig */,
-				55238CAA33639F0C4A63FF06 /* Pods-metropolitan.release.xcconfig */,
-			);
-			path = Pods;
+			name = tr.lproj;
+			path = "";
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -123,8 +118,8 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				8160EA842F743C0AB0D7523D /* Pods */,
-				0706030553B5D680E289D2E4 /* ExpoModulesProviders */,
+				072208165E5BD2B3ACE398BB /* Pods */,
+				CA4353EA5855B7E765A6A2BC /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -139,32 +134,41 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B91715DF082C453D8A776707 /* en.lproj */ = {
+		9641423CF1978DF9436B51AB /* metropolitan */ = {
 			isa = PBXGroup;
 			children = (
-				940579B72B9B45339EAC7660 /* InfoPlist.strings */,
+				E8AA98FADA4BF5C4D303348A /* ExpoModulesProvider.swift */,
 			);
-			name = en.lproj;
+			name = metropolitan;
 			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
 			isa = PBXGroup;
 			children = (
 				BB2F792C24A3F905000567C9 /* Expo.plist */,
-				CDD4A0D2848F4084BE70B82D /* tr.lproj */,
-				558FFD3AEB30443F8CBAC988 /* pl.lproj */,
-				B91715DF082C453D8A776707 /* en.lproj */,
+				7544A198E4B94F1381DCC0E5 /* tr.lproj */,
+				C16D9667D02946548F84F5FC /* pl.lproj */,
+				6CC496B1406D49E7A4783FEB /* en.lproj */,
 			);
 			name = Supporting;
 			path = metropolitan/Supporting;
 			sourceTree = "<group>";
 		};
-		CDD4A0D2848F4084BE70B82D /* tr.lproj */ = {
+		C16D9667D02946548F84F5FC /* pl.lproj */ = {
 			isa = PBXGroup;
 			children = (
-				820DD4926C334101A026239A /* InfoPlist.strings */,
+				3E70FEA9CA8B406AAAFF97C1 /* InfoPlist.strings */,
 			);
-			name = tr.lproj;
+			name = pl.lproj;
+			path = "";
+			sourceTree = "<group>";
+		};
+		CA4353EA5855B7E765A6A2BC /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				9641423CF1978DF9436B51AB /* metropolitan */,
+			);
+			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -175,13 +179,13 @@
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "metropolitan" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
-				8761F6BA27F7395B3ECB2624 /* [Expo] Configure project */,
+				ABBAE61DC03D06965F86359E /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
-				F3DB6E8C4092CD5C2281E565 /* [CP] Embed Pods Frameworks */,
+				464C019DE3A687CDEFCCC22E /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -231,11 +235,11 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				E51446792F584A658D2F2161 /* InfoPlist.strings in Resources */,
-				9D1390E1BB674A19B995ED33 /* InfoPlist.strings in Resources */,
-				E5E178A02B7341DDA60761E6 /* InfoPlist.strings in Resources */,
-				27FF7C2C35304D96A2F694CA /* GoogleService-Info.plist in Resources */,
-				2EBB1C3E79EB6228A5213B7D /* PrivacyInfo.xcprivacy in Resources */,
+				5B3709DDBAE44EED9872F19B /* InfoPlist.strings in Resources */,
+				B5FCFA29C7F540EA91B0B2DF /* InfoPlist.strings in Resources */,
+				82E95AD001E144C0BBC3BEA4 /* InfoPlist.strings in Resources */,
+				BF7A5B2322FF4585BA41121C /* GoogleService-Info.plist in Resources */,
+				49A012D7F0E94D302664A5FB /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -277,6 +281,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		464C019DE3A687CDEFCCC22E /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-metropolitan/Pods-metropolitan-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-metropolitan/Pods-metropolitan-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */ = {
@@ -345,7 +367,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-metropolitan/Pods-metropolitan-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		8761F6BA27F7395B3ECB2624 /* [Expo] Configure project */ = {
+		ABBAE61DC03D06965F86359E /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -364,24 +386,6 @@
 			shellPath = /bin/sh;
 			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-metropolitan/expo-configure-project.sh\"\n";
 		};
-		F3DB6E8C4092CD5C2281E565 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-metropolitan/Pods-metropolitan-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/Pre-built/hermes.framework/hermes",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-metropolitan/Pods-metropolitan-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -390,7 +394,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
-				C80D954012A21B6BD93F1AF6 /* ExpoModulesProvider.swift in Sources */,
+				6910DD7674AECDCE575BE844 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -399,12 +403,12 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7D629925A83019EC9C809CA6 /* Pods-metropolitan.debug.xcconfig */;
+			baseConfigurationReference = 41D6C220BBD6D3551B50E26E /* Pods-metropolitan.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = metropolitan/metropolitan.entitlements;
-				CURRENT_PROJECT_VERSION = 19;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 64XKK46655;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -412,14 +416,12 @@
 					"FB_SONARKIT_ENABLED=1",
 				);
 				INFOPLIST_FILE = metropolitan/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = metropolitan;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.food-and-drink";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.5;
+				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -438,22 +440,20 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 55238CAA33639F0C4A63FF06 /* Pods-metropolitan.release.xcconfig */;
+			baseConfigurationReference = E71CC2B806B6FB3D745FC84C /* Pods-metropolitan.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = metropolitan/metropolitan.entitlements;
-				CURRENT_PROJECT_VERSION = 19;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 64XKK46655;
 				INFOPLIST_FILE = metropolitan/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = metropolitan;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.food-and-drink";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.5;
+				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -524,7 +524,10 @@
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -579,7 +582,10 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(SDKROOT)/usr/lib/swift\"$(inherited)\"";
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
