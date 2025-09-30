@@ -171,13 +171,19 @@ export function setupResponseInterceptor(api: AxiosInstance) {
     async (error) => {
       const originalRequest = error.config;
 
-      // Skip refresh for auth endpoints
-      if (originalRequest.url?.includes('/auth/')) {
+      // Skip refresh for auth endpoints (except refresh endpoint itself)
+      if (originalRequest.url?.includes('/auth/') && !originalRequest.url?.includes('/auth/refresh')) {
         return Promise.reject(error);
       }
 
       // If the error is 401 and we haven't already tried to refresh
       if (error.response?.status === 401 && !originalRequest._retry) {
+        // Check if we have a refresh token before attempting refresh
+        const hasRefreshToken = await tokenStorage.getRefreshToken();
+        if (!hasRefreshToken) {
+          console.warn('[API] No refresh token available - skipping refresh attempt');
+          return Promise.reject(error);
+        }
         if (isRefreshing) {
           // If already refreshing, queue this request
           return new Promise((resolve, reject) => {
