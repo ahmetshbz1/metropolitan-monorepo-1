@@ -177,10 +177,11 @@ const ClearCacheSheet = forwardRef<Ref>((_, ref) => {
     <CustomBottomSheet
       ref={ref}
       title={t("app_settings.clear_cache_sheet_title")}
-      snapPoints={["50%"]}
+      snapPoints={["40%"]}
+      keepMounted={true}
     >
-      <View className="px-4">
-        <ThemedText className="text-sm opacity-70 mb-6 text-center">
+      <View className="px-5">
+        <ThemedText className="text-sm opacity-60 mb-6 text-center leading-5">
           {t("app_settings.clear_cache_sheet_subtitle")}
         </ThemedText>
 
@@ -189,38 +190,23 @@ const ClearCacheSheet = forwardRef<Ref>((_, ref) => {
           onPress={clearCacheOnly}
           activeOpacity={0.7}
           style={{
-            backgroundColor: colors.card,
-            borderRadius: 16,
+            backgroundColor: colors.primary,
+            borderRadius: 12,
             padding: 16,
-            marginBottom: 16,
-            borderWidth: 1,
-            borderColor: colors.border,
+            marginBottom: 12,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          <View className="flex-row items-center mb-2">
-            <View
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                backgroundColor: colors.primary + "15",
-                alignItems: "center",
-                justifyContent: "center",
-                marginRight: 12,
-              }}
-            >
-              <Ionicons
-                name="trash-outline"
-                size={20}
-                color={colors.primary}
-              />
-            </View>
-            <ThemedText className="text-base font-semibold flex-1">
-              {t("app_settings.clear_cache_only")}
-            </ThemedText>
-          </View>
-          <ThemedText className="text-sm opacity-60 ml-13">
-            {t("app_settings.clear_cache_only_desc")}
+          <Ionicons
+            name="trash-outline"
+            size={20}
+            color="#fff"
+            style={{ marginRight: 8 }}
+          />
+          <ThemedText className="text-base font-semibold" style={{ color: "#fff" }}>
+            {t("app_settings.clear_cache_only")}
           </ThemedText>
         </HapticButton>
 
@@ -229,57 +215,42 @@ const ClearCacheSheet = forwardRef<Ref>((_, ref) => {
           onPress={clearAllData}
           activeOpacity={0.7}
           style={{
-            backgroundColor: colors.error + "08",
-            borderRadius: 16,
+            backgroundColor: colors.error,
+            borderRadius: 12,
             padding: 16,
-            borderWidth: 1,
-            borderColor: colors.error + "30",
+            marginBottom: 12,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          <View className="flex-row items-center mb-2">
-            <View
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                backgroundColor: colors.error + "15",
-                alignItems: "center",
-                justifyContent: "center",
-                marginRight: 12,
-              }}
-            >
-              <Ionicons
-                name="warning-outline"
-                size={20}
-                color={colors.error}
-              />
-            </View>
-            <ThemedText
-              className="text-base font-semibold flex-1"
-              style={{ color: colors.error }}
-            >
-              {t("app_settings.clear_all_data")}
-            </ThemedText>
-          </View>
-          <ThemedText className="text-sm opacity-60 ml-13">
-            {t("app_settings.clear_all_data_desc")}
+          <Ionicons
+            name="warning-outline"
+            size={20}
+            color="#fff"
+            style={{ marginRight: 8 }}
+          />
+          <ThemedText className="text-base font-semibold" style={{ color: "#fff" }}>
+            {t("app_settings.clear_all_data")}
           </ThemedText>
         </HapticButton>
 
         <View
-          className="mt-4 p-3 rounded-lg"
-          style={{ backgroundColor: colors.primary + "08" }}
+          className="mt-2 p-3 rounded-xl"
+          style={{
+            backgroundColor: colors.primary + "10",
+          }}
         >
-          <View className="flex-row items-start">
+          <View className="flex-row items-center">
             <Ionicons
-              name="information-circle-outline"
-              size={20}
+              name="information-circle"
+              size={18}
               color={colors.primary}
-              style={{ marginRight: 8, marginTop: 2 }}
+              style={{ marginRight: 8 }}
             />
             <ThemedText
               className="text-xs flex-1"
-              style={{ color: colors.primary }}
+              style={{ color: colors.text, opacity: 0.7 }}
             >
               {t("app_settings.clear_cache_message")}
             </ThemedText>
