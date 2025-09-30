@@ -4,18 +4,22 @@
 
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation, useRouter } from "expo-router";
-import React, { useCallback, useLayoutEffect } from "react";
+import React, { useCallback, useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 
 import { BaseButton } from "@/components/base/BaseButton";
 import { ProductGrid } from "@/components/products/ProductGrid";
+import { ProductList } from "@/components/products/ProductList";
 import { ProductGridSkeleton } from "@/components/products/ProductGridSkeleton";
 import { ThemedText } from "@/components/ThemedText";
 import { ErrorState } from "@/components/ui/ErrorState";
 import Colors from "@/constants/Colors";
 import { useFavorites } from "@/context/FavoritesContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { HapticIconButton } from "@/components/HapticButton";
+
+type ViewMode = 'grid' | 'list';
 
 const EmptyFavorites = () => {
   const { t } = useTranslation();
@@ -53,9 +57,12 @@ const EmptyFavorites = () => {
 export default function FavoritesScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? "light"];
   const { favorites, isLoading, error, reloadFavorites } = useFavorites();
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
-  // Header title'ı dinamik olarak ayarla
+  // Header title'ı ayarla
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: t("favorites.title"),
@@ -82,6 +89,16 @@ export default function FavoritesScreen() {
       return <EmptyFavorites />;
     }
 
+    if (viewMode === 'list') {
+      return (
+        <ProductList
+          products={favorites}
+          onRefresh={handleRefresh}
+          refreshing={isLoading}
+        />
+      );
+    }
+
     return (
       <ProductGrid
         products={favorites}
@@ -93,6 +110,55 @@ export default function FavoritesScreen() {
 
   return (
     <View className="flex-1">
+      {/* View Mode Toggle */}
+      {favorites.length > 0 && !showSkeleton && (
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            gap: 8,
+            backgroundColor: colors.background,
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border,
+          }}
+        >
+          <HapticIconButton
+            onPress={() => setViewMode('grid')}
+            style={{
+              padding: 8,
+              backgroundColor: viewMode === 'grid' ? colors.tint + '20' : colors.cardBackground,
+              borderRadius: 8,
+              borderWidth: 1,
+              borderColor: viewMode === 'grid' ? colors.tint : colors.border,
+            }}
+          >
+            <Ionicons
+              name="grid-outline"
+              size={22}
+              color={viewMode === 'grid' ? colors.tint : colors.text}
+            />
+          </HapticIconButton>
+          <HapticIconButton
+            onPress={() => setViewMode('list')}
+            style={{
+              padding: 8,
+              backgroundColor: viewMode === 'list' ? colors.tint + '20' : colors.cardBackground,
+              borderRadius: 8,
+              borderWidth: 1,
+              borderColor: viewMode === 'list' ? colors.tint : colors.border,
+            }}
+          >
+            <Ionicons
+              name="list-outline"
+              size={22}
+              color={viewMode === 'list' ? colors.tint : colors.text}
+            />
+          </HapticIconButton>
+        </View>
+      )}
+
       <View className="flex-1">
         {renderContent()}
         {showErrorOverlay && (
