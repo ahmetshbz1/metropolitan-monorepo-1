@@ -87,7 +87,6 @@ export default function FavoritesScreen() {
         products={favorites}
         onRefresh={handleRefresh}
         refreshing={isLoading}
-        contentContainerStyle={{ padding: 10 }}
       />
     );
   };

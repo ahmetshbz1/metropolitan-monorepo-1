@@ -9,7 +9,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useNavigationProtection } from "@/hooks/useNavigationProtection";
 import React from "react";
-import { TouchableOpacity, View, Share } from "react-native";
+import { TouchableOpacity, View, Share, Dimensions } from "react-native";
 import { useTranslation } from "react-i18next";
 import ContextMenu from "react-native-context-menu-view";
 import * as Haptics from "expo-haptics";
@@ -17,9 +17,14 @@ import { HapticIconButton } from "../HapticButton";
 import { ProductCardContent } from "./ProductCardContent";
 import { ProductCardImage } from "./ProductCardImage";
 
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const NUM_COLUMNS = 3;
+const CARD_PADDING = 12;
+const COLUMN_GAP = 8;
+const CARD_WIDTH = (SCREEN_WIDTH - (CARD_PADDING * 2) - (COLUMN_GAP * (NUM_COLUMNS - 1))) / NUM_COLUMNS;
+
 interface ProductCardProps {
   product: Product;
-  variant?: "grid" | "horizontal";
 }
 
 // Helper function to determine favorite icon color
@@ -34,7 +39,6 @@ const getFavoriteIconColor = (
 
 export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
   product,
-  variant = "grid",
 }) {
   const {
     colors,
@@ -53,8 +57,6 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
   const pressStartTimeRef = React.useRef<number | null>(null);
   const LONG_PRESS_GUARD_MS = 350; // guard single-tap vs long-press
   const longPressTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const isHorizontal = variant === "horizontal";
 
   // Context menu handlers
   const handleShare = async () => {
@@ -138,10 +140,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
   ];
 
   return (
-    <View
-      className={isHorizontal ? "mr-3" : ""}
-      style={isHorizontal ? { width: 180 } : { flex: 1 }}
-    >
+    <View style={{ width: CARD_WIDTH }}>
       <ContextMenu
         actions={contextMenuActions}
         onPress={(e) => {
@@ -191,7 +190,6 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
               shadowOpacity: 0.08,
               shadowRadius: 4,
               elevation: 2,
-              height: 200,
             }}
           >
 

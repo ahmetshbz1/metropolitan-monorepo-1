@@ -32,7 +32,7 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
   const { t } = useTranslation();
 
   return (
-    <View className="p-2 flex-1" style={{ backgroundColor: colors.cardBackground }}>
+    <View className="p-2" style={{ backgroundColor: colors.cardBackground, minHeight: 100 }}>
       {/* Price - Top */}
       <ThemedText
         className="font-bold text-base mb-1"

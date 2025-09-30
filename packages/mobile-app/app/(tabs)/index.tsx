@@ -35,10 +35,10 @@ const MemoizedHomeScreenContent = React.memo(function HomeScreenContent() {
   const { featuredProducts, weeklyProducts, bestSellers, newArrivals } =
     useMemo(() => {
       return {
-        featuredProducts: products.slice(0, 4),
-        weeklyProducts: products.slice(2, 6),
-        bestSellers: products.slice(4, 8),
-        newArrivals: products.slice(1, 5),
+        featuredProducts: products.slice(0, 6),
+        weeklyProducts: products.slice(6, 12),
+        bestSellers: products.slice(12, 18),
+        newArrivals: products.slice(18, 24),
       };
     }, [products]);
 
