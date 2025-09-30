@@ -45,10 +45,6 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
   ) {
     const {
       products: contextProducts,
-      filteredProducts,
-      searchQuery,
-      fetchMoreProducts,
-      // hasMoreProducts,
       loadingProducts,
     } = useProducts();
 
@@ -62,14 +58,9 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
       },
     }));
 
-    // Prop olarak products verilmişse onu kullan, yoksa context'ten al
-    // Arama aktifse filteredProducts kullan
-    const products =
-      propProducts || (searchQuery.trim() ? filteredProducts : contextProducts);
+    const products = propProducts || contextProducts;
 
-    // Arama aktifse infinite scroll'u devre dışı bırak
-    const onEndReached =
-      propProducts || searchQuery.trim() ? undefined : fetchMoreProducts;
+    const onEndReached = propProducts ? undefined : undefined;
 
     const renderItem: ListRenderItem<Product> = useCallback(
       ({ item }) => (
@@ -79,10 +70,9 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
     );
 
     const renderFooter = useCallback(() => {
-      // Arama aktifse veya external products kullanılıyorsa footer gösterme
-      if (!loadingProducts || searchQuery.trim() || propProducts) return null;
+      if (!loadingProducts || propProducts) return null;
       return <ActivityIndicator style={{ marginVertical: 20 }} />;
-    }, [loadingProducts, searchQuery, propProducts]);
+    }, [loadingProducts, propProducts]);
 
     const keyExtractor = useCallback((item: Product, index: number) => {
       return `${item.id}-${index}`;

@@ -1,13 +1,9 @@
 //  "ProductContext.tsx"
 //  metropolitan app
 //  Created by Ahmet on 03.06.2025.
-//  Last Modified by Ahmet on 15.07.2025.
 
 import { api } from "@/core/api";
-import type {
-  Category,
-  Product,
-} from "@metropolitan/shared";
+import type { Category, Product } from "@metropolitan/shared";
 import {
   ReactNode,
   createContext,
@@ -17,60 +13,79 @@ import {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { useProductFiltering } from "./product/useProductFiltering";
-import { useProductState } from "./product/useProductState";
 
-// React Context type - should be local to mobile app
 interface ProductContextType {
   products: Product[];
-  filteredProducts: Product[];
   categories: Category[];
   loadingProducts: boolean;
   loadingCategories: boolean;
-  selectedCategory: string | null;
-  searchQuery: string;
-  hasMoreProducts: boolean;
   error: string | null;
-  setSelectedCategory: (slug: string | null) => void;
-  setSearchQuery: (query: string) => void;
-  fetchProducts: (categorySlug?: string | null) => void;
-  refreshProducts: (categorySlug?: string | null) => void;
-  fetchMoreProducts: () => void;
-  fetchCategories: () => void;
+  fetchAllProducts: () => Promise<void>;
+  refreshAllProducts: () => Promise<void>;
+  fetchCategories: () => Promise<void>;
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
+
+const sortProductsByStock = (products: Product[]): Product[] => {
+  return [...products].sort((a, b) => {
+    if (a.stock > 0 && b.stock === 0) return -1;
+    if (a.stock === 0 && b.stock > 0) return 1;
+    return 0;
+  });
+};
+
+const productCache = new Map<string, { products: Product[]; timestamp: number }>();
+const CACHE_DURATION = 5 * 60 * 1000;
 
 export const ProductProvider = ({ children }: { children: ReactNode }) => {
   const { i18n } = useTranslation();
   const lang = i18n.language;
 
-  // State and API logic hook
-  const {
-    products,
-    loading: loadingProducts,
-    error,
-    hasMore: hasMoreProducts,
-    fetchProducts,
-    fetchMoreProducts,
-    setProducts,
-    setPage,
-    setHasMore,
-    setLoading,
-  } = useProductState();
-
-  // Filtering logic hook
-  const {
-    searchQuery,
-    selectedCategory,
-    filteredProducts,
-    setSelectedCategory,
-    setSearchQuery,
-  } = useProductFiltering(products);
-
-  // Category-specific state
+  const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [loadingCategories, setLoadingCategories] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchAllProducts = useCallback(async () => {
+    const cacheKey = "all";
+    const cached = productCache.get(cacheKey);
+
+    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+      setProducts(cached.products);
+      return;
+    }
+
+    setError(null);
+    setLoadingProducts(true);
+
+    try {
+      const { data } = await api.get("/products", {
+        params: { lang, page: 1, limit: 1000 },
+      });
+
+      if (data.success) {
+        const sortedProducts = sortProductsByStock(data.data);
+        setProducts(sortedProducts);
+        productCache.set(cacheKey, {
+          products: sortedProducts,
+          timestamp: Date.now(),
+        });
+      } else {
+        setError("Could not fetch products.");
+      }
+    } catch (e) {
+      setError("A network error occurred.");
+    } finally {
+      setLoadingProducts(false);
+    }
+  }, [lang]);
+
+  const refreshAllProducts = useCallback(async () => {
+    productCache.clear();
+    await fetchAllProducts();
+  }, [fetchAllProducts]);
 
   const fetchCategories = useCallback(async () => {
     try {
@@ -82,57 +97,31 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
         setCategories(data.data);
       }
     } catch (e) {
-      // // Removed console statement
+      // Error silently
     } finally {
       setLoadingCategories(false);
     }
   }, [lang]);
 
-  const refreshProducts = useCallback(async (categorySlug?: string | null) => {
-    setLoading(true);
-    setPage(1);
-    setHasMore(true);
-    await fetchProducts(categorySlug ?? selectedCategory);
-    setLoading(false);
-  }, [fetchProducts, selectedCategory, setLoading, setPage, setHasMore]);
-
-  const handleFetchMore = () => {
-    fetchMoreProducts(selectedCategory);
-  };
-
   const value = useMemo(
     () => ({
       products,
-      filteredProducts,
       categories,
       loadingProducts,
       loadingCategories,
-      selectedCategory,
-      searchQuery,
-      hasMoreProducts,
       error,
-      setSelectedCategory,
-      setSearchQuery,
-      fetchProducts,
-      refreshProducts,
-      fetchMoreProducts: handleFetchMore,
+      fetchAllProducts,
+      refreshAllProducts,
       fetchCategories,
     }),
     [
       products,
-      filteredProducts,
       categories,
       loadingProducts,
       loadingCategories,
-      selectedCategory,
-      searchQuery,
-      hasMoreProducts,
       error,
-      setSelectedCategory,
-      setSearchQuery,
-      fetchProducts,
-      refreshProducts,
-      handleFetchMore,
+      fetchAllProducts,
+      refreshAllProducts,
       fetchCategories,
     ]
   );
@@ -150,5 +139,4 @@ export const useProducts = () => {
   return context;
 };
 
-// Re-export shared types for backward compatibility
 export type { Product, Category } from "@metropolitan/shared";

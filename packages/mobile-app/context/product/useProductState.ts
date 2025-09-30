@@ -8,7 +8,7 @@ import { api } from "@/core/api";
 import type { Product } from "@metropolitan/shared";
 
 const PAGE_SIZE = 20;
-const MINIMUM_LOADING_TIME = 500;
+const MINIMUM_LOADING_TIME = 200; // Azaltıldı - daha hızlı UI
 
 // Ürünleri stok durumuna göre sırala - stokta olanlar önce
 const sortProductsByStock = (products: Product[]): Product[] => {

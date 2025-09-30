@@ -302,6 +302,13 @@ export const UserDropdown = ({
             </DropdownMenuGroup>
 
             <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              {MENU_ITEMS.support
+                .filter((item) => item.action === "legal")
+                .map(renderMenuItem)}
+            </DropdownMenuGroup>
+
+            <DropdownMenuSeparator />
             <DropdownMenuItem
               className="p-2 rounded-lg cursor-pointer bg-primary/10 hover:bg-primary/20 text-primary font-medium"
               onClick={() => onLogin?.()}
