@@ -2,7 +2,7 @@
   "expo": {
     "name": "metropolitan",
     "slug": "metropolitan",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./assets/images/icooon.png",
     "scheme": "metropolitan",
@@ -21,7 +21,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.metropolitan.food",
-      "buildNumber": "19",
+      "buildNumber": "21",
       "config": {
         "googleSignIn": {
           "reservedClientId": "com.googleusercontent.apps.18493082891-0qg1bp44jncs4m7jt6426ud1cv7bil4t"
@@ -37,7 +37,7 @@
           "merchant.com.metropolitan.food"
         ],
         "com.apple.developer.applesignin": ["Default"],
-        "aps-environment": "development"
+        "aps-environment": "production"
       },
       "usesAppleSignIn": true,
       "googleServicesFile": "./GoogleService-Info.plist"
@@ -87,6 +87,15 @@
       "router": {},
       "eas": {
         "projectId": "45dcd12c-24ab-49ba-9cdf-b8f73c3f4632"
+      },
+      "firebase": {
+        "apiKey": "AIzaSyDZTjMiSNfP9kwHJpCF3CCl8ZwvLbsjDGw",
+        "authDomain": "metropolitan-c84b7.firebaseapp.com",
+        "projectId": "metropolitan-c84b7",
+        "storageBucket": "metropolitan-c84b7.firebasestorage.app",
+        "messagingSenderId": "18493082891",
+        "appId": "1:18493082891:ios:4090c7f397e7038f7ce60e",
+        "measurementId": ""
       }
     },
     "owner": "metropolitanfg"

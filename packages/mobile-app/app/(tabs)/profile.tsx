@@ -314,7 +314,7 @@ export default function ProfileScreen() {
         {/* Version Info */}
         <View className="items-center mt-2 mb-4">
           <ThemedText className="text-xs" style={{ color: colors.mediumGray }}>
-            {t("profile.version", { version: "1.0.5" })}
+            {t("profile.version", { version: "1.0.6" })}
           </ThemedText>
         </View>
       </ScrollView>

@@ -38,39 +38,45 @@ const loadLanguageFromStorage = async (): Promise<string> => {
     if (savedLanguage && ["tr", "en", "pl"].includes(savedLanguage)) {
       return savedLanguage;
     }
-  } catch (error) {
-    // Removed console statement
+  } catch {
+    // Storage okuma hatası - sistem dili kullanılacak
   }
 
   return getSystemLanguage();
 };
 
-// i18n'i başlat
-const initializeI18n = async () => {
-  const savedLanguage = await loadLanguageFromStorage();
+// i18n'i senkron başlat - AsyncStorage kontrolü sonradan yapılacak
+i18n.use(initReactI18next).init({
+  resources,
+  lng: getSystemLanguage(), // İlk başta sistem dilini kullan
+  fallbackLng: "tr",
+  compatibilityJSON: "v4", // For react-native
+  interpolation: {
+    escapeValue: false, // React already safes from xss
+  },
+});
 
-  i18n.use(initReactI18next).init({
-    resources,
-    lng: savedLanguage,
-    fallbackLng: "tr",
-    compatibilityJSON: "v3", // For react-native
-    interpolation: {
-      escapeValue: false, // React already safes from xss
-    },
-  });
+// AsyncStorage'dan dili yükle ve güncelle
+const initializeLanguage = async () => {
+  const savedLanguage = await loadLanguageFromStorage();
+  if (savedLanguage !== i18n.language) {
+    await i18n.changeLanguage(savedLanguage);
+  }
 };
+
+// Uygulama başladıktan sonra dili yükle
+initializeLanguage().catch(() => {
+  // Dil yükleme hatası - sistem dili kullanılacak
+});
 
 // Dil değiştirme fonksiyonu - AsyncStorage'a kaydet
 export const changeLanguage = async (language: "tr" | "en" | "pl") => {
   try {
     await AsyncStorage.setItem("@app_language", language);
     await i18n.changeLanguage(language);
-  } catch (error) {
-    // Removed console statement
+  } catch {
+    // Dil değiştirme hatası
   }
 };
-
-// i18n'i başlat
-initializeI18n();
 
 export default i18n;

@@ -9,12 +9,18 @@
       "distribution": "internal",
       "ios": {
         "simulator": true
+      },
+      "env": {
+        "NODE_ENV": "development"
       }
     },
     "preview": {
       "distribution": "internal",
       "ios": {
         "resourceClass": "m1-medium"
+      },
+      "env": {
+        "NODE_ENV": "production"
       }
     },
     "production": {
@@ -24,6 +30,10 @@
       },
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "NODE_ENV": "production",
+        "EXPO_PUBLIC_API_BASE_URL": "https://api.metropolitanfg.pl"
       }
     }
   },

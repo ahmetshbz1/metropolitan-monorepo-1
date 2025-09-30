@@ -12,12 +12,10 @@ const getApiBaseUrl = (): string => {
 
   // Eğer environment variable varsa kullan
   if (envUrl && envUrl.trim() !== '') {
-    console.log('[API] Using environment URL:', envUrl);
     return envUrl;
   }
 
   // Production için sabit URL kullan
-  console.log('[API] Using production URL: https://api.metropolitanfg.pl');
   return "https://api.metropolitanfg.pl";
 };
 
