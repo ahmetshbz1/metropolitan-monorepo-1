@@ -62,13 +62,13 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
           </div>
           {state.deliveryAddress ? (
             <div className="bg-muted/50 rounded-lg p-3 text-sm">
-              <p className="font-medium">{state.deliveryAddress.fullName}</p>
+              <p className="font-medium">{state.deliveryAddress.addressTitle}</p>
               <p className="text-muted-foreground mt-1">
-                {state.deliveryAddress.addressLine1}
+                {state.deliveryAddress.street}
                 <br />
                 {state.deliveryAddress.postalCode} {state.deliveryAddress.city}
                 <br />
-                {state.deliveryAddress.phoneNumber}
+                {state.deliveryAddress.country}
               </p>
             </div>
           ) : (

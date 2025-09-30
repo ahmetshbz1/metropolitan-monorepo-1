@@ -1,15 +1,5 @@
 import { api } from "@/lib/api";
-
-export interface Address {
-  id: string;
-  addressTitle: string;
-  street: string;
-  city: string;
-  postalCode: string;
-  country: string;
-  isDefaultDelivery: boolean;
-  isDefaultBilling: boolean;
-}
+import type { Address } from "@metropolitan/shared";
 
 export interface CreateAddressRequest {
   addressTitle: string;
@@ -20,6 +10,8 @@ export interface CreateAddressRequest {
   isDefaultDelivery?: boolean;
   isDefaultBilling?: boolean;
 }
+
+export type { Address };
 
 export const addressesApi = {
   getAddresses: async (): Promise<Address[]> => {
