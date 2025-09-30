@@ -25,7 +25,7 @@ import { useToast } from "@/hooks/useToast";
 
 export default function CheckoutSummaryScreen() {
   const { t } = useTranslation();
-  const { summary } = useCart();
+  const { summary, flushPendingUpdates } = useCart();
   const { setCurrentStep } = useCheckout();
   const { showToast } = useToast();
   const { isCreatingOrder, orderLoading, isBankTransfer, handleCreateOrder } =
@@ -34,7 +34,11 @@ export default function CheckoutSummaryScreen() {
   useFocusEffect(
     useCallback(() => {
       setCurrentStep(3);
-    }, [setCurrentStep])
+      // Sayfa açıldığında pending updates'leri flush et
+      flushPendingUpdates().catch(() => {
+        // Sessizce hataları yakala
+      });
+    }, [setCurrentStep, flushPendingUpdates])
   );
 
   if (!summary) {
@@ -68,6 +72,9 @@ export default function CheckoutSummaryScreen() {
         orderLoading={orderLoading}
         onPress={async () => {
           try {
+            // Sipariş oluşturmadan önce pending updates'leri senkronize et
+            await flushPendingUpdates();
+
             await handleCreateOrder();
             if (isBankTransfer) {
               showToast(t("checkout.bank_transfer_success"), "success");

@@ -18,6 +18,7 @@ type CartContextType = {
   removeItem: (itemId: string) => Promise<void>;
   clearCart: () => Promise<void>;
   refreshCart: () => Promise<void>;
+  flushPendingUpdates: () => Promise<void>;
   isLoading: boolean;
   error: string | null;
 };
@@ -31,6 +32,7 @@ export const CartContext = createContext<CartContextType>({
   removeItem: async () => {},
   clearCart: async () => {},
   refreshCart: async () => {},
+  flushPendingUpdates: async () => {},
   isLoading: true,
   error: null,
 });
