@@ -53,7 +53,7 @@ export default function SimilarProductsScreen() {
   }, [products, productId, category, brand]);
 
   const renderItem = ({ item }: { item: Product }) => (
-    <ProductCard product={item} />
+    <ProductCard product={item} replaceNavigation={true} />
   );
 
   return (

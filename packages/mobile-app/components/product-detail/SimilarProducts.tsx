@@ -44,9 +44,9 @@ export const SimilarProducts = memo<SimilarProductsProps>(function SimilarProduc
     return null;
   }
 
-  // Render function'ı cache'le
+  // Render function'ı cache'le - replace navigation kullan
   const renderItem = useCallback(({ item }: { item: Product }) => (
-    <ProductCard product={item} />
+    <ProductCard product={item} replaceNavigation={true} />
   ), []);
 
   // Navigation işlemini optimize et

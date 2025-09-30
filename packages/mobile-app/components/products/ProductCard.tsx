@@ -25,6 +25,7 @@ const CARD_WIDTH = (SCREEN_WIDTH - (CARD_PADDING * 2) - (COLUMN_GAP * (NUM_COLUM
 
 interface ProductCardProps {
   product: Product;
+  replaceNavigation?: boolean;
 }
 
 // Helper function to determine favorite icon color
@@ -39,6 +40,7 @@ const getFavoriteIconColor = (
 
 export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
   product,
+  replaceNavigation = false,
 }) {
   const {
     colors,
@@ -82,7 +84,11 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
         handleShare();
         break;
       case 3: // Detayları gör
-        safePush(`/product/${product.id}`);
+        if (replaceNavigation) {
+          router.replace(`/product/${product.id}`);
+        } else {
+          safePush(`/product/${product.id}`);
+        }
         break;
     }
   };
@@ -92,7 +98,12 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
       suppressNextPressRef.current = false;
       return;
     }
-    safePush(`/product/${product.id}`);
+
+    if (replaceNavigation) {
+      router.replace(`/product/${product.id}`);
+    } else {
+      safePush(`/product/${product.id}`);
+    }
   };
 
   const contextMenuActions = [
