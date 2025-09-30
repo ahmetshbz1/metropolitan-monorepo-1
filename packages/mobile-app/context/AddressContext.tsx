@@ -25,10 +25,10 @@ export const AddressProvider = ({ children }: { children: ReactNode }) => {
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { token } = useAuth();
+  const { user } = useAuth();
 
   const fetchAddresses = async () => {
-    if (!token) {
+    if (!user?.id) {
       setLoading(false);
       return;
     }
@@ -50,8 +50,8 @@ export const AddressProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const addAddress = async (addressData: AddressData) => {
-    if (!token) {
-      throw new Error("Authentication token is not available.");
+    if (!user?.id) {
+      throw new Error("Authentication is required.");
     }
 
     try {
@@ -63,7 +63,6 @@ export const AddressProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(data.message || "Failed to add address.");
       }
     } catch (e) {
-      // Removed console statement
       throw e;
     }
   };
@@ -136,14 +135,13 @@ export const AddressProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
-    if (token) {
+    if (user?.id) {
       fetchAddresses();
     } else {
-      // Handle case where user is not logged in
       setAddresses([]);
       setLoading(false);
     }
-  }, [token]);
+  }, [user?.id]);
 
   return (
     <AddressContext.Provider

@@ -17,6 +17,7 @@ interface ProductCardContentProps {
   colors: ThemeColors;
   isOutOfStock: boolean;
   isLowStock: boolean;
+  displayPrice: number;
   handleAddToCart: (e: GestureResponderEvent) => Promise<void>;
 }
 
@@ -27,6 +28,7 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
   colors,
   isOutOfStock,
   isLowStock,
+  displayPrice,
   handleAddToCart,
 }) => {
   const { t } = useTranslation();
@@ -42,7 +44,7 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
           letterSpacing: -0.3,
         }}
       >
-        {formatPrice(product.price, product.currency)}
+        {formatPrice(displayPrice, product.currency)}
       </ThemedText>
 
       {/* Product Name */}

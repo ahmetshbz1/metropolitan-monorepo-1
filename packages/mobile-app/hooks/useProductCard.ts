@@ -27,6 +27,17 @@ export const useProductCard = (product: Product) => {
   const { user } = useAuth();
 
   // Computed values
+  const userType = user?.userType || "individual";
+  const displayPrice = userType === "corporate" && product.corporatePrice !== undefined
+    ? product.corporatePrice
+    : userType === "individual" && product.individualPrice !== undefined
+    ? product.individualPrice
+    : product.price;
+
+  const minQuantity = userType === "corporate"
+    ? (product.minQuantityCorporate ?? 1)
+    : (product.minQuantityIndividual ?? 1);
+
   const isProductFavorite = isFavorite(product.id);
   const categoryName = categories.find(
     (cat) => cat.slug === product.category
@@ -96,6 +107,8 @@ export const useProductCard = (product: Product) => {
     isLowStock,
     isOutOfStock,
     isProductInCart,
+    displayPrice,
+    minQuantity,
 
     // Actions
     handleAddToCart,

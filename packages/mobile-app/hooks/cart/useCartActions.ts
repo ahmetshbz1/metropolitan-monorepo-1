@@ -148,8 +148,6 @@ export const useCartActions = ({
         showToast(message, "warning");
       }
     } catch (error: any) {
-      console.error("Batch update hatası:", error);
-
       // Backend'den gelen structured error'ı handle et
       const apiError = error as APIError;
       const errorPayload = apiError.response?.data;

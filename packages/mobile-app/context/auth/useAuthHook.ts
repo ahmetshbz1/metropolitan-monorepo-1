@@ -169,8 +169,7 @@ export const useAuthHook = () => {
       }
       return result;
     } catch (error) {
-      // Apple Sign-In hatası
-      return { success: false, error: "Apple Sign-In başarısız" };
+      return { success: false, error: t("auth.apple_sign_in_failed") };
     }
   };
 
@@ -258,8 +257,7 @@ export const useAuthHook = () => {
       }
       return result;
     } catch (error) {
-      // Google Sign-In hatası
-      return { success: false, error: "Google Sign-In başarısız" };
+      return { success: false, error: t("auth.google_sign_in_failed") };
     }
   };
 

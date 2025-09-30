@@ -49,6 +49,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
     categoryName,
     isLowStock,
     isOutOfStock,
+    displayPrice,
     handleAddToCart,
     handleToggleFavorite,
   } = useProductCard(product);
@@ -183,6 +184,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
             colors={colors}
             isOutOfStock={isOutOfStock}
             isLowStock={isLowStock}
+            displayPrice={displayPrice}
             handleAddToCart={handleAddToCart}
           />
         </TouchableOpacity>

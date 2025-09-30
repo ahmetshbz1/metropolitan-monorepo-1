@@ -108,7 +108,7 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     refreshAllProducts();
-  }, [user?.id, isGuest]);
+  }, [user?.id, user?.userType, isGuest]);
 
   const value = useMemo(
     () => ({
