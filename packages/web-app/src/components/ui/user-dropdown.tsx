@@ -277,19 +277,38 @@ export const UserDropdown = ({
         </div>
 
         {user.isGuest ? (
-          /* Guest User - Login Button */
-          <DropdownMenuItem
-            className="p-2 rounded-lg cursor-pointer bg-primary/10 hover:bg-primary/20 text-primary font-medium"
-            onClick={() => onLogin?.()}
-          >
-            <span className="flex items-center gap-2">
-              <Icon
-                icon="solar:login-2-line-duotone"
-                className="size-4 text-primary"
-              />
-              <span className="text-sm">{t("dropdown.login")}</span>
-            </span>
-          </DropdownMenuItem>
+          /* Guest User - Favorites + Login Button */
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup>
+              <DropdownMenuItem
+                className="p-2 rounded-lg cursor-pointer transition-colors font-medium"
+                onClick={() => onAction?.("favorites", "/favorites")}
+              >
+                <span className="flex items-center gap-2">
+                  <Icon
+                    icon="solar:heart-line-duotone"
+                    className="size-4 text-gray-500 dark:text-gray-400"
+                  />
+                  <span className="text-sm">{t("dropdown.favorites")}</span>
+                </span>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="p-2 rounded-lg cursor-pointer bg-primary/10 hover:bg-primary/20 text-primary font-medium"
+              onClick={() => onLogin?.()}
+            >
+              <span className="flex items-center gap-2">
+                <Icon
+                  icon="solar:login-2-line-duotone"
+                  className="size-4 text-primary"
+                />
+                <span className="text-sm">{t("dropdown.login")}</span>
+              </span>
+            </DropdownMenuItem>
+          </>
         ) : (
           /* Logged In User - Menu Items */
           <>
