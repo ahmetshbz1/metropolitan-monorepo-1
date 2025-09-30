@@ -27,7 +27,9 @@ export const ProductListItem = React.memo<ProductListItemProps>(function Product
     colorScheme,
     isLowStock,
     isOutOfStock,
+    isProductFavorite,
     handleAddToCart,
+    handleToggleFavorite,
   } = useProductCard(product);
   const { t } = useTranslation();
   const router = useRouter();
@@ -140,9 +142,10 @@ export const ProductListItem = React.memo<ProductListItemProps>(function Product
           </View>
         </View>
 
-        {/* Add to Cart Button */}
-        {!isOutOfStock && (
-          <View style={{ flexDirection: "row", alignItems: "center", marginLeft: 8 }}>
+        {/* Action Buttons - Add to Cart & Favorite */}
+        <View style={{ flexDirection: "column", alignItems: "center", marginLeft: 8, gap: 8 }}>
+          {/* Add to Cart Button */}
+          {!isOutOfStock && (
             <HapticIconButton
               onPress={handleAddToCart}
               className="rounded-full justify-center items-center"
@@ -159,8 +162,27 @@ export const ProductListItem = React.memo<ProductListItemProps>(function Product
                 style={{ fontWeight: 'bold' }}
               />
             </HapticIconButton>
-          </View>
-        )}
+          )}
+
+          {/* Favorite Toggle Button */}
+          <HapticIconButton
+            onPress={handleToggleFavorite}
+            className="rounded-full justify-center items-center"
+            style={{
+              backgroundColor: isProductFavorite ? '#EF444420' : colors.cardBackground,
+              width: 36,
+              height: 36,
+              borderWidth: 1,
+              borderColor: isProductFavorite ? '#EF4444' : colors.border,
+            }}
+          >
+            <Ionicons
+              name={isProductFavorite ? "heart" : "heart-outline"}
+              size={18}
+              color={isProductFavorite ? "#EF4444" : colors.text}
+            />
+          </HapticIconButton>
+        </View>
       </TouchableOpacity>
     </View>
   );

@@ -60,7 +60,7 @@ export default function FavoritesScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
   const { favorites, isLoading, error, reloadFavorites } = useFavorites();
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
 
   // Header title'ı ayarla
   useLayoutEffect(() => {
