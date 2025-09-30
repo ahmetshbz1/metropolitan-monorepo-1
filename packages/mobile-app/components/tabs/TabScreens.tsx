@@ -6,7 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
-import { TouchableOpacity, View } from "react-native";
+import { View } from "react-native";
 
 import { HapticIconButton } from "@/components/HapticButton";
 import { SearchInput } from "@/components/appbar/SearchInput";
@@ -121,7 +121,7 @@ export const TabScreens = memo(({
           headerRight:
             cartItemCount > 0
               ? () => (
-                  <TouchableOpacity
+                  <HapticIconButton
                     onPress={handleClearCart}
                     style={{ padding: 8, marginRight: 4 }}
                   >
@@ -130,7 +130,7 @@ export const TabScreens = memo(({
                       size={24}
                       color={colors.text}
                     />
-                  </TouchableOpacity>
+                  </HapticIconButton>
                 )
               : undefined,
           tabBarIcon: ({ color, focused }) => (
