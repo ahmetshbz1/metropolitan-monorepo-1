@@ -51,6 +51,16 @@ export class CartService {
     await api.delete("/me/cart");
   }
 
+  static async batchUpdateUserCart(
+    updates: Array<{ itemId: string; quantity: number }>
+  ) {
+    try {
+      await api.patch("/me/cart/batch", { updates });
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   // Guest cart operations
   static async getGuestCart(guestId: string, language: string) {
     const response = await api.get(`/guest/cart/${guestId}`, {
@@ -102,6 +112,17 @@ export class CartService {
     // Guest user - her item'ı tek tek sil (bulk clear endpoint'i yok)
     for (const item of cartItems) {
       await api.delete(`/guest/cart/${guestId}/${item.id}`);
+    }
+  }
+
+  static async batchUpdateGuestCart(
+    guestId: string,
+    updates: Array<{ itemId: string; quantity: number }>
+  ) {
+    try {
+      await api.patch("/guest/cart/batch", { guestId, updates });
+    } catch (error: any) {
+      throw error;
     }
   }
 
@@ -166,6 +187,18 @@ export class CartService {
       return this.clearUserCart();
     } else if (guestId && cartItems) {
       return this.clearGuestCart(guestId, cartItems);
+    }
+  }
+
+  static async batchUpdateCart(
+    isUser: boolean,
+    updates: Array<{ itemId: string; quantity: number }>,
+    guestId?: string
+  ) {
+    if (isUser) {
+      return this.batchUpdateUserCart(updates);
+    } else if (guestId) {
+      return this.batchUpdateGuestCart(guestId, updates);
     }
   }
 }

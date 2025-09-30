@@ -18,7 +18,7 @@ type CartContextType = {
   removeItem: (itemId: string) => Promise<void>;
   clearCart: () => Promise<void>;
   refreshCart: () => Promise<void>;
-  flushPendingUpdates: () => Promise<void>;
+  flushPendingUpdates: (throwError?: boolean) => Promise<void>;
   isLoading: boolean;
   error: string | null;
 };

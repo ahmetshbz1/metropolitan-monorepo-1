@@ -123,6 +123,29 @@ export const createCartApp = () =>
     // Sepeti temizle
     .delete("/", async ({ user }: AuthenticatedContext) => {
       return await CartItemService.clearCart(user.id);
-    });
+    })
+
+    // Sepet öğelerini toplu güncelle
+    .patch(
+      "/batch",
+      async ({
+        user,
+        body,
+      }: AuthenticatedContext & {
+        body: { updates: Array<{ itemId: string; quantity: number }> };
+      }) => {
+        return await CartItemService.batchUpdateCartItems(user.id, body.updates);
+      },
+      {
+        body: t.Object({
+          updates: t.Array(
+            t.Object({
+              itemId: t.String({ format: "uuid" }),
+              quantity: t.Number({ minimum: 1 }),
+            })
+          ),
+        }),
+      }
+    );
 
 export const cartRoutes = createCartApp();

@@ -545,7 +545,9 @@
     "order_error_title": "Błąd zamówienia",
     "order_error_message": "Wystąpił błąd podczas tworzenia zamówienia. Spróbuj ponownie.",
     "add_new_address": "Dodaj nowy adres",
-    "add_new_payment": "Dodaj nową kartę"
+    "add_new_payment": "Dodaj nową kartę",
+    "stock_adjusted": "Ilości zaktualizowane na podstawie dostępności: {{products}}",
+    "pieces": "szt."
   },
   "checkout": {
     "title": "Podsumowanie Zamówienia",

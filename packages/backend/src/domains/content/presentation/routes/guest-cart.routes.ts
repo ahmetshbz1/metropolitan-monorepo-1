@@ -155,4 +155,100 @@ export const guestCartRoutes = createApp()
         itemId: t.String(),
       }),
     }
+  )
+
+  // Batch update guest cart items
+  .patch(
+    "/cart/batch",
+    async ({ body, db, error, query }) => {
+      const { guestId, updates } = body;
+      const lang = query.lang || "tr";
+
+      if (!updates.length) {
+        return { success: true, message: "No updates provided", updatedCount: 0 };
+      }
+
+      let updatedCount = 0;
+      const adjustedItems: Array<{ itemId: string; requestedQty: number; adjustedQty: number; productName: string }> = [];
+
+      for (const { itemId, quantity } of updates) {
+        try {
+          // Check if product exists and has stock
+          const cartItem = await db.query.guestCartItems.findFirst({
+            where: and(
+              eq(guestCartItems.id, itemId),
+              eq(guestCartItems.guestId, guestId)
+            ),
+          });
+
+          if (!cartItem) continue;
+
+          const product = await db.query.products.findFirst({
+            where: eq(products.id, cartItem.productId),
+          });
+
+          if (!product) continue;
+
+          // Get product translation
+          const translation = await db.query.productTranslations.findFirst({
+            where: and(
+              eq(productTranslations.productId, product.id),
+              eq(productTranslations.languageCode, lang)
+            ),
+          });
+
+          const availableStock = product.stock || 0;
+          let finalQuantity = quantity;
+
+          // Eğer istenen miktar stoktan fazlaysa, otomatik olarak stok limitine ayarla
+          if (quantity > availableStock) {
+            finalQuantity = availableStock;
+            adjustedItems.push({
+              itemId,
+              requestedQty: quantity,
+              adjustedQty: finalQuantity,
+              productName: translation?.name || product.productCode || "Product",
+            });
+          }
+
+          await db
+            .update(guestCartItems)
+            .set({
+              quantity: finalQuantity,
+              updatedAt: new Date(),
+            })
+            .where(
+              and(
+                eq(guestCartItems.id, itemId),
+                eq(guestCartItems.guestId, guestId)
+              )
+            );
+
+          updatedCount++;
+        } catch (err) {
+          console.error(`Failed to update cart item ${itemId}:`, err);
+        }
+      }
+
+      return {
+        success: true,
+        message: `${updatedCount} items updated`,
+        updatedCount,
+        adjustedItems: adjustedItems.length > 0 ? adjustedItems : undefined,
+      };
+    },
+    {
+      body: t.Object({
+        guestId: t.String(),
+        updates: t.Array(
+          t.Object({
+            itemId: t.String(),
+            quantity: t.Integer({ minimum: 1 }),
+          })
+        ),
+      }),
+      query: t.Object({
+        lang: t.Optional(t.String({ pattern: "^(tr|en|pl)$" })),
+      }),
+    }
   );

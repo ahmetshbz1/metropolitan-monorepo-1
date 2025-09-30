@@ -222,4 +222,92 @@ export class CartItemService {
 
     return { message: "Sepet temizlendi" };
   }
+
+  /**
+   * Sepet öğelerini toplu günceller (batch update)
+   */
+  static async batchUpdateCartItems(
+    userId: string,
+    updates: Array<{ itemId: string; quantity: number }>
+  ): Promise<{
+    message: string;
+    updatedCount: number;
+    adjustedItems?: Array<{ itemId: string; requestedQty: number; adjustedQty: number; productName: string }>;
+  }> {
+    if (!updates.length) {
+      return { message: "Güncelleme yapılmadı", updatedCount: 0 };
+    }
+
+    let updatedCount = 0;
+    const adjustedItems: Array<{ itemId: string; requestedQty: number; adjustedQty: number; productName: string }> = [];
+
+    // Her bir güncellemeyi sırayla işle
+    for (const { itemId, quantity } of updates) {
+      try {
+        // Sepet öğesinin kullanıcıya ait olduğunu kontrol et
+        await CartValidationService.validateCartOwnership(itemId, userId);
+
+        const cartItem = await db.query.cartItems.findFirst({
+          where: eq(cartItems.id, itemId),
+          with: {
+            product: {
+              with: {
+                translations: {
+                  where: eq(productTranslations.languageCode, "tr"),
+                },
+              },
+            },
+          },
+        });
+
+        if (!cartItem) continue;
+
+        const product = await db.query.products.findFirst({
+          where: eq(products.id, cartItem.productId),
+        });
+
+        if (!product) continue;
+
+        const availableStock = product.stock || 0;
+        let finalQuantity = quantity;
+
+        // Eğer istenen miktar stoktan fazlaysa, otomatik olarak stok limitine ayarla
+        if (quantity > availableStock) {
+          finalQuantity = availableStock;
+          adjustedItems.push({
+            itemId,
+            requestedQty: quantity,
+            adjustedQty: finalQuantity,
+            productName: (cartItem.product as any).translations?.[0]?.name || product.productCode || "Ürün",
+          });
+        } else {
+          // Normal stok kontrolü
+          await CartValidationService.validateStock(
+            cartItem.productId,
+            quantity,
+            cartItem.quantity
+          );
+        }
+
+        await db
+          .update(cartItems)
+          .set({
+            quantity: finalQuantity,
+            updatedAt: new Date(),
+          })
+          .where(eq(cartItems.id, itemId));
+
+        updatedCount++;
+      } catch (error) {
+        // Hata durumunda devam et, diğer güncellemeleri yap
+        console.error(`Sepet öğesi ${itemId} güncellenemedi:`, error);
+      }
+    }
+
+    return {
+      message: `${updatedCount} öğe güncellendi`,
+      updatedCount,
+      adjustedItems: adjustedItems.length > 0 ? adjustedItems : undefined,
+    };
+  }
 }

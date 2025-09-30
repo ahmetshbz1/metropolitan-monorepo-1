@@ -2,8 +2,8 @@
 //  metropolitan app
 //  Created by Ahmet on 26.06.2025.
 
-import { useRouter } from "expo-router";
-import React from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import React, { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { ActivityIndicator } from "react-native";
 
@@ -15,12 +15,22 @@ import { useCart } from "@/context/CartContext";
 import { useToast } from "@/hooks/useToast";
 
 export default function CartScreen() {
-  const { cartItems, summary, updateQuantity, removeItem, isLoading } =
+  const { cartItems, summary, updateQuantity, removeItem, isLoading, flushPendingUpdates } =
     useCart();
   const { user, isGuest } = useAuth();
   const { t } = useTranslation();
   const router = useRouter();
   const { showToast } = useToast();
+
+  // Ekrandan çıkışta (blur) bekleyen güncellemeleri gönder
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        // Ekran blur olduğunda flush et
+        flushPendingUpdates();
+      };
+    }, [flushPendingUpdates])
+  );
 
   const handleRemoveItem = async (itemId: string) => {
     try {
@@ -47,12 +57,21 @@ export default function CartScreen() {
     }
   };
 
-  const handleCheckoutPress = () => {
-    if (isGuest && !user) {
-      router.push("/(auth)?from=checkout");
-      return;
+  const handleCheckoutPress = async () => {
+    try {
+      // Checkout'a geçmeden önce bekleyen güncellemeleri gönder
+      // throwError: true → Hata varsa toast göster
+      await flushPendingUpdates(true);
+
+      if (isGuest && !user) {
+        router.push("/(auth)?from=checkout");
+        return;
+      }
+      router.push("/checkout");
+    } catch (error: any) {
+      // Flush sırasında hata olursa kullanıcıya göster
+      showToast(error.message || t("cart.update_error"), "error");
     }
-    router.push("/checkout");
   };
 
   if (isLoading) {

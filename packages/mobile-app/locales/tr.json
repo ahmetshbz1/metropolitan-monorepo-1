@@ -538,7 +538,9 @@
     "order_error_title": "Sipariş Hatası",
     "order_error_message": "Sipariş oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.",
     "add_new_address": "Yeni Adres Ekle",
-    "add_new_payment": "Yeni Kart Ekle"
+    "add_new_payment": "Yeni Kart Ekle",
+    "stock_adjusted": "Stok durumuna göre miktarlar güncellendi: {{products}}",
+    "pieces": "adet"
   },
   "checkout": {
     "title": "Sipariş Özeti",

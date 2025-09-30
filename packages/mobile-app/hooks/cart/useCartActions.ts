@@ -31,8 +31,7 @@ export const useCartActions = ({
 }: UseCartActionsProps) => {
   const { t, i18n } = useTranslation();
 
-  // Debounce timer for quantity updates
-  const updateTimerRef = useRef<Record<string, NodeJS.Timeout>>({});
+  // Pending updates için ref (debounce yok, sadece toplanıyor)
   const pendingUpdatesRef = useRef<Record<string, number>>({});
 
   // Sepete ürün ekle (hybrid)
@@ -85,35 +84,75 @@ export const useCartActions = ({
     }
   };
 
-  // Pending updates'leri API'ye gönder
-  const flushPendingUpdates = useCallback(async () => {
+  // Pending updates'leri toplu olarak API'ye gönder (batch update)
+  const flushPendingUpdates = useCallback(async (throwError: boolean = false) => {
     const updates = { ...pendingUpdatesRef.current };
+
+    if (Object.keys(updates).length === 0) {
+      return; // Hiç güncelleme yoksa hiçbir şey yapma
+    }
+
     pendingUpdatesRef.current = {};
 
-    const promises = Object.entries(updates).map(async ([itemId, quantity]) => {
-      const item = cartItems.find((item) => item.id === itemId);
-      const productId = item?.product.id;
+    try {
+      // Array formatına çevir
+      const updatesArray = Object.entries(updates).map(([itemId, quantity]) => ({
+        itemId,
+        quantity,
+      }));
 
-      try {
-        await CartService.updateCartItem(
-          isAuthenticated,
-          itemId,
-          quantity,
-          guestId || undefined,
-          productId,
-          i18n.language
-        );
-      } catch (error) {
-        // API hatası olsa bile local state'i koruyoruz
-        throw error;
+      // Tek batch request'te gönder
+      const response = await CartService.batchUpdateCart(
+        isAuthenticated,
+        updatesArray,
+        guestId || undefined
+      );
+
+      // Sepeti yenile
+      await refreshCart();
+
+      // Eğer bazı ürünler otomatik düzeltildiyse kullanıcıya bildir
+      if (response?.data?.adjustedItems && response.data.adjustedItems.length > 0) {
+        const adjustedItems = response.data.adjustedItems;
+        const message = t("cart.stock_adjusted", {
+          count: adjustedItems.length,
+          products: adjustedItems
+            .map((item: any) => `${item.productName} (${item.adjustedQty} ${t("cart.pieces")})`)
+            .join(", "),
+        });
+
+        if (throwError) {
+          throw new Error(message);
+        }
       }
-    });
+    } catch (error: any) {
+      console.error("Batch update hatası:", error);
 
-    await Promise.all(promises);
-    await refreshCart();
-  }, [cartItems, isAuthenticated, guestId, i18n.language, refreshCart]);
+      // Backend'den gelen structured error'ı handle et
+      const apiError = error as APIError;
+      const errorPayload = apiError.response?.data;
+      const key = errorPayload?.key;
 
-  // Sepetteki ürün miktarını güncelle (debounced)
+      let errorMessage = t("errors.CART_UPDATE_ERROR");
+
+      if (key && i18n.exists(`errors.${key}`)) {
+        const params = errorPayload.params;
+        errorMessage = t(`errors.${key}`, params);
+      }
+
+      setError(errorMessage);
+
+      // Hata durumunda sepeti yeniden yükle (backend'deki gerçek durumu al)
+      await refreshCart();
+
+      // Eğer throwError true ise, hatayı fırlat (checkout için)
+      if (throwError) {
+        throw new Error(errorMessage);
+      }
+    }
+  }, [isAuthenticated, guestId, i18n, t, refreshCart, setError]);
+
+  // Sepetteki ürün miktarını güncelle (local-only, batch update için bekliyor)
   const updateQuantity = async (itemId: string, quantity: number) => {
     if (!hasValidSession) return;
 
@@ -132,54 +171,21 @@ export const useCartActions = ({
       );
       setCartItems(updatedItems);
 
-      // Önceki timer'ı temizle
-      if (updateTimerRef.current[itemId]) {
-        clearTimeout(updateTimerRef.current[itemId]);
-      }
+      // Summary'yi de local olarak hesapla
+      const totalItems = updatedItems.reduce((sum, item) => sum + item.quantity, 0);
+      const totalAmount = updatedItems.reduce(
+        (sum, item) => sum + item.product.price * item.quantity,
+        0
+      );
 
-      // Pending update'i kaydet
+      setSummary({
+        totalItems,
+        totalAmount,
+        currency: updatedItems[0]?.product.currency || "TRY",
+      });
+
+      // Pending update'i kaydet (API'ye hemen gönderilmez)
       pendingUpdatesRef.current[itemId] = quantity;
-
-      // 2 saniye debounce ile API'ye gönder
-      updateTimerRef.current[itemId] = setTimeout(async () => {
-        try {
-          const item = cartItems.find((item) => item.id === itemId);
-          const productId = item?.product.id;
-
-          await CartService.updateCartItem(
-            isAuthenticated,
-            itemId,
-            quantity,
-            guestId || undefined,
-            productId,
-            i18n.language
-          );
-
-          // Başarılıysa pending'den kaldır
-          delete pendingUpdatesRef.current[itemId];
-          delete updateTimerRef.current[itemId];
-
-          await refreshCart();
-        } catch (error) {
-          const apiError = error as APIError;
-
-          // Backend'den gelen structured error'ı handle et
-          const errorPayload = apiError.response?.data;
-          const key = errorPayload?.key;
-
-          if (key && i18n.exists(`errors.${key}`)) {
-            const params = errorPayload.params;
-            const translatedMessage = t(`errors.${key}`, params);
-            setError(translatedMessage);
-          } else {
-            const defaultMessage = t("errors.CART_UPDATE_ERROR");
-            setError(defaultMessage);
-          }
-
-          // Hata durumunda eski state'e dön
-          await refreshCart();
-        }
-      }, 2000);
     } catch (error) {
       // Validation error'ı olduğu gibi fırlat
       if ((error as StructuredError).code === "MIN_QUANTITY_ERROR") {
