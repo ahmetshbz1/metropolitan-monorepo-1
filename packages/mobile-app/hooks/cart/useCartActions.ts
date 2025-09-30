@@ -7,6 +7,7 @@ import { CartItem } from "@/types/cart";
 import { useTranslation } from "react-i18next";
 import { APIError, StructuredError } from "@/types/error.types";
 import { useRef, useCallback } from "react";
+import { useToast } from "@/hooks/useToast";
 
 interface UseCartActionsProps {
   refreshCart: () => Promise<void>;
@@ -30,6 +31,7 @@ export const useCartActions = ({
   cartItems,
 }: UseCartActionsProps) => {
   const { t, i18n } = useTranslation();
+  const { showToast } = useToast();
 
   // Pending updates için ref (debounce yok, sadece toplanıyor)
   const pendingUpdatesRef = useRef<Record<string, number>>({});
@@ -121,9 +123,8 @@ export const useCartActions = ({
             .join(", "),
         });
 
-        if (throwError) {
-          throw new Error(message);
-        }
+        // Her zaman toast göster (throwError true/false fark etmez)
+        showToast(message, "warning");
       }
     } catch (error: any) {
       console.error("Batch update hatası:", error);

@@ -55,7 +55,8 @@ export class CartService {
     updates: Array<{ itemId: string; quantity: number }>
   ) {
     try {
-      await api.patch("/me/cart/batch", { updates });
+      const response = await api.patch("/me/cart/batch", { updates });
+      return response;
     } catch (error: any) {
       throw error;
     }
@@ -120,7 +121,8 @@ export class CartService {
     updates: Array<{ itemId: string; quantity: number }>
   ) {
     try {
-      await api.patch("/guest/cart/batch", { guestId, updates });
+      const response = await api.patch("/guest/cart/batch", { guestId, updates });
+      return response;
     } catch (error: any) {
       throw error;
     }
