@@ -3,6 +3,7 @@ import { useAuthStore } from "@/stores/auth-store";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { userKeys } from "./use-user";
+import { useGuestAuth } from "../use-guest-auth";
 
 export function useSendOTP() {
   const setPhoneNumber = useAuthStore((state) => state.setPhoneNumber);
@@ -19,10 +20,11 @@ export function useSendOTP() {
 
 export function useVerifyOTP() {
   const queryClient = useQueryClient();
-  const { setTokens, setRegistrationToken, setGuest, setUser } = useAuthStore();
+  const { setTokens, setRegistrationToken, setGuest, setUser, phoneNumber: storedPhone } = useAuthStore();
   const isGuest = useAuthStore((state) => state.isGuest);
   const guestId = useAuthStore((state) => state.guestId);
   const socialAuthData = useAuthStore((state) => (state as any).socialAuthData);
+  const { migrateGuest } = useGuestAuth();
 
   return useMutation({
     mutationFn: (params: {
@@ -35,8 +37,20 @@ export function useVerifyOTP() {
         guestId: isGuest ? (guestId ?? undefined) : undefined,
         socialAuthData,
       }),
-    onSuccess: async (data) => {
+    onSuccess: async (data, variables) => {
       console.log("🔑 useVerifyOTP onSuccess - Full Response:", data);
+
+      // Eğer guest session varsa ve login başarılıysa, migration yap
+      if (guestId && data.accessToken) {
+        console.log("🔄 Migrating guest data to user account...");
+        try {
+          await migrateGuest(variables.phoneNumber);
+          console.log("✅ Guest data migrated successfully");
+        } catch (error) {
+          console.error("❌ Guest migration failed:", error);
+          // Migration hatası logged, ama login devam ediyor
+        }
+      }
 
       if (data.accessToken && data.refreshToken) {
         console.log("✅ Setting access & refresh tokens");
@@ -61,8 +75,10 @@ export function useVerifyOTP() {
           console.error("❌ Failed to fetch user profile after OTP:", error);
         }
 
-        // Invalidate queries to refresh
+        // Invalidate queries to refresh cart and favorites
         await queryClient.invalidateQueries({ queryKey: userKeys.current() });
+        await queryClient.invalidateQueries({ queryKey: ['cart'] });
+        await queryClient.invalidateQueries({ queryKey: ['favorites'] });
       } else if (data.registrationToken) {
         console.log("🆕 Setting registration token:", data.registrationToken);
         setRegistrationToken(data.registrationToken);
@@ -79,8 +95,10 @@ export function useVerifyOTP() {
 
 export function useCompleteProfile() {
   const queryClient = useQueryClient();
-  const { setTokens, setRegistrationToken, setGuest, setUser } = useAuthStore();
+  const { setTokens, setRegistrationToken, setGuest, setUser, phoneNumber } = useAuthStore();
   const registrationToken = useAuthStore((state) => state.registrationToken);
+  const guestId = useAuthStore((state) => state.guestId);
+  const { migrateGuest } = useGuestAuth();
 
   return useMutation({
     mutationFn: (userData: any) => {
@@ -91,6 +109,17 @@ export function useCompleteProfile() {
     },
     onSuccess: async (data) => {
       console.log("🎉 Complete Profile Success:", data);
+
+      // Guest migration - yeni kullanıcı kayıt olduysa ve guest session varsa
+      if (guestId && phoneNumber && data.accessToken) {
+        console.log("🔄 Migrating guest data after profile completion...");
+        try {
+          await migrateGuest(phoneNumber);
+          console.log("✅ Guest data migrated successfully");
+        } catch (error) {
+          console.error("❌ Guest migration failed:", error);
+        }
+      }
 
       if (data.accessToken && data.refreshToken) {
         console.log("✅ Setting tokens after profile completion");
@@ -109,8 +138,10 @@ export function useCompleteProfile() {
           console.error("❌ Failed to fetch user profile:", error);
         }
 
-        // Also invalidate queries to refresh any mounted useCurrentUser hooks
+        // Invalidate queries to refresh cart and favorites
         await queryClient.invalidateQueries({ queryKey: userKeys.current() });
+        await queryClient.invalidateQueries({ queryKey: ['cart'] });
+        await queryClient.invalidateQueries({ queryKey: ['favorites'] });
       }
     },
   });

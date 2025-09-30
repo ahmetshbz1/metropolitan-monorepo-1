@@ -30,11 +30,8 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
 
     if (isOutOfStock) return;
 
-    // Check if user is authenticated
-    if (!accessToken) {
-      router.push("/auth/phone-login");
-      return;
-    }
+    // NOT: Guest kullanıcılar da sepete ekleyebilir artık
+    // Login kontrolü kaldırıldı, useCart hook otomatik guest session oluşturacak
 
     try {
       await addToCartMutation.mutateAsync({

@@ -1,23 +1,28 @@
 "use client";
 
+import { CartDrawer } from "@/components/cart/CartDrawer";
 import { Button } from "@/components/ui/button";
 import { NotificationsDropdown } from "@/components/ui/notifications-dropdown";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { UserDropdown } from "@/components/ui/user-dropdown";
 import { useCurrentUser, useLogout } from "@/hooks/api";
+import { useCart } from "@/hooks/api/use-cart";
 import { useAuthInit } from "@/hooks/use-auth-init";
 import { useHydration } from "@/hooks/use-hydration";
 import { useAuthStore } from "@/stores";
 import { useCartStore } from "@/stores/cart-store";
-import { useCart } from "@/hooks/api/use-cart";
-import { Menu, Sparkles, Truck, ShoppingBag } from "lucide-react";
+import { Menu, ShoppingBag, Sparkles, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { CategoryMenu } from "./navbar/CategoryMenu";
 import { MobileMenu } from "./navbar/MobileMenu";
 import { SearchBar } from "./navbar/SearchBar";
-import { CartDrawer } from "@/components/cart/CartDrawer";
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -165,26 +170,36 @@ export function Navbar() {
             <div className="pb-2">
               <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-end -mr-4 sm:-mr-6 lg:-mr-8">
-                  <button
-                    onClick={() => setIsCartOpen(true)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-orange-50 hover:bg-orange-100 dark:bg-orange-900/20 dark:hover:bg-orange-900/30 transition-colors border border-orange-200 dark:border-orange-800"
-                  >
-                    <span className="font-semibold text-sm text-orange-600 dark:text-orange-400">
-                      {formatPrice(
-                        typeof cartSummary?.totalAmount === "string"
-                          ? parseFloat(cartSummary.totalAmount)
-                          : cartSummary?.totalAmount ?? 0,
-                        cartSummary?.currency ?? "PLN"
-                      )}
-                    </span>
-                    <ShoppingBag className="h-4 w-4 text-orange-600 dark:text-orange-400" />
-                  </button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => setIsCartOpen(true)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-orange-50 hover:bg-orange-100 dark:bg-orange-900/20 dark:hover:bg-orange-900/30 transition-colors border border-orange-200 dark:border-orange-800"
+                      >
+                        <span className="font-semibold text-sm text-orange-600 dark:text-orange-400">
+                          {formatPrice(
+                            typeof cartSummary?.totalAmount === "string"
+                              ? parseFloat(cartSummary.totalAmount)
+                              : (cartSummary?.totalAmount ?? 0),
+                            cartSummary?.currency ?? "PLN"
+                          )}
+                        </span>
+                        <ShoppingBag className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">
+                      <p>Sepetimi Görüntüle</p>
+                    </TooltipContent>
+                  </Tooltip>
                 </div>
               </div>
             </div>
           )}
 
-          <MobileMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+          <MobileMenu
+            isOpen={isMenuOpen}
+            onClose={() => setIsMenuOpen(false)}
+          />
         </div>
       </nav>
 
