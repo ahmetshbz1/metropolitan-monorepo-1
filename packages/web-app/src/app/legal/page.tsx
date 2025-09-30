@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Shield, ChevronRight, ChevronDown, Globe } from "lucide-react";
+import { Shield, ChevronRight, ChevronDown, Globe, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -203,7 +203,17 @@ export default function LegalPage() {
       {/* Navigation Tabs */}
       <div className="sticky top-1 z-40 bg-background/95 backdrop-blur-sm border-b shadow-sm">
         <div className="container mx-auto px-4 py-2">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {/* Back Button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.back()}
+              className="flex-shrink-0"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+
             {/* Mobile: Dropdown */}
             <div className="sm:hidden flex-1">
               <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
@@ -235,7 +245,7 @@ export default function LegalPage() {
             </div>
 
             {/* Desktop: Tabs */}
-            <div className="hidden sm:flex items-center space-x-4">
+            <div className="hidden sm:flex items-center space-x-4 flex-1">
               {(["privacy-policy", "terms-of-service", "cookie-policy"] as LegalType[]).map((type) => (
                 <Button
                   key={type}
@@ -254,7 +264,7 @@ export default function LegalPage() {
             {mounted && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="ml-2">
+                  <Button variant="ghost" size="sm" className="flex-shrink-0">
                     <Globe className="h-4 w-4 mr-2" />
                     {language.toUpperCase()}
                   </Button>
