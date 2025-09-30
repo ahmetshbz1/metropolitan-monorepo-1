@@ -36,16 +36,19 @@ export function Navbar() {
   // Initialize auth from localStorage (like mobile-app does)
   useAuthInit();
 
-  const { user, accessToken, _hasHydrated } = useAuthStore();
+  const { user, accessToken, _hasHydrated, isGuest, guestId } = useAuthStore();
   const logout = useLogout();
 
   // Direct authentication check (isAuthenticated getter is not reactive in Zustand)
   const isAuthenticated = !!(user && accessToken);
 
+  // Sepet göstermek için user veya guest olması yeterli
+  const hasSession = isAuthenticated || (isGuest && guestId);
+
   // Fetch user profile when authenticated (auto-enabled when accessToken exists)
   useCurrentUser();
 
-  // Fetch cart data when authenticated
+  // Fetch cart data when authenticated or guest
   useCart();
 
   // Get cart summary for display (directly access summary for reactivity)
@@ -166,7 +169,7 @@ export function Navbar() {
           </div>
 
           {/* Second Row - Cart Button under profile */}
-          {isAuthenticated && (
+          {hasSession && (
             <div className="pb-2">
               <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-end -mr-4 sm:-mr-6 lg:-mr-8">
