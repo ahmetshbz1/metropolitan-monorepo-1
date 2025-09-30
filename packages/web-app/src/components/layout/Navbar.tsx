@@ -43,9 +43,8 @@ export function Navbar() {
   // Fetch cart data when authenticated
   useCart();
 
-  // Get cart summary for display
+  // Get cart summary for display (directly access summary for reactivity)
   const cartSummary = useCartStore((state) => state.summary);
-  const getTotalPrice = useCartStore((state) => state.getTotalPrice);
 
   // Legal sayfasında navbar'ı gösterme
   if (pathname === "/legal") {
@@ -69,8 +68,7 @@ export function Navbar() {
     router.push("/auth/phone-login");
   };
 
-  const formatPrice = (price: number) => {
-    const currency = cartSummary?.currency || 'PLN';
+  const formatPrice = (price: number, currency: string) => {
     return new Intl.NumberFormat('pl-PL', {
       style: 'currency',
       currency: currency,
@@ -137,7 +135,10 @@ export function Navbar() {
                 className="flex items-center gap-2 px-3 py-2 rounded-lg bg-orange-50 hover:bg-orange-100 dark:bg-orange-900/20 dark:hover:bg-orange-900/30 transition-colors border border-orange-200 dark:border-orange-800"
               >
                 <span className="font-semibold text-orange-600 dark:text-orange-400">
-                  {formatPrice(getTotalPrice())}
+                  {formatPrice(
+                    cartSummary?.subtotal ?? 0,
+                    cartSummary?.currency ?? 'PLN'
+                  )}
                 </span>
                 <div className="relative">
                   <ShoppingBag className="h-5 w-5 text-orange-600 dark:text-orange-400" />

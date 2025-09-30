@@ -12,9 +12,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/stores/cart-store";
 import { useUpdateCartItem, useRemoveFromCart } from "@/hooks/api/use-cart";
+import { useProducts } from "@/hooks/api/use-products";
 import { Minus, Plus, Trash2, X, ShoppingBag } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import { useMemo } from "react";
 
 interface CartDrawerProps {
   open: boolean;
@@ -27,6 +28,20 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
   const summary = useCartStore((state) => state.summary);
   const updateItemMutation = useUpdateCartItem();
   const removeItemMutation = useRemoveFromCart();
+
+  // Frontend'deki tüm ürünleri al
+  const { data: products = [] } = useProducts();
+
+  // Sepetteki itemlara frontend'deki product bilgilerini merge et
+  const enrichedItems = useMemo(() => {
+    return items.map(item => {
+      const frontendProduct = products.find(p => p.id === item.product.id);
+      return {
+        ...item,
+        product: frontendProduct || item.product, // Frontend'den bulunamazsa backend'den geleni kullan
+      };
+    });
+  }, [items, products]);
 
   const formatPrice = (price: number, currency: string) => {
     return new Intl.NumberFormat('pl-PL', {
@@ -65,7 +80,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
         </DrawerHeader>
 
         <DrawerBody className="flex flex-col h-[calc(80vh-140px)]">
-          {items.length === 0 ? (
+          {enrichedItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center">
               <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center mb-4">
                 <ShoppingBag className="w-12 h-12 text-muted-foreground" />
@@ -80,7 +95,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
             </div>
           ) : (
             <div className="flex-1 overflow-y-auto space-y-4">
-              {items.map((item) => (
+              {enrichedItems.map((item) => (
                 <div
                   key={item.id}
                   className="flex gap-4 p-4 bg-card rounded-lg border border-border"
@@ -88,11 +103,10 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
                   {/* Product Image */}
                   <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
                     {item.product.image ? (
-                      <Image
+                      <img
                         src={item.product.image}
                         alt={item.product.name}
-                        fill
-                        className="object-contain p-2"
+                        className="w-full h-full object-contain p-2"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
@@ -169,7 +183,7 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
           )}
         </DrawerBody>
 
-        {items.length > 0 && summary && (
+        {enrichedItems.length > 0 && summary && (
           <DrawerFooter className="border-t">
             <div className="space-y-4">
               {/* Summary */}
