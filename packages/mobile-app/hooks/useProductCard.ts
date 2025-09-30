@@ -59,9 +59,15 @@ export const useProductCard = (product: Product) => {
           "warning",
           5000, // 5 seconds duration
           t("product_detail.purchase.add_min_quantity", { count: minQty }),
-          () => {
-            // Navigate to product detail with minimum quantity pre-filled
-            router.push(`/product/${product.id}`);
+          async () => {
+            // Direkt sepete minimum miktarı ekle
+            try {
+              await addToCart(product.id, minQty);
+              showToast(t("cart.item_added"), "success", 3000);
+            } catch (addError) {
+              const addErrorMessage = getErrorMessage(addError);
+              showToast(addErrorMessage || t("errors.CART_ADD_ERROR"), "error", 3000);
+            }
           }
         );
       } else if (errorMessage === "UNEXPECTED_ERROR") {
