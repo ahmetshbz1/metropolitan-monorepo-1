@@ -32,34 +32,35 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
   const { t } = useTranslation();
 
   return (
-    <View className="p-2" style={{ backgroundColor: colors.cardBackground, minHeight: 100 }}>
+    <View className="px-1.5 py-1" style={{ backgroundColor: colors.cardBackground, height: 75, position: 'relative' }}>
       {/* Price - Top */}
       <ThemedText
-        className="font-bold text-base mb-1"
-        style={{ color: colors.primary }}
+        className="font-bold text-sm"
+        style={{ color: colors.primary, marginBottom: 2 }}
       >
         {formatPrice(product.price, product.currency)}
       </ThemedText>
 
       {/* Product Name - Middle */}
       <ThemedText
-        className="text-xs mb-auto"
+        className="text-xs font-semibold"
         numberOfLines={2}
         style={{
-          lineHeight: 16,
-          color: colorScheme === "dark" ? "#e5e5e5" : "#3f3f3f",
+          lineHeight: 13,
+          color: colorScheme === "dark" ? "#f3f4f6" : "#1f2937",
           letterSpacing: -0.1,
+          marginBottom: 2,
         }}
       >
         {product.name}
       </ThemedText>
 
-      {/* Bottom Section */}
-      <View className="mt-2">
+      {/* Bottom Section - Fixed at bottom */}
+      <View style={{ position: 'absolute', bottom: 4, left: 6 }}>
         {/* Size/Unit Info */}
         {product.size && (
           <ThemedText
-            className="text-xs mb-1"
+            className="text-xs"
             style={{ color: colorScheme === "dark" ? "#a3a3a3" : "#737373" }}
           >
             {product.size}
@@ -68,7 +69,7 @@ export const ProductCardContent: React.FC<ProductCardContentProps> = ({
 
         {/* Stock Status */}
         {isLowStock && !isOutOfStock && (
-          <View className="flex-row items-center">
+          <View className="flex-row items-center" style={{ marginTop: 2 }}>
             <View className="w-1 h-1 bg-amber-400 rounded-full mr-1.5" />
             <ThemedText
               className="text-xs font-medium"

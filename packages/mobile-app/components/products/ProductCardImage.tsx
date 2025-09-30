@@ -38,23 +38,11 @@ export const ProductCardImage: React.FC<ProductCardImageProps> = ({
       className="relative items-center justify-center overflow-hidden"
       style={{
         aspectRatio: 1,
-        backgroundColor: colorScheme === 'dark' ? '#1f1f1f' : '#f8f8f8',
+        backgroundColor: colorScheme === 'dark' ? '#1a1a1a' : '#ffffff',
         borderTopLeftRadius: 12,
         borderTopRightRadius: 12,
       }}
     >
-      {/* Enhanced gradient background */}
-      <LinearGradient
-        colors={
-          colorScheme === 'dark'
-            ? ['#2a2a2a', '#1a1a1a', '#0f0f0f']
-            : ['#ffffff', '#f8f9fa', '#f1f3f4']
-        }
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        className="absolute inset-0"
-      />
-
       <Image
         source={{ uri: product.image }}
         style={{
@@ -66,46 +54,20 @@ export const ProductCardImage: React.FC<ProductCardImageProps> = ({
         cachePolicy="memory-disk"
       />
 
-      {/* Enhanced gradient overlay for depth */}
-      <LinearGradient
-        colors={
-          colorScheme === 'dark'
-            ? ['rgba(255,255,255,0)', 'rgba(255,255,255,0.02)']
-            : ['rgba(0,0,0,0)', 'rgba(0,0,0,0.04)']
-        }
-        start={{ x: 0, y: 0.5 }}
-        end={{ x: 0, y: 1 }}
-        className="absolute inset-0"
-        pointerEvents="none"
-      />
-
-      {/* Favorite Button - Top Right */}
-      <HapticIconButton
-        onPress={handleToggleFavorite}
-        className="absolute top-2 right-2 w-7 h-7 rounded-full justify-center items-center z-20"
-        style={{
-          backgroundColor: colorScheme === 'dark' ? 'rgba(40, 40, 40, 0.9)' : 'rgba(255, 255, 255, 0.9)',
-        }}
-      >
-        <Ionicons
-          name={isProductFavorite ? "heart" : "heart-outline"}
-          size={14}
-          color={isProductFavorite ? colors.danger : (colorScheme === "dark" ? "#fff" : "#000")}
-        />
-      </HapticIconButton>
-
-      {/* Add to Cart Button - Below Favorite */}
+      {/* Add to Cart Button - Top Right */}
       {!isOutOfStock && (
         <HapticIconButton
           onPress={handleAddToCart}
-          className="absolute top-11 right-2 w-7 h-7 rounded-full justify-center items-center z-20"
+          className="absolute top-1.5 right-1.5 rounded-full justify-center items-center z-20"
           style={{
             backgroundColor: colors.primary,
+            width: 28,
+            height: 28,
           }}
         >
           <Ionicons
-            name="add"
-            size={16}
+            name="add-circle"
+            size={18}
             color="#fff"
           />
         </HapticIconButton>

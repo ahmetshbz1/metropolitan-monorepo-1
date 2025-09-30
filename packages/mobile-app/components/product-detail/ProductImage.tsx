@@ -2,19 +2,14 @@
 //  metropolitan app
 //  Created by Ahmet on 09.06.2025.
 
-import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import React, { memo, useMemo, useCallback } from "react";
+import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
-import { Dimensions, Share, View } from "react-native";
+import { Dimensions, View } from "react-native";
 import Animated, { FadeIn } from "react-native-reanimated";
 
-import { HapticIconButton } from "@/components/HapticButton";
 import { ThemedText } from "@/components/ThemedText";
-import Colors from "@/constants/Colors";
 import { Product } from "@/context/ProductContext";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { useHaptics } from "@/hooks/useHaptics";
 
 // Dimension'ları static olarak al - hiç değişmeyecek
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -26,24 +21,6 @@ interface ProductImageProps {
 
 export const ProductImage = memo(function ProductImage({ product }: ProductImageProps) {
   const { t } = useTranslation();
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? "light"];
-  const { triggerHaptic } = useHaptics();
-
-  // Share handler
-  const handleShare = useCallback(async () => {
-    if (!product) return;
-
-    try {
-      await Share.share({
-        message: `${product.name} - ${t("product_detail.share.check_out_this_product")}`,
-        title: product.name,
-      });
-      triggerHaptic();
-    } catch (error) {
-      // Removed console statement
-    }
-  }, [product, t, triggerHaptic]);
 
   return (
     <Animated.View
@@ -74,17 +51,6 @@ export const ProductImage = memo(function ProductImage({ product }: ProductImage
           </ThemedText>
         </View>
       )}
-
-      <HapticIconButton
-        onPress={handleShare}
-        className="absolute top-2.5 right-2.5 w-8.5 h-8.5 justify-center items-center z-10"
-        style={{
-          backgroundColor: colors.cardBackground,
-          borderRadius: 17,
-        }}
-      >
-        <Ionicons name="share-outline" size={22} color={colors.darkGray} />
-      </HapticIconButton>
     </Animated.View>
   );
 });
