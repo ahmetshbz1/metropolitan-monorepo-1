@@ -55,7 +55,12 @@ export const useProductCard = (product: Product) => {
     }
   };
 
-  const handleToggleFavorite = () => {
+  const handleToggleFavorite = (e?: GestureResponderEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    triggerHaptic();
     toggleFavorite(product);
   };
 

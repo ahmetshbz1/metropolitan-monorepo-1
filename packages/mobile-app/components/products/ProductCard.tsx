@@ -54,9 +54,6 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
   const router = useRouter();
   const { push: safePush } = useNavigationProtection({ debounceTime: 700 });
   const suppressNextPressRef = React.useRef(false);
-  const pressStartTimeRef = React.useRef<number | null>(null);
-  const LONG_PRESS_GUARD_MS = 350; // guard single-tap vs long-press
-  const longPressTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Context menu handlers
   const handleShare = async () => {
@@ -91,27 +88,10 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
   };
 
   const handleCardPress = () => {
-    // Clear any scheduled long-press guard
-    if (longPressTimerRef.current) {
-      clearTimeout(longPressTimerRef.current);
-      longPressTimerRef.current = null;
-    }
     if (suppressNextPressRef.current) {
-      // A long-press just opened/closed the context menu; skip navigation once
       suppressNextPressRef.current = false;
       return;
     }
-    // If press duration suggests a long-press, ignore navigation
-    if (
-      pressStartTimeRef.current &&
-      Date.now() - pressStartTimeRef.current >= LONG_PRESS_GUARD_MS
-    ) {
-      // reset timestamp to avoid affecting next press
-      pressStartTimeRef.current = null;
-      return;
-    }
-    // reset timestamp before navigating
-    pressStartTimeRef.current = null;
     safePush(`/product/${product.id}`);
   };
 
@@ -144,16 +124,13 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
       <ContextMenu
         actions={contextMenuActions}
         onPress={(e) => {
-          // Prevent the underlying card press from navigating after menu action
           suppressNextPressRef.current = true;
           handleContextMenu(e.nativeEvent.index);
         }}
         onCancel={() => {
-          // User opened menu and dismissed it; suppress the next press
           suppressNextPressRef.current = true;
         }}
         onPreviewPress={() => {
-          // Preview was tapped from the context menu, also suppress next press
           suppressNextPressRef.current = true;
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         }}
@@ -161,25 +138,10 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
       >
           <TouchableOpacity
             onPress={handleCardPress}
-            onPressIn={() => {
-              pressStartTimeRef.current = Date.now();
-              // schedule a guard in case of long-press before ContextMenu events fire
-              if (longPressTimerRef.current) {
-                clearTimeout(longPressTimerRef.current);
-              }
-              longPressTimerRef.current = setTimeout(() => {
-                suppressNextPressRef.current = true;
-                longPressTimerRef.current = null;
-              }, LONG_PRESS_GUARD_MS);
-            }}
             onLongPress={() => {
-              // If child long-press fires, ensure we suppress subsequent onPress
               suppressNextPressRef.current = true;
-              if (longPressTimerRef.current) {
-                clearTimeout(longPressTimerRef.current);
-                longPressTimerRef.current = null;
-              }
             }}
+            delayLongPress={500}
             activeOpacity={0.85}
             className="overflow-hidden rounded-xl border"
             style={{

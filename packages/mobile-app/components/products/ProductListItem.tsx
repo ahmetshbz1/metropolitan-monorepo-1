@@ -39,6 +39,18 @@ export const ProductListItem = React.memo<ProductListItemProps>(function Product
     safePush(`/product/${product.id}`);
   };
 
+  const handleAddToCartWithEvent = async (e: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    await handleAddToCart(e);
+  };
+
+  const handleToggleFavoriteWithEvent = (e: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    handleToggleFavorite(e);
+  };
+
   return (
     <View className="mx-4 mb-3">
       <TouchableOpacity
@@ -147,7 +159,7 @@ export const ProductListItem = React.memo<ProductListItemProps>(function Product
           {/* Add to Cart Button */}
           {!isOutOfStock && (
             <HapticIconButton
-              onPress={handleAddToCart}
+              onPress={handleAddToCartWithEvent}
               className="rounded-full justify-center items-center"
               style={{
                 backgroundColor: colors.primary,
@@ -166,7 +178,7 @@ export const ProductListItem = React.memo<ProductListItemProps>(function Product
 
           {/* Favorite Toggle Button */}
           <HapticIconButton
-            onPress={handleToggleFavorite}
+            onPress={handleToggleFavoriteWithEvent}
             className="rounded-full justify-center items-center"
             style={{
               backgroundColor: isProductFavorite ? '#EF444420' : colors.cardBackground,

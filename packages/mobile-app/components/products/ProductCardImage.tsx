@@ -18,7 +18,7 @@ interface ProductCardImageProps {
   isOutOfStock: boolean;
   colors: any;
   isProductFavorite: boolean;
-  handleToggleFavorite: (e: GestureResponderEvent) => void;
+  handleToggleFavorite: (e?: GestureResponderEvent) => void;
   handleAddToCart: (e: GestureResponderEvent) => Promise<void>;
 }
 
