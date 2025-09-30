@@ -12,11 +12,11 @@ import React, {
 import { useTranslation } from "react-i18next";
 
 import { useAuth } from "./AuthContext";
-import { Product } from "./ProductContext";
-import { 
-  fetchFavoritesFromApi, 
-  addFavoriteToApi, 
-  removeFavoriteFromApi 
+import { Product, useProducts } from "./ProductContext";
+import {
+  fetchFavoritesFromApi,
+  addFavoriteToApi,
+  removeFavoriteFromApi
 } from "@/hooks/favorites/useFavoritesApi";
 import { handleMinimumLoadingTime } from "@/utils/favorites/favoritesUtils";
 
@@ -47,6 +47,7 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const { user, isGuest, guestId } = useAuth();
   const { i18n } = useTranslation();
+  const { products } = useProducts();
 
   const [favorites, setFavorites] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -75,7 +76,14 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({
           guestId,
           lang,
         });
-        setFavorites(fetchedFavorites);
+
+        // ProductContext'teki ürünlerle eşleştir, tam bilgileri al
+        const fullFavorites = fetchedFavorites.map(favProduct => {
+          const fullProduct = products.find(p => p.id === favProduct.id);
+          return fullProduct || favProduct;
+        });
+
+        setFavorites(fullFavorites);
       } catch (error) {
         // Removed console statement
         setError(
@@ -85,7 +93,7 @@ export const FavoritesProvider: React.FC<{ children: React.ReactNode }> = ({
         handleMinimumLoadingTime(startTime, () => setIsLoading(false));
       }
     },
-    [user, isGuest, guestId, i18n.language]
+    [user, isGuest, guestId, i18n.language, products]
   );
 
   const reloadFavorites = useCallback(() => {
