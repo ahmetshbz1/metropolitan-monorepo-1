@@ -9,6 +9,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { OTPInput } from "@/components/ui/otp-input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useSendOTP, useVerifyOTP } from "@/hooks/api";
 import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import Link from "next/link";
@@ -119,7 +124,9 @@ export default function VerifyOtpPage() {
             if (hasRegistrationToken || result.isNewUser) {
               console.log("🆕 New user - redirecting to complete-profile");
               const returnParam = returnToCart ? "&returnToCart=true" : "";
-              router.replace(`/auth/complete-profile?userType=${userType}${returnParam}`);
+              router.replace(
+                `/auth/complete-profile?userType=${userType}${returnParam}`
+              );
             } else if (hasAccessToken) {
               console.log("✅ Existing user - redirecting to home");
               if (returnToCart) {
@@ -213,17 +220,22 @@ export default function VerifyOtpPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
-        <div className="mb-6">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/auth/phone-login">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              {t("auth.verifyOtp.back", "Geri Dön")}
-            </Link>
-          </Button>
-        </div>
-
         <Card className="border-0 shadow-lg">
           <CardHeader className="space-y-4 text-center">
+            <div className="flex justify-start">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link href="/auth/phone-login">
+                      <ArrowLeft className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p>Geri Dön</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
               <ShieldCheck className="h-6 w-6 text-primary" />
             </div>

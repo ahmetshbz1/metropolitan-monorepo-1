@@ -8,9 +8,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useCompleteProfile } from "@/hooks/api";
 import { useAuthStore } from "@/stores";
 import { ArrowLeft, Loader2, User } from "lucide-react";
@@ -108,18 +113,22 @@ export default function CompleteProfilePage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
-        {/* Back Button */}
-        <div className="mb-6">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/auth/verify-otp">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Geri Dön
-            </Link>
-          </Button>
-        </div>
-
         <Card className="border shadow-lg">
           <CardHeader className="text-center space-y-4">
+            <div className="flex justify-start">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link href="/auth/verify-otp">
+                      <ArrowLeft className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p>Geri Dön</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
             <div className="w-12 h-12 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
               <User className="h-6 w-6 text-primary" />
             </div>
@@ -214,7 +223,10 @@ export default function CompleteProfilePage() {
                     className="mt-0.5"
                   />
                   <div className="flex-1">
-                    <Label htmlFor="termsAccepted" className="text-sm cursor-pointer">
+                    <Label
+                      htmlFor="termsAccepted"
+                      className="text-sm cursor-pointer"
+                    >
                       <span className="text-muted-foreground">
                         Kabul ediyorum:{" "}
                       </span>
@@ -244,7 +256,10 @@ export default function CompleteProfilePage() {
                     className="mt-0.5"
                   />
                   <div className="flex-1">
-                    <Label htmlFor="privacyAccepted" className="text-sm cursor-pointer">
+                    <Label
+                      htmlFor="privacyAccepted"
+                      className="text-sm cursor-pointer"
+                    >
                       <span className="text-muted-foreground">
                         Kabul ediyorum:{" "}
                       </span>
@@ -274,7 +289,10 @@ export default function CompleteProfilePage() {
                     className="mt-0.5"
                   />
                   <div className="flex-1">
-                    <Label htmlFor="marketingAccepted" className="text-sm cursor-pointer">
+                    <Label
+                      htmlFor="marketingAccepted"
+                      className="text-sm cursor-pointer"
+                    >
                       Pazarlama iletişimlerini kabul ediyorum
                     </Label>
                     <div className="text-xs text-muted-foreground mt-1">

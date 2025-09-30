@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useGoogleAuth, useSendOTP } from "@/hooks/api";
-import { ArrowLeft, Loader2, Phone } from "lucide-react";
+import { Loader2, Phone } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -75,16 +75,6 @@ export default function PhoneLoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <div className="w-full max-w-md">
-        {/* Back Button */}
-        <div className="mb-6">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Ana Sayfaya Dön
-            </Link>
-          </Button>
-        </div>
-
         <Card className="border-0 shadow-lg">
           <CardHeader className="text-center space-y-4">
             <div className="w-12 h-12 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
