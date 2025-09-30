@@ -15,20 +15,41 @@ export default function Home() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
+        {/* Hero slider skeleton */}
         <section className="container mx-auto px-4 py-8">
-          <div className="h-[300px] md:h-[500px] lg:h-[600px] bg-muted rounded-2xl animate-pulse" />
+          <div className="relative h-[300px] md:h-[500px] lg:h-[600px] bg-muted rounded-2xl animate-pulse overflow-hidden">
+            <div className="absolute bottom-6 left-6 space-y-3">
+              <div className="h-8 bg-muted-foreground/20 rounded w-64"></div>
+              <div className="h-4 bg-muted-foreground/20 rounded w-48"></div>
+            </div>
+          </div>
         </section>
-        <div className="space-y-8">
+
+        {/* Product sections skeleton */}
+        <div className="space-y-12">
           {[1, 2, 3, 4].map((i) => (
-            <section key={i} className="py-8">
+            <section key={i} className="py-4">
               <div className="container mx-auto px-4">
-                <div className="h-8 bg-muted rounded w-48 mb-6 animate-pulse" />
+                {/* Section header */}
+                <div className="flex items-center justify-between mb-6">
+                  <div className="h-8 bg-muted rounded-lg w-48 animate-pulse" />
+                  <div className="h-9 bg-muted rounded-lg w-32 animate-pulse" />
+                </div>
+
+                {/* Product cards skeleton */}
                 <div className="flex gap-3 overflow-hidden">
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map((j) => (
+                  {Array.from({ length: 16 }).map((_, j) => (
                     <div
                       key={j}
-                      className="w-32 h-56 bg-muted rounded-xl animate-pulse flex-shrink-0"
-                    />
+                      className="w-32 h-56 bg-muted rounded-xl animate-pulse flex-shrink-0 flex flex-col"
+                    >
+                      <div className="h-28 bg-muted-foreground/10 rounded-t-xl"></div>
+                      <div className="flex-1 p-2 space-y-2">
+                        <div className="h-3 bg-muted-foreground/10 rounded w-3/4"></div>
+                        <div className="h-2 bg-muted-foreground/10 rounded w-full"></div>
+                        <div className="h-2 bg-muted-foreground/10 rounded w-2/3"></div>
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>

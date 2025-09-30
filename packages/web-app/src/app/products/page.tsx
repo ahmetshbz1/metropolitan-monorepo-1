@@ -46,24 +46,39 @@ export default function ProductsPage() {
     return (
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8">
-          <div className="animate-pulse">
-            <div className="h-12 bg-muted rounded-lg w-full max-w-md mb-6"></div>
-            <div className="flex gap-2 mb-6 overflow-hidden">
-              {[1, 2, 3, 4, 5].map((i) => (
+          {/* Header skeleton */}
+          <div className="mb-6">
+            <div className="h-9 bg-muted rounded-lg w-48 mb-2 animate-pulse"></div>
+            <div className="h-5 bg-muted rounded w-32 animate-pulse"></div>
+          </div>
+
+          {/* Search skeleton */}
+          <div className="mb-6 space-y-4">
+            <div className="h-10 bg-muted rounded-lg w-full max-w-md animate-pulse"></div>
+
+            {/* Category filters skeleton */}
+            <div className="flex gap-2 overflow-hidden">
+              {Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
-                  className="h-10 bg-muted rounded-lg w-24 flex-shrink-0"
+                  className="h-9 bg-muted rounded-lg w-24 flex-shrink-0 animate-pulse"
                 ></div>
               ))}
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((i) => (
-                <div
-                  key={i}
-                  className="h-64 bg-muted rounded-xl animate-pulse"
-                ></div>
-              ))}
-            </div>
+          </div>
+
+          {/* Products grid skeleton */}
+          <div className="flex flex-wrap gap-3">
+            {Array.from({ length: 18 }).map((_, i) => (
+              <div key={i} className="w-32 h-56 bg-muted rounded-xl animate-pulse flex flex-col">
+                <div className="h-28 bg-muted-foreground/10 rounded-t-xl"></div>
+                <div className="flex-1 p-2 space-y-2">
+                  <div className="h-3 bg-muted-foreground/10 rounded w-3/4"></div>
+                  <div className="h-2 bg-muted-foreground/10 rounded w-full"></div>
+                  <div className="h-2 bg-muted-foreground/10 rounded w-2/3"></div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

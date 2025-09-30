@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores";
-import { useLogout } from "@/hooks/api";
+import { useLogout, useCurrentUser } from "@/hooks/api";
 import {
   User,
   Heart,
@@ -23,8 +23,42 @@ export default function ProfilePage() {
   const { t } = useTranslation();
   const router = useRouter();
   const { user, accessToken } = useAuthStore();
+  const { isLoading: userLoading } = useCurrentUser();
   const logout = useLogout();
 
+  // Loading skeleton
+  if (userLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-8">
+          {/* Header skeleton */}
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-20 h-20 rounded-full bg-muted animate-pulse"></div>
+            <div className="space-y-2">
+              <div className="h-7 bg-muted rounded w-48 animate-pulse"></div>
+              <div className="h-4 bg-muted rounded w-32 animate-pulse"></div>
+            </div>
+          </div>
+
+          {/* Menu sections skeleton */}
+          <div className="space-y-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="space-y-2">
+                <div className="h-5 bg-muted rounded w-32 mb-3 animate-pulse"></div>
+                <div className="space-y-2">
+                  {[1, 2, 3].map((j) => (
+                    <div key={j} className="h-14 bg-muted rounded-lg animate-pulse"></div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Guest user - redirect to login
   if (!accessToken || !user) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
@@ -33,13 +67,13 @@ export default function ProfilePage() {
             <User className="h-12 w-12 text-muted-foreground" />
           </div>
           <h2 className="text-2xl font-bold mb-2">
-            {t("profile.guest_title")}
+            {t("profile.guest_title") || "Profilinizi görüntülemek için giriş yapın"}
           </h2>
           <p className="text-muted-foreground mb-6">
-            {t("profile.guest_message")}
+            {t("profile.guest_message") || "Siparişlerinizi takip edin ve adreslerinizi yönetin"}
           </p>
           <Button asChild>
-            <Link href="/auth/phone-login">{t("profile.login")}</Link>
+            <Link href="/auth/phone-login">{t("profile.login") || "Giriş Yap"}</Link>
           </Button>
         </div>
       </div>
