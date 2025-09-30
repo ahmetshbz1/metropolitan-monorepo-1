@@ -74,6 +74,7 @@ export const useAuthHook = () => {
     setPhoneNumber,
     setSocialAuthData,
     migrateGuestToUser,
+    loginAsGuest,
   });
 
   // Check Apple Sign-In availability

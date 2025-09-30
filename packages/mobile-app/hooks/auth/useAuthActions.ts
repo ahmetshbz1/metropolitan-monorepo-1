@@ -57,6 +57,7 @@ interface AuthActionsDeps {
   setPhoneNumber: (phone: string | null) => void;
   setSocialAuthData: (data: any | null) => void;
   migrateGuestToUser: (phoneNumber: string, guestId: string) => Promise<void>;
+  loginAsGuest: () => Promise<void>;
 }
 
 export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
@@ -76,6 +77,7 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
     setPhoneNumber,
     setSocialAuthData,
     migrateGuestToUser,
+    loginAsGuest,
   } = deps;
 
   const sendOTP = async (
@@ -253,19 +255,23 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
       // Removed console statement
     }
 
+    // Tüm kimlik doğrulama verilerini temizle
+    await clearAllAuthData();
+
     // Local state'i temizle
     setUser(null);
     setToken(null);
     setAccessToken(null);
     setRefreshToken(null);
     setRegistrationToken(null);
-    setIsGuest(false);
-    setGuestId(null);
     setPhoneNumber(null);
     setSocialAuthData(null);
 
-    // Tüm kimlik doğrulama verilerini temizle
-    await clearAllAuthData();
+    // Logout sonrası yeni misafir kullanıcı oluştur
+    await loginAsGuest();
+
+    // Ana sayfaya yönlendir
+    router.replace('/(tabs)');
   };
 
   return {
