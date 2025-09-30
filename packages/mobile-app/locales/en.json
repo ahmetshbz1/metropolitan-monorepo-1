@@ -1351,5 +1351,10 @@
     "skip_for_now": "Skip for Now",
     "notification_enabled_title": "Great!",
     "notification_enabled_message": "We will now keep you informed about important updates."
+  },
+  "auth_progress": {
+    "phone": "Phone",
+    "verification": "Verification",
+    "info": "Information"
   }
 }

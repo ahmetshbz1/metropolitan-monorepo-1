@@ -1351,5 +1351,10 @@
     "skip_for_now": "Şimdilik Atla",
     "notification_enabled_title": "Harika!",
     "notification_enabled_message": "Artık önemli güncellemeler hakkında sizi bilgilendireceğiz."
+  },
+  "auth_progress": {
+    "phone": "Telefon",
+    "verification": "Doğrulama",
+    "info": "Bilgiler"
   }
 }

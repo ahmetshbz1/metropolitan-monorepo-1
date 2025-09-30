@@ -4,6 +4,7 @@
 
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 
 import { ThemedText } from "@/components/ThemedText";
@@ -17,11 +18,12 @@ interface AuthProgressIndicatorProps {
 export function AuthProgressIndicator({ currentStep }: AuthProgressIndicatorProps) {
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
+  const { t } = useTranslation();
 
   const steps = [
-    { number: 1, title: "Telefon" },
-    { number: 2, title: "Doğrulama" },
-    { number: 3, title: "Bilgiler" },
+    { number: 1, title: t("auth_progress.phone") },
+    { number: 2, title: t("auth_progress.verification") },
+    { number: 3, title: t("auth_progress.info") },
   ];
 
   return (

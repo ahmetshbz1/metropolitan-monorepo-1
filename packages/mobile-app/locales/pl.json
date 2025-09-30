@@ -1358,5 +1358,10 @@
     "skip_for_now": "Pomiń na razie",
     "notification_enabled_title": "Świetnie!",
     "notification_enabled_message": "Teraz będziemy informować Cię o ważnych aktualizacjach."
+  },
+  "auth_progress": {
+    "phone": "Telefon",
+    "verification": "Weryfikacja",
+    "info": "Informacje"
   }
 }
