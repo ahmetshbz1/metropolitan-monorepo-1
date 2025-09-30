@@ -102,11 +102,11 @@ export const useProductsSection = (items: OrderItem[]) => {
     try {
       // Sadece stokta bulunan ürünleri ekle
       const availableItems = stockChecks.filter(item => item.availableStock > 0);
-      
+
       for (const item of availableItems) {
         const quantityToAdd = Math.min(item.quantity, item.availableStock);
         // Removed console statement`);
-        
+
         try {
           await addToCart(item.product.id, quantityToAdd);
         } catch (error) {
@@ -116,13 +116,17 @@ export const useProductsSection = (items: OrderItem[]) => {
         }
       }
 
-      showToast(
-        t("order_detail.reorder.partial_success_message"),
-        "success",
-        5000,
-        t("order_detail.reorder.go_to_cart"),
-        () => router.push("/(tabs)/cart")
-      );
+      showDialog({
+        title: t("order_detail.reorder.success_title"),
+        message: t("order_detail.reorder.partial_success_message"),
+        icon: "checkmark-circle-outline",
+        confirmText: t("order_detail.reorder.go_to_cart"),
+        cancelText: t("order_detail.reorder.stay_on_orders"),
+        destructive: false,
+        onConfirm: async () => {
+          router.push("/(tabs)/cart");
+        },
+      });
     } catch (error) {
       // Removed console statement
       showToast(t("order_detail.reorder.error_message"), "error");
@@ -135,13 +139,17 @@ export const useProductsSection = (items: OrderItem[]) => {
         items.map((item) => addToCart(item.product.id, item.quantity))
       );
 
-      showToast(
-        t("order_detail.reorder.success_message"),
-        "success",
-        5000,
-        t("order_detail.reorder.go_to_cart"),
-        () => router.push("/(tabs)/cart")
-      );
+      showDialog({
+        title: t("order_detail.reorder.success_title"),
+        message: t("order_detail.reorder.success_message"),
+        icon: "checkmark-circle-outline",
+        confirmText: t("order_detail.reorder.go_to_cart"),
+        cancelText: t("order_detail.reorder.stay_on_orders"),
+        destructive: false,
+        onConfirm: async () => {
+          router.push("/(tabs)/cart");
+        },
+      });
     } catch (error) {
       // Removed console statement
       showToast(t("order_detail.reorder.error_message"), "error");

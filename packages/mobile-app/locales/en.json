@@ -365,6 +365,7 @@
       "partial_success_message": "Available items have been added to your cart.",
       "error_message": "Could not add items to the cart. Please try again.",
       "go_to_cart": "Go to Cart",
+      "stay_on_orders": "Stay on Orders",
       "button_text": "Reorder",
       "stock_warning_title": "Stock Warning",
       "out_of_stock_items": "{{count}} item(s) are out of stock.",

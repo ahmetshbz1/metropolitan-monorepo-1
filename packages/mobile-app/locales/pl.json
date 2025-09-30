@@ -365,6 +365,7 @@
       "partial_success_message": "Dostępne produkty zostały dodane do Twojego koszyka.",
       "error_message": "Nie można dodać produktów do koszyka. Proszę spróbować ponownie.",
       "go_to_cart": "Przejdź do Koszyka",
+      "stay_on_orders": "Zostań w Zamówieniach",
       "button_text": "Powtórz",
       "stock_warning_title": "Ostrzeżenie o zapasach",
       "out_of_stock_items": "{{count}} produkty nie są dostępne w magazynie.",

@@ -365,6 +365,7 @@
       "partial_success_message": "Stokta bulunan ürünler sepetinize eklendi.",
       "error_message": "Ürünler sepete eklenemedi. Lütfen tekrar deneyin.",
       "go_to_cart": "Sepete Git",
+      "stay_on_orders": "Siparişlerde Kal",
       "button_text": "Tekrarla",
       "stock_warning_title": "Stok Uyarısı",
       "out_of_stock_items": "{{count}} ürün stokta yok.",

@@ -5,7 +5,8 @@
 
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, View } from "react-native";
+import { HapticButton } from "@/components/HapticButton";
 
 interface ReorderButtonProps {
   onPress: () => void;
@@ -19,10 +20,7 @@ export const ReorderButton: React.FC<ReorderButtonProps> = ({
   t,
 }) => {
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.7}
-    >
+    <HapticButton onPress={onPress}>
       <View
         className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-lg"
         style={{
@@ -39,6 +37,6 @@ export const ReorderButton: React.FC<ReorderButtonProps> = ({
           {t("order_detail.reorder.button_text")}
         </Text>
       </View>
-    </TouchableOpacity>
+    </HapticButton>
   );
 };
