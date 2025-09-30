@@ -61,6 +61,10 @@ export const useCheckoutActions = (
     dispatch({ type: "SET_NOTES", payload: notes });
   }, [dispatch]);
 
+  const setPaymentTermDays = useCallback((days: number | null) => {
+    dispatch({ type: "SET_PAYMENT_TERM_DAYS", payload: days });
+  }, [dispatch]);
+
   return {
     setCurrentStep,
     nextStep,
@@ -72,5 +76,6 @@ export const useCheckoutActions = (
     setPaymentMethod,
     setAgreedToTerms,
     setNotes,
+    setPaymentTermDays,
   };
 };

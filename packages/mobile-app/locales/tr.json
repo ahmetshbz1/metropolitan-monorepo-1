@@ -609,6 +609,10 @@
         "title": "Banka Havalesi / EFT",
         "subtitle": "Banka hesabımıza manuel ödeme yapın"
       }
+    },
+    "payment_term": {
+      "title": "Ödeme Vadesi",
+      "info": "Ödemenizi {{days}} gün içinde tamamlamanız gerekmektedir."
     }
   },
   "categories": {

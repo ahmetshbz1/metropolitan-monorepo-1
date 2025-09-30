@@ -26,6 +26,7 @@ export type PaymentMethodType =
   | "apple_pay"
   | "google_pay"
   | "blik"
+  | "bank_transfer"
   | null;
 
 // Stripe payment processing result
@@ -83,4 +84,31 @@ export interface SavedPaymentMethodData {
   details: string;
   /** Expiry date in MM/YY format (for cards) */
   expiry?: string;
+}
+
+export interface PaymentTermsSettings {
+  id: string;
+  isGlobalDefault: boolean;
+  availableTerms: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}
+
+export interface UserPaymentTerms {
+  id: string;
+  userId: string;
+  customTerms: string | null;
+  isEnabled: boolean;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+}
+
+export interface PaymentTermOption {
+  days: number;
+  label: string;
+}
+
+export interface GetPaymentTermsResponse {
+  success: boolean;
+  data: PaymentTermOption[];
 }

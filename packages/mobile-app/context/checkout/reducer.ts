@@ -32,6 +32,8 @@ export const checkoutReducer = (
       return { ...state, agreedToTerms: action.payload };
     case "SET_NOTES":
       return { ...state, notes: action.payload };
+    case "SET_PAYMENT_TERM_DAYS":
+      return { ...state, paymentTermDays: action.payload };
     case "RESET_CHECKOUT":
       return initialState;
     case "RESET_CHECKOUT_WITH_STATE":

@@ -24,6 +24,7 @@ import { refreshTokenRoutes } from "./src/domains/identity/presentation/routes/r
 import { invoicesRoutes } from "./src/domains/order/presentation/routes/invoices.routes";
 import { ordersRoutes } from "./src/domains/order/presentation/routes/orders.routes";
 import { paymentRoutes } from "./src/domains/payment/presentation/routes/payment.routes";
+import { paymentTermsRoutes } from "./src/domains/payment/presentation/routes/payment-terms.routes";
 import { stripeWebhookRoutes } from "./src/domains/payment/presentation/routes/stripe-webhook.routes";
 import { cartRoutes } from "./src/domains/shopping/presentation/routes/cart.routes";
 import { favoritesRoutes } from "./src/domains/shopping/presentation/routes/favorites.routes";
@@ -159,6 +160,7 @@ export const app = new Elysia()
 
       // Payment routes
       .use(paymentRoutes)
+      .use(paymentTermsRoutes)
 
       // Catalog Domain
       .use(productRoutes)

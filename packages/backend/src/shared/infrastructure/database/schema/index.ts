@@ -23,5 +23,8 @@ export * from "./device-tokens.schema";
 // Bildirimler
 export * from "./notifications.schema";
 
+// Ödeme Vadeleri
+export * from "./payment-terms.schema";
+
 // İlişkiler
 export * from "./relations";

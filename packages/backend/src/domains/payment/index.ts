@@ -4,6 +4,7 @@
 
 // Payment Domain Exports
 export * from "./presentation/routes/payment.routes";
+export * from "./presentation/routes/payment-terms.routes";
 
 // Domain Entities & Value Objects would be exported here
 // export * from './domain/entities/payment.entity';

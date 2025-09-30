@@ -119,6 +119,7 @@ export function useCheckoutSummary() {
             : state.billingAddress?.id,
           paymentMethodId: selectedPaymentMethod.id,
           notes: state.notes || undefined,
+          paymentTermDays: state.paymentTermDays ?? undefined,
         });
 
         // Removed console statement

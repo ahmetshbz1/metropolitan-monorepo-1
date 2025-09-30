@@ -616,6 +616,10 @@
         "title": "Przelew bankowy / EFT",
         "subtitle": "Zapłać ręcznie na nasze konto bankowe"
       }
+    },
+    "payment_term": {
+      "title": "Termin płatności",
+      "info": "Musisz dokonać płatności w ciągu {{days}} dni."
     }
   },
   "categories": {

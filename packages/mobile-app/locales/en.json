@@ -609,6 +609,10 @@
         "title": "Bank Transfer / EFT",
         "subtitle": "Pay manually to our bank account"
       }
+    },
+    "payment_term": {
+      "title": "Payment Terms",
+      "info": "You must complete your payment within {{days}} days."
     }
   },
   "categories": {

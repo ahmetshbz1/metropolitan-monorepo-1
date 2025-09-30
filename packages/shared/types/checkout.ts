@@ -44,6 +44,9 @@ export interface CheckoutState {
 
   // Yeni eklenen notlar
   notes: string;
+
+  // Banka havalesi için vade süresi (gün)
+  paymentTermDays: number | null;
 }
 
 export type Action =
@@ -56,6 +59,7 @@ export type Action =
   | { type: "SET_PAYMENT_METHOD"; payload: CheckoutPaymentMethod }
   | { type: "SET_AGREED_TO_TERMS"; payload: boolean }
   | { type: "SET_NOTES"; payload: string }
+  | { type: "SET_PAYMENT_TERM_DAYS"; payload: number | null }
   | { type: "RESET_CHECKOUT_WITH_STATE"; payload: CheckoutState }
   | { type: "RESET_CHECKOUT" };
 
@@ -83,4 +87,7 @@ export interface CheckoutContextType {
 
   // Not işlemleri
   setNotes: (notes: string) => void;
+
+  // Vade işlemleri
+  setPaymentTermDays: (days: number | null) => void;
 }

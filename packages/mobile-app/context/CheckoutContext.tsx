@@ -45,7 +45,8 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
       selectedPaymentMethod: null,
       agreedToTerms: false,
       notes: "",
-      paymentMethods: [], // Bu getAvailablePaymentMethods tarafından doldurulacak
+      paymentMethods: [],
+      paymentTermDays: null,
     }),
     [t]
   );

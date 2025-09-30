@@ -17,6 +17,7 @@ import { DeliveryAddressSummary } from "@/components/checkout/summary/DeliveryAd
 import { OrderNotes } from "@/components/checkout/summary/OrderNotes";
 import { OrderTotals } from "@/components/checkout/summary/OrderTotals";
 import { PaymentMethodSummary } from "@/components/checkout/summary/PaymentMethodSummary";
+import { PaymentTermSelector } from "@/components/checkout/summary/PaymentTermSelector";
 import { SummaryFooter } from "@/components/checkout/summary/SummaryFooter";
 import { useCart } from "@/context/CartContext";
 import { useCheckout } from "@/context/CheckoutContext";
@@ -62,6 +63,7 @@ export default function CheckoutSummaryScreen() {
         <View className="p-5 gap-6" style={{ paddingBottom: 0 }}>
           <DeliveryAddressSummary />
           <PaymentMethodSummary />
+          <PaymentTermSelector />
           <OrderTotals />
           <OrderNotes />
         </View>

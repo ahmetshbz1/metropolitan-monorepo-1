@@ -34,9 +34,10 @@ export const orders = pgTable("orders", {
   // Stripe payment fields
   stripePaymentIntentId: text("stripe_payment_intent_id"),
   paymentStatus: text("payment_status").notNull().default("pending"), // pending, requires_action, succeeded, canceled, processing, requires_payment_method
-  paymentMethodType: text("payment_method_type"), // card, apple_pay, google_pay, etc.
+  paymentMethodType: text("payment_method_type"), // card, apple_pay, google_pay, bank_transfer etc.
   stripeClientSecret: text("stripe_client_secret"), // Frontend için gerekli
   paidAt: timestamp("paid_at"), // Ödemenin tamamlandığı tarih
+  paymentTermDays: integer("payment_term_days"), // Banka havalesi için vade süresi (gün)
 
   trackingNumber: text("tracking_number"),
   shippingCompany: text("shipping_company").default("DHL Express"),

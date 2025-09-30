@@ -36,6 +36,7 @@ export interface OrderSummary {
   shippingAddress: Address;
   paymentMethodType?: string; // Stripe payment method type
   paymentStatus?: string; // Stripe payment status
+  paymentTermDays?: number | null; // Banka havalesi için vade süresi (gün)
 }
 
 export interface OrderDetail extends OrderSummary {
@@ -67,6 +68,7 @@ export interface OrderCreationRequest {
   billingAddressId?: string;
   paymentMethodId: string;
   notes?: string;
+  paymentTermDays?: number;
 }
 
 export interface OrderCreationResult {
