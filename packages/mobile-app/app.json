@@ -21,7 +21,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.metropolitan.food",
-      "buildNumber": "24",
+      "buildNumber": "25",
       "deploymentTarget": "18.0",
       "config": {
         "googleSignIn": {
@@ -75,6 +75,14 @@
           "icon": "./assets/images/icooon.png",
           "color": "#ffffff",
           "defaultChannel": "default"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "18.0"
+          }
         }
       ]
     ],
