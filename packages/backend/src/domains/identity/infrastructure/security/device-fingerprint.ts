@@ -3,6 +3,7 @@
 // Device fingerprinting and session management for enhanced security
 
 import { createHash, randomBytes } from "crypto";
+
 import { redis } from "../../../../shared/infrastructure/database/redis";
 
 // Device info interface
@@ -30,42 +31,42 @@ export interface SessionInfo {
 
 // Enhanced JWT payload interfaces
 export interface EnhancedAccessTokenPayload {
-  sub: string;           // User ID (subject)
-  iat?: number;          // Issued at
-  exp: number;           // Expires at (15 minutes)
-  aud: string;           // Audience (mobile-app)
-  iss: string;           // Issuer (metropolitan-api)
-  type: 'access';        // Token type
-  sessionId: string;     // Session identifier
-  deviceId: string;      // Device fingerprint
-  scope?: string[];      // Permissions array
-  jti: string;           // Unique token ID (JWT ID)
+  sub: string; // User ID (subject)
+  iat?: number; // Issued at
+  exp: number; // Expires at (15 minutes)
+  aud: string; // Audience (mobile-app)
+  iss: string; // Issuer (metropolitan-api)
+  type: "access"; // Token type
+  sessionId: string; // Session identifier
+  deviceId: string; // Device fingerprint
+  scope?: string[]; // Permissions array
+  jti: string; // Unique token ID (JWT ID)
 }
 
 export interface EnhancedRefreshTokenPayload {
-  sub: string;           // User ID
-  iat?: number;          // Issued at
-  exp: number;           // Expires at (30 days)
-  aud: string;           // Audience
-  iss: string;           // Issuer
-  type: 'refresh';       // Token type
-  sessionId: string;     // Session identifier
-  deviceId: string;      // Device fingerprint
-  jti: string;           // Unique token ID
+  sub: string; // User ID
+  iat?: number; // Issued at
+  exp: number; // Expires at (30 days)
+  aud: string; // Audience
+  iss: string; // Issuer
+  type: "refresh"; // Token type
+  sessionId: string; // Session identifier
+  deviceId: string; // Device fingerprint
+  jti: string; // Unique token ID
 }
 
 /**
  * Generate unique JWT ID
  */
 export function generateJTI(): string {
-  return randomBytes(16).toString('hex');
+  return randomBytes(16).toString("hex");
 }
 
 /**
  * Generate unique session ID
  */
 export function generateSessionId(): string {
-  return `sess_${randomBytes(24).toString('hex')}`;
+  return `sess_${randomBytes(24).toString("hex")}`;
 }
 
 /**
@@ -79,34 +80,34 @@ export function generateDeviceFingerprint(
   deviceInfo: DeviceInfo,
   headers: Record<string, string | undefined>
 ): string {
-  const platform = headers['x-platform'] || deviceInfo.platform || 'unknown';
-  const isWebPlatform = platform.toLowerCase() === 'web';
+  const platform = headers["x-platform"] || deviceInfo.platform || "unknown";
+  const isWebPlatform = platform.toLowerCase() === "web";
 
   // For web: Use only stable characteristics (no IP, no screen resolution, no app version)
-  // For mobile: Use stable characteristics (excluding app version to prevent session invalidation on updates)
+  // For mobile: Use only STABLE characteristics to prevent session invalidation
   const fingerprintData = isWebPlatform
     ? [
-        deviceInfo.userAgent || 'unknown',
+        deviceInfo.userAgent || "unknown",
         platform,
-        deviceInfo.deviceModel || 'unknown',
-        deviceInfo.timezone || 'unknown',
-        deviceInfo.language || 'unknown',
-      ].join('|')
+        deviceInfo.deviceModel || "unknown",
+        deviceInfo.timezone || "unknown",
+        deviceInfo.language || "unknown",
+      ].join("|")
     : [
-        deviceInfo.userAgent || 'unknown',
+        // Only stable device characteristics for mobile
         platform,
-        deviceInfo.deviceModel || 'unknown',
-        // Removed appVersion to prevent session invalidation on app updates
-        deviceInfo.screenResolution || 'unknown',
-        deviceInfo.timezone || 'unknown',
-        deviceInfo.language || 'unknown',
-        headers['x-forwarded-for'] || headers['x-real-ip'] || 'unknown',
-      ].join('|');
+        deviceInfo.deviceModel || "unknown",
+        deviceInfo.timezone || "unknown",
+        // Removed: userAgent (changes with OS updates)
+        // Removed: screenResolution (changes with orientation/zoom)
+        // Removed: IP address (changes with network switching)
+        // Removed: appVersion (changes with app updates)
+      ].join("|");
 
   // Generate SHA-256 hash
-  const fingerprint = createHash('sha256')
+  const fingerprint = createHash("sha256")
     .update(fingerprintData)
-    .digest('hex');
+    .digest("hex");
 
   return `dev_${fingerprint.substring(0, 32)}`;
 }
@@ -114,15 +115,17 @@ export function generateDeviceFingerprint(
 /**
  * Extract device info from headers
  */
-export function extractDeviceInfo(headers: Record<string, string | undefined>): DeviceInfo {
+export function extractDeviceInfo(
+  headers: Record<string, string | undefined>
+): DeviceInfo {
   return {
-    userAgent: headers['user-agent'],
-    platform: headers['x-platform'], // Mobile app should send this
-    deviceModel: headers['x-device-model'],
-    appVersion: headers['x-app-version'],
-    screenResolution: headers['x-screen-resolution'],
-    timezone: headers['x-timezone'],
-    language: headers['accept-language'],
+    userAgent: headers["user-agent"],
+    platform: headers["x-platform"], // Mobile app should send this
+    deviceModel: headers["x-device-model"],
+    appVersion: headers["x-app-version"],
+    screenResolution: headers["x-screen-resolution"],
+    timezone: headers["x-timezone"],
+    language: headers["accept-language"],
   };
 }
 
@@ -143,8 +146,13 @@ export async function storeDeviceSession(
   // If there's an existing session, clean up its session lookup key
   if (existingSessionData) {
     try {
-      const existingSession: SessionInfo = JSON.parse(existingSessionData as string);
-      if (existingSession.sessionId && existingSession.sessionId !== sessionId) {
+      const existingSession: SessionInfo = JSON.parse(
+        existingSessionData as string
+      );
+      if (
+        existingSession.sessionId &&
+        existingSession.sessionId !== sessionId
+      ) {
         // Delete the old session lookup key
         const oldSessionKey = `session:${existingSession.sessionId}`;
         await redis.del(oldSessionKey);
@@ -171,10 +179,14 @@ export async function storeDeviceSession(
 
   // Also store session lookup key
   const sessionKey = `session:${sessionId}`;
-  await redis.setex(sessionKey, 30 * 24 * 60 * 60, JSON.stringify({
-    userId,
-    deviceId,
-  }));
+  await redis.setex(
+    sessionKey,
+    30 * 24 * 60 * 60,
+    JSON.stringify({
+      userId,
+      deviceId,
+    })
+  );
 }
 
 /**
@@ -255,7 +267,7 @@ export async function invalidateAllUserSessions(userId: string): Promise<void> {
           keysToDelete.push(sessionKey);
         }
       }
-    } catch (error) {
+    } catch (_error) {
       // Session corrupted, delete it anyway to be safe
       keysToDelete.push(sessionKey);
     }
@@ -264,7 +276,9 @@ export async function invalidateAllUserSessions(userId: string): Promise<void> {
   // Delete all keys at once
   if (keysToDelete.length > 0) {
     await redis.del(...keysToDelete);
-    console.warn(`[SECURITY] All sessions invalidated for user: ${userId} (${keysToDelete.length} keys deleted)`);
+    console.warn(
+      `[SECURITY] All sessions invalidated for user: ${userId} (${keysToDelete.length} keys deleted)`
+    );
   }
 }
 
@@ -312,7 +326,7 @@ export async function getUserSessions(userId: string): Promise<SessionInfo[]> {
     }
   }
 
-  return sessions.filter(s => s.isActive);
+  return sessions.filter((s) => s.isActive);
 }
 
 /**
@@ -336,7 +350,10 @@ export async function storeRefreshToken(
       if (existingData) {
         const parsed = JSON.parse(existingData as string);
         // Delete old refresh tokens for the same device
-        if (parsed.deviceId === deviceId && existingKey !== `refresh_token:${userId}:${jti}`) {
+        if (
+          parsed.deviceId === deviceId &&
+          existingKey !== `refresh_token:${userId}:${jti}`
+        ) {
           await redis.del(existingKey);
         }
       }
@@ -386,7 +403,7 @@ export async function verifyRefreshToken(
 
     return {
       valid: true,
-      sessionId: tokenData.sessionId
+      sessionId: tokenData.sessionId,
     };
   } catch {
     return { valid: false };
@@ -396,22 +413,29 @@ export async function verifyRefreshToken(
 /**
  * Remove all refresh tokens for a user
  */
-export async function removeAllUserRefreshTokens(userId: string): Promise<void> {
+export async function removeAllUserRefreshTokens(
+  userId: string
+): Promise<void> {
   const pattern = `refresh_token:${userId}:*`;
   const keys = await redis.keys(pattern);
 
   if (keys.length > 0) {
     await redis.del(...(keys as string[]));
-    console.log(`[SECURITY] Removed ${keys.length} refresh tokens for user: ${userId}`);
+    console.log(
+      `[SECURITY] Removed ${keys.length} refresh tokens for user: ${userId}`
+    );
   }
 }
 
 /**
  * Blacklist JWT by JTI
  */
-export async function blacklistJTI(jti: string, expiresIn: number): Promise<void> {
+export async function blacklistJTI(
+  jti: string,
+  expiresIn: number
+): Promise<void> {
   const key = `blacklist_jti:${jti}`;
-  await redis.setex(key, expiresIn, 'true');
+  await redis.setex(key, expiresIn, "true");
 }
 
 /**
@@ -420,5 +444,5 @@ export async function blacklistJTI(jti: string, expiresIn: number): Promise<void
 export async function isJTIBlacklisted(jti: string): Promise<boolean> {
   const key = `blacklist_jti:${jti}`;
   const result = await redis.get(key);
-  return result === 'true';
+  return result === "true";
 }
