@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { PaymentTermOption } from "@metropolitan/shared";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ActivityIndicator, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Pressable, View } from "react-native";
 
 import { ThemedText } from "@/components/ThemedText";
 import { BaseCard } from "@/components/base/BaseCard";
@@ -10,12 +10,14 @@ import { useAuth } from "@/context/AuthContext";
 import { useCheckout } from "@/context/CheckoutContext";
 import { api } from "@/core/api";
 import { useTheme } from "@/hooks/useTheme";
+import { useHaptics } from "@/hooks/useHaptics";
 
 export const PaymentTermSelector: React.FC = () => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const { user } = useAuth();
   const { state, setPaymentTermDays } = useCheckout();
+  const { withHapticFeedback } = useHaptics();
   const [availableTerms, setAvailableTerms] = useState<PaymentTermOption[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -64,38 +66,81 @@ export const PaymentTermSelector: React.FC = () => {
           <ActivityIndicator size="small" color={colors.tint} />
         </View>
       ) : (
-        <View className="flex-row flex-wrap gap-2">
+        <View className="gap-3">
           {availableTerms.map((term) => {
             const isSelected = state.paymentTermDays === term.days;
+            const isRecommended = term.days === 7;
             return (
-              <TouchableOpacity
+              <Pressable
                 key={term.days}
-                onPress={() => {
+                onPress={withHapticFeedback(() => {
                   setPaymentTermDays(term.days);
-                }}
-                className="px-4 py-2 rounded-lg border"
-                style={{
-                  backgroundColor: isSelected ? `${colors.tint}15` : colors.cardBackground,
-                  borderColor: isSelected ? colors.tint : colors.border,
-                }}
+                })}
+                style={({ pressed }) => ({
+                  opacity: pressed ? 0.7 : 1,
+                })}
               >
-                <ThemedText
-                  className="text-sm font-semibold"
+                <View
+                  className="p-4 rounded-xl border-2 flex-row items-center justify-between"
                   style={{
-                    color: isSelected ? colors.tint : colors.text,
+                    backgroundColor: isSelected
+                      ? `${colors.tint}10`
+                      : colors.cardBackground,
+                    borderColor: isSelected ? colors.tint : colors.border,
                   }}
                 >
-                  {term.label}
-                </ThemedText>
-              </TouchableOpacity>
+                  <View className="flex-row items-center flex-1">
+                    <Ionicons
+                      name={isSelected ? "radio-button-on" : "radio-button-off"}
+                      size={24}
+                      color={isSelected ? colors.tint : colors.border}
+                      style={{ marginRight: 12 }}
+                    />
+                    <View className="flex-1">
+                      <ThemedText
+                        className="text-base font-semibold"
+                        style={{
+                          color: isSelected ? colors.tint : colors.text,
+                        }}
+                      >
+                        {term.label}
+                      </ThemedText>
+                      {term.days === 0 && (
+                        <ThemedText className="text-xs opacity-60 mt-0.5">
+                          {t("checkout.payment_term.immediate_payment")}
+                        </ThemedText>
+                      )}
+                    </View>
+                  </View>
+                  {isRecommended && (
+                    <View
+                      className="px-2 py-1 rounded-md"
+                      style={{ backgroundColor: colors.success + "20" }}
+                    >
+                      <ThemedText
+                        className="text-xs font-semibold"
+                        style={{ color: colors.success }}
+                      >
+                        {t("checkout.payment_term.recommended")}
+                      </ThemedText>
+                    </View>
+                  )}
+                </View>
+              </Pressable>
             );
           })}
         </View>
       )}
 
-      {state.paymentTermDays !== null && (
-        <View className="mt-3 p-3 rounded-lg" style={{ backgroundColor: `${colors.tint}10` }}>
-          <ThemedText className="text-xs opacity-70">
+      {state.paymentTermDays !== null && state.paymentTermDays > 0 && (
+        <View className="mt-3 p-3 rounded-lg flex-row items-start" style={{ backgroundColor: `${colors.tint}08` }}>
+          <Ionicons
+            name="information-circle-outline"
+            size={18}
+            color={colors.tint}
+            style={{ marginRight: 8, marginTop: 1 }}
+          />
+          <ThemedText className="text-xs opacity-70 flex-1">
             {t("checkout.payment_term.info", { days: state.paymentTermDays })}
           </ThemedText>
         </View>

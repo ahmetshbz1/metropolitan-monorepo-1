@@ -613,7 +613,9 @@
     },
     "payment_term": {
       "title": "Payment Terms",
-      "info": "You must complete your payment within {{days}} days."
+      "info": "You must complete your payment within {{days}} days.",
+      "immediate_payment": "Immediate payment",
+      "recommended": "RECOMMENDED"
     }
   },
   "categories": {

@@ -613,7 +613,9 @@
     },
     "payment_term": {
       "title": "Ödeme Vadesi",
-      "info": "Ödemenizi {{days}} gün içinde tamamlamanız gerekmektedir."
+      "info": "Ödemenizi {{days}} gün içinde tamamlamanız gerekmektedir.",
+      "immediate_payment": "Hemen ödeme",
+      "recommended": "ÖNERİLEN"
     }
   },
   "categories": {

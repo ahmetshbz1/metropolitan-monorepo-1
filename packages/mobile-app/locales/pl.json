@@ -620,7 +620,9 @@
     },
     "payment_term": {
       "title": "Termin płatności",
-      "info": "Musisz dokonać płatności w ciągu {{days}} dni."
+      "info": "Musisz dokonać płatności w ciągu {{days}} dni.",
+      "immediate_payment": "Natychmiastowa płatność",
+      "recommended": "POLECANE"
     }
   },
   "categories": {
