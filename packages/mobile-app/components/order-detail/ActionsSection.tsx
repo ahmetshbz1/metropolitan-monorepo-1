@@ -72,24 +72,16 @@ export function ActionsSection({
       cancelText: t("general.no"),
       destructive: true,
       onConfirm: async () => {
-        console.log("[DEBUG] ActionsSection onConfirm başladı");
         try {
           if (onCancelOrder) {
-            console.log("[DEBUG] onCancelOrder prop var, çağrılıyor");
             await onCancelOrder();
           } else {
-            console.log("[DEBUG] Direkt cancelOrder çağrılıyor, orderId:", orderData.order.id);
             await cancelOrder(orderData.order.id);
-            console.log("[DEBUG] cancelOrder başarılı, toast gösteriliyor");
             showToast(t("order_detail.cancel_success_title"), "success");
-
-            console.log("[DEBUG] 300ms bekleniyor, sonra orders sayfasına replace");
             await new Promise(resolve => setTimeout(resolve, 300));
-            console.log("[DEBUG] router.replace('/(tabs)/orders') çağrılıyor");
             router.replace("/(tabs)/orders");
           }
         } catch (error: any) {
-          console.log("[DEBUG] Cancel HATA:", error);
           const errorMessage =
             error.response?.data?.message ||
             t("order_detail.cancel_error_message");

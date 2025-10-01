@@ -46,22 +46,15 @@ export const useConfirmationDialog = () => {
   }, []);
 
   const handleConfirm = useCallback(async () => {
-    console.log("[DEBUG] handleConfirm başladı");
     if (dialogState.onConfirmAction) {
-      console.log("[DEBUG] onConfirmAction var, loading true yapılıyor");
       setLoading(true);
       try {
-        console.log("[DEBUG] onConfirmAction çağrılıyor...");
         await dialogState.onConfirmAction();
-        console.log("[DEBUG] onConfirmAction başarılı, hideDialog çağrılıyor");
         hideDialog();
-        console.log("[DEBUG] hideDialog tamamlandı");
       } catch (error) {
-        console.log("[DEBUG] onConfirmAction HATA, loading false yapılıyor:", error);
         setLoading(false);
       }
     } else {
-      console.log("[DEBUG] onConfirmAction yok, direkt hideDialog");
       hideDialog();
     }
   }, [dialogState.onConfirmAction, hideDialog]);

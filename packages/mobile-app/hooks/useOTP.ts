@@ -83,9 +83,18 @@ export const useOTP = ({ onSuccess }: UseOTPProps) => {
   const handleResendCode = useCallback(async () => {
     if (phone && !isResendActive) {
       const userType = type === "b2b" ? "corporate" : "individual";
-      await sendOTP(phone, userType); // Fire-and-forget is okay here
-      setResendTimer(RESEND_TIMEOUT);
-      setIsResendActive(true);
+      const { success, message } = await sendOTP(phone, userType);
+
+      if (success) {
+        setResendTimer(RESEND_TIMEOUT);
+        setIsResendActive(true);
+        setError(false);
+        setErrorMessage("");
+      } else {
+        // Rate limit veya diğer hatalar için mesajı göster
+        setError(true);
+        setErrorMessage(message);
+      }
     }
   }, [phone, type, sendOTP, isResendActive]);
 

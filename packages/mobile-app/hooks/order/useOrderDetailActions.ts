@@ -22,13 +22,9 @@ export function useOrderDetailActions(orderId: string) {
   };
 
   const handleCancelOrder = async () => {
-    console.log("[DEBUG] handleCancelOrder başladı");
     if (!selectedOrder) {
-      console.log("[DEBUG] selectedOrder yok, çıkılıyor");
       return;
     }
-
-    console.log("[DEBUG] Dialog gösteriliyor, orderId:", selectedOrder.id);
     showDialog({
       title: t("order.cancelOrder"),
       message: t("order.cancelOrderConfirmation"),

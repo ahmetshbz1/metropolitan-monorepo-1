@@ -3,8 +3,11 @@
 //  Created by Ahmet on 01.06.2025.
 
 import { randomUUID } from "crypto";
+import { EventEmitter } from "events";
 
 import pino from "pino";
+
+EventEmitter.defaultMaxListeners = 20;
 
 // Log levels
 export type LogLevel = "trace" | "debug" | "info" | "warn" | "error" | "fatal";

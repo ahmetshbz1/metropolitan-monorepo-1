@@ -1,4 +1,7 @@
 {
+  "auth": {
+    "rate_limit": "Poczekaj {waitTime} sekund przed wysłaniem nowego kodu."
+  },
   "notifications": {
     "welcome": {
       "title": "Witamy w Metropolitan!",

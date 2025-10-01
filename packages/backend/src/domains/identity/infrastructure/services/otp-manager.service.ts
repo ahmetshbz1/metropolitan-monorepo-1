@@ -2,9 +2,16 @@
 //  metropolitan backend
 //  OTP management service with Redis storage
 
+import { getRateLimitMessage } from "../../../../shared/application/services/auth-translations";
 import { redis } from "../../../../shared/infrastructure/database/redis";
-import { generateOtpCode, sendOtpSms, getPhoneCountryCode, formatPhoneNumber } from "./sms.service";
-import { SmsAction } from "../templates/sms-templates";
+import type { SmsAction } from "../templates/sms-templates";
+
+import {
+  formatPhoneNumber,
+  generateOtpCode,
+  getPhoneCountryCode,
+  sendOtpSms,
+} from "./sms.service";
 
 // OTP configuration
 const OTP_EXPIRY_SECONDS = 60; // 1 minute (mobile app resend is 60 seconds)
@@ -12,10 +19,10 @@ const OTP_MAX_ATTEMPTS = 3;
 const OTP_RESEND_COOLDOWN = 60; // 1 minute between resends
 
 // Test credentials for Apple Review
-const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
-const ENABLE_REAL_SMS = process.env.ENABLE_REAL_SMS === 'true';
-const TEST_PHONE_NUMBER = process.env.TEST_PHONE_NUMBER || '+48123456789';
-const TEST_OTP_CODE = process.env.TEST_OTP_CODE || '555555';
+const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
+const ENABLE_REAL_SMS = process.env.ENABLE_REAL_SMS === "true";
+const TEST_PHONE_NUMBER = process.env.TEST_PHONE_NUMBER || "+48123456789";
+const TEST_OTP_CODE = process.env.TEST_OTP_CODE || "555555";
 
 interface OtpData {
   code: string;
@@ -61,10 +68,12 @@ export async function createAndSendOtp(
     if (lastSentTime) {
       const timeSinceLastSend = Date.now() - parseInt(lastSentTime as string);
       if (timeSinceLastSend < OTP_RESEND_COOLDOWN * 1000) {
-        const waitTime = Math.ceil((OTP_RESEND_COOLDOWN * 1000 - timeSinceLastSend) / 1000);
+        const waitTime = Math.ceil(
+          (OTP_RESEND_COOLDOWN * 1000 - timeSinceLastSend) / 1000
+        );
         return {
           success: false,
-          message: `Please wait ${waitTime} seconds before requesting a new code.`
+          message: getRateLimitMessage(waitTime, language),
         };
       }
     }
@@ -79,13 +88,18 @@ export async function createAndSendOtp(
       action,
       attempts: 0,
       createdAt: Date.now(),
-      phoneNumber: formattedPhone
+      phoneNumber: formattedPhone,
     };
 
-    await redis.set(otpKey, JSON.stringify(otpData), 'EX', OTP_EXPIRY_SECONDS);
+    await redis.set(otpKey, JSON.stringify(otpData), "EX", OTP_EXPIRY_SECONDS);
 
     // Set rate limit
-    await redis.set(rateLimitKey, Date.now().toString(), 'EX', OTP_RESEND_COOLDOWN);
+    await redis.set(
+      rateLimitKey,
+      Date.now().toString(),
+      "EX",
+      OTP_RESEND_COOLDOWN
+    );
 
     // Determine language based on phone country code if not provided
     const detectedLanguage = language || getPhoneCountryCode(formattedPhone);
@@ -94,18 +108,19 @@ export async function createAndSendOtp(
     await sendOtpSms(formattedPhone, otpCode, action, detectedLanguage);
 
     // Log for monitoring
-    console.log(`OTP created for ${formattedPhone}, action: ${action}, language: ${detectedLanguage}`);
+    console.log(
+      `OTP created for ${formattedPhone}, action: ${action}, language: ${detectedLanguage}`
+    );
 
     return {
       success: true,
-      message: "Verification code sent successfully."
+      message: "Verification code sent successfully.",
     };
-
   } catch (error: any) {
     console.error("Error creating OTP:", error);
     return {
       success: false,
-      message: error.message || "Failed to send verification code."
+      message: error.message || "Failed to send verification code.",
     };
   }
 }
@@ -126,12 +141,18 @@ export async function verifyOtpCode(
     const formattedPhone = formatPhoneNumber(phoneNumber);
 
     // Test mode for Apple Review - development environment only
-    if (IS_DEVELOPMENT && !ENABLE_REAL_SMS &&
-        formattedPhone === TEST_PHONE_NUMBER && providedCode === TEST_OTP_CODE) {
-      console.log(`🧪 [TEST MODE] OTP verified for test phone: ${TEST_PHONE_NUMBER}`);
+    if (
+      IS_DEVELOPMENT &&
+      !ENABLE_REAL_SMS &&
+      formattedPhone === TEST_PHONE_NUMBER &&
+      providedCode === TEST_OTP_CODE
+    ) {
+      console.log(
+        `[TEST MODE] OTP verified for test phone: ${TEST_PHONE_NUMBER}`
+      );
       return {
         success: true,
-        message: "Test OTP verified successfully."
+        message: "Test OTP verified successfully.",
       };
     }
 
@@ -142,7 +163,8 @@ export async function verifyOtpCode(
     if (!storedData) {
       return {
         success: false,
-        message: "Verification code expired or not found. Please request a new code."
+        message:
+          "Verification code expired or not found. Please request a new code.",
       };
     }
 
@@ -154,20 +176,21 @@ export async function verifyOtpCode(
       await redis.del(otpKey);
       return {
         success: false,
-        message: "Maximum verification attempts exceeded. Please request a new code."
+        message:
+          "Maximum verification attempts exceeded. Please request a new code.",
       };
     }
 
     // Increment attempts
     otpData.attempts++;
-    await redis.set(otpKey, JSON.stringify(otpData), 'EX', OTP_EXPIRY_SECONDS);
+    await redis.set(otpKey, JSON.stringify(otpData), "EX", OTP_EXPIRY_SECONDS);
 
     // Verify the code
     if (otpData.code !== providedCode) {
       const remainingAttempts = OTP_MAX_ATTEMPTS - otpData.attempts;
       return {
         success: false,
-        message: `Invalid verification code. ${remainingAttempts} attempts remaining.`
+        message: `Invalid verification code. ${remainingAttempts} attempts remaining.`,
       };
     }
 
@@ -175,18 +198,19 @@ export async function verifyOtpCode(
     await redis.del(otpKey);
     await redis.del(getOtpRateLimitKey(formattedPhone));
 
-    console.log(`OTP verified successfully for ${formattedPhone}, action: ${action}`);
+    console.log(
+      `OTP verified successfully for ${formattedPhone}, action: ${action}`
+    );
 
     return {
       success: true,
-      message: "Verification successful."
+      message: "Verification successful.",
     };
-
   } catch (error: any) {
     console.error("Error verifying OTP:", error);
     return {
       success: false,
-      message: "Verification failed. Please try again."
+      message: "Verification failed. Please try again.",
     };
   }
 }
@@ -194,7 +218,10 @@ export async function verifyOtpCode(
 /**
  * Clear OTP for a phone number (used after successful operations)
  */
-export async function clearOtp(phoneNumber: string, action: SmsAction): Promise<void> {
+export async function clearOtp(
+  phoneNumber: string,
+  action: SmsAction
+): Promise<void> {
   const formattedPhone = formatPhoneNumber(phoneNumber);
   const otpKey = getOtpKey(formattedPhone, action);
   await redis.del(otpKey);
@@ -203,7 +230,10 @@ export async function clearOtp(phoneNumber: string, action: SmsAction): Promise<
 /**
  * Check if OTP exists for a phone number
  */
-export async function otpExists(phoneNumber: string, action: SmsAction): Promise<boolean> {
+export async function otpExists(
+  phoneNumber: string,
+  action: SmsAction
+): Promise<boolean> {
   const formattedPhone = formatPhoneNumber(phoneNumber);
   const otpKey = getOtpKey(formattedPhone, action);
   const exists = await redis.exists(otpKey);
@@ -213,9 +243,14 @@ export async function otpExists(phoneNumber: string, action: SmsAction): Promise
 /**
  * Get OTP details (for debugging/admin purposes only)
  */
-export async function getOtpDetails(phoneNumber: string, action: SmsAction): Promise<OtpData | null> {
+export async function getOtpDetails(
+  phoneNumber: string,
+  action: SmsAction
+): Promise<OtpData | null> {
   // This function is only for emergency debugging
-  console.warn("WARNING: getOtpDetails called - this should only be used for emergency debugging");
+  console.warn(
+    "WARNING: getOtpDetails called - this should only be used for emergency debugging"
+  );
 
   const formattedPhone = formatPhoneNumber(phoneNumber);
   const otpKey = getOtpKey(formattedPhone, action);

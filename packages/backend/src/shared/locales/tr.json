@@ -1,4 +1,7 @@
 {
+  "auth": {
+    "rate_limit": "Yeni kod istemek için lütfen {waitTime} saniye bekleyin."
+  },
   "notifications": {
     "welcome": {
       "title": "Metropolitan'e Hoş Geldiniz!",

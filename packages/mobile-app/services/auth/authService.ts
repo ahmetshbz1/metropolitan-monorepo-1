@@ -3,6 +3,7 @@
 //  Created by Ahmet on 27.07.2025.
 
 import { api } from "@/core/api";
+import i18n from "@/core/i18n";
 
 // OTP gönder
 export const sendOTP = async (
@@ -13,10 +14,13 @@ export const sendOTP = async (
     const response = await api.post("/auth/send-otp", {
       phoneNumber,
       userType,
+      language: i18n.language || "tr", // Send user's language preference
     });
     return { success: true, message: response.data.message };
   } catch (e: any) {
-    return { success: false, message: e.response?.data?.error || e.message };
+    // Backend returns { message: "..." } for rate limit errors
+    const errorMessage = e.response?.data?.message || e.response?.data?.error || e.message || "Bir hata oluştu";
+    return { success: false, message: errorMessage };
   }
 };
 

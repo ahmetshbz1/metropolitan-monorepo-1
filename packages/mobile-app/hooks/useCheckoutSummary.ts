@@ -101,15 +101,8 @@ export function useCheckoutSummary() {
 
         await clearCart();
         resetCheckout();
-
-        console.log("[DEBUG] Sipariş başarılı (Stripe), orderId:", order.id);
-
-        // Checkout stack'ini tamamen temizle - orders sayfasına git
         router.replace("/(tabs)/orders");
-
-        // Kısa bir gecikme sonra sipariş detay sayfasına git
         setTimeout(() => {
-          console.log("[DEBUG] Sipariş detay sayfasına yönlendiriliyor...");
           router.push(`/order/${order.id}`);
         }, 300);
       }
@@ -132,15 +125,8 @@ export function useCheckoutSummary() {
           const orderId = orderData.order.id;
           await clearCart();
           resetCheckout();
-
-          console.log("[DEBUG] Sipariş başarılı (Bank Transfer), orderId:", orderId);
-
-          // Checkout stack'ini tamamen temizle - orders sayfasına git
           router.replace("/(tabs)/orders");
-
-          // Kısa bir gecikme sonra sipariş detay sayfasına git
           setTimeout(() => {
-            console.log("[DEBUG] Sipariş detay sayfasına yönlendiriliyor...");
             router.push(`/order/${orderId}`);
           }, 300);
         } else {

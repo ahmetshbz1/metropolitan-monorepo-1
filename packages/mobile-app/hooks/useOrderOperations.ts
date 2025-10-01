@@ -52,21 +52,15 @@ export const useOrderOperations = ({
 
   const cancelOrder = useCallback(
     async (orderId: string) => {
-      console.log("[DEBUG] cancelOrder başladı, orderId:", orderId);
       setLoading(true);
       setError(null);
       try {
-        console.log("[DEBUG] API DELETE çağrılıyor...");
         await api.delete(`/orders/${orderId}`);
-        console.log("[DEBUG] API DELETE başarılı, fetchOrders(true) çağrılıyor (force refresh)...");
-        await fetchOrders(true); // ✅ Force refresh - cache bypass
-        console.log("[DEBUG] fetchOrders tamamlandı");
+        await fetchOrders(true); // Force refresh - cache bypass
       } catch (err: any) {
-        console.log("[DEBUG] cancelOrder HATA:", err);
         setError(err.response?.data || err);
         throw err;
       } finally {
-        console.log("[DEBUG] cancelOrder finally, setLoading(false)");
         setLoading(false);
       }
     },
