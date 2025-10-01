@@ -31,7 +31,8 @@
       "infoPlist": {
         "LSApplicationCategoryType": "public.app-category.food-and-drink",
         "CFBundleAllowMixedLocalizations": true,
-        "CFBundleLocalizations": ["tr", "en", "pl"]
+        "CFBundleLocalizations": ["tr", "en", "pl"],
+        "ITSAppUsesNonExemptEncryption": false
       },
       "appleTeamId": "64XKK46655",
       "entitlements": {
