@@ -19,7 +19,7 @@
       "en": "./locales/native/en.json"
     },
     "ios": {
-      "supportsTablet": false,
+      "supportsTablet": true,
       "bundleIdentifier": "com.metropolitan.food",
       "buildNumber": "25",
       "deploymentTarget": "18.0",
