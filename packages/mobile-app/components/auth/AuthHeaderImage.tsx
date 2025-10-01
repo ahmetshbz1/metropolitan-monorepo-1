@@ -3,14 +3,20 @@
 //  Created by Ahmet on 27.07.2025.
 
 import React from "react";
-import { Dimensions, View } from "react-native";
+import { useWindowDimensions, View } from "react-native";
 import Svg, { ClipPath, Defs, Image, Path } from "react-native-svg";
 
-const { width } = Dimensions.get("window");
-const imageHeight = width * 1;
-const curveHeight = 20;
+type ClipPathProps = {
+  width: number;
+  imageHeight: number;
+  curveHeight: number;
+};
 
-const CustomClipPath = () => (
+const CustomClipPath: React.FC<ClipPathProps> = ({
+  width,
+  imageHeight,
+  curveHeight,
+}) => (
   <Defs>
     <ClipPath id="clip">
       <Path
@@ -23,10 +29,20 @@ const CustomClipPath = () => (
 );
 
 export const AuthHeaderImage: React.FC = () => {
+  const { width } = useWindowDimensions();
+
+  const isTablet = width >= 768;
+  const imageHeight = isTablet ? Math.min(width * 0.9, 550) : width;
+  const curveHeight = Math.min(32, imageHeight * 0.2);
+
   return (
     <View style={{ height: imageHeight }} className="w-full">
       <Svg width={width} height={imageHeight}>
-        <CustomClipPath />
+        <CustomClipPath
+          width={width}
+          imageHeight={imageHeight}
+          curveHeight={curveHeight}
+        />
         <Image
           href={require("@/assets/images/yayla.webp")}
           width="100%"
