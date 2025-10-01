@@ -49,11 +49,18 @@ export function ActionsSection({
   };
 
   const handleRepeatOrder = async () => {
-    orderData.items.forEach((item: OrderItem) => {
-      addToCart(item.product.id, item.quantity);
-    });
-    triggerHaptic();
-    router.push("/(tabs)/cart");
+    try {
+      triggerHaptic();
+
+      for (const item of orderData.items) {
+        await addToCart(item.product.id, item.quantity);
+      }
+
+      router.push("/(tabs)/cart");
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || t("general.error_occurred");
+      showToast(errorMessage, "error");
+    }
   };
 
   const handleCancel = () => {

@@ -12,12 +12,14 @@ import { useOTP } from "@/hooks/useOTP";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
+import { View, Dimensions } from "react-native";
 import {
   KeyboardAwareScrollView,
   KeyboardStickyView,
 } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+const SCREEN_HEIGHT = Dimensions.get('window').height;
 
 const OTPScreen = () => {
   const router = useRouter();
@@ -53,14 +55,14 @@ const OTPScreen = () => {
       <AuthProgressIndicator currentStep={2} />
       <KeyboardAwareScrollView
         contentContainerStyle={{
-          flexGrow: 1,
-          paddingHorizontal: 20
+          paddingHorizontal: 20,
+          paddingBottom: 40
         }}
         keyboardShouldPersistTaps="always"
-        disableScrollOnKeyboardHide
-        // @ts-ignore
-        enableAutomaticScroll={false}
-        scrollEnabled={false}
+        showsVerticalScrollIndicator={false}
+        enableOnAndroid={true}
+        enableAutomaticScroll={true}
+        extraScrollHeight={40}
       >
         <OTPScreenContent
           phone={phone}

@@ -55,23 +55,22 @@ const PhoneLoginScreen = () => {
       <AuthProgressIndicator currentStep={1} />
       <KeyboardAwareScrollView
         contentContainerStyle={{
-          flexGrow: 1,
-          paddingHorizontal: 20
+          paddingHorizontal: 20,
+          paddingBottom: 40
         }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="always"
-        disableScrollOnKeyboardHide
-        // @ts-ignore – prop provided by KeyboardAwareScrollView but missing in types
-        enableAutomaticScroll={false}
-        scrollEnabled={false}
+        enableOnAndroid={true}
+        enableAutomaticScroll={true}
+        extraScrollHeight={40}
       >
         <AuthHeader
           title={t("phone_login.header_title")}
           subtitle={t("phone_login.info_text")}
-          style={{ paddingVertical: PHONE_LOGIN_LAYOUT.headerPadding }}
+          style={{ paddingTop: 20, paddingBottom: 24 }}
           minimal
         />
-        <View className="flex-1 justify-center">
+        <View style={{ paddingTop: 60 }}>
           <PhoneInput
             ref={phoneInputRef}
             phoneNumber={phoneNumber}

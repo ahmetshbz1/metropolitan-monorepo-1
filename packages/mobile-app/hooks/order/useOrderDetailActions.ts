@@ -2,17 +2,18 @@
 //  metropolitan app
 //  Created by Ahmet on 27.07.2025.
 
-import { useRouter } from "expo-router";
-import { useTranslation } from "react-i18next";
 import { useOrders } from "@/context/OrderContext";
 import { useConfirmationDialog } from "@/hooks/useConfirmationDialog";
 import { useToast } from "@/hooks/useToast";
+import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 export function useOrderDetailActions(orderId: string) {
   const router = useRouter();
   const { t } = useTranslation();
   const { cancelOrder, selectedOrder } = useOrders();
-  const { dialogState, showDialog, hideDialog, handleConfirm } = useConfirmationDialog();
+  const { dialogState, showDialog, hideDialog, handleConfirm } =
+    useConfirmationDialog();
   const { showToast } = useToast();
 
   const downloadInvoice = () => {
@@ -32,7 +33,8 @@ export function useOrderDetailActions(orderId: string) {
       destructive: true,
       onConfirm: async () => {
         try {
-          await cancelOrder(selectedOrder.order.id);
+          await cancelOrder(selectedOrder.id);
+          hideDialog();
           router.back();
         } catch {
           showToast(t("order.cancelOrderError"), "error");

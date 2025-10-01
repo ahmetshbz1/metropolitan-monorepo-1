@@ -70,7 +70,6 @@ const UserInfoScreen = () => {
   // Memoized keyboard configuration for stability
   const keyboardConfig = useMemo(
     () => ({
-      style: { flex: 1 },
       keyboardShouldPersistTaps: "handled" as const,
       showsVerticalScrollIndicator: false,
       contentContainerStyle: {
@@ -78,11 +77,11 @@ const UserInfoScreen = () => {
         paddingTop: 20,
         paddingBottom: 20,
       },
-      // Stable scroll configuration
-      bottomOffset: 320, // Footer + space for NIP + CompanyDataCard + Terms visibility
-      extraKeyboardSpace: 0, // No extra space to prevent jumpy scroll
       enableOnAndroid: true,
-      enableResetScrollToCoords: false, // Prevent automatic scroll reset
+      enableAutomaticScroll: true,
+      extraScrollHeight: 40,
+      enableResetScrollToCoords: true,
+      resetScrollToCoords: { x: 0, y: 0 },
     }),
     []
   );

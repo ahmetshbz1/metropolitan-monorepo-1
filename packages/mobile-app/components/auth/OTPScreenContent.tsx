@@ -41,15 +41,15 @@ export const OTPScreenContent: React.FC<OTPScreenContentProps> = ({
   const themeColors = Colors[colorScheme];
 
   return (
-    <>
+    <View className="flex-1">
       <AuthHeader
         title={t("otp.title")}
         subtitle={`${t("otp.subtitle_part1")} ${phone} ${t("otp.subtitle_part2")}`}
-        style={{ paddingVertical: 16 }}
+        style={{ paddingTop: 20, paddingBottom: 24 }}
         minimal
       />
 
-      <View className="flex-1 justify-center px-6 pt-4">
+      <View className="px-6" style={{ paddingTop: 60 }}>
         <OTPInput
           code={code}
           setCode={setCode}
@@ -92,6 +92,6 @@ export const OTPScreenContent: React.FC<OTPScreenContentProps> = ({
           </Text>
         </TouchableOpacity>
       </View>
-    </>
+    </View>
   );
 };
