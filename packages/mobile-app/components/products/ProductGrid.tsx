@@ -14,6 +14,7 @@ import {
   ListRenderItem,
   RefreshControl,
   useWindowDimensions,
+  View,
 } from "react-native";
 
 import Colors from "@/constants/Colors";
@@ -27,6 +28,10 @@ interface ProductGridProps {
   onRefresh?: () => void;
   refreshing?: boolean;
   contentContainerStyle?: object;
+  horizontal?: boolean;
+  scrollEnabled?: boolean;
+  cardWidth?: number;
+  replaceNavigation?: boolean;
 }
 
 export interface ProductGridRef {
@@ -41,6 +46,10 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
       onRefresh,
       refreshing,
       contentContainerStyle,
+      horizontal = false,
+      scrollEnabled = true,
+      cardWidth,
+      replaceNavigation = false,
     },
     ref
   ) {
@@ -54,9 +63,22 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
     const flatListRef = useRef<FlatList>(null);
     const { width } = useWindowDimensions();
     const isTablet = width >= 768;
-    const numColumns = isTablet ? 4 : 3;
-    const gap = isTablet ? 10 : 5;
-    const horizontalPadding = isTablet ? 12 : 6;
+
+    // Horizontal scroll için card width, vertical için numColumns
+    const numColumns = horizontal ? undefined : (isTablet ? 4 : 3);
+    const gap = horizontal ? (isTablet ? 10 : 6) : (isTablet ? 10 : 5);
+    const horizontalPadding = horizontal ? (isTablet ? 12 : 10) : (isTablet ? 12 : 6);
+
+    // Kart genişliği hesaplama - hem horizontal hem vertical için
+    const calculateCardWidth = () => {
+      if (cardWidth) return cardWidth; // Prop olarak gelirse onu kullan
+      if (horizontal) return isTablet ? 180 : 110; // Yatay scroll
+      // Dikey grid için hesapla
+      const cols = numColumns || 3;
+      return (width - (horizontalPadding * 2) - (gap * (cols - 1))) / cols;
+    };
+
+    const finalCardWidth = calculateCardWidth();
 
     useImperativeHandle(ref, () => ({
       scrollToTop: () => {
@@ -70,9 +92,11 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
 
     const renderItem: ListRenderItem<Product> = useCallback(
       ({ item }) => (
-        <ProductCard product={item} />
+        <View style={{ width: finalCardWidth }}>
+          <ProductCard product={item} replaceNavigation={replaceNavigation} />
+        </View>
       ),
-      []
+      [finalCardWidth, replaceNavigation]
     );
 
     const renderFooter = useCallback(() => {
@@ -90,19 +114,21 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
         data={products}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        key={`product-grid-${numColumns}`}
-        numColumns={numColumns}
+        key={horizontal ? 'horizontal-list' : `product-grid-${numColumns}`}
+        horizontal={horizontal}
+        numColumns={horizontal ? undefined : numColumns}
+        scrollEnabled={scrollEnabled}
         contentContainerStyle={[
-          { paddingHorizontal: horizontalPadding, paddingVertical: 8, gap },
+          { paddingHorizontal: horizontalPadding, paddingVertical: horizontal ? 0 : 8, gap },
           contentContainerStyle,
         ]}
-        columnWrapperStyle={{ gap }}
+        columnWrapperStyle={horizontal ? undefined : { gap }}
         onEndReached={onEndReached}
         onEndReachedThreshold={0.5}
         ListHeaderComponent={ListHeaderComponent}
         ListFooterComponent={renderFooter}
         refreshControl={
-          onRefresh && refreshing !== undefined ? (
+          onRefresh && refreshing !== undefined && !horizontal ? (
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
@@ -112,11 +138,12 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
         }
         // Basic performance optimizations - sadece temel olanlar
         removeClippedSubviews={true}
-        maxToRenderPerBatch={10}
-        windowSize={10}
-        initialNumToRender={numColumns * 3}
-        updateCellsBatchingPeriod={100}
+        maxToRenderPerBatch={horizontal ? 8 : 10}
+        windowSize={horizontal ? 5 : 10}
+        initialNumToRender={horizontal ? 8 : (numColumns ? numColumns * 3 : 9)}
+        updateCellsBatchingPeriod={horizontal ? 50 : 100}
         showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       />
     );
   }

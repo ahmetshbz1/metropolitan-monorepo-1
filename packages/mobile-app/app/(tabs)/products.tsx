@@ -3,11 +3,11 @@
 //  Created by Ahmet on 16.06.2025.
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { View, FlatList, RefreshControl, ActivityIndicator } from "react-native";
+import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 
 import { CategoryFilter } from "@/components/products/CategoryFilter";
-import { ProductCard } from "@/components/products/ProductCard";
+import { ProductGrid, ProductGridRef } from "@/components/products/ProductGrid";
 import { ProductGridSkeleton } from "@/components/products/ProductGridSkeleton";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useProducts, type Product } from "@/context/ProductContext";
@@ -46,7 +46,7 @@ export default function ProductsScreen() {
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
 
-  const flatListRef = useRef<FlatList>(null);
+  const gridRef = useRef<ProductGridRef>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [categoryProducts, setCategoryProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -99,7 +99,7 @@ export default function ProductsScreen() {
 
   useEffect(() => {
     const scrollToTop = () => {
-      flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+      gridRef.current?.scrollToTop();
     };
     registerScrollHandler("products", scrollToTop);
     return () => unregisterScrollHandler("products");
@@ -126,12 +126,6 @@ export default function ProductsScreen() {
     });
   }, [allProducts, categoryProducts, selectedCategory, searchQuery]);
 
-  const renderItem = useCallback(
-    ({ item }: { item: Product }) => <ProductCard product={item} />,
-    []
-  );
-
-  const keyExtractor = useCallback((item: Product) => item.id, []);
 
   const ListHeaderComponent = useMemo(
     () => (
@@ -144,11 +138,6 @@ export default function ProductsScreen() {
     ),
     [categories, selectedCategory, handleCategoryPress, isLoading]
   );
-
-  const ListFooterComponent = useMemo(() => {
-    if (!isLoading) return null;
-    return <ActivityIndicator style={{ marginVertical: 20 }} color={colors.tint} />;
-  }, [isLoading, colors.tint]);
 
   if (error && displayProducts.length === 0) {
     return (
@@ -164,29 +153,13 @@ export default function ProductsScreen() {
 
   return (
     <View className="flex-1">
-      <FlatList
-        ref={flatListRef}
-        data={displayProducts}
-        renderItem={renderItem}
-        keyExtractor={keyExtractor}
-        numColumns={3}
-        contentContainerStyle={{
-          paddingHorizontal: 12,
-          paddingVertical: 8,
-          paddingBottom,
-          gap: 8,
-        }}
-        columnWrapperStyle={{ gap: 8 }}
+      <ProductGrid
+        ref={gridRef}
+        products={displayProducts}
         ListHeaderComponent={ListHeaderComponent}
-        ListFooterComponent={ListFooterComponent}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefreshing}
-            onRefresh={handleRefresh}
-            tintColor={colors.tint}
-          />
-        }
-        showsVerticalScrollIndicator={false}
+        onRefresh={handleRefresh}
+        refreshing={isRefreshing}
+        contentContainerStyle={{ paddingBottom }}
       />
     </View>
   );

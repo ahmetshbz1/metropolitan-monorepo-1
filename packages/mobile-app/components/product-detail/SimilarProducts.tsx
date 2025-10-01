@@ -3,10 +3,10 @@
 //  Created by Ahmet on 22.09.2025.
 
 import React, { memo, useMemo, useCallback } from "react";
-import { View, FlatList, Text, TouchableOpacity, useWindowDimensions } from "react-native";
+import { View, TouchableOpacity, useWindowDimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useProducts } from "@/context/ProductContext";
-import { ProductCard } from "@/components/products/ProductCard";
+import { ProductGrid } from "@/components/products/ProductGrid";
 import { ThemedText } from "@/components/ThemedText";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
@@ -26,7 +26,6 @@ export const SimilarProducts = memo<SimilarProductsProps>(function SimilarProduc
   const { width } = useWindowDimensions();
   const isTablet = width >= 768;
   const horizontalPadding = isTablet ? 12 : 10;
-  const gap = isTablet ? 10 : 6;
   const cardWidth = isTablet ? 180 : 110;
 
   // Benzer ürünleri daha akıllıca filtreleme - multiple dependency memoization
@@ -48,13 +47,6 @@ export const SimilarProducts = memo<SimilarProductsProps>(function SimilarProduc
   if (similarProducts.length === 0) {
     return null;
   }
-
-  // Render function'ı cache'le - replace navigation kullan
-  const renderItem = useCallback(({ item }: { item: Product }) => (
-    <View style={{ width: cardWidth }}>
-      <ProductCard product={item} replaceNavigation={true} />
-    </View>
-  ), [cardWidth]);
 
   // Navigation işlemini optimize et
   const handleViewAll = useCallback(() => {
@@ -84,21 +76,12 @@ export const SimilarProducts = memo<SimilarProductsProps>(function SimilarProduc
           <Ionicons name="chevron-forward" size={16} color="#9E9E9E" />
         </TouchableOpacity>
       </View>
-      <FlatList
-        data={similarProducts}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+      <ProductGrid
+        products={similarProducts}
         horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingHorizontal: horizontalPadding,
-          gap,
-        }}
-        // Performance optimizations
-        removeClippedSubviews={true}
-        maxToRenderPerBatch={8}
-        updateCellsBatchingPeriod={50}
-        initialNumToRender={8}
+        scrollEnabled={true}
+        cardWidth={cardWidth}
+        replaceNavigation={true}
       />
     </View>
   );

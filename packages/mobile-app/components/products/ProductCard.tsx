@@ -132,7 +132,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
   ];
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, width: '100%' }}>
       <ContextMenu
         actions={contextMenuActions}
         onPress={(e) => {
