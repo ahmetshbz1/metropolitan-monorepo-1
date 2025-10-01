@@ -52,15 +52,21 @@ export const useOrderOperations = ({
 
   const cancelOrder = useCallback(
     async (orderId: string) => {
+      console.log("[DEBUG] cancelOrder başladı, orderId:", orderId);
       setLoading(true);
       setError(null);
       try {
+        console.log("[DEBUG] API DELETE çağrılıyor...");
         await api.delete(`/orders/${orderId}`);
+        console.log("[DEBUG] API DELETE başarılı, fetchOrders çağrılıyor...");
         await fetchOrders(); // Refresh the orders list
+        console.log("[DEBUG] fetchOrders tamamlandı");
       } catch (err: any) {
+        console.log("[DEBUG] cancelOrder HATA:", err);
         setError(err.response?.data || err);
         throw err;
       } finally {
+        console.log("[DEBUG] cancelOrder finally, setLoading(false)");
         setLoading(false);
       }
     },

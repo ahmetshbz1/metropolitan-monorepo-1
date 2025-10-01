@@ -101,12 +101,17 @@ export function useCheckoutSummary() {
 
         await clearCart();
         resetCheckout();
-        
-        // Direkt sipariş detay sayfasına yönlendir
-        router.replace({
-          pathname: "/order/[id]",
-          params: { id: order.id }
-        });
+
+        console.log("[DEBUG] Sipariş başarılı (Stripe), orderId:", order.id);
+
+        // Checkout stack'ini tamamen temizle - orders sayfasına git
+        router.replace("/(tabs)/orders");
+
+        // Kısa bir gecikme sonra sipariş detay sayfasına git
+        setTimeout(() => {
+          console.log("[DEBUG] Sipariş detay sayfasına yönlendiriliyor...");
+          router.push(`/order/${order.id}`);
+        }, 300);
       }
       // Bank transfer flow (existing logic)
       else if (isBankTransfer) {
@@ -127,12 +132,17 @@ export function useCheckoutSummary() {
           const orderId = orderData.order.id;
           await clearCart();
           resetCheckout();
-          
-          // Direkt sipariş detay sayfasına yönlendir
-          router.replace({
-            pathname: "/order/[id]",
-            params: { id: orderId },
-          });
+
+          console.log("[DEBUG] Sipariş başarılı (Bank Transfer), orderId:", orderId);
+
+          // Checkout stack'ini tamamen temizle - orders sayfasına git
+          router.replace("/(tabs)/orders");
+
+          // Kısa bir gecikme sonra sipariş detay sayfasına git
+          setTimeout(() => {
+            console.log("[DEBUG] Sipariş detay sayfasına yönlendiriliyor...");
+            router.push(`/order/${orderId}`);
+          }, 300);
         } else {
           // Removed console statement
           throw new Error(t("checkout.order_creation_failed"));

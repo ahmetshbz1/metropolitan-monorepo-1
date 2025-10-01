@@ -80,8 +80,12 @@ export function ActionsSection({
           } else {
             console.log("[DEBUG] Direkt cancelOrder çağrılıyor, orderId:", orderData.order.id);
             await cancelOrder(orderData.order.id);
-            console.log("[DEBUG] cancelOrder başarılı, router.back()");
+            console.log("[DEBUG] cancelOrder başarılı, toast gösteriliyor");
             showToast(t("order_detail.cancel_success_title"), "success");
+
+            console.log("[DEBUG] 300ms bekleniyor, sonra router.back()");
+            await new Promise(resolve => setTimeout(resolve, 300));
+            console.log("[DEBUG] router.back() çağrılıyor");
             router.back();
           }
         } catch (error: any) {
