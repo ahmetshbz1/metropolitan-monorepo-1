@@ -1,0 +1,66 @@
+{
+  "notifications": {
+    "welcome": {
+      "title": "Witamy w Metropolitan!",
+      "body": "Powiadomienia push zostały pomyślnie aktywowane."
+    },
+    "test": {
+      "title": "Powiadomienie Testowe",
+      "body": "To jest powiadomienie testowe. System działa poprawnie!"
+    },
+    "order_placed": {
+      "title": "Zamówienie Złożone",
+      "body": "Twoje zamówienie zostało pomyślnie utworzone i jest przetwarzane."
+    },
+    "order_confirmed": {
+      "title": "Zamówienie Potwierdzone",
+      "body": "Twoje zamówienie zostało potwierdzone i jest przygotowywane.",
+      "body_with_order": "Zamówienie {orderNumber} zostało potwierdzone i jest przygotowywane."
+    },
+    "order_preparing": {
+      "title": "Zamówienie w Przygotowaniu",
+      "body": "Twoje zamówienie jest przygotowywane.",
+      "body_with_order": "Zamówienie {orderNumber} jest przygotowywane."
+    },
+    "order_shipped": {
+      "title": "Zamówienie Wysłane",
+      "body": "Twoje zamówienie zostało wysłane. Możesz sprawdzić kod śledzenia.",
+      "body_with_order": "Zamówienie {orderNumber} zostało wysłane. Możesz sprawdzić kod śledzenia."
+    },
+    "order_out_for_delivery": {
+      "title": "W Dostawie",
+      "body": "Twoje zamówienie zostanie dostarczone dzisiaj.",
+      "body_with_order": "Zamówienie {orderNumber} zostanie dostarczone dzisiaj."
+    },
+    "order_delivered": {
+      "title": "Zamówienie Dostarczone",
+      "body": "Twoje zamówienie zostało pomyślnie dostarczone. Smacznego!",
+      "body_with_order": "Zamówienie {orderNumber} zostało pomyślnie dostarczone. Smacznego!"
+    },
+    "order_cancelled": {
+      "title": "Zamówienie Anulowane",
+      "body": "Twoje zamówienie zostało anulowane.",
+      "body_with_order": "Zamówienie {orderNumber} zostało anulowane."
+    },
+    "order_refunded": {
+      "title": "Zamówienie Zwrócone",
+      "body": "Zwrot płatności został przetworzony dla Twojego zamówienia.",
+      "body_with_order": "Zwrot płatności został przetworzony dla zamówienia {orderNumber}."
+    },
+    "payment_success": {
+      "title": "Płatność Pomyślna",
+      "body": "Twoja płatność została pomyślnie otrzymana.",
+      "body_with_order": "Płatność otrzymana za zamówienie {orderNumber}. Twoje zamówienie jest przygotowywane."
+    },
+    "payment_failed": {
+      "title": "Płatność Nieudana",
+      "body": "Wystąpił błąd podczas przetwarzania płatności.",
+      "body_with_order": "Płatność za zamówienie {orderNumber} nie powiodła się. Spróbuj ponownie."
+    },
+    "payment_cancelled": {
+      "title": "Płatność Anulowana",
+      "body": "Płatność za Twoje zamówienie została anulowana.",
+      "body_with_order": "Płatność za zamówienie {orderNumber} została anulowana."
+    }
+  }
+}

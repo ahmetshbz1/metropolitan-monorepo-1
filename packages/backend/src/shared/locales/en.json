@@ -1,0 +1,66 @@
+{
+  "notifications": {
+    "welcome": {
+      "title": "Welcome to Metropolitan!",
+      "body": "Push notifications have been successfully activated."
+    },
+    "test": {
+      "title": "Test Notification",
+      "body": "This is a test notification. The system is working properly!"
+    },
+    "order_placed": {
+      "title": "Order Placed",
+      "body": "Your order has been successfully created and is being processed."
+    },
+    "order_confirmed": {
+      "title": "Order Confirmed",
+      "body": "Your order has been confirmed and is being prepared.",
+      "body_with_order": "Order {orderNumber} has been confirmed and is being prepared."
+    },
+    "order_preparing": {
+      "title": "Order Being Prepared",
+      "body": "Your order is being prepared.",
+      "body_with_order": "Order {orderNumber} is being prepared."
+    },
+    "order_shipped": {
+      "title": "Order Shipped",
+      "body": "Your order has been shipped. You can check your tracking code.",
+      "body_with_order": "Order {orderNumber} has been shipped. You can check your tracking code."
+    },
+    "order_out_for_delivery": {
+      "title": "Out for Delivery",
+      "body": "Your order will be delivered today.",
+      "body_with_order": "Order {orderNumber} will be delivered today."
+    },
+    "order_delivered": {
+      "title": "Order Delivered",
+      "body": "Your order has been successfully delivered. Enjoy!",
+      "body_with_order": "Order {orderNumber} has been successfully delivered. Enjoy!"
+    },
+    "order_cancelled": {
+      "title": "Order Cancelled",
+      "body": "Your order has been cancelled.",
+      "body_with_order": "Order {orderNumber} has been cancelled."
+    },
+    "order_refunded": {
+      "title": "Order Refunded",
+      "body": "Payment refund has been processed for your order.",
+      "body_with_order": "Payment refund has been processed for order {orderNumber}."
+    },
+    "payment_success": {
+      "title": "Payment Successful",
+      "body": "Your payment has been successfully received.",
+      "body_with_order": "Payment received for order {orderNumber}. Your order is being prepared."
+    },
+    "payment_failed": {
+      "title": "Payment Failed",
+      "body": "An error occurred while processing your payment.",
+      "body_with_order": "Payment for order {orderNumber} failed. Please try again."
+    },
+    "payment_cancelled": {
+      "title": "Payment Cancelled",
+      "body": "Payment for your order has been cancelled.",
+      "body_with_order": "Payment for order {orderNumber} was cancelled."
+    }
+  }
+}

@@ -15,6 +15,7 @@ import {
   users,
 } from "../../../../shared/infrastructure/database/schema";
 import { PushNotificationService } from "../../../../shared/application/services/push-notification.service";
+import { getOrderStatusNotificationWithNumber } from "../../../../shared/application/services/notification-translations";
 
 export class OrderTrackingService {
   /**
@@ -246,10 +247,12 @@ export class OrderTrackingService {
     }
 
     // Push notification gönder
-    const notificationData = this.getNotificationData(newStatus, updatedOrder.orderNumber);
-    if (notificationData) {
+    const shouldSendNotification = this.shouldSendNotification(newStatus);
+    if (shouldSendNotification) {
+      const notificationTranslations = this.getNotificationTranslations(newStatus, updatedOrder.orderNumber);
+
       await PushNotificationService.sendToUser(updatedOrder.userId, {
-        ...notificationData,
+        customTranslations: notificationTranslations,
         data: {
           screen: `/order/${orderId}`,
           orderId: orderId,
@@ -264,123 +267,67 @@ export class OrderTrackingService {
   }
 
   /**
-   * Sipariş durumuna göre bildirim metni döndürür
+   * Sipariş durumuna göre bildirim gönderilip gönderilmeyeceğini kontrol eder
    */
-  private static getNotificationData(status: string, orderNumber: string) {
-    const statusMap: Record<string, { tr: string; en: string; pl: string }> = {
-      confirmed: {
-        tr: `${orderNumber} numaralı siparişiniz onaylandı ve hazırlanıyor.`,
-        en: `Order ${orderNumber} has been confirmed and is being prepared.`,
-        pl: `Zamówienie ${orderNumber} zostało potwierdzone i jest przygotowywane.`,
-      },
-      preparing: {
-        tr: `${orderNumber} numaralı siparişiniz hazırlanıyor.`,
-        en: `Order ${orderNumber} is being prepared.`,
-        pl: `Zamówienie ${orderNumber} jest przygotowywane.`,
-      },
-      shipped: {
-        tr: `${orderNumber} numaralı siparişiniz kargoya verildi. Takip kodunuzu kontrol edebilirsiniz.`,
-        en: `Order ${orderNumber} has been shipped. You can check your tracking code.`,
-        pl: `Zamówienie ${orderNumber} zostało wysłane. Możesz sprawdzić kod śledzenia.`,
-      },
-      out_for_delivery: {
-        tr: `${orderNumber} numaralı siparişiniz bugün teslim edilecek.`,
-        en: `Order ${orderNumber} will be delivered today.`,
-        pl: `Zamówienie ${orderNumber} zostanie dostarczone dzisiaj.`,
-      },
-      delivered: {
-        tr: `${orderNumber} numaralı siparişiniz başarıyla teslim edildi. Afiyet olsun!`,
-        en: `Order ${orderNumber} has been successfully delivered. Enjoy!`,
-        pl: `Zamówienie ${orderNumber} zostało pomyślnie dostarczone. Smacznego!`,
-      },
-      cancelled: {
-        tr: `${orderNumber} numaralı siparişiniz iptal edildi.`,
-        en: `Order ${orderNumber} has been cancelled.`,
-        pl: `Zamówienie ${orderNumber} zostało anulowane.`,
-      },
-      refunded: {
-        tr: `${orderNumber} numaralı siparişiniz için ödeme iadesi yapıldı.`,
-        en: `Payment refund has been processed for order ${orderNumber}.`,
-        pl: `Zwrot płatności został przetworzony dla zamówienia ${orderNumber}.`,
-      },
-    };
+  private static shouldSendNotification(status: string): boolean {
+    const notifiableStatuses = [
+      "confirmed",
+      "preparing",
+      "shipped",
+      "out_for_delivery",
+      "delivered",
+      "cancelled",
+      "refunded",
+    ];
+    return notifiableStatuses.includes(status);
+  }
 
-    const notificationTypeMap: Record<
-      string,
-      "orderConfirmed" | "orderPreparing" | "orderShipped" | "orderOutForDelivery" | "orderDelivered" | "orderCancelled" | "orderRefunded"
-    > = {
-      confirmed: "orderConfirmed",
-      preparing: "orderPreparing",
-      shipped: "orderShipped",
-      out_for_delivery: "orderOutForDelivery",
-      delivered: "orderDelivered",
-      cancelled: "orderCancelled",
-      refunded: "orderRefunded",
-    };
+  /**
+   * Sipariş durumuna göre bildirim çevirilerini döndürür
+   */
+  private static getNotificationTranslations(
+    status: string,
+    orderNumber: string
+  ): Record<"tr" | "en" | "pl", { title: string; body: string }> {
+    const validStatuses = [
+      "confirmed",
+      "preparing",
+      "shipped",
+      "out_for_delivery",
+      "delivered",
+      "cancelled",
+      "refunded",
+    ];
 
-    const notificationType = notificationTypeMap[status];
-    const bodyTranslations = statusMap[status];
-
-    if (!notificationType || !bodyTranslations) {
-      return null;
+    if (!validStatuses.includes(status)) {
+      // Default fallback
+      return {
+        tr: { title: "Sipariş Güncelleme", body: `${orderNumber} numaralı siparişiniz güncellendi.` },
+        en: { title: "Order Update", body: `Order ${orderNumber} has been updated.` },
+        pl: { title: "Aktualizacja Zamówienia", body: `Zamówienie ${orderNumber} zostało zaktualizowane.` },
+      };
     }
 
-    const titleMap: Record<string, { tr: string; en: string; pl: string }> = {
-      confirmed: {
-        tr: "Siparişiniz Onaylandı",
-        en: "Order Confirmed",
-        pl: "Zamówienie Potwierdzone",
-      },
-      preparing: {
-        tr: "Siparişiniz Hazırlanıyor",
-        en: "Order Being Prepared",
-        pl: "Zamówienie w Przygotowaniu",
-      },
-      shipped: {
-        tr: "Kargoya Verildi",
-        en: "Order Shipped",
-        pl: "Zamówienie Wysłane",
-      },
-      out_for_delivery: {
-        tr: "Dağıtıma Çıktı",
-        en: "Out for Delivery",
-        pl: "W Dostawie",
-      },
-      delivered: {
-        tr: "Teslim Edildi",
-        en: "Order Delivered",
-        pl: "Zamówienie Dostarczone",
-      },
-      cancelled: {
-        tr: "Sipariş İptal Edildi",
-        en: "Order Cancelled",
-        pl: "Zamówienie Anulowane",
-      },
-      refunded: {
-        tr: "İade Edildi",
-        en: "Order Refunded",
-        pl: "Zamówienie Zwrócone",
-      },
-    };
-
-    const titleTranslations = titleMap[status];
+    const trTranslation = getOrderStatusNotificationWithNumber(
+      status as any,
+      orderNumber,
+      "tr"
+    );
+    const enTranslation = getOrderStatusNotificationWithNumber(
+      status as any,
+      orderNumber,
+      "en"
+    );
+    const plTranslation = getOrderStatusNotificationWithNumber(
+      status as any,
+      orderNumber,
+      "pl"
+    );
 
     return {
-      notificationType,
-      customTranslations: {
-        tr: {
-          title: titleTranslations.tr,
-          body: bodyTranslations.tr,
-        },
-        en: {
-          title: titleTranslations.en,
-          body: bodyTranslations.en,
-        },
-        pl: {
-          title: titleTranslations.pl,
-          body: bodyTranslations.pl,
-        },
-      },
+      tr: trTranslation,
+      en: enTranslation,
+      pl: plTranslation,
     };
   }
 
