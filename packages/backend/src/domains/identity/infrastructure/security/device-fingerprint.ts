@@ -83,7 +83,7 @@ export function generateDeviceFingerprint(
   const isWebPlatform = platform.toLowerCase() === 'web';
 
   // For web: Use only stable characteristics (no IP, no screen resolution, no app version)
-  // For mobile: Use all characteristics including IP for better security
+  // For mobile: Use stable characteristics (excluding app version to prevent session invalidation on updates)
   const fingerprintData = isWebPlatform
     ? [
         deviceInfo.userAgent || 'unknown',
@@ -96,7 +96,7 @@ export function generateDeviceFingerprint(
         deviceInfo.userAgent || 'unknown',
         platform,
         deviceInfo.deviceModel || 'unknown',
-        deviceInfo.appVersion || 'unknown',
+        // Removed appVersion to prevent session invalidation on app updates
         deviceInfo.screenResolution || 'unknown',
         deviceInfo.timezone || 'unknown',
         deviceInfo.language || 'unknown',
