@@ -58,8 +58,8 @@ export const useOrderOperations = ({
       try {
         console.log("[DEBUG] API DELETE çağrılıyor...");
         await api.delete(`/orders/${orderId}`);
-        console.log("[DEBUG] API DELETE başarılı, fetchOrders çağrılıyor...");
-        await fetchOrders(); // Refresh the orders list
+        console.log("[DEBUG] API DELETE başarılı, fetchOrders(true) çağrılıyor (force refresh)...");
+        await fetchOrders(true); // ✅ Force refresh - cache bypass
         console.log("[DEBUG] fetchOrders tamamlandı");
       } catch (err: any) {
         console.log("[DEBUG] cancelOrder HATA:", err);

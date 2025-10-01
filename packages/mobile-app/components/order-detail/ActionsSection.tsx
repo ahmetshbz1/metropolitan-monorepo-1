@@ -83,10 +83,10 @@ export function ActionsSection({
             console.log("[DEBUG] cancelOrder başarılı, toast gösteriliyor");
             showToast(t("order_detail.cancel_success_title"), "success");
 
-            console.log("[DEBUG] 300ms bekleniyor, sonra router.back()");
+            console.log("[DEBUG] 300ms bekleniyor, sonra orders sayfasına replace");
             await new Promise(resolve => setTimeout(resolve, 300));
-            console.log("[DEBUG] router.back() çağrılıyor");
-            router.back();
+            console.log("[DEBUG] router.replace('/(tabs)/orders') çağrılıyor");
+            router.replace("/(tabs)/orders");
           }
         } catch (error: any) {
           console.log("[DEBUG] Cancel HATA:", error);
