@@ -4,9 +4,9 @@
 
 import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect, useRouter } from "expo-router";
-import React, { useCallback, useEffect, useLayoutEffect } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
+import { InteractionManager, Platform, View } from "react-native";
 import {
   KeyboardAwareScrollView,
   KeyboardStickyView,
@@ -35,7 +35,16 @@ export default function CheckoutAddressScreen() {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: t("checkout.steps.address"),
-    });
+      headerBackTitle: "",
+      headerBackTitleVisible: false,
+      headerBackButtonDisplayMode: "minimal" as const,
+      ...Platform.select({
+        ios: {
+          headerBackTitleStyle: { fontSize: 0 },
+          headerBackButtonMenuEnabled: false,
+        },
+      }),
+    } as any);
   }, [navigation, t]);
 
   const { addresses, loading: addressesLoading } = useAddresses();
@@ -57,18 +66,35 @@ export default function CheckoutAddressScreen() {
     }
   }, [addresses, state.deliveryAddress, setDeliveryAddress]);
 
+  const isMountedRef = useRef(true);
+
   useFocusEffect(
     useCallback(() => {
-      setCurrentStep(1);
-    }, [setCurrentStep])
+      const task = InteractionManager.runAfterInteractions(() => {
+        if (isMountedRef.current && state.currentStep !== 1) {
+          setCurrentStep(1);
+        }
+      });
+
+      return () => {
+        task.cancel();
+      };
+    }, [state.currentStep, setCurrentStep])
   );
 
-  const handleNext = () => {
-    if (canProceedToNext()) {
-      nextStep();
-      router.push("/checkout/payment");
-    }
-  };
+  const isNavigatingRef = useRef(false);
+
+  const handleNext = useCallback(() => {
+    if (isNavigatingRef.current || !canProceedToNext()) return;
+
+    isNavigatingRef.current = true;
+    nextStep();
+    router.push("/checkout/payment");
+
+    setTimeout(() => {
+      isNavigatingRef.current = false;
+    }, 500);
+  }, [canProceedToNext, nextStep, router]);
 
   if (addressesLoading) {
     return (

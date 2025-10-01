@@ -8,7 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Platform, Text, TouchableOpacity, View } from "react-native";
 import {
   KeyboardAwareScrollView,
   KeyboardStickyView,
@@ -35,7 +35,16 @@ export default function BankTransferScreen() {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: t("checkout.bank_transfer_title"),
-    });
+      headerBackTitle: "",
+      headerBackTitleVisible: false,
+      headerBackButtonDisplayMode: "minimal" as const,
+      ...Platform.select({
+        ios: {
+          headerBackTitleStyle: { fontSize: 0 },
+          headerBackButtonMenuEnabled: false,
+        },
+      }),
+    } as any);
   }, [navigation, t]);
 
   const bankDetails = [

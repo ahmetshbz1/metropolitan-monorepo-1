@@ -7,7 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect, useRouter } from "expo-router";
 import React, { useCallback, useLayoutEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { Pressable, View } from "react-native";
+import { InteractionManager, Platform, Pressable, View } from "react-native";
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import {
   KeyboardAwareScrollView,
@@ -40,7 +40,16 @@ export default function CheckoutPaymentScreen() {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: t("checkout.steps.payment"),
-    });
+      headerBackTitle: "",
+      headerBackTitleVisible: false,
+      headerBackButtonDisplayMode: "minimal" as const,
+      ...Platform.select({
+        ios: {
+          headerBackTitleStyle: { fontSize: 0 },
+          headerBackButtonMenuEnabled: false,
+        },
+      }),
+    } as any);
   }, [navigation, t]);
 
   const {
@@ -55,10 +64,20 @@ export default function CheckoutPaymentScreen() {
   const availablePaymentMethods = getAvailablePaymentMethods();
   const bankTransferSheetRef = useRef<BottomSheetModal>(null);
 
+  const isMountedRef = useRef(true);
+
   useFocusEffect(
     useCallback(() => {
-      setCurrentStep(2);
-    }, [setCurrentStep])
+      const task = InteractionManager.runAfterInteractions(() => {
+        if (isMountedRef.current && state.currentStep !== 2) {
+          setCurrentStep(2);
+        }
+      });
+
+      return () => {
+        task.cancel();
+      };
+    }, [state.currentStep, setCurrentStep])
   );
 
   const handleSelectPaymentMethod = (method: CheckoutPaymentMethod) => {
@@ -125,12 +144,19 @@ export default function CheckoutPaymentScreen() {
     </Pressable>
   );
 
-  const handleNext = () => {
-    if (canProceedToNext()) {
-      nextStep();
-      router.push("/checkout/summary");
-    }
-  };
+  const isNavigatingRef = useRef(false);
+
+  const handleNext = useCallback(() => {
+    if (isNavigatingRef.current || !canProceedToNext()) return;
+
+    isNavigatingRef.current = true;
+    nextStep();
+    router.push("/checkout/summary");
+
+    setTimeout(() => {
+      isNavigatingRef.current = false;
+    }, 500);
+  }, [canProceedToNext, nextStep, router]);
 
   return (
     <ThemedView className="flex-1">

@@ -8,7 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect } from "expo-router";
 import React, { useCallback, useLayoutEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
+import { InteractionManager, Platform, View } from "react-native";
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
@@ -31,7 +31,7 @@ export default function CheckoutSummaryScreen() {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const { summary, flushPendingUpdates } = useCart();
-  const { setCurrentStep } = useCheckout();
+  const { state, setCurrentStep } = useCheckout();
   const { showToast } = useToast();
   const { isCreatingOrder, orderLoading, isBankTransfer, handleCreateOrder } =
     useCheckoutSummary();
@@ -40,17 +40,35 @@ export default function CheckoutSummaryScreen() {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: t("checkout.steps.summary"),
-    });
+      headerBackTitle: "",
+      headerBackTitleVisible: false,
+      headerBackButtonDisplayMode: "minimal" as const,
+      ...Platform.select({
+        ios: {
+          headerBackTitleStyle: { fontSize: 0 },
+          headerBackButtonMenuEnabled: false,
+        },
+      }),
+    } as any);
   }, [navigation, t]);
+
+  const isMountedRef = useRef(true);
 
   useFocusEffect(
     useCallback(() => {
-      setCurrentStep(3);
-      // Sayfa açıldığında pending updates'leri flush et
-      flushPendingUpdates().catch(() => {
-        // Sessizce hataları yakala
+      const task = InteractionManager.runAfterInteractions(() => {
+        if (isMountedRef.current && state.currentStep !== 3) {
+          setCurrentStep(3);
+        }
+        flushPendingUpdates().catch(() => {
+          // Sessizce hataları yakala
+        });
       });
-    }, [setCurrentStep, flushPendingUpdates])
+
+      return () => {
+        task.cancel();
+      };
+    }, [state.currentStep, setCurrentStep, flushPendingUpdates])
   );
 
   if (!summary) {
