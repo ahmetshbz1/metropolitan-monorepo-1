@@ -136,11 +136,11 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
             />
           ) : undefined
         }
-        // Basic performance optimizations - sadece temel olanlar
-        removeClippedSubviews={true}
-        maxToRenderPerBatch={horizontal ? 8 : 10}
-        windowSize={horizontal ? 5 : 10}
-        initialNumToRender={horizontal ? 8 : (numColumns ? numColumns * 3 : 9)}
+        // Basic performance optimizations - horizontal için removeClippedSubviews disable
+        removeClippedSubviews={!horizontal}
+        maxToRenderPerBatch={horizontal ? 12 : 10}
+        windowSize={horizontal ? 8 : 10}
+        initialNumToRender={horizontal ? 12 : (numColumns ? numColumns * 3 : 9)}
         updateCellsBatchingPeriod={horizontal ? 50 : 100}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}

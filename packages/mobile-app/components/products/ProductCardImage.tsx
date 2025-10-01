@@ -50,8 +50,10 @@ export const ProductCardImage: React.FC<ProductCardImageProps> = ({
           height: '85%',
         }}
         contentFit="contain"
-        transition={400}
+        transition={200}
         cachePolicy="memory-disk"
+        priority="high"
+        placeholder={{ uri: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2Y1ZjVmNSIvPgo8L3N2Zz4K' }}
       />
 
       {/* Add to Cart Button - Top Right */}
