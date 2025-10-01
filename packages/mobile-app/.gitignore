@@ -10,7 +10,9 @@ web-build/
 expo-env.d.ts
 
 # Native
-ios/
+ios/Pods/
+ios/Podfile.lock
+ios/build/
 android/
 .kotlin/
 *.orig.*
