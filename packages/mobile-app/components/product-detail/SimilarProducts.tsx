@@ -3,7 +3,7 @@
 //  Created by Ahmet on 22.09.2025.
 
 import React, { memo, useMemo, useCallback } from "react";
-import { View, FlatList, Text, TouchableOpacity } from "react-native";
+import { View, FlatList, Text, TouchableOpacity, useWindowDimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useProducts } from "@/context/ProductContext";
 import { ProductCard } from "@/components/products/ProductCard";
@@ -23,6 +23,11 @@ export const SimilarProducts = memo<SimilarProductsProps>(function SimilarProduc
   const { products } = useProducts();
   const { t } = useTranslation();
   const router = useRouter();
+  const { width } = useWindowDimensions();
+  const isTablet = width >= 768;
+  const horizontalPadding = isTablet ? 12 : 10;
+  const gap = isTablet ? 10 : 6;
+  const cardWidth = isTablet ? 180 : 110;
 
   // Benzer ürünleri daha akıllıca filtreleme - multiple dependency memoization
   const similarProducts = useMemo(() => {
@@ -36,7 +41,7 @@ export const SimilarProducts = memo<SimilarProductsProps>(function SimilarProduc
           (p.category === currentProduct.category ||
             p.brand === currentProduct.brand)
       )
-      .slice(0, 6); // İlk 6 ürün
+      .slice(0, 12); // Daha fazla ürün göster
   }, [products, currentProduct.id, currentProduct.category, currentProduct.brand]);
 
   // Early return optimization
@@ -46,8 +51,10 @@ export const SimilarProducts = memo<SimilarProductsProps>(function SimilarProduc
 
   // Render function'ı cache'le - replace navigation kullan
   const renderItem = useCallback(({ item }: { item: Product }) => (
-    <ProductCard product={item} replaceNavigation={true} />
-  ), []);
+    <View style={{ width: cardWidth }}>
+      <ProductCard product={item} replaceNavigation={true} />
+    </View>
+  ), [cardWidth]);
 
   // Navigation işlemini optimize et
   const handleViewAll = useCallback(() => {
@@ -63,7 +70,7 @@ export const SimilarProducts = memo<SimilarProductsProps>(function SimilarProduc
 
   return (
     <View className="mt-0 mb-4">
-      <View className="flex-row justify-between items-center px-4 mb-3">
+      <View className="flex-row justify-between items-center mb-3" style={{ paddingHorizontal: horizontalPadding }}>
         <ThemedText className="text-xl font-bold">
           {t("product_detail.similar_products", "Benzer Ürünler")}
         </ThemedText>
@@ -81,20 +88,17 @@ export const SimilarProducts = memo<SimilarProductsProps>(function SimilarProduc
         data={similarProducts}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-        numColumns={3}
-        scrollEnabled={false}
+        horizontal
+        showsHorizontalScrollIndicator={false}
         contentContainerStyle={{
-          paddingHorizontal: 12,
-          gap: 8,
-        }}
-        columnWrapperStyle={{
-          gap: 8,
+          paddingHorizontal: horizontalPadding,
+          gap,
         }}
         // Performance optimizations
         removeClippedSubviews={true}
-        maxToRenderPerBatch={6}
+        maxToRenderPerBatch={8}
         updateCellsBatchingPeriod={50}
-        initialNumToRender={6}
+        initialNumToRender={8}
       />
     </View>
   );

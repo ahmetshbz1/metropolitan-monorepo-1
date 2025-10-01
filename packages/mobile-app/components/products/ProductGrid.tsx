@@ -13,6 +13,7 @@ import {
   FlatList,
   ListRenderItem,
   RefreshControl,
+  useWindowDimensions,
 } from "react-native";
 
 import Colors from "@/constants/Colors";
@@ -51,6 +52,11 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
     const colorScheme = useColorScheme() ?? "light";
     const colors = Colors[colorScheme];
     const flatListRef = useRef<FlatList>(null);
+    const { width } = useWindowDimensions();
+    const isTablet = width >= 768;
+    const numColumns = isTablet ? 4 : 3;
+    const gap = isTablet ? 10 : 5;
+    const horizontalPadding = isTablet ? 12 : 6;
 
     useImperativeHandle(ref, () => ({
       scrollToTop: () => {
@@ -84,12 +90,13 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
         data={products}
         renderItem={renderItem}
         keyExtractor={keyExtractor}
-        numColumns={3}
+        key={`product-grid-${numColumns}`}
+        numColumns={numColumns}
         contentContainerStyle={[
-          { paddingHorizontal: 12, paddingVertical: 8, gap: 8 },
+          { paddingHorizontal: horizontalPadding, paddingVertical: 8, gap },
           contentContainerStyle,
         ]}
-        columnWrapperStyle={{ gap: 8 }}
+        columnWrapperStyle={{ gap }}
         onEndReached={onEndReached}
         onEndReachedThreshold={0.5}
         ListHeaderComponent={ListHeaderComponent}
@@ -107,7 +114,7 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
         removeClippedSubviews={true}
         maxToRenderPerBatch={10}
         windowSize={10}
-        initialNumToRender={9}
+        initialNumToRender={numColumns * 3}
         updateCellsBatchingPeriod={100}
         showsVerticalScrollIndicator={false}
       />
