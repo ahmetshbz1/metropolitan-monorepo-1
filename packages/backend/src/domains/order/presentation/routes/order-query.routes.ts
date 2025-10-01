@@ -43,17 +43,23 @@ export const orderQueryRoutes = new Elysia()
     async ({
       user,
       params,
-    }: AuthenticatedContext & { params: { orderId: string } }) => {
+      headers,
+    }: AuthenticatedContext & { params: { orderId: string }; headers: Record<string, string | undefined> }) => {
       const { orderId } = params;
+
+      // Get language from Accept-Language header
+      const acceptLanguage = headers["accept-language"];
+      const language = acceptLanguage?.split(",")[0]?.split("-")[0]?.toLowerCase() || "tr";
+      const validLanguage = ["tr", "en", "pl"].includes(language) ? language : "tr";
 
       try {
         console.log(
-          `📦 Fetching order details for orderId: ${orderId}, userId: ${user.id}`
+          `📦 Fetching order details for orderId: ${orderId}, userId: ${user.id}, language: ${validLanguage}`
         );
 
         const [order, items, trackingEvents] = await Promise.all([
           OrderTrackingService.getOrderDetails(orderId, user.id),
-          OrderTrackingService.getOrderItems(orderId),
+          OrderTrackingService.getOrderItems(orderId, validLanguage),
           OrderTrackingService.getTrackingEvents(orderId),
         ]);
 

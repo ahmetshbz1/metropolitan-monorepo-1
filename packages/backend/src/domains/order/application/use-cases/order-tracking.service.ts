@@ -130,7 +130,7 @@ export class OrderTrackingService {
   /**
    * Sipariş öğelerini getirir
    */
-  static async getOrderItems(orderId: string) {
+  static async getOrderItems(orderId: string, language: string = "tr") {
     return await db
       .select({
         id: orderItems.id,
@@ -153,7 +153,7 @@ export class OrderTrackingService {
         productTranslations,
         and(
           eq(products.id, productTranslations.productId),
-          eq(productTranslations.languageCode, "tr")
+          eq(productTranslations.languageCode, language)
         )
       )
       .where(eq(orderItems.orderId, orderId));

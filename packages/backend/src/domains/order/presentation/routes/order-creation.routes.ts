@@ -40,7 +40,13 @@ export const orderCreationRoutes = new Elysia()
     async ({
       user,
       body,
-    }: AuthenticatedContext & { body: OrderCreationRequest }) => {
+      headers,
+    }: AuthenticatedContext & { body: OrderCreationRequest; headers: Record<string, string | undefined> }) => {
+      // Get language from Accept-Language header
+      const acceptLanguage = headers["accept-language"];
+      const language = acceptLanguage?.split(",")[0]?.split("-")[0]?.toLowerCase() || "tr";
+      const validLanguage = ["tr", "en", "pl"].includes(language) ? language : "tr";
+
       console.log(
         "📦 Order creation request body:",
         JSON.stringify(body, null, 2)
@@ -48,7 +54,7 @@ export const orderCreationRoutes = new Elysia()
 
       // Validate cart items
       const { items: cartItems, validation } =
-        await OrderValidationService.validateCartItems(user.id);
+        await OrderValidationService.validateCartItems(user.id, validLanguage);
 
       if (!validation.isValid) {
         // Check if cart is empty specifically

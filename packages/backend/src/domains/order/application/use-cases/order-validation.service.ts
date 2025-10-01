@@ -23,12 +23,13 @@ export class OrderValidationService {
     userId: string;
     addressId: string;
     items: CartItemData[];
+    language?: string;
   }): Promise<{
     isValid: boolean;
     stockErrors?: StockError[];
     error?: string;
   }> {
-    const { userId, addressId, items } = data;
+    const { userId, addressId, items, language = "tr" } = data;
 
     // 1. Ürün listesinin boş olup olmadığını kontrol et
     if (items.length === 0) {
@@ -53,7 +54,7 @@ export class OrderValidationService {
         where: eq(products.id, item.product.id),
         with: {
           translations: {
-            where: eq(productTranslations.languageCode, "tr"),
+            where: eq(productTranslations.languageCode, language),
           },
         },
       });
@@ -88,7 +89,7 @@ export class OrderValidationService {
   /**
    * Sepet öğelerini doğrular ve cart item data'sını döner
    */
-  static async validateCartItems(userId: string): Promise<{
+  static async validateCartItems(userId: string, language: string = "tr"): Promise<{
     items: CartItemData[];
     validation: {
       isValid: boolean;
@@ -102,7 +103,7 @@ export class OrderValidationService {
         product: {
           with: {
             translations: {
-              where: eq(productTranslations.languageCode, "tr"),
+              where: eq(productTranslations.languageCode, language),
             },
           },
         },
