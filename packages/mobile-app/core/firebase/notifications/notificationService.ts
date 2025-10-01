@@ -3,6 +3,7 @@ import * as Device from 'expo-device';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import api from '@/core/api';
+import i18n from '@/core/i18n';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -38,7 +39,7 @@ export class NotificationService {
     }
   }
 
-  async registerForPushNotifications(): Promise<string | null> {
+  async registerForPushNotifications(guestId?: string): Promise<string | null> {
     try {
       // Simülatörde de token alabiliriz ama gerçek push alamayız
       if (!Device.isDevice) {
@@ -86,7 +87,7 @@ export class NotificationService {
         });
       }
 
-      await this.sendTokenToBackend(token);
+      await this.sendTokenToBackend(token, guestId);
 
       return token;
     } catch (error) {
@@ -95,16 +96,37 @@ export class NotificationService {
     }
   }
 
-  private async sendTokenToBackend(token: string): Promise<void> {
+  private async sendTokenToBackend(token: string, guestId?: string): Promise<void> {
     try {
-      await api.post('/users/device-token', {
-        token,
-        platform: Platform.OS,
-        deviceName: Device.deviceName || 'Unknown Device',
-      });
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Timeout')), 5000)
+      );
+
+      const currentLanguage = i18n.language || 'tr';
+
+      const endpoint = guestId ? '/guest/device-token' : '/users/device-token';
+      const payload = guestId
+        ? {
+            guestId,
+            token,
+            platform: Platform.OS,
+            deviceName: Device.deviceName || 'Unknown Device',
+            language: currentLanguage,
+          }
+        : {
+            token,
+            platform: Platform.OS,
+            deviceName: Device.deviceName || 'Unknown Device',
+            language: currentLanguage,
+          };
+
+      await Promise.race([
+        api.post(endpoint, payload),
+        timeoutPromise,
+      ]);
       // Removed console statement
     } catch (error) {
-      // Token backend gönderim hatası
+      // Token backend gönderim hatası veya timeout
     }
   }
 

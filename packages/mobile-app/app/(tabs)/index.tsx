@@ -118,11 +118,6 @@ export default function HomeScreen() {
     }, [])
   );
 
-  useEffect(() => {
-    fetchCategories();
-    fetchAllProducts();
-  }, [fetchCategories, fetchAllProducts]);
-
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
     try {

@@ -65,8 +65,20 @@ export class PaymentStateHandlersService {
       if (order) {
         // Send payment success notification
         await PushNotificationService.sendToUser(order.userId, {
-          title: "Ödeme Başarılı",
-          body: `${order.orderNumber} numaralı siparişiniz için ödemeniz alındı. Siparişiniz hazırlanıyor.`,
+          customTranslations: {
+            tr: {
+              title: "Ödeme Başarılı",
+              body: `${order.orderNumber} numaralı siparişiniz için ödemeniz alındı. Siparişiniz hazırlanıyor.`,
+            },
+            en: {
+              title: "Payment Successful",
+              body: `Payment received for order ${order.orderNumber}. Your order is being prepared.`,
+            },
+            pl: {
+              title: "Płatność Pomyślna",
+              body: `Płatność otrzymana za zamówienie ${order.orderNumber}. Twoje zamówienie jest przygotowywane.`,
+            },
+          },
           type: "payment_success",
           data: {
             screen: `/order/${order.id}`,
@@ -123,8 +135,20 @@ export class PaymentStateHandlersService {
       if (order) {
         // Send payment failed notification
         await PushNotificationService.sendToUser(order.userId, {
-          title: "Ödeme Başarısız",
-          body: `${order.orderNumber} numaralı siparişinizin ödemesi alınamadı. Lütfen tekrar deneyin.`,
+          customTranslations: {
+            tr: {
+              title: "Ödeme Başarısız",
+              body: `${order.orderNumber} numaralı siparişinizin ödemesi alınamadı. Lütfen tekrar deneyin.`,
+            },
+            en: {
+              title: "Payment Failed",
+              body: `Payment for order ${order.orderNumber} failed. Please try again.`,
+            },
+            pl: {
+              title: "Płatność Nieudana",
+              body: `Płatność za zamówienie ${order.orderNumber} nie powiodła się. Spróbuj ponownie.`,
+            },
+          },
           type: "payment_failed",
           data: {
             screen: `/cart`,
@@ -218,8 +242,20 @@ export class PaymentStateHandlersService {
       if (order) {
         // Send payment canceled notification
         await PushNotificationService.sendToUser(order.userId, {
-          title: "Ödeme İptal Edildi",
-          body: `${order.orderNumber} numaralı siparişinizin ödemesi iptal edildi.`,
+          customTranslations: {
+            tr: {
+              title: "Ödeme İptal Edildi",
+              body: `${order.orderNumber} numaralı siparişinizin ödemesi iptal edildi.`,
+            },
+            en: {
+              title: "Payment Cancelled",
+              body: `Payment for order ${order.orderNumber} was cancelled.`,
+            },
+            pl: {
+              title: "Płatność Anulowana",
+              body: `Płatność za zamówienie ${order.orderNumber} została anulowana.`,
+            },
+          },
           type: "payment_canceled",
           data: {
             screen: `/cart`,

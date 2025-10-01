@@ -17,6 +17,7 @@ import { createNotification } from "./notifications.routes";
 import { ProfileCompletionService } from "../../application/use-cases/profile-completion.service";
 import { ProfilePhotoService } from "../../application/use-cases/profile-photo.service";
 import { ProfileUpdateService } from "../../application/use-cases/profile-update.service";
+import { getNotificationTranslation } from "../../../../shared/application/services/notification-translations";
 
 // Bu tip backend'e özel kalabilir, çünkü JWT payload'u ile ilgili.
 export interface RegistrationTokenPayload {
@@ -175,6 +176,7 @@ const protectedProfileRoutes = createApp()
               lastUsedAt: new Date(),
               platform: body.platform,
               deviceName: body.deviceName || existingToken[0].deviceName,
+              language: body.language || existingToken[0].language,
               isValid: "true",
               failureCount: "0",
               updatedAt: new Date(),
@@ -190,6 +192,7 @@ const protectedProfileRoutes = createApp()
             platform: body.platform,
             deviceName: body.deviceName || "Unknown Device",
             deviceId: body.deviceId,
+            language: body.language || "tr",
             isValid: "true",
             failureCount: "0",
           });
@@ -199,6 +202,11 @@ const protectedProfileRoutes = createApp()
 
         // Test bildirimi gönder
         try {
+          const welcomeNotification = getNotificationTranslation(
+            'welcome',
+            body.language || 'tr'
+          );
+
           const response = await fetch('https://exp.host/--/api/v2/push/send', {
             method: 'POST',
             headers: {
@@ -208,8 +216,8 @@ const protectedProfileRoutes = createApp()
             },
             body: JSON.stringify({
               to: body.token,
-              title: '🎉 Metropolitan\'e Hoş Geldiniz!',
-              body: 'Push bildirimleri başarıyla aktifleştirildi.',
+              title: welcomeNotification.title,
+              body: welcomeNotification.body,
               data: { screen: '/(tabs)' },
               sound: 'default',
               badge: 1,
@@ -222,8 +230,8 @@ const protectedProfileRoutes = createApp()
           // Bildirimi veritabanına da kaydet
           if (result.data && result.data.status === 'ok') {
             await createNotification(userId, {
-              title: '🎉 Metropolitan\'e Hoş Geldiniz!',
-              body: 'Push bildirimleri başarıyla aktifleştirildi.',
+              title: welcomeNotification.title,
+              body: welcomeNotification.body,
               type: 'system',
               data: { screen: '/(tabs)' },
               source: 'push',
@@ -251,6 +259,7 @@ const protectedProfileRoutes = createApp()
         platform: t.String({ enum: ["ios", "android"] }),
         deviceName: t.Optional(t.String()),
         deviceId: t.Optional(t.String()),
+        language: t.Optional(t.String({ enum: ["tr", "en", "pl"] })),
       }),
     }
   )

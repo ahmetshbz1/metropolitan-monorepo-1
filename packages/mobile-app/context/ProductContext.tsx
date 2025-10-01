@@ -47,7 +47,7 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [loadingProducts, setLoadingProducts] = useState(true);
   const [loadingCategories, setLoadingCategories] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -105,6 +105,11 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
       setLoadingCategories(false);
     }
   }, [lang]);
+
+  useEffect(() => {
+    fetchAllProducts();
+    fetchCategories();
+  }, [fetchAllProducts, fetchCategories]);
 
   useEffect(() => {
     refreshAllProducts();

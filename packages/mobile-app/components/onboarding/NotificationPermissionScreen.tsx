@@ -10,6 +10,7 @@ import { HapticButton } from "@/components/HapticButton";
 import { ThemedText } from "@/components/ThemedText";
 import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useAuth } from "@/context/AuthContext";
 import notificationService from "@/core/firebase/notifications/notificationService";
 import { showHaptic } from "@/utils/haptic";
 
@@ -22,31 +23,26 @@ export function NotificationPermissionScreen({ onContinue }: NotificationPermiss
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
+  const { isGuest, guestId } = useAuth();
   const [loading, setLoading] = useState(false);
 
   const handleEnableNotifications = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const token = await notificationService.registerForPushNotifications();
+      const token = await notificationService.registerForPushNotifications(isGuest ? guestId || undefined : undefined);
 
       if (token) {
         await AsyncStorage.setItem("notification_permission_granted", "true");
         await AsyncStorage.setItem("onboarding_notification_asked", "true");
         showHaptic("success");
-
-        // Direkt devam et, hoş geldin push'u zaten gidecek
-        onContinue();
       } else {
-        // İzin verilmedi ama devam edebilir
         await AsyncStorage.setItem("onboarding_notification_asked", "true");
-        onContinue();
       }
     } catch (error) {
-      // Removed console statement
       await AsyncStorage.setItem("onboarding_notification_asked", "true");
-      onContinue();
     } finally {
       setLoading(false);
+      onContinue();
     }
   };
 

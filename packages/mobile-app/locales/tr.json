@@ -955,7 +955,61 @@
     "delete_confirm_title": "Bildirimi Sil",
     "delete_confirm_message": "Bu bildirimi kalıcı olarak silmek istediğinizden emin misiniz?",
     "delete_all_confirm_title": "Tüm Bildirimleri Sil",
-    "delete_all_confirm_message": "Tüm bildirimleri kalıcı olarak silmek istediğinizden emin misiniz?"
+    "delete_all_confirm_message": "Tüm bildirimleri kalıcı olarak silmek istediğinizden emin misiniz?",
+    "push_messages": {
+      "welcome": {
+        "title": "Metropolitan'e Hoş Geldiniz!",
+        "body": "Push bildirimleri başarıyla aktifleştirildi."
+      },
+      "test": {
+        "title": "Test Bildirimi",
+        "body": "Bu bir test bildirimidir. Sistem düzgün çalışıyor!"
+      },
+      "order_placed": {
+        "title": "Siparişiniz Alındı",
+        "body": "Siparişiniz başarıyla oluşturuldu ve işleme alındı."
+      },
+      "order_confirmed": {
+        "title": "Siparişiniz Onaylandı",
+        "body": "Siparişiniz onaylandı ve hazırlanıyor."
+      },
+      "order_preparing": {
+        "title": "Siparişiniz Hazırlanıyor",
+        "body": "Siparişiniz hazırlanıyor."
+      },
+      "order_shipped": {
+        "title": "Kargoya Verildi",
+        "body": "Siparişiniz kargoya verildi. Takip kodunuzu kontrol edebilirsiniz."
+      },
+      "order_out_for_delivery": {
+        "title": "Dağıtıma Çıktı",
+        "body": "Siparişiniz bugün teslim edilecek."
+      },
+      "order_delivered": {
+        "title": "Teslim Edildi",
+        "body": "Siparişiniz başarıyla teslim edildi. Afiyet olsun!"
+      },
+      "order_cancelled": {
+        "title": "Sipariş İptal Edildi",
+        "body": "Siparişiniz iptal edildi."
+      },
+      "order_refunded": {
+        "title": "İade Edildi",
+        "body": "Siparişiniz için ödeme iadesi yapıldı."
+      },
+      "payment_success": {
+        "title": "Ödeme Başarılı",
+        "body": "Ödemeniz başarıyla alındı."
+      },
+      "payment_failed": {
+        "title": "Ödeme Başarısız",
+        "body": "Ödemeniz işlenirken bir hata oluştu."
+      },
+      "payment_cancelled": {
+        "title": "Ödeme İptal Edildi",
+        "body": "Siparişinizin ödemesi iptal edildi."
+      }
+    }
   },
   "payment": {
     "unknown_error": "Bilinmeyen bir hata oluştu",

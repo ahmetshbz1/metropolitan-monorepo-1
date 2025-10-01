@@ -5,14 +5,26 @@
 import { db } from "../../infrastructure/database/connection";
 import { deviceTokens, notifications } from "../../infrastructure/database/schema";
 import { eq, and, sql } from "drizzle-orm";
+import {
+  getNotificationTranslation,
+  getCustomNotificationTranslation,
+  type NotificationType,
+} from "./notification-translations";
+
+type Language = "tr" | "en" | "pl";
 
 interface PushNotificationData {
-  title: string;
-  body: string;
+  title?: string;
+  body?: string;
   data?: any;
   badge?: number;
   sound?: string;
   type?: string;
+  notificationType?: NotificationType;
+  customTranslations?: Record<
+    Language,
+    { title: string; body: string }
+  >;
 }
 
 export class PushNotificationService {
@@ -41,6 +53,26 @@ export class PushNotificationService {
       // Her token'a push gönder
       const pushPromises = userTokens.map(async (tokenRecord) => {
         try {
+          // Tokena göre dil seçimi yap
+          let title = notification.title || '';
+          let body = notification.body || '';
+
+          if (notification.notificationType) {
+            const translation = getNotificationTranslation(
+              notification.notificationType,
+              tokenRecord.language
+            );
+            title = translation.title;
+            body = translation.body;
+          } else if (notification.customTranslations) {
+            const translation = getCustomNotificationTranslation(
+              notification.customTranslations,
+              tokenRecord.language
+            );
+            title = translation.title;
+            body = translation.body;
+          }
+
           const response = await fetch('https://exp.host/--/api/v2/push/send', {
             method: 'POST',
             headers: {
@@ -50,8 +82,8 @@ export class PushNotificationService {
             },
             body: JSON.stringify({
               to: tokenRecord.token,
-              title: notification.title,
-              body: notification.body,
+              title,
+              body,
               data: notification.data || {},
               sound: notification.sound || 'default',
               badge: notification.badge,
@@ -82,11 +114,31 @@ export class PushNotificationService {
       const results = await Promise.all(pushPromises);
       const successCount = results.filter(r => r?.data?.status === 'ok').length;
 
+      // Veritabanına kaydetmek için Turkish translation kullan
+      let dbTitle = notification.title || '';
+      let dbBody = notification.body || '';
+
+      if (notification.notificationType) {
+        const translation = getNotificationTranslation(
+          notification.notificationType,
+          'tr'
+        );
+        dbTitle = translation.title;
+        dbBody = translation.body;
+      } else if (notification.customTranslations) {
+        const translation = getCustomNotificationTranslation(
+          notification.customTranslations,
+          'tr'
+        );
+        dbTitle = translation.title;
+        dbBody = translation.body;
+      }
+
       // Bildirimi veritabanına kaydet
       await db.insert(notifications).values({
         userId,
-        title: notification.title,
-        body: notification.body,
+        title: dbTitle,
+        body: dbBody,
         type: notification.type || 'system',
         data: notification.data || {},
         source: 'push',
@@ -143,8 +195,7 @@ export class PushNotificationService {
   // Test bildirimi gönder (backend'den manuel)
   static async sendTestNotification(userId: string): Promise<boolean> {
     return await this.sendToUser(userId, {
-      title: 'Test Bildirimi',
-      body: 'Bu bir test bildirimidir. Sistem düzgün çalışıyor!',
+      notificationType: 'test',
       type: 'system',
       data: { test: true, timestamp: new Date().toISOString() },
       badge: 1,

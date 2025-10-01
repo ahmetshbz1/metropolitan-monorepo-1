@@ -8,8 +8,10 @@ import { t } from "elysia";
 
 import {
   cartItems,
+  deviceTokens,
   favorites,
   guestCartItems,
+  guestDeviceTokens,
   guestFavorites,
   users,
 } from "../../../../shared/infrastructure/database/schema";
@@ -48,6 +50,11 @@ export const guestMigrationRoutes = createApp()
           // 3. Get guest favorites
           const guestFavoritesData = await db.query.guestFavorites.findMany({
             where: eq(guestFavorites.guestId, guestId),
+          });
+
+          // 3.5. Get guest device tokens
+          const guestTokensData = await db.query.guestDeviceTokens.findMany({
+            where: eq(guestDeviceTokens.guestId, guestId),
           });
 
           // 4. Migrate cart items
@@ -97,6 +104,42 @@ export const guestMigrationRoutes = createApp()
             }
           }
 
+          // 5.5. Migrate device tokens
+          let migratedDeviceTokens = 0;
+          for (const item of guestTokensData) {
+            try {
+              await db
+                .insert(deviceTokens)
+                .values({
+                  userId: user.id,
+                  token: item.token,
+                  platform: item.platform,
+                  deviceName: item.deviceName,
+                  deviceId: item.deviceId,
+                  lastUsedAt: item.lastUsedAt,
+                  isValid: item.isValid,
+                  failureCount: item.failureCount,
+                })
+                .onConflictDoUpdate({
+                  target: [deviceTokens.userId, deviceTokens.token],
+                  set: {
+                    lastUsedAt: item.lastUsedAt,
+                    platform: item.platform,
+                    deviceName: item.deviceName,
+                    isValid: item.isValid,
+                    failureCount: item.failureCount,
+                    updatedAt: new Date(),
+                  },
+                });
+              migratedDeviceTokens++;
+            } catch (err) {
+              log.warn(
+                { error: err, token: item.token.substring(0, 20) + "..." },
+                "Failed to migrate device token"
+              );
+            }
+          }
+
           // 6. Cleanup guest data
           try {
             await db
@@ -105,6 +148,9 @@ export const guestMigrationRoutes = createApp()
             await db
               .delete(guestFavorites)
               .where(eq(guestFavorites.guestId, guestId));
+            await db
+              .delete(guestDeviceTokens)
+              .where(eq(guestDeviceTokens.guestId, guestId));
           } catch (err) {
             log.warn({ error: err, guestId }, "Failed to cleanup guest data");
           }
@@ -115,6 +161,7 @@ export const guestMigrationRoutes = createApp()
               guestId,
               migratedCartItems,
               migratedFavorites,
+              migratedDeviceTokens,
             },
             "Guest data migration completed"
           );
@@ -125,6 +172,7 @@ export const guestMigrationRoutes = createApp()
             migratedData: {
               cartItems: migratedCartItems,
               favorites: migratedFavorites,
+              deviceTokens: migratedDeviceTokens,
             },
           };
         },

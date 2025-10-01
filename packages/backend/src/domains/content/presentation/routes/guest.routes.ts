@@ -5,6 +5,7 @@
 import { createApp } from "../../../../shared/infrastructure/web/app";
 
 import { guestCartRoutes } from "./guest-cart.routes";
+import { guestDeviceTokenRoutes } from "./guest-device-token.routes";
 import { guestFavoritesRoutes } from "./guest-favorites.routes";
 import { guestSessionRoutes } from "./guest-session.routes";
 
@@ -13,4 +14,5 @@ export const guestRoutes = createApp().group("/guest", (app) =>
     .use(guestSessionRoutes)
     .use(guestCartRoutes)
     .use(guestFavoritesRoutes)
+    .use(guestDeviceTokenRoutes)
 );

@@ -267,38 +267,121 @@ export class OrderTrackingService {
    * Sipariş durumuna göre bildirim metni döndürür
    */
   private static getNotificationData(status: string, orderNumber: string) {
-    const notifications: Record<string, { title: string; body: string }> = {
+    const statusMap: Record<string, { tr: string; en: string; pl: string }> = {
       confirmed: {
-        title: "Siparişiniz Onaylandı",
-        body: `${orderNumber} numaralı siparişiniz onaylandı ve hazırlanıyor.`,
+        tr: `${orderNumber} numaralı siparişiniz onaylandı ve hazırlanıyor.`,
+        en: `Order ${orderNumber} has been confirmed and is being prepared.`,
+        pl: `Zamówienie ${orderNumber} zostało potwierdzone i jest przygotowywane.`,
       },
       preparing: {
-        title: "Siparişiniz Hazırlanıyor",
-        body: `${orderNumber} numaralı siparişiniz hazırlanıyor.`,
+        tr: `${orderNumber} numaralı siparişiniz hazırlanıyor.`,
+        en: `Order ${orderNumber} is being prepared.`,
+        pl: `Zamówienie ${orderNumber} jest przygotowywane.`,
       },
       shipped: {
-        title: "Kargoya Verildi",
-        body: `${orderNumber} numaralı siparişiniz kargoya verildi. Takip kodunuzu kontrol edebilirsiniz.`,
+        tr: `${orderNumber} numaralı siparişiniz kargoya verildi. Takip kodunuzu kontrol edebilirsiniz.`,
+        en: `Order ${orderNumber} has been shipped. You can check your tracking code.`,
+        pl: `Zamówienie ${orderNumber} zostało wysłane. Możesz sprawdzić kod śledzenia.`,
       },
       out_for_delivery: {
-        title: "Dağıtıma Çıktı",
-        body: `${orderNumber} numaralı siparişiniz bugün teslim edilecek.`,
+        tr: `${orderNumber} numaralı siparişiniz bugün teslim edilecek.`,
+        en: `Order ${orderNumber} will be delivered today.`,
+        pl: `Zamówienie ${orderNumber} zostanie dostarczone dzisiaj.`,
       },
       delivered: {
-        title: "Teslim Edildi",
-        body: `${orderNumber} numaralı siparişiniz başarıyla teslim edildi. Afiyet olsun!`,
+        tr: `${orderNumber} numaralı siparişiniz başarıyla teslim edildi. Afiyet olsun!`,
+        en: `Order ${orderNumber} has been successfully delivered. Enjoy!`,
+        pl: `Zamówienie ${orderNumber} zostało pomyślnie dostarczone. Smacznego!`,
       },
       cancelled: {
-        title: "Sipariş İptal Edildi",
-        body: `${orderNumber} numaralı siparişiniz iptal edildi.`,
+        tr: `${orderNumber} numaralı siparişiniz iptal edildi.`,
+        en: `Order ${orderNumber} has been cancelled.`,
+        pl: `Zamówienie ${orderNumber} zostało anulowane.`,
       },
       refunded: {
-        title: "İade Edildi",
-        body: `${orderNumber} numaralı siparişiniz için ödeme iadesi yapıldı.`,
+        tr: `${orderNumber} numaralı siparişiniz için ödeme iadesi yapıldı.`,
+        en: `Payment refund has been processed for order ${orderNumber}.`,
+        pl: `Zwrot płatności został przetworzony dla zamówienia ${orderNumber}.`,
       },
     };
 
-    return notifications[status] || null;
+    const notificationTypeMap: Record<
+      string,
+      "orderConfirmed" | "orderPreparing" | "orderShipped" | "orderOutForDelivery" | "orderDelivered" | "orderCancelled" | "orderRefunded"
+    > = {
+      confirmed: "orderConfirmed",
+      preparing: "orderPreparing",
+      shipped: "orderShipped",
+      out_for_delivery: "orderOutForDelivery",
+      delivered: "orderDelivered",
+      cancelled: "orderCancelled",
+      refunded: "orderRefunded",
+    };
+
+    const notificationType = notificationTypeMap[status];
+    const bodyTranslations = statusMap[status];
+
+    if (!notificationType || !bodyTranslations) {
+      return null;
+    }
+
+    const titleMap: Record<string, { tr: string; en: string; pl: string }> = {
+      confirmed: {
+        tr: "Siparişiniz Onaylandı",
+        en: "Order Confirmed",
+        pl: "Zamówienie Potwierdzone",
+      },
+      preparing: {
+        tr: "Siparişiniz Hazırlanıyor",
+        en: "Order Being Prepared",
+        pl: "Zamówienie w Przygotowaniu",
+      },
+      shipped: {
+        tr: "Kargoya Verildi",
+        en: "Order Shipped",
+        pl: "Zamówienie Wysłane",
+      },
+      out_for_delivery: {
+        tr: "Dağıtıma Çıktı",
+        en: "Out for Delivery",
+        pl: "W Dostawie",
+      },
+      delivered: {
+        tr: "Teslim Edildi",
+        en: "Order Delivered",
+        pl: "Zamówienie Dostarczone",
+      },
+      cancelled: {
+        tr: "Sipariş İptal Edildi",
+        en: "Order Cancelled",
+        pl: "Zamówienie Anulowane",
+      },
+      refunded: {
+        tr: "İade Edildi",
+        en: "Order Refunded",
+        pl: "Zamówienie Zwrócone",
+      },
+    };
+
+    const titleTranslations = titleMap[status];
+
+    return {
+      notificationType,
+      customTranslations: {
+        tr: {
+          title: titleTranslations.tr,
+          body: bodyTranslations.tr,
+        },
+        en: {
+          title: titleTranslations.en,
+          body: bodyTranslations.en,
+        },
+        pl: {
+          title: titleTranslations.pl,
+          body: bodyTranslations.pl,
+        },
+      },
+    };
   }
 
   /**
