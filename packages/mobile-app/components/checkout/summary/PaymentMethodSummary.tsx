@@ -2,7 +2,6 @@
 //  metropolitan app
 //  Created by Ahmet on 15.07.2025.
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, View } from "react-native";
@@ -15,9 +14,12 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { useHaptics } from "@/hooks/useHaptics";
 import { IoniconsName } from "@/types/ionicons.types";
 
-export function PaymentMethodSummary() {
+interface PaymentMethodSummaryProps {
+  onViewBankDetails?: () => void;
+}
+
+export function PaymentMethodSummary({ onViewBankDetails }: PaymentMethodSummaryProps) {
   const { t } = useTranslation();
-  const router = useRouter();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
   const { state } = useCheckout();
@@ -29,8 +31,8 @@ export function PaymentMethodSummary() {
   return (
     <Pressable
       onPress={withHapticFeedback(() => {
-        if (isBankTransfer) {
-          router.push("/checkout/bank-transfer");
+        if (isBankTransfer && onViewBankDetails) {
+          onViewBankDetails();
         }
       })}
       disabled={!selectedPaymentMethod || !isBankTransfer}

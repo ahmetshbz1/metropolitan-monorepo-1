@@ -5,13 +5,15 @@
 //  Updated by Ahmet on 22.07.2025. - Keyboard handling improved
 
 import { useFocusEffect } from "expo-router";
-import React, { useCallback } from "react";
+import React, { useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
+import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { KeyboardAwareScrollView } from "react-native-keyboard-controller";
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { BankTransferBottomSheet } from "@/components/checkout/BankTransferBottomSheet";
 import { ProgressIndicator } from "@/components/checkout/ProgressIndicator";
 import { DeliveryAddressSummary } from "@/components/checkout/summary/DeliveryAddressSummary";
 import { OrderNotes } from "@/components/checkout/summary/OrderNotes";
@@ -31,6 +33,7 @@ export default function CheckoutSummaryScreen() {
   const { showToast } = useToast();
   const { isCreatingOrder, orderLoading, isBankTransfer, handleCreateOrder } =
     useCheckoutSummary();
+  const bankTransferSheetRef = useRef<BottomSheetModal>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -62,7 +65,9 @@ export default function CheckoutSummaryScreen() {
       >
         <View className="p-5 gap-6" style={{ paddingBottom: 0 }}>
           <DeliveryAddressSummary />
-          <PaymentMethodSummary />
+          <PaymentMethodSummary
+            onViewBankDetails={() => bankTransferSheetRef.current?.present()}
+          />
           <PaymentTermSelector />
           <OrderTotals />
           <OrderNotes />
@@ -91,6 +96,7 @@ export default function CheckoutSummaryScreen() {
           }
         }}
       />
+      <BankTransferBottomSheet ref={bankTransferSheetRef} />
     </ThemedView>
   );
 }

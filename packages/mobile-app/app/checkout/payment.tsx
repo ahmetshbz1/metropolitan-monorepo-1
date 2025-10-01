@@ -4,9 +4,10 @@
 
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
-import React, { useCallback } from "react";
+import React, { useCallback, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, View } from "react-native";
+import type { BottomSheetModal } from "@gorhom/bottom-sheet";
 import {
   KeyboardAwareScrollView,
   KeyboardStickyView,
@@ -19,6 +20,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { BaseButton } from "@/components/base/BaseButton";
 import { BaseCard } from "@/components/base/BaseCard";
 import { ProgressIndicator } from "@/components/checkout/ProgressIndicator";
+import { BankTransferBottomSheet } from "@/components/checkout/BankTransferBottomSheet";
 import Colors, { ColorUtils } from "@/constants/Colors";
 import { useCheckout } from "@/context/CheckoutContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -42,6 +44,7 @@ export default function CheckoutPaymentScreen() {
   } = useCheckout();
 
   const availablePaymentMethods = getAvailablePaymentMethods();
+  const bankTransferSheetRef = useRef<BottomSheetModal>(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -52,7 +55,7 @@ export default function CheckoutPaymentScreen() {
   const handleSelectPaymentMethod = (method: CheckoutPaymentMethod) => {
     setPaymentMethod(method);
     if (method.id === "bank_transfer") {
-      router.push("/checkout/bank-transfer");
+      bankTransferSheetRef.current?.present();
     }
   };
 
@@ -192,6 +195,8 @@ export default function CheckoutPaymentScreen() {
           />
         </View>
       </KeyboardStickyView>
+
+      <BankTransferBottomSheet ref={bankTransferSheetRef} />
     </ThemedView>
   );
 }
