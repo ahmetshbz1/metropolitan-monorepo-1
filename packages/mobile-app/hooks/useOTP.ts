@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 
-const RESEND_TIMEOUT = 20;
+const RESEND_TIMEOUT = 60;
 
 interface UseOTPProps {
   onSuccess: (isNewUser: boolean) => void;
