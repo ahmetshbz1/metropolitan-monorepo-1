@@ -13,6 +13,7 @@ import {
   guestCartItems,
   guestDeviceTokens,
   guestFavorites,
+  products,
   users,
 } from "../../../../shared/infrastructure/database/schema";
 import { createApp } from "../../../../shared/infrastructure/web/app";
@@ -57,21 +58,51 @@ export const guestMigrationRoutes = createApp()
             where: eq(guestDeviceTokens.guestId, guestId),
           });
 
-          // 4. Migrate cart items
+          // 4. Migrate cart items with minimum quantity adjustment for corporate users
           let migratedCartItems = 0;
           for (const item of guestCartData) {
             try {
+              let finalQuantity = item.quantity;
+
+              // If user is corporate, adjust quantity to meet minimum requirements
+              if (user.userType === 'corporate') {
+                // Get product minimum quantity for corporate
+                const product = await db.query.products.findFirst({
+                  where: eq(products.id, item.productId),
+                  columns: {
+                    minQuantityCorporate: true,
+                  },
+                });
+
+                if (product && product.minQuantityCorporate) {
+                  // Adjust quantity to meet minimum corporate requirement
+                  finalQuantity = Math.max(item.quantity, product.minQuantityCorporate);
+
+                  if (finalQuantity !== item.quantity) {
+                    log.info(
+                      {
+                        productId: item.productId,
+                        originalQuantity: item.quantity,
+                        adjustedQuantity: finalQuantity,
+                        minRequired: product.minQuantityCorporate,
+                      },
+                      "Adjusted quantity to meet corporate minimum"
+                    );
+                  }
+                }
+              }
+
               await db
                 .insert(cartItems)
                 .values({
                   userId: user.id,
                   productId: item.productId,
-                  quantity: item.quantity,
+                  quantity: finalQuantity,
                 })
                 .onConflictDoUpdate({
                   target: [cartItems.userId, cartItems.productId],
                   set: {
-                    quantity: item.quantity,
+                    quantity: finalQuantity,
                     updatedAt: new Date(),
                   },
                 });
