@@ -4,8 +4,9 @@
 //  Modified by Ahmet on 15.07.2025.
 //  Updated by Ahmet on 22.07.2025. - Keyboard handling improved
 
+import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect } from "expo-router";
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useLayoutEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
@@ -28,12 +29,19 @@ import { useToast } from "@/hooks/useToast";
 
 export default function CheckoutSummaryScreen() {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const { summary, flushPendingUpdates } = useCart();
   const { setCurrentStep } = useCheckout();
   const { showToast } = useToast();
   const { isCreatingOrder, orderLoading, isBankTransfer, handleCreateOrder } =
     useCheckoutSummary();
   const bankTransferSheetRef = useRef<BottomSheetModal>(null);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: t("checkout.steps.summary"),
+    });
+  }, [navigation, t]);
 
   useFocusEffect(
     useCallback(() => {

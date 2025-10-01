@@ -3,8 +3,9 @@
 //  Created by Ahmet on 07.07.2025.
 
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect, useRouter } from "expo-router";
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useLayoutEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Pressable, View } from "react-native";
 import type { BottomSheetModal } from "@gorhom/bottom-sheet";
@@ -29,11 +30,19 @@ import type { CheckoutPaymentMethod } from "@metropolitan/shared";
 
 export default function CheckoutPaymentScreen() {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
   const { withHapticFeedback } = useHaptics();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: t("checkout.steps.payment"),
+    });
+  }, [navigation, t]);
+
   const {
     state,
     setPaymentMethod,

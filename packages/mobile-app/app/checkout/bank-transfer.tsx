@@ -4,8 +4,9 @@
 
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
+import { useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Text, TouchableOpacity, View } from "react-native";
 import {
@@ -23,12 +24,19 @@ import { useHaptics } from "@/hooks/useHaptics";
 
 export default function BankTransferScreen() {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
   const { triggerHaptic } = useHaptics();
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: t("checkout.bank_transfer_title"),
+    });
+  }, [navigation, t]);
 
   const bankDetails = [
     {

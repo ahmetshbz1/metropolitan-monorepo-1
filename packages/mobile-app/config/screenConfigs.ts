@@ -28,10 +28,6 @@ export const SCREEN_CONFIGS = {
     name: "(tabs)",
     options: { headerShown: false },
   },
-  checkout: {
-    name: "checkout",
-    options: { headerShown: false },
-  },
   notFound: {
     name: "+not-found",
     options: {},
@@ -68,6 +64,56 @@ export const DYNAMIC_SCREEN_CONFIGS: ScreenConfig[] = [
 ];
 
 export const STATIC_SCREEN_CONFIGS: ScreenConfig[] = [
+  {
+    name: "checkout/address",
+    options: {
+      headerShown: true,
+      headerTitle: "",
+      headerBackButtonDisplayMode: "default",
+      ...Platform.select({
+        ios: {
+          headerBackTitleVisible: true,
+          headerBackTitleStyle: { fontSize: 17 },
+        },
+      }),
+    },
+  },
+  {
+    name: "checkout/payment",
+    options: {
+      headerShown: true,
+      headerTitle: "",
+      headerBackButtonDisplayMode: "default",
+      ...Platform.select({
+        ios: {
+          headerBackTitleVisible: true,
+          headerBackTitleStyle: { fontSize: 17 },
+        },
+      }),
+    },
+  },
+  {
+    name: "checkout/summary",
+    options: {
+      headerShown: true,
+      headerTitle: "",
+      headerBackButtonDisplayMode: "default",
+      ...Platform.select({
+        ios: {
+          headerBackTitleVisible: true,
+          headerBackTitleStyle: { fontSize: 17 },
+        },
+      }),
+    },
+  },
+  {
+    name: "checkout/bank-transfer",
+    options: {
+      headerShown: true,
+      headerTitle: "",
+      presentation: "modal",
+    },
+  },
   {
     name: "add-address",
     options: {

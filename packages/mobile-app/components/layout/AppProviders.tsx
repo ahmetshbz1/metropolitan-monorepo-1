@@ -12,6 +12,7 @@ import ErrorBoundary from "@/components/error/ErrorBoundary";
 import { AddressProvider } from "@/context/AddressContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
+import { CheckoutProvider } from "@/context/CheckoutContext";
 import { ColorSchemeProvider } from "@/context/ColorSchemeContext";
 import { FavoritesProvider } from "@/context/FavoritesContext";
 import { NetworkProvider } from "@/context/NetworkContext";
@@ -41,7 +42,8 @@ export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
                         <CartProvider>
                           <FavoritesProvider>
                             <OrderProvider>
-                              <StripeProviderWrapper>
+                              <CheckoutProvider>
+                                <StripeProviderWrapper>
                                 {/* Move ColorSchemeProvider below data providers to avoid re-rendering them on theme change */}
                                 <ColorSchemeProvider>
                                   <BottomSheetModalProvider>
@@ -49,6 +51,7 @@ export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
                                   </BottomSheetModalProvider>
                                 </ColorSchemeProvider>
                               </StripeProviderWrapper>
+                              </CheckoutProvider>
                             </OrderProvider>
                           </FavoritesProvider>
                         </CartProvider>

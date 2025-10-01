@@ -2,8 +2,9 @@
 //  metropolitan app
 //  Created by Ahmet on 25.06.2025.
 
+import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect, useRouter } from "expo-router";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import {
@@ -25,10 +26,17 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 
 export default function CheckoutAddressScreen() {
   const { t } = useTranslation();
+  const navigation = useNavigation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: t("checkout.steps.address"),
+    });
+  }, [navigation, t]);
 
   const { addresses, loading: addressesLoading } = useAddresses();
   const {

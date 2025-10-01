@@ -67,7 +67,7 @@ export default function CartScreen() {
         router.push("/(auth)?from=checkout");
         return;
       }
-      router.push("/checkout");
+      router.push("/checkout/address");
     } catch (error: any) {
       // Flush sırasında hata olursa kullanıcıya göster
       showToast(error.message || t("cart.update_error"), "error");

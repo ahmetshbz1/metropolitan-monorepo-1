@@ -69,10 +69,6 @@ export const NavigationStack: React.FC = () => {
           options={SCREEN_CONFIGS.tabs.options}
         />
         <Stack.Screen
-          name={SCREEN_CONFIGS.checkout.name}
-          options={SCREEN_CONFIGS.checkout.options}
-        />
-        <Stack.Screen
           name={SCREEN_CONFIGS.notFound.name}
           options={SCREEN_CONFIGS.notFound.options}
         />
