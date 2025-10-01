@@ -137,6 +137,8 @@ docker-compose.override.yml
 .vscode-test
 
 # Mobile specific
+android/
+ios/
 android/app/debug.keystore
 android/app/release.keystore
 ios/Pods/
