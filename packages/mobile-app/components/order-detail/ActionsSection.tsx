@@ -72,19 +72,25 @@ export function ActionsSection({
       cancelText: t("general.no"),
       destructive: true,
       onConfirm: async () => {
+        console.log("[DEBUG] ActionsSection onConfirm başladı");
         try {
           if (onCancelOrder) {
+            console.log("[DEBUG] onCancelOrder prop var, çağrılıyor");
             await onCancelOrder();
           } else {
+            console.log("[DEBUG] Direkt cancelOrder çağrılıyor, orderId:", orderData.order.id);
             await cancelOrder(orderData.order.id);
+            console.log("[DEBUG] cancelOrder başarılı, router.back()");
             showToast(t("order_detail.cancel_success_title"), "success");
             router.back();
           }
         } catch (error: any) {
+          console.log("[DEBUG] Cancel HATA:", error);
           const errorMessage =
             error.response?.data?.message ||
             t("order_detail.cancel_error_message");
           showToast(errorMessage, "error");
+          throw error;
         }
       },
     });

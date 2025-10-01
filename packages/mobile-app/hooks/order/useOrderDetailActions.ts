@@ -22,8 +22,13 @@ export function useOrderDetailActions(orderId: string) {
   };
 
   const handleCancelOrder = async () => {
-    if (!selectedOrder) return;
+    console.log("[DEBUG] handleCancelOrder başladı");
+    if (!selectedOrder) {
+      console.log("[DEBUG] selectedOrder yok, çıkılıyor");
+      return;
+    }
 
+    console.log("[DEBUG] Dialog gösteriliyor, orderId:", selectedOrder.id);
     showDialog({
       title: t("order.cancelOrder"),
       message: t("order.cancelOrderConfirmation"),
@@ -32,12 +37,22 @@ export function useOrderDetailActions(orderId: string) {
       cancelText: t("common.cancel"),
       destructive: true,
       onConfirm: async () => {
+        console.log("[DEBUG] onConfirm başladı");
         try {
+          console.log("[DEBUG] cancelOrder çağrılıyor...");
           await cancelOrder(selectedOrder.id);
-          hideDialog();
-          router.back();
-        } catch {
+          console.log("[DEBUG] cancelOrder başarılı");
+
+          console.log("[DEBUG] 100ms sonra router.back() çağrılacak");
+          setTimeout(() => {
+            console.log("[DEBUG] router.back() çağrılıyor");
+            router.back();
+            console.log("[DEBUG] router.back() tamamlandı");
+          }, 100);
+        } catch (error) {
+          console.log("[DEBUG] cancelOrder HATA:", error);
           showToast(t("order.cancelOrderError"), "error");
+          throw error;
         }
       },
     });
