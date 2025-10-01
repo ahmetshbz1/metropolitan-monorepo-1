@@ -14,9 +14,9 @@ import {
 } from "./sms.service";
 
 // OTP configuration
-const OTP_EXPIRY_SECONDS = 60; // 1 minute (mobile app resend is 60 seconds)
+const OTP_EXPIRY_SECONDS = 120; // 2 minutes (mobile app resend is 30 seconds)
 const OTP_MAX_ATTEMPTS = 3;
-const OTP_RESEND_COOLDOWN = 60; // 1 minute between resends
+const OTP_RESEND_COOLDOWN = 30; // 30 seconds between resends
 
 // Test credentials for Apple Review
 const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
