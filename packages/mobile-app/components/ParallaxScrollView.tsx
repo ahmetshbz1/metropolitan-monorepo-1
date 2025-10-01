@@ -2,7 +2,9 @@
 //  metropolitan app
 //  Created by Ahmet on 06.07.2025.
 
+import * as Device from "expo-device";
 import type { PropsWithChildren, ReactElement } from "react";
+import { useWindowDimensions } from "react-native";
 import Animated, {
   interpolate,
   useAnimatedRef,
@@ -13,8 +15,6 @@ import Animated, {
 import { ThemedView } from "@/components/ThemedView";
 import { useBottomTabOverflow } from "@/components/ui/TabBarBackground";
 import { useColorScheme } from "@/hooks/useColorScheme";
-
-const HEADER_HEIGHT = 300;
 
 type Props = PropsWithChildren<{
   headerImage: ReactElement;
@@ -30,6 +30,11 @@ export default function ParallaxScrollView({
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
   const bottom = useBottomTabOverflow();
+  const { height } = useWindowDimensions();
+
+  const isTablet = Device.deviceType === Device.DeviceType.TABLET;
+  const HEADER_HEIGHT = isTablet ? height * 0.45 : height * 0.35;
+
   const headerAnimatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
@@ -72,9 +77,7 @@ export default function ParallaxScrollView({
         >
           {headerImage}
         </Animated.View>
-        <ThemedView className="flex-1 overflow-hidden">
-          {children}
-        </ThemedView>
+        <ThemedView className="flex-1 overflow-hidden">{children}</ThemedView>
       </Animated.ScrollView>
     </ThemedView>
   );
