@@ -14,10 +14,14 @@ import {
   generateDeviceFingerprint,
   extractDeviceInfo,
   generateJTI,
+  generateSessionId,
   verifyRefreshToken,
   verifyDeviceSession,
   updateSessionActivity,
+  storeDeviceSession,
+  storeRefreshToken,
   invalidateAllUserSessions,
+  invalidateSession,
   blacklistJTI,
   type EnhancedRefreshTokenPayload,
 } from "../../infrastructure/security/device-fingerprint";
@@ -57,26 +61,87 @@ export const refreshTokenRoutes = createApp()
         const deviceInfo = extractDeviceInfo(headers);
         const currentDeviceId = generateDeviceFingerprint(deviceInfo, headers);
 
-        // Verify device fingerprint matches
-        if (payload.deviceId !== currentDeviceId) {
-          // Device mismatch - potential security breach
-          log.error({
+        // Get userType from payload if available, otherwise fallback to "individual"
+        const userType = (payload as any).userType || "individual";
+
+        // Check if device fingerprint changed
+        const deviceFingerprintChanged = payload.deviceId !== currentDeviceId;
+
+        if (deviceFingerprintChanged) {
+          // Device fingerprint changed - graceful migration to new fingerprint
+          log.warn({
             userId: payload.sub,
-            storedDeviceId: payload.deviceId,
-            currentDeviceId,
-            message: "Device fingerprint mismatch - potential security breach",
+            oldDeviceId: payload.deviceId,
+            newDeviceId: currentDeviceId,
+            message: "Device fingerprint changed - creating new session with new fingerprint",
           });
 
-          // Invalidate all user sessions for security
-          await invalidateAllUserSessions(payload.sub);
+          // Invalidate old session
+          await invalidateSession(payload.sessionId);
 
-          set.status = 401;
+          // Create new session with new device fingerprint
+          const newSessionId = generateSessionId();
+          await storeDeviceSession(
+            payload.sub,
+            currentDeviceId,
+            newSessionId,
+            deviceInfo,
+            headers["x-forwarded-for"] || headers["x-real-ip"]
+          );
+
+          // Generate new access token with new device fingerprint
+          const newAccessJTI = generateJTI();
+          const newAccessToken = await jwt.sign({
+            sub: payload.sub,
+            type: "access",
+            userType,
+            sessionId: newSessionId,
+            deviceId: currentDeviceId, // Use new device fingerprint
+            jti: newAccessJTI,
+            aud: "mobile-app",
+            iss: "metropolitan-api",
+            exp: Math.floor(Date.now() / 1000) + 60 * 60,
+          });
+
+          // Generate new refresh token with new device fingerprint
+          const newRefreshJTI = generateJTI();
+          const newRefreshToken = await jwt.sign({
+            sub: payload.sub,
+            type: "refresh",
+            userType,
+            sessionId: newSessionId,
+            deviceId: currentDeviceId, // Use new device fingerprint
+            jti: newRefreshJTI,
+            aud: "mobile-app",
+            iss: "metropolitan-api",
+            exp: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60, // 30 days
+          });
+
+          // Store new refresh token
+          await storeRefreshToken(
+            payload.sub,
+            newRefreshToken,
+            currentDeviceId,
+            newSessionId,
+            newRefreshJTI
+          );
+
+          log.info({
+            userId: payload.sub,
+            newDeviceId: currentDeviceId,
+            newSessionId,
+            message: "Session migrated to new device fingerprint successfully",
+          });
+
           return {
-            success: false,
-            message: "Device verification failed. Please login again.",
+            success: true,
+            accessToken: newAccessToken,
+            refreshToken: newRefreshToken, // Return new refresh token
+            expiresIn: 3600,
           };
         }
 
+        // Normal flow - device fingerprint hasn't changed
         // Verify refresh token in Redis
         const tokenValid = await verifyRefreshToken(
           payload.sub,
@@ -118,9 +183,6 @@ export const refreshTokenRoutes = createApp()
         // Update session activity
         await updateSessionActivity(payload.sub, payload.deviceId);
 
-        // Get userType from payload if available, otherwise fallback to "individual"
-        const userType = (payload as any).userType || "individual";
-
         // Generate new access token with fresh JTI
         const newAccessJTI = generateJTI();
         const newAccessToken = await jwt.sign({
@@ -132,7 +194,7 @@ export const refreshTokenRoutes = createApp()
           jti: newAccessJTI,
           aud: "mobile-app",
           iss: "metropolitan-api",
-          exp: Math.floor(Date.now() / 1000) + 60 * 60, // 1 hour (was 15 minutes)
+          exp: Math.floor(Date.now() / 1000) + 60 * 60,
         });
 
         log.info({
@@ -145,7 +207,7 @@ export const refreshTokenRoutes = createApp()
         return {
           success: true,
           accessToken: newAccessToken,
-          expiresIn: 3600, // 1 hour in seconds (was 900)
+          expiresIn: 3600,
         };
       } catch (error: any) {
         log.error({

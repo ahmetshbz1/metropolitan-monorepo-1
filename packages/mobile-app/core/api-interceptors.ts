@@ -57,6 +57,12 @@ async function refreshAccessToken(api: AxiosInstance): Promise<string | null> {
       // Save new access token
       await tokenStorage.saveAccessToken(newAccessToken);
 
+      // If a new refresh token is provided (e.g., after device fingerprint migration), save it too
+      if (response.data.refreshToken) {
+        await tokenStorage.saveRefreshToken(response.data.refreshToken);
+        console.log("🔄 [TOKEN REFRESH] New refresh token received and saved (fingerprint migration)");
+      }
+
       // Removed console statement
       return newAccessToken;
     }
