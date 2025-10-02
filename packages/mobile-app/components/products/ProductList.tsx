@@ -60,6 +60,15 @@ export const ProductList = forwardRef<ProductListRef, ProductListProps>(
       return `${item.id}-${index}`;
     }, []);
 
+    const getItemLayout = useCallback(
+      (_: any, index: number) => ({
+        length: 116,
+        offset: 116 * index,
+        index,
+      }),
+      []
+    );
+
     return (
       <FlatList
         ref={flatListRef}
@@ -80,9 +89,10 @@ export const ProductList = forwardRef<ProductListRef, ProductListProps>(
           ) : undefined
         }
         removeClippedSubviews={false}
-        maxToRenderPerBatch={10}
-        windowSize={10}
-        initialNumToRender={9}
+        getItemLayout={getItemLayout}
+        maxToRenderPerBatch={8}
+        windowSize={8}
+        initialNumToRender={8}
         updateCellsBatchingPeriod={100}
         showsVerticalScrollIndicator={false}
       />

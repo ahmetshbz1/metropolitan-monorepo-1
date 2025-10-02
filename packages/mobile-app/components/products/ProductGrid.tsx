@@ -108,6 +108,15 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
       return `${item.id}-${index}`;
     }, []);
 
+    const getItemLayout = useCallback(
+      (_: any, index: number) => ({
+        length: horizontal ? finalCardWidth : finalCardWidth,
+        offset: horizontal ? (finalCardWidth + gap) * index : 0,
+        index,
+      }),
+      [finalCardWidth, gap, horizontal]
+    );
+
     return (
       <FlatList
         ref={flatListRef}
@@ -118,6 +127,7 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
         horizontal={horizontal}
         numColumns={horizontal ? undefined : numColumns}
         scrollEnabled={scrollEnabled}
+        nestedScrollEnabled={true}
         contentContainerStyle={[
           { paddingHorizontal: horizontalPadding, paddingVertical: horizontal ? 0 : 8, gap },
           contentContainerStyle,
@@ -136,11 +146,12 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
             />
           ) : undefined
         }
-        // Basic performance optimizations - removeClippedSubviews disable (resim yükleme sorunları için)
+        // Performance optimizations
         removeClippedSubviews={false}
-        maxToRenderPerBatch={horizontal ? 12 : 10}
-        windowSize={horizontal ? 8 : 10}
-        initialNumToRender={horizontal ? 12 : (numColumns ? numColumns * 3 : 9)}
+        getItemLayout={horizontal ? getItemLayout : undefined}
+        maxToRenderPerBatch={horizontal ? 4 : 10}
+        windowSize={horizontal ? 3 : 10}
+        initialNumToRender={horizontal ? 4 : (numColumns ? numColumns * 3 : 9)}
         updateCellsBatchingPeriod={horizontal ? 50 : 100}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}

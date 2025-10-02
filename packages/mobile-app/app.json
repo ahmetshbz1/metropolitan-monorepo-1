@@ -21,7 +21,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.metropolitan.food",
-      "buildNumber": "34",
+      "buildNumber": "35",
       "deploymentTarget": "18.0",
       "config": {
         "googleSignIn": {
@@ -52,7 +52,7 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.metropolitan.food",
-      "versionCode": 3,
+      "versionCode": 4,
       "permissions": [
         "android.permission.RECORD_AUDIO",
         "com.google.android.c2dm.permission.RECEIVE"

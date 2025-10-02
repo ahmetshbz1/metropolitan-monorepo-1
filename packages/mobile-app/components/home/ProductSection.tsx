@@ -38,4 +38,7 @@ function ProductSectionComponent({ title, products }: ProductSectionProps) {
   );
 }
 
-export const ProductSection = React.memo(ProductSectionComponent);
+export const ProductSection = React.memo(
+  ProductSectionComponent,
+  (prev, next) => prev.title === next.title && prev.products.length === next.products.length
+);

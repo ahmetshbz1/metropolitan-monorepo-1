@@ -89,8 +89,10 @@ export const ProductListItem = React.memo<ProductListItemProps>(function Product
               height: '85%',
             }}
             contentFit="contain"
-            transition={400}
-            cachePolicy="memory-disk"
+            transition={200}
+            cachePolicy="disk"
+            priority="normal"
+            recyclingKey={product.id}
           />
           {isOutOfStock && (
             <View

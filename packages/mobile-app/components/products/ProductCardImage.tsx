@@ -3,14 +3,13 @@
 //  Created by Ahmet on 03.07.2025. Edited on 23.07.2025.
 
 import { Product } from "@/context/ProductContext";
+import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ColorSchemeName, View, GestureResponderEvent } from "react-native";
-import { ThemedText } from "../ThemedText";
-import { Ionicons } from "@expo/vector-icons";
+import { ColorSchemeName, GestureResponderEvent, View } from "react-native";
 import { HapticIconButton } from "../HapticButton";
+import { ThemedText } from "../ThemedText";
 
 interface ProductCardImageProps {
   product: Product;
@@ -22,7 +21,7 @@ interface ProductCardImageProps {
   handleAddToCart: (e: GestureResponderEvent) => Promise<void>;
 }
 
-export const ProductCardImage: React.FC<ProductCardImageProps> = ({
+const ProductCardImageComponent: React.FC<ProductCardImageProps> = ({
   product,
   colorScheme,
   isOutOfStock,
@@ -38,7 +37,7 @@ export const ProductCardImage: React.FC<ProductCardImageProps> = ({
       className="relative items-center justify-center overflow-hidden"
       style={{
         aspectRatio: 1,
-        backgroundColor: colorScheme === 'dark' ? '#1a1a1a' : '#ffffff',
+        backgroundColor: colorScheme === "dark" ? "#1a1a1a" : "#ffffff",
         borderTopLeftRadius: 12,
         borderTopRightRadius: 12,
       }}
@@ -46,14 +45,17 @@ export const ProductCardImage: React.FC<ProductCardImageProps> = ({
       <Image
         source={{ uri: product.image }}
         style={{
-          width: '85%',
-          height: '85%',
+          width: "85%",
+          height: "85%",
         }}
         contentFit="contain"
         transition={200}
-        cachePolicy="memory-disk"
-        priority="high"
-        placeholder={{ uri: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2Y1ZjVmNSIvPgo8L3N2Zz4K' }}
+        cachePolicy="disk"
+        priority="normal"
+        recyclingKey={product.id}
+        placeholder={{
+          uri: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2Y1ZjVmNSIvPgo8L3N2Zz4K",
+        }}
       />
 
       {/* Add to Cart Button - Top Right */}
@@ -76,7 +78,7 @@ export const ProductCardImage: React.FC<ProductCardImageProps> = ({
             name="add"
             size={20}
             color="#fff"
-            style={{ fontWeight: 'bold' }}
+            style={{ fontWeight: "bold" }}
           />
         </HapticIconButton>
       )}
@@ -90,10 +92,13 @@ export const ProductCardImage: React.FC<ProductCardImageProps> = ({
           <View
             className="px-3 py-1.5 rounded-lg"
             style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              backgroundColor: "rgba(255, 255, 255, 0.95)",
             }}
           >
-            <ThemedText className="text-xs font-bold" style={{ color: '#1a1a1a' }}>
+            <ThemedText
+              className="text-xs font-bold"
+              style={{ color: "#1a1a1a" }}
+            >
               {t("product.out_of_stock")}
             </ThemedText>
           </View>
@@ -102,3 +107,11 @@ export const ProductCardImage: React.FC<ProductCardImageProps> = ({
     </View>
   );
 };
+
+export const ProductCardImage = React.memo(
+  ProductCardImageComponent,
+  (prev, next) =>
+    prev.product.id === next.product.id &&
+    prev.isOutOfStock === next.isOutOfStock &&
+    prev.isProductFavorite === next.isProductFavorite
+);

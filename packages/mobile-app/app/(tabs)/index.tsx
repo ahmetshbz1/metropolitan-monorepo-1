@@ -147,6 +147,8 @@ export default function HomeScreen() {
           paddingBottom,
         }}
         scrollEnabled={!showErrorOverlay}
+        nestedScrollEnabled={true}
+        removeClippedSubviews={false}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
