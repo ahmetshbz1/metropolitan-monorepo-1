@@ -5,6 +5,7 @@ import axios, { AxiosInstance } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { tokenStorage } from '../context/auth/storage';
 import { getDeviceHeaders } from '../utils/deviceFingerprint';
+import { EventEmitter, AppEvent } from '../utils/eventEmitter';
 import i18n from './i18n';
 
 let isRefreshing = false;
@@ -32,7 +33,6 @@ async function refreshAccessToken(api: AxiosInstance): Promise<string | null> {
   try {
     const refreshToken = await tokenStorage.getRefreshToken();
     if (!refreshToken) {
-      // Removed console statement
       return null;
     }
 
@@ -63,21 +63,19 @@ async function refreshAccessToken(api: AxiosInstance): Promise<string | null> {
         console.log("🔄 [TOKEN REFRESH] New refresh token received and saved (fingerprint migration)");
       }
 
-      // Removed console statement
       return newAccessToken;
     }
 
-    // Removed console statement
     return null;
   } catch (error: any) {
-    // Removed console statement
-
     // If refresh failed with 401, clear only tokens but keep user data
     if (error.response?.status === 401) {
       // Only clear tokens, keep user data and phone number for re-auth
       await tokenStorage.removeAccessToken();
       await tokenStorage.removeRefreshToken();
-      console.log("🔄 [AUTH EXPIRED] Tokens cleared, user needs re-authentication");
+
+      // Emit session expired event to show dialog
+      EventEmitter.emit(AppEvent.SESSION_EXPIRED);
     }
 
     return null;
@@ -90,9 +88,8 @@ async function refreshAccessToken(api: AxiosInstance): Promise<string | null> {
 export function setupRequestInterceptor(api: AxiosInstance) {
   api.interceptors.request.use(
     async (config) => {
-      // Skip auth for refresh endpoint
+      // Skip auth for refresh endpoint (don't delete header, response interceptor needs it)
       if (config.headers['X-Skip-Auth-Interceptor']) {
-        delete config.headers['X-Skip-Auth-Interceptor'];
         return config;
       }
 
@@ -105,18 +102,11 @@ export function setupRequestInterceptor(api: AxiosInstance) {
       const token = await tokenStorage.getAccessToken();
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
-        console.log("🔧 [API DEBUG] Using token:", token.substring(0, 50) + "...");
-      } else {
-        console.log("🔧 [API DEBUG] No access token found");
       }
 
       // Add device fingerprint headers
       const deviceHeaders = await getDeviceHeaders();
       Object.assign(config.headers, deviceHeaders);
-
-      console.log("🔧 [API DEBUG] Request:", config.method?.toUpperCase(), config.url);
-      console.log("🔧 [API DEBUG] Base URL:", config.baseURL);
-      console.log("🔧 [API DEBUG] Device Headers:", deviceHeaders);
 
       // Add Accept-Language header for i18n
       config.headers['Accept-Language'] = i18n.language || 'tr';
@@ -137,6 +127,11 @@ export function setupResponseInterceptor(api: AxiosInstance) {
     (response) => response,
     async (error) => {
       const originalRequest = error.config;
+
+      // Skip refresh endpoint errors - let them bubble up to the refresh function
+      if (originalRequest.headers?.['X-Skip-Auth-Interceptor']) {
+        return Promise.reject(error);
+      }
 
       // If the error is 401 and we haven't already tried to refresh
       if (error.response?.status === 401 && !originalRequest._retry) {
@@ -167,21 +162,6 @@ export function setupResponseInterceptor(api: AxiosInstance) {
 
         // If refresh failed, reject all queued requests
         refreshSubscribers = [];
-      }
-
-      // Debug error details
-      console.log("🔧 [API ERROR] Request failed:", {
-        url: error.config?.url,
-        method: error.config?.method,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        message: error.message,
-        isNetworkError: !error.response,
-        baseURL: error.config?.baseURL,
-      });
-
-      if (error.response?.data) {
-        console.log("🔧 [API ERROR] Response data:", error.response.data);
       }
 
       return Promise.reject(error);

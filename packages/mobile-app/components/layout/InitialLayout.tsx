@@ -5,13 +5,15 @@
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 import NotificationService from "@/core/firebase/notifications/notificationService";
 import { useAuth } from "@/context/AuthContext";
 import { router } from "expo-router";
 import * as Notifications from 'expo-notifications';
+import { EventEmitter, AppEvent } from "@/utils/eventEmitter";
+import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 
 import { NavigationStack } from "./NavigationStack";
 
@@ -20,8 +22,9 @@ export const InitialLayout: React.FC = () => {
     // ... add your fonts here
   });
   const colorScheme = useColorScheme();
-  const { i18n } = useTranslation();
-  const { isAuthenticated } = useAuth();
+  const { i18n, t } = useTranslation();
+  const { isAuthenticated, logout } = useAuth();
+  const [sessionExpired, setSessionExpired] = useState(false);
 
   // Push notification navigasyon kontrolü için
   const lastNavigationRef = React.useRef<{ screen: string; time: number } | null>(null);
@@ -85,6 +88,31 @@ export const InitialLayout: React.FC = () => {
     };
   }, [loaded]);
 
+  // Session expired listener
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      setSessionExpired(true);
+    };
+
+    const subscription = EventEmitter.addListener(AppEvent.SESSION_EXPIRED, handleSessionExpired);
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  // Handle session expired dialog login action
+  const handleSessionExpiredLogin = async () => {
+    // Hide dialog first
+    setSessionExpired(false);
+
+    // Logout (clears all auth data and updates context state)
+    logout();
+
+    // Navigate to login
+    router.replace("/(auth)/phone-login");
+  };
+
   // Font yüklenmemiş ise null döndür (Expo splash screen görünür)
   if (!loaded) {
     return null;
@@ -96,6 +124,17 @@ export const InitialLayout: React.FC = () => {
       style={{ flex: 1 }}
     >
       <NavigationStack key={i18n.language} />
+
+      {/* Session Expired Dialog */}
+      <ConfirmationDialog
+        visible={sessionExpired}
+        title={t("auth.session_expired_title")}
+        message={t("auth.session_expired_description")}
+        icon="lock-closed-outline"
+        confirmText={t("auth.login_again")}
+        singleButton
+        onConfirm={handleSessionExpiredLogin}
+      />
     </View>
   );
 };

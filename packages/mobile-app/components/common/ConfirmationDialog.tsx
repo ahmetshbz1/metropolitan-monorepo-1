@@ -23,8 +23,9 @@ interface ConfirmationDialogProps {
   confirmButtonColor?: string;
   destructive?: boolean;
   loading?: boolean;
+  singleButton?: boolean; // Hide cancel button (non-dismissible dialog)
   onConfirm: () => void;
-  onCancel: () => void;
+  onCancel?: () => void; // Optional when singleButton=true
 }
 
 export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
@@ -38,6 +39,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   confirmButtonColor,
   destructive = false,
   loading = false,
+  singleButton = false,
   onConfirm,
   onCancel,
 }) => {
@@ -78,7 +80,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
       visible={visible}
       transparent
       animationType="none"
-      onRequestClose={onCancel}
+      onRequestClose={singleButton ? () => {} : onCancel}
       statusBarTranslucent
     >
       <BlurView
@@ -116,25 +118,11 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
             </ThemedText>
           </View>
 
-          <View className="flex-row gap-3">
-            <HapticButton
-              onPress={onCancel}
-              disabled={loading}
-              className="flex-1 py-3.5 rounded-xl border items-center justify-center"
-              style={{
-                borderColor: colors.border,
-                opacity: loading ? 0.5 : 1,
-              }}
-            >
-              <ThemedText className="font-semibold">
-                {defaultCancelText}
-              </ThemedText>
-            </HapticButton>
-
+          {singleButton ? (
             <HapticButton
               onPress={onConfirm}
               disabled={loading}
-              className="flex-1 py-3.5 rounded-xl items-center justify-center"
+              className="py-3.5 rounded-xl items-center justify-center"
               style={{
                 backgroundColor: defaultConfirmColor,
                 opacity: loading ? 0.7 : 1,
@@ -148,7 +136,41 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
                 </ThemedText>
               )}
             </HapticButton>
-          </View>
+          ) : (
+            <View className="flex-row gap-3">
+              <HapticButton
+                onPress={onCancel!}
+                disabled={loading}
+                className="flex-1 py-3.5 rounded-xl border items-center justify-center"
+                style={{
+                  borderColor: colors.border,
+                  opacity: loading ? 0.5 : 1,
+                }}
+              >
+                <ThemedText className="font-semibold">
+                  {defaultCancelText}
+                </ThemedText>
+              </HapticButton>
+
+              <HapticButton
+                onPress={onConfirm}
+                disabled={loading}
+                className="flex-1 py-3.5 rounded-xl items-center justify-center"
+                style={{
+                  backgroundColor: defaultConfirmColor,
+                  opacity: loading ? 0.7 : 1,
+                }}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <ThemedText className="font-semibold" style={{ color: "#fff" }}>
+                    {defaultConfirmText}
+                  </ThemedText>
+                )}
+              </HapticButton>
+            </View>
+          )}
         </Animated.View>
       </BlurView>
     </Modal>
