@@ -23,6 +23,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import Colors from "@/constants/Colors";
 import { useProducts } from "@/context/ProductContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useImagePreload } from "@/hooks/useImagePreload";
 import { useTabBarHeight } from "@/hooks/useTabBarHeight";
 import { useScrollToTop } from "./_layout";
 
@@ -99,6 +100,18 @@ export default function HomeScreen() {
   const scrollViewRef = useRef<ScrollView>(null);
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
+
+  const imageUrls = useMemo(
+    () => products.slice(0, 24).map((p) => p.image),
+    [products]
+  );
+
+  useImagePreload(imageUrls, {
+    enabled: !loadingProducts && products.length > 0,
+    highPriorityCount: 6,
+    batchSize: 6,
+    delayBetweenBatches: 100,
+  });
 
   useEffect(() => {
     const scrollToTop = () => {

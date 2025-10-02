@@ -5,7 +5,7 @@
 import { Product } from "@/context/ProductContext";
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ColorSchemeName, GestureResponderEvent, View } from "react-native";
 import { HapticIconButton } from "../HapticButton";
@@ -31,6 +31,9 @@ const ProductCardImageComponent: React.FC<ProductCardImageProps> = ({
   handleAddToCart,
 }) => {
   const { t } = useTranslation();
+  const [imageError, setImageError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   return (
     <View
@@ -42,26 +45,54 @@ const ProductCardImageComponent: React.FC<ProductCardImageProps> = ({
         borderTopRightRadius: 12,
       }}
     >
-      <Image
-        source={{ uri: product.image }}
-        style={{
-          width: "85%",
-          height: "85%",
-        }}
-        contentFit="contain"
-        transition={200}
-        cachePolicy="disk"
-        priority="normal"
-        recyclingKey={product.id}
-        placeholder={{
-          uri: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2Y1ZjVmNSIvPgo8L3N2Zz4K",
-        }}
-      />
+      {!imageError ? (
+        <Image
+          source={{
+            uri: `${product.image}${retryCount > 0 ? `?retry=${retryCount}` : ""}`,
+            headers: {
+              "Cache-Control": "max-age=31536000",
+            },
+          }}
+          style={{
+            width: "85%",
+            height: "85%",
+          }}
+          contentFit="contain"
+          transition={200}
+          cachePolicy="memory-disk"
+          priority="high"
+          recyclingKey={product.id}
+          placeholder="L6PZfSi_.AyE_3t7t7R**0o#DgR4"
+          placeholderContentFit="contain"
+          allowDownscaling={true}
+          responsivePolicy="live"
+          contentPosition="center"
+          onLoad={() => setIsLoading(false)}
+          onError={() => {
+            setIsLoading(false);
+            if (retryCount < 3) {
+              setTimeout(() => setRetryCount((prev) => prev + 1), 1000 * (retryCount + 1));
+            } else {
+              setImageError(true);
+            }
+          }}
+        />
+      ) : (
+        <View className="items-center justify-center" style={{ width: "85%", height: "85%" }}>
+          <Ionicons
+            name="image-outline"
+            size={48}
+            color={colorScheme === "dark" ? "#666" : "#ccc"}
+          />
+        </View>
+      )}
 
       {/* Add to Cart Button - Top Right */}
       {!isOutOfStock && (
         <HapticIconButton
-          onPress={handleAddToCart}
+          onPress={(e) => {
+            if (e) handleAddToCart(e);
+          }}
           className="absolute top-1.5 right-1.5 rounded-full justify-center items-center z-20"
           style={{
             backgroundColor: colors.primary,

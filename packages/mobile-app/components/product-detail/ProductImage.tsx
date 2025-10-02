@@ -29,13 +29,22 @@ export const ProductImage = memo(function ProductImage({ product }: ProductImage
       entering={FadeIn.duration(200)}
     >
       <Image
-        source={{ uri: product?.image }}
+        source={{
+          uri: product?.image,
+          headers: {
+            "Cache-Control": "max-age=31536000",
+          },
+        }}
         style={{ width: "100%", height: "100%" }}
         contentFit="contain"
         transition={300}
         placeholder="L6Pj42%M4nWBVZJr00%M_4RjO[M|"
+        placeholderContentFit="contain"
         cachePolicy="memory-disk"
         priority="high"
+        allowDownscaling={true}
+        responsivePolicy="live"
+        contentPosition="center"
       />
       {product && product.stock <= 5 && (
         <View

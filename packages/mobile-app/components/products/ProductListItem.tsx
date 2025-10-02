@@ -83,16 +83,26 @@ export const ProductListItem = React.memo<ProductListItemProps>(function Product
           }}
         >
           <Image
-            source={{ uri: product.image }}
+            source={{
+              uri: product.image,
+              headers: {
+                "Cache-Control": "max-age=31536000",
+              },
+            }}
             style={{
               width: '85%',
               height: '85%',
             }}
             contentFit="contain"
             transition={200}
-            cachePolicy="disk"
-            priority="normal"
+            cachePolicy="memory-disk"
+            priority="high"
             recyclingKey={product.id}
+            placeholder="L6PZfSi_.AyE_3t7t7R**0o#DgR4"
+            placeholderContentFit="contain"
+            allowDownscaling={true}
+            responsivePolicy="live"
+            contentPosition="center"
           />
           {isOutOfStock && (
             <View
@@ -107,7 +117,7 @@ export const ProductListItem = React.memo<ProductListItemProps>(function Product
         </View>
 
         {/* Content */}
-        <View style={{ flex: 1, justifyContent: 'start' }}>
+        <View style={{ flex: 1, justifyContent: 'flex-start' }}>
           {/* Product Name */}
           <ThemedText
             className="text-base font-semibold mb-0.5"
