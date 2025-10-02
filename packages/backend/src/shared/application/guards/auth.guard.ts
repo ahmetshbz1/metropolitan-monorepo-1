@@ -27,6 +27,16 @@ export const isAuthenticated = (app: Elysia) =>
         return { profile: null };
       }
 
+      // Token format kontrolü
+      const tokenParts = token.split('.');
+      console.log("🔧 [AUTH DEBUG] Token format:", {
+        partsCount: tokenParts.length,
+        isValidFormat: tokenParts.length === 3,
+        firstPart: tokenParts[0]?.substring(0, 20) + '...',
+        jwtSecretExists: !!process.env.JWT_SECRET,
+        jwtSecretLength: process.env.JWT_SECRET?.length,
+      });
+
       try {
         const isBlacklisted = await isTokenBlacklisted(token);
         if (isBlacklisted) {
@@ -65,8 +75,12 @@ export const isAuthenticated = (app: Elysia) =>
         };
 
         return { profile };
-      } catch (_error) {
-        // Token geçersiz veya süresi dolmuş
+      } catch (error) {
+        console.log("🔧 [AUTH DEBUG] Token verification error:", {
+          error: error instanceof Error ? error.message : String(error),
+          errorType: error?.constructor?.name,
+          stack: error instanceof Error ? error.stack?.substring(0, 200) : undefined,
+        });
         return { profile: null };
       }
     })
