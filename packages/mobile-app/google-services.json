@@ -12,7 +12,20 @@
           "package_name": "com.metropolitan.food"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "18493082891-srvgo3hsv9khuhvdpe80s1hkfqjlb1of.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.metropolitan.food",
+            "certificate_hash": "b7a65e889b886ef1ba443cf74d696d75289353f3"
+          }
+        },
+        {
+          "client_id": "18493082891-lfrifiodr8mit9tiep2r7thaa42iodke.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCBz3yCpIN_arfL3pTipefoElD9eaJ1NFs"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "18493082891-lfrifiodr8mit9tiep2r7thaa42iodke.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "18493082891-0qg1bp44jncs4m7jt6426ud1cv7bil4t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.metropolitan.food"
+              }
+            }
+          ]
         }
       }
     }
