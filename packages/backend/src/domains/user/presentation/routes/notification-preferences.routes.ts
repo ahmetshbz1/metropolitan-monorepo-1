@@ -34,6 +34,7 @@ export const notificationPreferencesRoutes = createApp()
           });
 
           if (!user) {
+            set.status = 401;
             return { success: false, message: "User not found" };
           }
 

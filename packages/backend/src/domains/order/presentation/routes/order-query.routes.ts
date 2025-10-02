@@ -18,7 +18,7 @@ interface AuthenticatedContext {
 
 export const orderQueryRoutes = new Elysia()
   .use(isAuthenticated)
-  .resolve(async ({ profile }) => {
+  .resolve(async ({ profile, set }) => {
     if (!profile) throw new Error("Unauthorized");
 
     const userId = profile?.sub || profile?.userId;
@@ -28,7 +28,10 @@ export const orderQueryRoutes = new Elysia()
       .where(eq(users.id, userId))
       .limit(1);
 
-    if (!user) throw new Error("User not found");
+    if (!user) {
+      set.status = 401;
+      throw new Error("User not found");
+    }
 
     return { user };
   })

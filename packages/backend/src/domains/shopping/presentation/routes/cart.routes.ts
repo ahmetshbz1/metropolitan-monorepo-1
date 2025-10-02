@@ -25,7 +25,7 @@ interface AuthenticatedContext {
 export const createCartApp = () =>
   new Elysia({ prefix: "/me/cart" })
     .use(isAuthenticated)
-    .resolve(async ({ profile }) => {
+    .resolve(async ({ profile, set }) => {
       if (!profile) throw new Error("Unauthorized");
 
       const userId = profile?.sub || profile?.userId;
@@ -35,19 +35,31 @@ export const createCartApp = () =>
         .where(eq(users.id, userId))
         .limit(1);
 
-      if (!user) throw new Error("User not found");
+      if (!user) {
+        set.status = 401;
+        throw new Error("User not found");
+      }
 
-      return { user: { id: user.id, userType: user.userType as "individual" | "corporate" } };
+      return {
+        user: {
+          id: user.id,
+          userType: user.userType as "individual" | "corporate",
+        },
+      };
     })
 
     // Sepet öğelerini listele
-    .get("/", async ({ user }: AuthenticatedContext) => {
-      return await CartItemService.getUserCartItems(user.id, user.userType);
-    }, {
-      query: t.Object({
-        lang: t.Optional(t.String({ pattern: "^(tr|en|pl)$" }))
-      })
-    })
+    .get(
+      "/",
+      async ({ user }: AuthenticatedContext) => {
+        return await CartItemService.getUserCartItems(user.id, user.userType);
+      },
+      {
+        query: t.Object({
+          lang: t.Optional(t.String({ pattern: "^(tr|en|pl)$" })),
+        }),
+      }
+    )
 
     // Sepete ürün ekle
     .post(
@@ -58,7 +70,11 @@ export const createCartApp = () =>
       }: AuthenticatedContext & {
         body: AddToCartRequest;
       }) => {
-        return await CartItemService.addItemToCart(user.id, body, user.userType);
+        return await CartItemService.addItemToCart(
+          user.id,
+          body,
+          user.userType
+        );
       },
       {
         body: t.Object({
@@ -66,8 +82,8 @@ export const createCartApp = () =>
           quantity: t.Optional(t.Number({ minimum: 1 })),
         }),
         query: t.Object({
-          lang: t.Optional(t.String({ pattern: "^(tr|en|pl)$" }))
-        })
+          lang: t.Optional(t.String({ pattern: "^(tr|en|pl)$" })),
+        }),
       }
     )
 
@@ -85,7 +101,12 @@ export const createCartApp = () =>
         const { itemId } = params;
         const { quantity } = body;
 
-        return await CartItemService.updateCartItem(user.id, itemId, quantity, user.userType);
+        return await CartItemService.updateCartItem(
+          user.id,
+          itemId,
+          quantity,
+          user.userType
+        );
       },
       {
         params: t.Object({
@@ -95,8 +116,8 @@ export const createCartApp = () =>
           quantity: t.Number({ minimum: 1 }),
         }),
         query: t.Object({
-          lang: t.Optional(t.String({ pattern: "^(tr|en|pl)$" }))
-        })
+          lang: t.Optional(t.String({ pattern: "^(tr|en|pl)$" })),
+        }),
       }
     )
 
@@ -134,7 +155,11 @@ export const createCartApp = () =>
       }: AuthenticatedContext & {
         body: { updates: Array<{ itemId: string; quantity: number }> };
       }) => {
-        return await CartItemService.batchUpdateCartItems(user.id, body.updates, user.userType);
+        return await CartItemService.batchUpdateCartItems(
+          user.id,
+          body.updates,
+          user.userType
+        );
       },
       {
         body: t.Object({

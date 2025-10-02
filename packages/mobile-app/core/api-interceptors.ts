@@ -133,6 +133,27 @@ export function setupResponseInterceptor(api: AxiosInstance) {
         return Promise.reject(error);
       }
 
+      // Check for user not found scenarios (session invalid but token still valid)
+      const isUserNotFound = 
+        error.response?.status === 401 ||
+        error.response?.data?.code === "USER_NOT_FOUND" ||
+        error.response?.data?.message === "User not found";
+
+      if (isUserNotFound && !originalRequest._sessionExpiredHandled) {
+        // Mark this request as handled to prevent infinite loops
+        originalRequest._sessionExpiredHandled = true;
+
+        // Clear tokens (keep user data for potential re-auth with same phone)
+        await tokenStorage.removeAccessToken();
+        await tokenStorage.removeRefreshToken();
+
+        // Emit session expired event to show dialog
+        console.log("🔒 [SESSION EXPIRED] User not found - session invalidated");
+        EventEmitter.emit(AppEvent.SESSION_EXPIRED);
+
+        return Promise.reject(error);
+      }
+
       // If the error is 401 and we haven't already tried to refresh
       if (error.response?.status === 401 && !originalRequest._retry) {
         if (isRefreshing) {

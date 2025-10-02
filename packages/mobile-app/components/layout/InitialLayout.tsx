@@ -112,10 +112,13 @@ export const InitialLayout: React.FC = () => {
     setSessionExpired(false);
 
     // Logout (clears all auth data and updates context state)
-    logout();
+    await logout();
 
-    // Navigate to login
-    router.replace("/(auth)/phone-login");
+    // Small delay to ensure state is updated before navigation
+    setTimeout(() => {
+      // Navigate to auth index (main login screen with all options)
+      router.replace("/(auth)");
+    }, 100);
   };
 
   // Font yüklenmemiş ise null döndür (Expo splash screen görünür)
