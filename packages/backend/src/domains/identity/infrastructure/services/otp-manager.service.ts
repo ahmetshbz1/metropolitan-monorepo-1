@@ -18,10 +18,10 @@ const OTP_EXPIRY_SECONDS = 120; // 2 minutes (mobile app resend is 30 seconds)
 const OTP_MAX_ATTEMPTS = 3;
 const OTP_RESEND_COOLDOWN = 30; // 30 seconds between resends
 
-// Test credentials for Apple Review
+// Test credentials for Apple/Google Review
 const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
 const ENABLE_REAL_SMS = process.env.ENABLE_REAL_SMS === "true";
-const TEST_PHONE_NUMBER = process.env.TEST_PHONE_NUMBER || "+48123456789";
+const TEST_PHONE_NUMBERS = ["+48123456789", "+48234567890"]; // iOS and Android test numbers
 const TEST_OTP_CODE = process.env.TEST_OTP_CODE || "555555";
 
 interface OtpData {
@@ -140,15 +140,15 @@ export async function verifyOtpCode(
     // Normalize phone number to E.164 format
     const formattedPhone = formatPhoneNumber(phoneNumber);
 
-    // Test mode for Apple Review - development environment only
+    // Test mode for Apple/Google Review - development environment only
     if (
       IS_DEVELOPMENT &&
       !ENABLE_REAL_SMS &&
-      formattedPhone === TEST_PHONE_NUMBER &&
+      TEST_PHONE_NUMBERS.includes(formattedPhone) &&
       providedCode === TEST_OTP_CODE
     ) {
       console.log(
-        `[TEST MODE] OTP verified for test phone: ${TEST_PHONE_NUMBER}`
+        `[TEST MODE] OTP verified for test phone: ${formattedPhone}`
       );
       return {
         success: true,
