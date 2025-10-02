@@ -62,6 +62,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       authHookValues.guestId,
       authHookValues.phoneNumber,
       authHookValues.loading,
+      authHookValues.isAuthenticated,
       authHookValues.isAppleSignInAvailable,
       authHookValues.sendOTP,
       authHookValues.verifyOTP,

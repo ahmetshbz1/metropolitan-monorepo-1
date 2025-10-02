@@ -4,7 +4,7 @@
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
-import { User } from "./types";
+import { MobileUser } from "./types";
 
 // Storage anahtarları
 const STORAGE_KEYS = {
@@ -15,6 +15,7 @@ const STORAGE_KEYS = {
   GUEST_ID: "guest_id",
   IS_GUEST: "is_guest",
   SOCIAL_AUTH_DATA: "social_auth_data",
+  APP_VERSION: "app_version", // Track app version for session management
 } as const;
 
 // Enhanced token storage with access/refresh token support
@@ -77,11 +78,11 @@ export const tokenStorage = {
 
 // Kullanıcı verisi işlemleri
 export const userStorage = {
-  async save(user: User): Promise<void> {
+  async save(user: MobileUser): Promise<void> {
     await AsyncStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(user));
   },
 
-  async get(): Promise<User | null> {
+  async get(): Promise<MobileUser | null> {
     const userData = await AsyncStorage.getItem(STORAGE_KEYS.USER_DATA);
     return userData ? JSON.parse(userData) : null;
   },
@@ -149,6 +150,22 @@ export const clearAllAuthData = async (keepGuest: boolean = false): Promise<void
   }
 };
 
+// App version management for session cleanup
+export const versionStorage = {
+  async saveCurrentVersion(version: string): Promise<void> {
+    await AsyncStorage.setItem(STORAGE_KEYS.APP_VERSION, version);
+  },
+
+  async getStoredVersion(): Promise<string | null> {
+    return await AsyncStorage.getItem(STORAGE_KEYS.APP_VERSION);
+  },
+
+  async checkVersionChanged(currentVersion: string): Promise<boolean> {
+    const storedVersion = await this.getStoredVersion();
+    return storedVersion !== null && storedVersion !== currentVersion;
+  },
+};
+
 // Auth durumunu yükle
 export const loadAuthState = async () => {
   try {
@@ -161,6 +178,17 @@ export const loadAuthState = async () => {
       socialAuthStorage.get(),
     ]);
 
+    console.log("🔧 [AUTH DEBUG] Loaded auth state:", {
+      hasToken: !!token,
+      hasRefreshToken: !!refreshToken,
+      hasUser: !!user,
+      userPhone: user?.phone,
+      userType: user?.userType,
+      isGuest: isGuestFlag,
+      guestId,
+      hasSocialAuth: !!socialAuthData,
+    });
+
     return {
       token,
       refreshToken,
@@ -170,7 +198,7 @@ export const loadAuthState = async () => {
       socialAuthData,
     };
   } catch (error) {
-    // Removed console statement
+    console.log("🔧 [AUTH DEBUG] Error loading auth state:", error);
     return {
       token: null,
       refreshToken: null,

@@ -66,10 +66,12 @@ async function refreshAccessToken(api: AxiosInstance): Promise<string | null> {
   } catch (error: any) {
     // Removed console statement
 
-    // If refresh failed with 401, clear tokens and redirect to login
+    // If refresh failed with 401, clear only tokens but keep user data
     if (error.response?.status === 401) {
-      await tokenStorage.remove();
-      // Trigger logout in app (you may want to emit an event here)
+      // Only clear tokens, keep user data and phone number for re-auth
+      await tokenStorage.removeAccessToken();
+      await tokenStorage.removeRefreshToken();
+      console.log("🔄 [AUTH EXPIRED] Tokens cleared, user needs re-authentication");
     }
 
     return null;
@@ -97,11 +99,18 @@ export function setupRequestInterceptor(api: AxiosInstance) {
       const token = await tokenStorage.getAccessToken();
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+        console.log("🔧 [API DEBUG] Using token:", token.substring(0, 50) + "...");
+      } else {
+        console.log("🔧 [API DEBUG] No access token found");
       }
 
       // Add device fingerprint headers
       const deviceHeaders = await getDeviceHeaders();
       Object.assign(config.headers, deviceHeaders);
+
+      console.log("🔧 [API DEBUG] Request:", config.method?.toUpperCase(), config.url);
+      console.log("🔧 [API DEBUG] Base URL:", config.baseURL);
+      console.log("🔧 [API DEBUG] Device Headers:", deviceHeaders);
 
       // Add Accept-Language header for i18n
       config.headers['Accept-Language'] = i18n.language || 'tr';
@@ -152,6 +161,21 @@ export function setupResponseInterceptor(api: AxiosInstance) {
 
         // If refresh failed, reject all queued requests
         refreshSubscribers = [];
+      }
+
+      // Debug error details
+      console.log("🔧 [API ERROR] Request failed:", {
+        url: error.config?.url,
+        method: error.config?.method,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        message: error.message,
+        isNetworkError: !error.response,
+        baseURL: error.config?.baseURL,
+      });
+
+      if (error.response?.data) {
+        console.log("🔧 [API ERROR] Response data:", error.response.data);
       }
 
       return Promise.reject(error);

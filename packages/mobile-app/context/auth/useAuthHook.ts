@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import { router } from "expo-router";
 import api from "@/core/api";
-import { socialAuthStorage, tokenStorage, userStorage, guestStorage } from "@/context/auth/storage";
+import { socialAuthStorage, tokenStorage, userStorage, guestStorage, versionStorage, clearAllAuthData } from "@/context/auth/storage";
 import { useToast } from "@/hooks/useToast";
 
 // Custom hooks
@@ -18,6 +18,10 @@ import { useProfileManagement } from "@/hooks/auth/useProfileManagement";
 // Firebase auth
 import { signInWithApple as firebaseSignInWithApple, checkAppleAuthAvailable } from "@/core/firebase/auth/appleAuth";
 import { signInWithGoogle as firebaseSignInWithGoogle } from "@/core/firebase/auth/googleAuth";
+
+// App version for session management
+import * as Application from "expo-application";
+import Constants from "expo-constants";
 
 export const useAuthHook = () => {
   const { t } = useTranslation();
@@ -81,6 +85,20 @@ export const useAuthHook = () => {
   useEffect(() => {
     checkAppleAuthAvailable().then(setIsAppleSignInAvailable);
   }, []);
+
+  // Save app version (removed automatic session cleanup)
+  useEffect(() => {
+    const saveAppVersion = async () => {
+      try {
+        const currentVersion = Constants.expoConfig?.version || Application.nativeApplicationVersion || "1.0.0";
+        await versionStorage.saveCurrentVersion(currentVersion);
+      } catch (error) {
+        console.log("⚠️ [VERSION SAVE ERROR]", error);
+      }
+    };
+
+    saveAppVersion();
+  }, []); // Run only once on app start
 
   // Firebase Social Auth
   const signInWithApple = async () => {
