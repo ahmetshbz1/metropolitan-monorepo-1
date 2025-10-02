@@ -136,8 +136,8 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
             />
           ) : undefined
         }
-        // Basic performance optimizations - horizontal için removeClippedSubviews disable
-        removeClippedSubviews={!horizontal}
+        // Basic performance optimizations - removeClippedSubviews disable (resim yükleme sorunları için)
+        removeClippedSubviews={false}
         maxToRenderPerBatch={horizontal ? 12 : 10}
         windowSize={horizontal ? 8 : 10}
         initialNumToRender={horizontal ? 12 : (numColumns ? numColumns * 3 : 9)}

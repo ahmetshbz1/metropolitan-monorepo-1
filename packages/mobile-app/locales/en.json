@@ -1016,7 +1016,7 @@
     "clear_all_data_desc": "All data, session info and cache will be deleted. App will be like freshly installed.",
     "clear_all_data_confirm_title": "Clear All Data",
     "clear_all_data_confirm_message": "This will delete all your session info, tokens and cache. The app will restart. Are you sure?",
-    "clear_all_data_confirm_button": "Yes, Clear All",
+    "clear_all_data_confirm_button": "Yes",
     "clear_all_data_success": "All data cleared successfully. Please close and reopen the app."
   },
   "support": {

@@ -79,7 +79,7 @@ export const ProductList = forwardRef<ProductListRef, ProductListProps>(
             />
           ) : undefined
         }
-        removeClippedSubviews={true}
+        removeClippedSubviews={false}
         maxToRenderPerBatch={10}
         windowSize={10}
         initialNumToRender={9}

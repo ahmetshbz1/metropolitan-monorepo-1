@@ -1070,7 +1070,7 @@
     "clear_all_data_desc": "Tüm veriler, oturum bilgileri ve önbellek silinir. Uygulama ilk kurulmuş gibi olur.",
     "clear_all_data_confirm_title": "Tüm Verileri Temizle",
     "clear_all_data_confirm_message": "Bu işlem tüm oturum bilgilerinizi, token'larınızı ve önbelleğinizi silecektir. Uygulama yeniden başlatılacak. Emin misiniz?",
-    "clear_all_data_confirm_button": "Evet, Tümünü Temizle",
+    "clear_all_data_confirm_button": "Evet",
     "clear_all_data_success": "Tüm veriler başarıyla temizlendi. Lütfen uygulamayı kapatup tekrar açın."
   },
   "support": {

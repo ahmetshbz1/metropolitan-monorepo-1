@@ -1023,7 +1023,7 @@
     "clear_all_data_desc": "Wszystkie dane, informacje o sesji i pamięć podręczna zostaną usunięte. Aplikacja będzie jak świeżo zainstalowana.",
     "clear_all_data_confirm_title": "Wyczyść wszystkie dane",
     "clear_all_data_confirm_message": "Spowoduje to usunięcie wszystkich informacji o sesji, tokenów i pamięci podręcznej. Aplikacja zostanie ponownie uruchomiona. Czy jesteś pewien?",
-    "clear_all_data_confirm_button": "Tak, wyczyść wszystko",
+    "clear_all_data_confirm_button": "Tak",
     "clear_all_data_success": "Wszystkie dane zostały wyczyszczone pomyślnie. Proszę zamknąć i ponownie otworzyć aplikację."
   },
   "support": {
