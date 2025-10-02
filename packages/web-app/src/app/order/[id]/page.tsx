@@ -5,10 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { useAuthStore } from "@/stores";
 import { Package, Download, HelpCircle, ArrowLeft, ShoppingCart, FileText } from "lucide-react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
-import api from "@/lib/api";
-import Image from "next/image";
+import api, { API_BASE_URL } from "@/lib/api";
 import type { OrderDetail } from "@metropolitan/shared";
 import { toast } from "sonner";
 import { ordersApi } from "@/services/api/orders-api";
@@ -18,17 +18,17 @@ import { InvoicePreviewDialog } from "@/components/invoice/InvoicePreviewDialog"
 type Order = OrderDetail & {
   items?: Array<{
     id: string;
+    productId?: string;
     quantity: number;
     unitPrice: string;
     totalPrice: string;
-    product: {
-      id: string;
-      name: string;
-      image: string | null;
-      price: string;
-      currency: string;
-    };
+    name: string;
+    image: string | null;
+    price: number;
+    currency: string;
   }>;
+  subtotal?: number;
+  shippingCost?: number;
 };
 
 export default function OrderDetailPage() {
@@ -71,8 +71,43 @@ export default function OrderDetailPage() {
       console.log("📦 Order data received:", response.data);
 
       // Backend response: { order, items, trackingEvents }
-      const { order: orderData, items } = response.data;
-      setOrder({ ...orderData, items });
+      const { order: orderData, items: rawItems } = response.data;
+      
+      // Transform items to match expected structure
+      const transformedItems = rawItems?.map((item: any) => ({
+        id: item.id,
+        productId: item.product?.id || item.productId,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        totalPrice: item.totalPrice,
+        name: item.product?.name || item.product?.fullName || 'Ürün',
+        image: item.product?.imageUrl ? `${API_BASE_URL}${item.product.imageUrl}` : null,
+        price: parseFloat(item.unitPrice) || 0,
+        currency: orderData.currency || 'PLN',
+      })) || [];
+
+      console.log("🖼️ Transformed items:", transformedItems.map(i => ({ 
+        name: i.name, 
+        image: i.image,
+        price: i.price,
+        productId: i.productId
+      })));
+
+      // Calculate subtotal from items
+      const subtotal = transformedItems.reduce((sum, item) => {
+        return sum + (item.price * item.quantity);
+      }, 0);
+
+      // Calculate shipping cost (total - subtotal)
+      const totalAmount = parseFloat(orderData.totalAmount) || 0;
+      const shippingCost = totalAmount - subtotal;
+
+      setOrder({ 
+        ...orderData,
+        items: transformedItems,
+        subtotal: subtotal,
+        shippingCost: shippingCost >= 0 ? shippingCost : 0,
+      });
     } catch (error) {
       console.error("Failed to fetch order:", error);
     } finally {
@@ -118,11 +153,14 @@ export default function OrderDetailPage() {
     }
   };
 
-  const formatPrice = (price: number, currency = "TRY") => {
-    return new Intl.NumberFormat("tr-TR", {
+  const formatPrice = (price: number | string, currency = "PLN") => {
+    const numPrice = typeof price === "string" ? parseFloat(price) : price;
+    if (isNaN(numPrice)) return `0 ${currency}`;
+    
+    return new Intl.NumberFormat("pl-PL", {
       style: "currency",
       currency,
-    }).format(price);
+    }).format(numPrice);
   };
 
   const formatDate = (dateString: string) => {
@@ -215,15 +253,17 @@ export default function OrderDetailPage() {
           </h2>
           <div className="space-y-4">
             {order.items.map((item) => (
-              <div key={item.id} className="flex gap-4 pb-4 border-b border-border last:border-b-0 last:pb-0">
+              <Link
+                href={`/product/${item.productId || item.id}`}
+                key={item.id}
+                className="flex gap-4 pb-4 border-b border-border last:border-b-0 last:pb-0 hover:bg-muted/50 transition-colors rounded-lg p-2 -m-2"
+              >
                 <div className="w-20 h-20 bg-muted rounded-lg flex-shrink-0 overflow-hidden">
                   {item.image ? (
-                    <Image
+                    <img
                       src={item.image}
                       alt={item.name}
-                      width={80}
-                      height={80}
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-contain p-2"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
@@ -232,7 +272,7 @@ export default function OrderDetailPage() {
                   )}
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold mb-1">{item.name}</h3>
+                  <h3 className="font-semibold mb-1 hover:text-primary transition-colors">{item.name}</h3>
                   <p className="text-sm text-muted-foreground">
                     {t("order_detail.products.quantity", { count: item.quantity })}
                   </p>
@@ -242,7 +282,7 @@ export default function OrderDetailPage() {
                     {formatPrice(item.price * item.quantity, item.currency)}
                   </p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
