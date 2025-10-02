@@ -22,7 +22,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const OTP_LENGTH = 6;
-const RESEND_DELAY_SECONDS = 60;
+const RESEND_DELAY_SECONDS = 30; // Match mobile-app resend timeout
 
 export default function VerifyOtpPage() {
   const { t } = useTranslation();
