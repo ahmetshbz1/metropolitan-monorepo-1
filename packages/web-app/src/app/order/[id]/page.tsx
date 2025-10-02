@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuthStore } from "@/stores";
-import { Package, Download, HelpCircle, ArrowLeft, ShoppingCart } from "lucide-react";
+import { Package, Download, HelpCircle, ArrowLeft, ShoppingCart, FileText } from "lucide-react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
@@ -13,6 +13,7 @@ import type { OrderDetail } from "@metropolitan/shared";
 import { toast } from "sonner";
 import { ordersApi } from "@/services/api/orders-api";
 import { useAddToCart } from "@/hooks/api/use-cart";
+import { InvoicePreviewDialog } from "@/components/invoice/InvoicePreviewDialog";
 
 type Order = OrderDetail & {
   items?: Array<{
@@ -39,7 +40,7 @@ export default function OrderDetailPage() {
   const addToCart = useAddToCart();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
-  const [downloadingInvoice, setDownloadingInvoice] = useState(false);
+  const [invoicePreviewOpen, setInvoicePreviewOpen] = useState(false);
   const [reordering, setReordering] = useState(false);
 
   useEffect(() => {
@@ -79,34 +80,10 @@ export default function OrderDetailPage() {
     }
   };
 
-  const handleDownloadInvoice = async () => {
+  const handleDownloadInvoice = () => {
     if (!order) return;
-
-    try {
-      setDownloadingInvoice(true);
-      const blob = await ordersApi.downloadInvoice(order.id);
-
-      // Create download link
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `fatura-${order.orderNumber}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-
-      toast.success("Fatura indiriliyor", {
-        description: "Faturanız indirildi.",
-      });
-    } catch (error) {
-      console.error("Failed to download invoice:", error);
-      toast.error("Fatura indirilemedi", {
-        description: "Fatura indirilirken bir hata oluştu.",
-      });
-    } finally {
-      setDownloadingInvoice(false);
-    }
+    // Open preview dialog instead of direct download
+    setInvoicePreviewOpen(true);
   };
 
   const handleReorder = async () => {
@@ -334,10 +311,9 @@ export default function OrderDetailPage() {
           <Button
             variant="outline"
             onClick={handleDownloadInvoice}
-            disabled={downloadingInvoice}
           >
-            <Download className="mr-2 h-4 w-4" />
-            {downloadingInvoice ? "İndiriliyor..." : t("order_detail.actions.download_invoice")}
+            <FileText className="mr-2 h-4 w-4" />
+            Fatura Önizle
           </Button>
           <Button
             variant="outline"
@@ -353,6 +329,16 @@ export default function OrderDetailPage() {
           </Button>
         </div>
       </div>
+
+      {/* Invoice Preview Dialog */}
+      {order && (
+        <InvoicePreviewDialog
+          open={invoicePreviewOpen}
+          onOpenChange={setInvoicePreviewOpen}
+          orderId={order.id}
+          orderNumber={order.orderNumber}
+        />
+      )}
     </div>
   );
 }
