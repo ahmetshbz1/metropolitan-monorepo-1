@@ -23,7 +23,7 @@ export const InitialLayout: React.FC = () => {
   });
   const colorScheme = useColorScheme();
   const { i18n, t } = useTranslation();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, isGuest, logout } = useAuth();
   const [sessionExpired, setSessionExpired] = useState(false);
 
   // Push notification navigasyon kontrolü için
@@ -91,6 +91,11 @@ export const InitialLayout: React.FC = () => {
   // Session expired listener
   useEffect(() => {
     const handleSessionExpired = () => {
+      if (isGuest) {
+        logout();
+        return;
+      }
+
       setSessionExpired(true);
     };
 
@@ -99,7 +104,7 @@ export const InitialLayout: React.FC = () => {
     return () => {
       subscription.remove();
     };
-  }, []);
+  }, [isGuest, logout]);
 
   // Handle session expired dialog login action
   const handleSessionExpiredLogin = async () => {

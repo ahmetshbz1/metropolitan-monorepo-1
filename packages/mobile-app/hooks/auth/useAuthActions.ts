@@ -293,8 +293,9 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
     setPhoneNumber(null);
     setSocialAuthData(null);
 
-    // Guest moduna geri dön (mevcut guest ID'yi kullan)
+    // Guest moduna geri dön ve yeni guest session oluştur
     setIsGuest(true);
+    await loginAsGuest();
 
     // Ana sayfaya yönlendir
     router.replace('/(tabs)');
