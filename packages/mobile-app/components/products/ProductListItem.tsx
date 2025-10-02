@@ -8,7 +8,7 @@ import { useProductCard } from "@/hooks/useProductCard";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useNavigationProtection } from "@/hooks/useNavigationProtection";
-import React from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import { TouchableOpacity, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Image } from "expo-image";
@@ -18,6 +18,19 @@ import { formatPrice } from "@/core/utils";
 interface ProductListItemProps {
   product: Product;
 }
+
+// Helper function to ensure valid image URL
+const getValidImageUrl = (imageUrl: string): string => {
+  if (!imageUrl) return "";
+  
+  if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
+    return imageUrl;
+  }
+  
+  const path = imageUrl.startsWith("/") ? imageUrl : `/${imageUrl}`;
+  const baseUrl = process.env.EXPO_PUBLIC_API_BASE_URL || "https://api.metropolitanfg.pl";
+  return `${baseUrl}${path}`;
+};
 
 export const ProductListItem = React.memo<ProductListItemProps>(function ProductListItem({
   product,
@@ -34,6 +47,10 @@ export const ProductListItem = React.memo<ProductListItemProps>(function Product
   const { t } = useTranslation();
   const router = useRouter();
   const { push: safePush } = useNavigationProtection({ debounceTime: 700 });
+  const [imageError, setImageError] = useState(false);
+
+  const imageUrl = useMemo(() => getValidImageUrl(product.image), [product.image]);
+  const cacheKey = useMemo(() => `product-list-${product.id}`, [product.id]);
 
   const handlePress = () => {
     safePush(`/product/${product.id}`);
@@ -50,6 +67,14 @@ export const ProductListItem = React.memo<ProductListItemProps>(function Product
     e.stopPropagation();
     handleToggleFavorite(e);
   };
+
+  const handleImageError = useCallback(() => {
+    setImageError(true);
+  }, []);
+
+  const handleImageLoad = useCallback(() => {
+    setImageError(false);
+  }, []);
 
   return (
     <View className="mx-4 mb-3">
@@ -82,28 +107,32 @@ export const ProductListItem = React.memo<ProductListItemProps>(function Product
             marginRight: 12,
           }}
         >
-          <Image
-            source={{
-              uri: product.image,
-              headers: {
-                "Cache-Control": "max-age=31536000",
-              },
-            }}
-            style={{
-              width: '85%',
-              height: '85%',
-            }}
-            contentFit="contain"
-            transition={200}
-            cachePolicy="memory-disk"
-            priority="high"
-            recyclingKey={product.id}
-            placeholder="L6PZfSi_.AyE_3t7t7R**0o#DgR4"
-            placeholderContentFit="contain"
-            allowDownscaling={true}
-            responsivePolicy="live"
-            contentPosition="center"
-          />
+          {!imageError && imageUrl ? (
+            <Image
+              source={{ uri: imageUrl }}
+              style={{
+                width: '85%',
+                height: '85%',
+              }}
+              contentFit="contain"
+              transition={150}
+              cachePolicy="memory-disk"
+              priority="normal"
+              recyclingKey={cacheKey}
+              placeholder="L6PZfSi_.AyE_3t7t7R**0o#DgR4"
+              placeholderContentFit="contain"
+              allowDownscaling={false}
+              contentPosition="center"
+              onLoad={handleImageLoad}
+              onError={handleImageError}
+            />
+          ) : (
+            <Ionicons
+              name="image-outline"
+              size={32}
+              color={colorScheme === "dark" ? "#666" : "#ccc"}
+            />
+          )}
           {isOutOfStock && (
             <View
               className="absolute inset-0 items-center justify-center"

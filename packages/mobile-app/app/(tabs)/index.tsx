@@ -93,7 +93,6 @@ export default function HomeScreen() {
     error,
     refreshAllProducts,
     fetchCategories,
-    fetchAllProducts,
   } = useProducts();
 
   const { registerScrollHandler, unregisterScrollHandler } = useScrollToTop();
@@ -102,15 +101,16 @@ export default function HomeScreen() {
   const colors = Colors[colorScheme];
 
   const imageUrls = useMemo(
-    () => products.slice(0, 24).map((p) => p.image),
+    () => products.slice(0, 24).map((p) => p.image).filter(Boolean),
     [products]
   );
 
+  // Preload images with optimized settings
   useImagePreload(imageUrls, {
     enabled: !loadingProducts && products.length > 0,
     highPriorityCount: 6,
-    batchSize: 6,
-    delayBetweenBatches: 100,
+    batchSize: 4,
+    delayBetweenBatches: 150,
   });
 
   useEffect(() => {
@@ -161,7 +161,7 @@ export default function HomeScreen() {
         }}
         scrollEnabled={!showErrorOverlay}
         nestedScrollEnabled={true}
-        removeClippedSubviews={false}
+        removeClippedSubviews={true}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}

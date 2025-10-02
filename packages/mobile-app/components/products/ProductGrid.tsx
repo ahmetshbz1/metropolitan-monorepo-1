@@ -105,7 +105,7 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
     }, [loadingProducts, propProducts]);
 
     const keyExtractor = useCallback((item: Product, index: number) => {
-      return `${item.id}-${index}`;
+      return `product-${item.id}-${index}`;
     }, []);
 
     const getItemLayout = useCallback(
@@ -146,13 +146,13 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
             />
           ) : undefined
         }
-        // Performance optimizations
-        removeClippedSubviews={false}
+        // Performance optimizations - FIXED
+        removeClippedSubviews={true}
         getItemLayout={horizontal ? getItemLayout : undefined}
-        maxToRenderPerBatch={horizontal ? 4 : 10}
-        windowSize={horizontal ? 3 : 10}
-        initialNumToRender={horizontal ? 4 : (numColumns ? numColumns * 3 : 9)}
-        updateCellsBatchingPeriod={horizontal ? 50 : 100}
+        maxToRenderPerBatch={horizontal ? 3 : 6}
+        windowSize={horizontal ? 2 : 5}
+        initialNumToRender={horizontal ? 3 : 6}
+        updateCellsBatchingPeriod={horizontal ? 100 : 50}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
       />

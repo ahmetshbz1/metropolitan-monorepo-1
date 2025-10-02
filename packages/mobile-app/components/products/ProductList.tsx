@@ -57,7 +57,7 @@ export const ProductList = forwardRef<ProductListRef, ProductListProps>(
     );
 
     const keyExtractor = useCallback((item: Product, index: number) => {
-      return `${item.id}-${index}`;
+      return `product-list-${item.id}-${index}`;
     }, []);
 
     const getItemLayout = useCallback(
@@ -88,12 +88,12 @@ export const ProductList = forwardRef<ProductListRef, ProductListProps>(
             />
           ) : undefined
         }
-        removeClippedSubviews={false}
+        removeClippedSubviews={true}
         getItemLayout={getItemLayout}
-        maxToRenderPerBatch={8}
-        windowSize={8}
-        initialNumToRender={8}
-        updateCellsBatchingPeriod={100}
+        maxToRenderPerBatch={6}
+        windowSize={5}
+        initialNumToRender={6}
+        updateCellsBatchingPeriod={50}
         showsVerticalScrollIndicator={false}
       />
     );
