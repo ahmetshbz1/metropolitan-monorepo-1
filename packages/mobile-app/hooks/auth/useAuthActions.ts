@@ -93,7 +93,7 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
     otp: string,
     userType: "individual" | "corporate" = "individual"
   ) => {
-    const result = await verifyOTPService(phone, otp, userType);
+    const result = await verifyOTPService(phone, otp, userType, socialAuthData);
 
     if (result.success) {
       // Tokenları kaydet

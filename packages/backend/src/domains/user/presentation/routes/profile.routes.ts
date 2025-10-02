@@ -366,8 +366,8 @@ const protectedProfileRoutes = createApp()
           updateData.appleUserId = body.appleUserId;
         }
 
-        // Only update email if it's not already set
-        if (body.email && !user.email) {
+        // In linking flow, always update email from OAuth provider if different
+        if (body.email && body.email !== user.email) {
           updateData.email = body.email;
         }
 

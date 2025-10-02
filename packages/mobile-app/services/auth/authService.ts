@@ -28,7 +28,8 @@ export const sendOTP = async (
 export const verifyOTP = async (
   phoneNumber: string,
   otpCode: string,
-  userType: "individual" | "corporate" = "individual"
+  userType: "individual" | "corporate" = "individual",
+  socialAuthData?: { uid: string; email?: string; provider: 'apple' | 'google'; appleUserId?: string } | null
 ): Promise<{
   success: boolean;
   message: string;
@@ -39,11 +40,20 @@ export const verifyOTP = async (
   registrationToken?: string;
 }> => {
   try {
-    const response = await api.post("/auth/verify-otp", {
+    const requestBody: any = {
       phoneNumber,
       otpCode,
       userType,
-    });
+    };
+
+    if (socialAuthData) {
+      requestBody.firebaseUid = socialAuthData.uid;
+      requestBody.provider = socialAuthData.provider;
+      if (socialAuthData.email) requestBody.email = socialAuthData.email;
+      if (socialAuthData.appleUserId) requestBody.appleUserId = socialAuthData.appleUserId;
+    }
+
+    const response = await api.post("/auth/verify-otp", requestBody);
     const data = response.data;
 
     if (data.success) {

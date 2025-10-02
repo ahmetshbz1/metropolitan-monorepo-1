@@ -143,13 +143,22 @@ export const otpRoutes = createApp()
               log.info(
                 `User with phone number ${body.phoneNumber} and type ${body.userType} not found. Creating new user.`
               );
+              const newUserData: any = {
+                phoneNumber: body.phoneNumber,
+                phoneNumberVerified: true,
+                userType: body.userType,
+              };
+
+              if (body.firebaseUid) {
+                newUserData.firebaseUid = body.firebaseUid;
+                newUserData.authProvider = body.provider;
+                if (body.email) newUserData.email = body.email;
+                if (body.appleUserId) newUserData.appleUserId = body.appleUserId;
+              }
+
               const newUser = await db
                 .insert(users)
-                .values({
-                  phoneNumber: body.phoneNumber,
-                  phoneNumberVerified: true, // OTP verified, so phone is verified
-                  userType: body.userType,
-                })
+                .values(newUserData)
                 .returning();
               user = newUser[0];
             } else if (!user.phoneNumberVerified) {
@@ -172,6 +181,33 @@ export const otpRoutes = createApp()
                 success: false,
                 message: "Could not create or find user.",
               };
+            }
+
+            // If social auth data provided for existing user, update it
+            if (existingUser && body.firebaseUid) {
+              const socialUpdateData: any = {
+                updatedAt: new Date(),
+              };
+              if (body.firebaseUid && user.firebaseUid !== body.firebaseUid) {
+                socialUpdateData.firebaseUid = body.firebaseUid;
+              }
+              if (body.provider && user.authProvider !== body.provider) {
+                socialUpdateData.authProvider = body.provider;
+              }
+              if (body.email && body.email !== user.email) {
+                socialUpdateData.email = body.email;
+              }
+              if (body.appleUserId && user.appleUserId !== body.appleUserId) {
+                socialUpdateData.appleUserId = body.appleUserId;
+              }
+
+              if (Object.keys(socialUpdateData).length > 1) {
+                await db
+                  .update(users)
+                  .set(socialUpdateData)
+                  .where(eq(users.id, user.id));
+                user = { ...user, ...socialUpdateData };
+              }
             }
 
             // Extract device info for fingerprinting
@@ -268,6 +304,10 @@ export const otpRoutes = createApp()
             phoneNumber: t.String(phoneNumberSchema),
             otpCode: t.String({ minLength: 6, maxLength: 6 }),
             userType: t.String({ enum: userTypeEnum }),
+            firebaseUid: t.Optional(t.String()),
+            provider: t.Optional(t.String({ enum: ["apple", "google"] })),
+            email: t.Optional(t.String({ format: "email" })),
+            appleUserId: t.Optional(t.String()),
           }),
         }
       )

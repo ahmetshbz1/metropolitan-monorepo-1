@@ -209,8 +209,14 @@ export const socialAuthRoutes = createApp()
         if (body.firebaseUid && user.firebaseUid !== body.firebaseUid) {
           updateData.firebaseUid = body.firebaseUid;
         }
-        if (body.email && !user.email) {
-          updateData.email = body.email;
+        // In linking flow (currentUserId exists), always update email from OAuth provider
+        // In sign-in flow, only update if user has no email yet
+        if (body.email) {
+          if (currentUserId && body.email !== user.email) {
+            updateData.email = body.email;
+          } else if (!currentUserId && !user.email) {
+            updateData.email = body.email;
+          }
         }
 
         if (Object.keys(updateData).length > 0) {
