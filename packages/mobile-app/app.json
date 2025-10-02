@@ -21,7 +21,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.metropolitan.food",
-      "buildNumber": "32",
+      "buildNumber": "33",
       "deploymentTarget": "18.0",
       "config": {
         "googleSignIn": {
