@@ -153,10 +153,18 @@ export function setupRequestInterceptor(api: AxiosInstance) {
       const deviceHeaders = await getDeviceHeaders();
       Object.assign(config.headers, deviceHeaders);
 
-      // Override Accept-Language to use simple format that backend expects
-      const language = typeof window !== 'undefined'
-        ? window.navigator.language?.split('-')[0] || 'tr'
-        : 'tr';
+      // Override Accept-Language to use i18n language (user's selected language)
+      let language = 'tr';
+      if (typeof window !== 'undefined') {
+        try {
+          // Get language from i18n (localStorage: 'i18nextLng')
+          const i18nLang = localStorage.getItem('i18nextLng');
+          language = i18nLang?.split('-')[0] || 'tr';
+        } catch {
+          // Fallback to navigator language if localStorage fails
+          language = window.navigator.language?.split('-')[0] || 'tr';
+        }
+      }
 
       // Ensure language is one of the supported ones
       const supportedLanguages = ['tr', 'en', 'pl'];

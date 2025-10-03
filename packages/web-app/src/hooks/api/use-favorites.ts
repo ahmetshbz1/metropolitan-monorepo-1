@@ -4,18 +4,21 @@ import { useFavoritesStore } from '@/stores/favorites-store';
 import { useAuthStore } from '@/stores';
 import { useGuestAuth } from '../use-guest-auth';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export const favoriteKeys = {
   all: ['favorites'] as const,
-  items: (userId?: string, guestId?: string) => [
+  items: (userId?: string, guestId?: string, lang?: string) => [
     ...favoriteKeys.all,
     'items',
     userId || guestId || 'anonymous',
+    lang || 'tr',
   ] as const,
-  ids: (userId?: string, guestId?: string) => [
+  ids: (userId?: string, guestId?: string, lang?: string) => [
     ...favoriteKeys.all,
     'ids',
     userId || guestId || 'anonymous',
+    lang || 'tr',
   ] as const,
 };
 
@@ -29,6 +32,8 @@ export function useFavorites() {
   const _hasHydrated = useAuthStore((state) => state._hasHydrated);
   const isAuthenticated = Boolean(user && accessToken);
   const { isGuest, guestId } = useGuestAuth();
+  const { i18n } = useTranslation();
+  const lang = i18n.language?.split('-')[0] || 'tr';
 
   const hasValidSession = Boolean(isAuthenticated || (isGuest && guestId));
 
@@ -36,7 +41,7 @@ export function useFavorites() {
   // This prevents multiple guest sessions being created
 
   return useQuery({
-    queryKey: favoriteKeys.items(user?.id, guestId || undefined),
+    queryKey: favoriteKeys.items(user?.id, guestId || undefined, lang),
     queryFn: () => favoritesApi.getFavorites(isAuthenticated, guestId || undefined, 'pl'),
     enabled: hasValidSession && _hasHydrated,
     staleTime: 2 * 60 * 1000, // 2 minutes
@@ -53,11 +58,13 @@ export function useFavoriteIds() {
   const _hasHydrated = useAuthStore((state) => state._hasHydrated);
   const isAuthenticated = Boolean(user && accessToken);
   const { isGuest, guestId } = useGuestAuth();
+  const { i18n } = useTranslation();
+  const lang = i18n.language?.split('-')[0] || 'tr';
 
   const hasValidSession = Boolean(isAuthenticated || (isGuest && guestId));
 
   return useQuery({
-    queryKey: favoriteKeys.ids(user?.id, guestId || undefined),
+    queryKey: favoriteKeys.ids(user?.id, guestId || undefined, lang),
     queryFn: async () => {
       const ids = await favoritesApi.getFavoriteIds(
         isAuthenticated,
@@ -78,6 +85,8 @@ export function useFavoriteIds() {
 export function useAddFavorite() {
   const queryClient = useQueryClient();
   const addFavorite = useFavoritesStore((state) => state.addFavorite);
+  const { i18n } = useTranslation();
+  const lang = i18n.language?.split('-')[0] || 'tr';
 
   const user = useAuthStore((state) => state.user);
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -91,17 +100,17 @@ export function useAddFavorite() {
     onMutate: async (productId) => {
       // Cancel outgoing queries
       await queryClient.cancelQueries({
-        queryKey: favoriteKeys.ids(user?.id, guestId || undefined),
+        queryKey: favoriteKeys.ids(user?.id, guestId || undefined, lang),
       });
 
       const previousIds = queryClient.getQueryData<string[]>(
-        favoriteKeys.ids(user?.id, guestId || undefined)
+        favoriteKeys.ids(user?.id, guestId || undefined, lang)
       );
 
       // Optimistic update
       if (previousIds) {
         queryClient.setQueryData<string[]>(
-          favoriteKeys.ids(user?.id, guestId || undefined),
+          favoriteKeys.ids(user?.id, guestId || undefined, lang),
           [...previousIds, productId]
         );
       }
@@ -113,7 +122,7 @@ export function useAddFavorite() {
       // Rollback on error
       if (context?.previousIds) {
         queryClient.setQueryData(
-          favoriteKeys.ids(user?.id, guestId || undefined),
+          favoriteKeys.ids(user?.id, guestId || undefined, lang),
           context.previousIds
         );
       }
@@ -132,6 +141,8 @@ export function useAddFavorite() {
 export function useRemoveFavorite() {
   const queryClient = useQueryClient();
   const removeFavorite = useFavoritesStore((state) => state.removeFavorite);
+  const { i18n } = useTranslation();
+  const lang = i18n.language?.split('-')[0] || 'tr';
 
   const user = useAuthStore((state) => state.user);
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -149,17 +160,17 @@ export function useRemoveFavorite() {
     onMutate: async (productId) => {
       // Cancel outgoing queries
       await queryClient.cancelQueries({
-        queryKey: favoriteKeys.ids(user?.id, guestId || undefined),
+        queryKey: favoriteKeys.ids(user?.id, guestId || undefined, lang),
       });
 
       const previousIds = queryClient.getQueryData<string[]>(
-        favoriteKeys.ids(user?.id, guestId || undefined)
+        favoriteKeys.ids(user?.id, guestId || undefined, lang)
       );
 
       // Optimistic update
       if (previousIds) {
         queryClient.setQueryData<string[]>(
-          favoriteKeys.ids(user?.id, guestId || undefined),
+          favoriteKeys.ids(user?.id, guestId || undefined, lang),
           previousIds.filter((id) => id !== productId)
         );
       }
@@ -171,7 +182,7 @@ export function useRemoveFavorite() {
       // Rollback on error
       if (context?.previousIds) {
         queryClient.setQueryData(
-          favoriteKeys.ids(user?.id, guestId || undefined),
+          favoriteKeys.ids(user?.id, guestId || undefined, lang),
           context.previousIds
         );
       }

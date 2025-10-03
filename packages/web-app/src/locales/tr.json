@@ -355,6 +355,11 @@
     "not_found_title": "Sipariş Bulunamadı",
     "not_found_body": "İstenen sipariş bulunamadı.",
     "back_to_orders": "Siparişlerime Dön",
+    "back": "Geri",
+    "order_number": "Sipariş #{{number}}",
+    "invoice_preview": "Fatura Önizle",
+    "reorder": "Yeniden Sipariş Ver",
+    "reordering": "Ekleniyor...",
     "products": {
       "section_title": "Sipariş İçeriği",
       "quantity": "{{count}} adet"
@@ -373,7 +378,13 @@
       "download_invoice": "Faturayı İndir"
     },
     "help": "Yardım",
-    "items_added_to_cart": "{{count}} ürün sepetinize eklendi."
+    "items_added_to_cart": "{{count}} ürün sepetinize eklendi.",
+    "payment": {
+      "success_title": "Ödeme Başarılı!",
+      "success_description": "Siparişiniz başarıyla oluşturuldu. Kısa sürede hazırlanacak.",
+      "cancelled_title": "Ödeme İptal Edildi",
+      "cancelled_description": "Ödeme işlemi iptal edildi. Tekrar deneyebilirsiniz."
+    }
   },
   "profile": {
     "guest_title": "Misafir Kullanıcı",
@@ -412,7 +423,8 @@
       "subtitle": "Beğendiğiniz ürünleri favorilere ekleyin ve kolayca erişin.",
       "browse_button": "Ürünlere Göz At"
     },
-    "login_required": "Favori ürünlerinizi görmek için giriş yapın"
+    "login_required": "Favori ürünlerinizi görmek için giriş yapın",
+    "suggested_products": "Önerilen Ürünler"
   },
   "addresses": {
     "title": "Adreslerim",
@@ -890,6 +902,106 @@
       "confirm": "Bağlantıyı Kes",
       "disconnecting": "Kesiliyor"
     }
+  },
+  "account_settings_page": {
+    "login_required_title": "Giriş Yapın",
+    "login_required_desc": "Hesap ayarlarınızı görmek için giriş yapmalısınız.",
+    "login_button": "Giriş Yap",
+    "user_type_corporate": "Kurumsal",
+    "stats_orders": "Sipariş",
+    "stats_favorites": "Favori",
+    "personal_info": {
+      "title": "Kişisel Bilgiler",
+      "subtitle": "Adınız, soyadınız ve email adresiniz",
+      "first_name": "Ad",
+      "last_name": "Soyad",
+      "email": "Email",
+      "phone": "Telefon",
+      "phone_change_help": "Telefon numaranızı değiştirmek için destek ile iletişime geçin",
+      "saving": "Kaydediliyor",
+      "save_changes": "Değişiklikleri Kaydet",
+      "cancel": "İptal"
+    },
+    "other_settings": {
+      "title": "Diğer Ayarlar",
+      "subtitle": "Güvenlik ve gizlilik ayarları",
+      "addresses": "Adreslerim",
+      "addresses_desc": "Teslimat adresleri",
+      "security": "Güvenlik",
+      "security_desc": "Oturum yönetimi",
+      "privacy": "Gizlilik",
+      "privacy_desc": "Veri tercihleri"
+    },
+    "danger_zone": {
+      "title": "Tehlikeli Bölge",
+      "subtitle": "Dikkatli olun, bu işlemler geri alınamaz",
+      "export_data": "Verilerimi İndir",
+      "export_data_desc": "Tüm verilerinizi indirin",
+      "delete_account": "Hesabı Sil",
+      "delete_account_desc": "Kalıcı olarak silin"
+    }
+  },
+  "address_dialog": {
+    "add_title": "Yeni Adres Ekle",
+    "edit_title": "Adresi Düzenle",
+    "add_description": "Yeni teslimat adresi ekleyin",
+    "update_description": "Adres bilgilerinizi güncelleyin",
+    "labels": {
+      "address_title": "Adres Başlığı",
+      "street": "Adres",
+      "city": "Şehir",
+      "postal_code": "Posta Kodu",
+      "country": "Ülke",
+      "default_delivery": "Varsayılan teslimat adresi",
+      "default_billing": "Varsayılan fatura adresi"
+    },
+    "placeholders": {
+      "address_title": "Ev, İş, vb.",
+      "street": "Sokak, cadde, mahalle...",
+      "city": "Warszawa",
+      "postal_code": "00-001",
+      "country": "Ülke seçin"
+    },
+    "buttons": {
+      "save": "Kaydet",
+      "cancel": "İptal"
+    },
+    "messages": {
+      "loading": "Kaydediliyor...",
+      "success": "Adres başarıyla kaydedildi",
+      "error": "Adres kaydedilemedi"
+    }
+  },
+  "order_page": {
+    "payment_success_title": "Ödeme Başarılı!",
+    "payment_success_desc": "Siparişiniz başarıyla oluşturuldu. Kısa sürede hazırlanacak.",
+    "payment_cancelled_title": "Ödeme İptal Edildi",
+    "payment_cancelled_desc": "Ödeme işlemi iptal edildi. Tekrar deneyebilirsiniz.",
+    "back_to_orders": "Siparişlerime Dön",
+    "back": "Geri",
+    "order_number": "Sipariş #{{number}}",
+    "invoice_preview": "Fatura Önizle",
+    "reorder_adding": "Ekleniyor...",
+    "reorder": "Yeniden Sipariş Ver"
+  },
+  "checkout_address": {
+    "add_address_title": "Adres Ekleyin",
+    "add_address_desc": "Siparişinizi tamamlamak için önce bir teslimat adresi eklemelisiniz.",
+    "add_new_address": "Yeni Adres Ekle",
+    "default_badge": "Varsayılan"
+  },
+  "order_confirmation_page": {
+    "title": "Siparişiniz Alındı!",
+    "description": "Siparişiniz başarıyla oluşturuldu. Sipariş detaylarınızı e-posta adresinize gönderdik.",
+    "go_to_orders": "Siparişlerime Git",
+    "continue_shopping": "Alışverişe Devam Et"
+  },
+  "invoice_dialog": {
+    "title": "Fatura Önizleme",
+    "title_with_order": "Fatura Önizleme - Sipariş #{{orderNumber}}",
+    "download": "İndir",
+    "loading": "Fatura yükleniyor...",
+    "load_error": "Fatura yüklenemedi. Lütfen tekrar deneyin."
   },
   "cookie": {
     "banner": {

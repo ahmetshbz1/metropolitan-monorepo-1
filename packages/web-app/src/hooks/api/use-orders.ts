@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ordersApi } from '@/services/api/orders-api';
+import { useTranslation } from 'react-i18next';
 
 export const orderKeys = {
   all: ['orders'] as const,
@@ -9,8 +10,11 @@ export const orderKeys = {
 };
 
 export function useOrders(enabled: boolean = true) {
+  const { i18n } = useTranslation();
+  const lang = i18n.language?.split('-')[0] || 'tr';
+
   return useQuery({
-    queryKey: orderKeys.lists(),
+    queryKey: [...orderKeys.lists(), lang],
     queryFn: ordersApi.getOrders,
     enabled: enabled,
     staleTime: 1 * 60 * 1000, // 1 minute
@@ -18,8 +22,11 @@ export function useOrders(enabled: boolean = true) {
 }
 
 export function useOrder(id: string) {
+  const { i18n } = useTranslation();
+  const lang = i18n.language?.split('-')[0] || 'tr';
+
   return useQuery({
-    queryKey: orderKeys.detail(id),
+    queryKey: [...orderKeys.detail(id), lang],
     queryFn: () => ordersApi.getOrderById(id),
     enabled: !!id,
     staleTime: 30 * 1000, // 30 seconds (orders update frequently)

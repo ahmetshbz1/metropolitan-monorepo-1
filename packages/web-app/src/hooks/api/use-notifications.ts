@@ -1,5 +1,6 @@
 import { notificationsApi } from "@/services/api/notifications-api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from 'react-i18next';
 
 export const notificationKeys = {
   all: ["notifications"] as const,
@@ -7,8 +8,11 @@ export const notificationKeys = {
 };
 
 export function useNotifications() {
+  const { i18n } = useTranslation();
+  const lang = i18n.language?.split('-')[0] || 'tr';
+
   return useQuery({
-    queryKey: notificationKeys.lists(),
+    queryKey: [...notificationKeys.lists(), lang],
     queryFn: notificationsApi.getNotifications,
   });
 }

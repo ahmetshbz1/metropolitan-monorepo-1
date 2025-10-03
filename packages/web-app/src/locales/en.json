@@ -355,6 +355,11 @@
     "not_found_title": "Order Not Found",
     "not_found_body": "The requested order could not be found.",
     "back_to_orders": "Back to My Orders",
+    "back": "Back",
+    "order_number": "Order #{{number}}",
+    "invoice_preview": "Preview Invoice",
+    "reorder": "Reorder",
+    "reordering": "Adding...",
     "products": {
       "section_title": "Order Contents",
       "quantity": "{{count}} items"
@@ -373,7 +378,13 @@
       "download_invoice": "Download Invoice"
     },
     "help": "Help",
-    "items_added_to_cart": "{{count}} items added to your cart."
+    "items_added_to_cart": "{{count}} items added to your cart.",
+    "payment": {
+      "success_title": "Payment Successful!",
+      "success_description": "Your order has been created successfully. It will be prepared shortly.",
+      "cancelled_title": "Payment Cancelled",
+      "cancelled_description": "Payment was cancelled. You can try again."
+    }
   },
   "profile": {
     "guest_title": "Guest User",
@@ -412,7 +423,8 @@
       "subtitle": "Add products you like to favorites for easy access.",
       "browse_button": "Browse Products"
     },
-    "login_required": "Sign in to view your favorite products"
+    "login_required": "Sign in to view your favorite products",
+    "suggested_products": "Suggested Products"
   },
   "addresses": {
     "title": "My Addresses",
@@ -926,5 +938,117 @@
         "description": "Provides a personalized experience by remembering your language, theme, and other preferences."
       }
     }
+  },
+  "search": {
+    "results_for": "Search results for \"{{query}}\"",
+    "products_found": "{{count}} products found",
+    "no_results": "No Results Found",
+    "no_results_desc": "No products found for \"{{query}}\". Try a different search term.",
+    "browse_all": "Browse All Products",
+    "recommended": "Recommended Products",
+    "recommended_desc": "Our picks for you",
+    "related": "Related Products",
+    "related_desc": "You might also like these",
+    "no_products": "No products available yet."
+  },
+  "account_settings_page": {
+    "login_required_title": "Sign In",
+    "login_required_desc": "You must sign in to view your account settings.",
+    "login_button": "Sign In",
+    "user_type_corporate": "Corporate",
+    "stats_orders": "Orders",
+    "stats_favorites": "Favorites",
+    "personal_info": {
+      "title": "Personal Information",
+      "subtitle": "Your name, surname, and email address",
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "phone_change_help": "Contact support to change your phone number",
+      "saving": "Saving",
+      "save_changes": "Save Changes",
+      "cancel": "Cancel"
+    },
+    "other_settings": {
+      "title": "Other Settings",
+      "subtitle": "Security and privacy settings",
+      "addresses": "My Addresses",
+      "addresses_desc": "Delivery addresses",
+      "security": "Security",
+      "security_desc": "Session management",
+      "privacy": "Privacy",
+      "privacy_desc": "Data preferences"
+    },
+    "danger_zone": {
+      "title": "Danger Zone",
+      "subtitle": "Be careful, these actions cannot be undone",
+      "export_data": "Export My Data",
+      "export_data_desc": "Download all your data",
+      "delete_account": "Delete Account",
+      "delete_account_desc": "Permanently delete"
+    }
+  },
+  "address_dialog": {
+    "add_title": "Add New Address",
+    "edit_title": "Edit Address",
+    "add_description": "Add new delivery address",
+    "update_description": "Update your address information",
+    "labels": {
+      "address_title": "Address Title",
+      "street": "Address",
+      "city": "City",
+      "postal_code": "Postal Code",
+      "country": "Country",
+      "default_delivery": "Set as default delivery address",
+      "default_billing": "Set as default billing address"
+    },
+    "placeholders": {
+      "address_title": "Home, Work, etc.",
+      "street": "Street, avenue, neighborhood...",
+      "city": "Warsaw",
+      "postal_code": "00-001",
+      "country": "Select country"
+    },
+    "buttons": {
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "messages": {
+      "loading": "Saving...",
+      "success": "Address saved successfully",
+      "error": "Failed to save address"
+    }
+  },
+  "order_page": {
+    "payment_success_title": "Payment Successful!",
+    "payment_success_desc": "Your order has been successfully created. It will be prepared shortly.",
+    "payment_cancelled_title": "Payment Cancelled",
+    "payment_cancelled_desc": "Payment was cancelled. You can try again.",
+    "back_to_orders": "Back to My Orders",
+    "back": "Back",
+    "order_number": "Order #{{number}}",
+    "invoice_preview": "Preview Invoice",
+    "reorder_adding": "Adding...",
+    "reorder": "Reorder"
+  },
+  "checkout_address": {
+    "add_address_title": "Add Address",
+    "add_address_desc": "You must first add a delivery address to complete your order.",
+    "add_new_address": "Add New Address",
+    "default_badge": "Default"
+  },
+  "order_confirmation_page": {
+    "title": "Your Order Has Been Received!",
+    "description": "Your order has been successfully created. We have sent your order details to your email address.",
+    "go_to_orders": "Go to My Orders",
+    "continue_shopping": "Continue Shopping"
+  },
+  "invoice_dialog": {
+    "title": "Invoice Preview",
+    "title_with_order": "Invoice Preview - Order #{{orderNumber}}",
+    "download": "Download",
+    "loading": "Loading invoice...",
+    "load_error": "Failed to load invoice. Please try again."
   }
 }

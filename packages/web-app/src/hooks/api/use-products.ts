@@ -35,9 +35,9 @@ export function useProductsSuspense(params?: { category?: string; search?: strin
 export function useProduct(id: string) {
   const { i18n } = useTranslation();
   const lang = i18n.language?.split('-')[0] || 'tr';
-  
+
   return useQuery({
-    queryKey: productKeys.detail(id),
+    queryKey: [...productKeys.detail(id), lang],
     queryFn: () => productsApi.getProductById(id, lang),
     enabled: !!id,
     staleTime: 5 * 60 * 1000,

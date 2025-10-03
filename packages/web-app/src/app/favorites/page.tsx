@@ -97,7 +97,7 @@ export default function FavoritesPage() {
         {/* Suggested Products */}
         {suggestedProducts.length > 0 && (
           <div className="mt-12 pt-8 border-t border-border">
-            <h2 className="text-2xl font-bold mb-6">Önerilen Ürünler</h2>
+            <h2 className="text-2xl font-bold mb-6">{t("favorites.suggested_products")}</h2>
             <div className="flex flex-wrap gap-3">
               {suggestedProducts.map((product: any) => (
                 <ProductCard key={product.id} product={product} />

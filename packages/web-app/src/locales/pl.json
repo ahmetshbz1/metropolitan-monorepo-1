@@ -343,6 +343,11 @@
     "not_found_title": "Nie Znaleziono Zamówienia",
     "not_found_body": "Nie znaleziono żądanego zamówienia.",
     "back_to_orders": "Wróć do Zamówień",
+    "back": "Wstecz",
+    "order_number": "Zamówienie #{{number}}",
+    "invoice_preview": "Podgląd Faktury",
+    "reorder": "Zamów Ponownie",
+    "reordering": "Dodawanie...",
     "products": {
       "section_title": "Zawartość Zamówienia",
       "quantity": "{{count}} szt."
@@ -361,7 +366,13 @@
       "download_invoice": "Pobierz Fakturę"
     },
     "help": "Pomoc",
-    "items_added_to_cart": "{{count}} produktów dodano do koszyka."
+    "items_added_to_cart": "{{count}} produktów dodano do koszyka.",
+    "payment": {
+      "success_title": "Płatność Zakończona Sukcesem!",
+      "success_description": "Twoje zamówienie zostało pomyślnie utworzone. Zostanie wkrótce przygotowane.",
+      "cancelled_title": "Płatność Anulowana",
+      "cancelled_description": "Płatność została anulowana. Możesz spróbować ponownie."
+    }
   },
   "profile": {
     "guest_title": "Użytkownik Gość",
@@ -400,7 +411,8 @@
       "subtitle": "Dodaj produkty, które lubisz do ulubionych i łatwo do nich wracaj.",
       "browse_button": "Przeglądaj Produkty"
     },
-    "login_required": "Zaloguj się, aby zobaczyć ulubione produkty"
+    "login_required": "Zaloguj się, aby zobaczyć ulubione produkty",
+    "suggested_products": "Sugerowane Produkty"
   },
   "addresses": {
     "title": "Moje Adresy",
@@ -899,7 +911,7 @@
       "manage_cookies": "Zarządzaj ustawieniami plików cookie",
       "essential": {
         "title": "Niezbędne pliki cookie",
-        "description": "Są to niezbędne pliki cookie wymagane do prawidłowego funkcjonowania naszej witryny. Witryna nie może wykonywać swoich funkcji bez nich."
+        "description": "Są to niezbędne pliki cookie wymagane do prawidłowego funcjonowania naszej witryny. Witryna nie może wykonywać swoich funkcji bez nich."
       },
       "analytics": {
         "title": "Pliki cookie analityczne",
@@ -914,5 +926,117 @@
         "description": "Zapewniają spersonalizowane doświadczenie, zapamiętując Twój język, motyw i inne preferencje."
       }
     }
+  },
+  "search": {
+    "results_for": "Wyniki wyszukiwania dla \"{{query}}\"",
+    "products_found": "Znaleziono {{count}} produktów",
+    "no_results": "Nie znaleziono wyników",
+    "no_results_desc": "Nie znaleziono produktów dla \"{{query}}\". Spróbuj innego wyszukiwanego hasła.",
+    "browse_all": "Przeglądaj wszystkie produkty",
+    "recommended": "Polecane produkty",
+    "recommended_desc": "Nasze propozycje dla Ciebie",
+    "related": "Powiązane produkty",
+    "related_desc": "Może Ci się też spodobać",
+    "no_products": "Nie ma jeszcze dostępnych produktów."
+  },
+  "account_settings_page": {
+    "login_required_title": "Zaloguj się",
+    "login_required_desc": "Musisz zalogować się, aby zobaczyć ustawienia konta.",
+    "login_button": "Zaloguj się",
+    "user_type_corporate": "Firmowy",
+    "stats_orders": "Zamówienia",
+    "stats_favorites": "Ulubione",
+    "personal_info": {
+      "title": "Dane Osobowe",
+      "subtitle": "Twoje imię, nazwisko i adres e-mail",
+      "first_name": "Imię",
+      "last_name": "Nazwisko",
+      "email": "E-mail",
+      "phone": "Telefon",
+      "phone_change_help": "Skontaktuj się z obsługą, aby zmienić numer telefonu",
+      "saving": "Zapisywanie",
+      "save_changes": "Zapisz Zmiany",
+      "cancel": "Anuluj"
+    },
+    "other_settings": {
+      "title": "Inne Ustawienia",
+      "subtitle": "Ustawienia bezpieczeństwa i prywatności",
+      "addresses": "Moje Adresy",
+      "addresses_desc": "Adresy dostawy",
+      "security": "Bezpieczeństwo",
+      "security_desc": "Zarządzanie sesjami",
+      "privacy": "Prywatność",
+      "privacy_desc": "Preferencje danych"
+    },
+    "danger_zone": {
+      "title": "Strefa Niebezpieczna",
+      "subtitle": "Uważaj, tych działań nie można cofnąć",
+      "export_data": "Eksportuj Moje Dane",
+      "export_data_desc": "Pobierz wszystkie swoje dane",
+      "delete_account": "Usuń Konto",
+      "delete_account_desc": "Usuń na stałe"
+    }
+  },
+  "address_dialog": {
+    "add_title": "Dodaj Nowy Adres",
+    "edit_title": "Edytuj Adres",
+    "add_description": "Dodaj nowy adres dostawy",
+    "update_description": "Zaktualizuj dane adresowe",
+    "labels": {
+      "address_title": "Tytuł Adresu",
+      "street": "Adres",
+      "city": "Miasto",
+      "postal_code": "Kod Pocztowy",
+      "country": "Kraj",
+      "default_delivery": "Ustaw jako domyślny adres dostawy",
+      "default_billing": "Ustaw jako domyślny adres rozliczeniowy"
+    },
+    "placeholders": {
+      "address_title": "Dom, Praca, itp.",
+      "street": "Ulica, aleja, dzielnica...",
+      "city": "Warszawa",
+      "postal_code": "00-001",
+      "country": "Wybierz kraj"
+    },
+    "buttons": {
+      "save": "Zapisz",
+      "cancel": "Anuluj"
+    },
+    "messages": {
+      "loading": "Zapisywanie...",
+      "success": "Adres pomyślnie zapisany",
+      "error": "Nie udało się zapisać adresu"
+    }
+  },
+  "order_page": {
+    "payment_success_title": "Płatność Zakończona Sukcesem!",
+    "payment_success_desc": "Twoje zamówienie zostało pomyślnie utworzone. Zostanie wkrótce przygotowane.",
+    "payment_cancelled_title": "Płatność Anulowana",
+    "payment_cancelled_desc": "Płatność została anulowana. Możesz spróbować ponownie.",
+    "back_to_orders": "Wróć do Zamówień",
+    "back": "Wstecz",
+    "order_number": "Zamówienie #{{number}}",
+    "invoice_preview": "Podgląd Faktury",
+    "reorder_adding": "Dodawanie...",
+    "reorder": "Zamów Ponownie"
+  },
+  "checkout_address": {
+    "add_address_title": "Dodaj Adres",
+    "add_address_desc": "Musisz najpierw dodać adres dostawy, aby ukończyć zamówienie.",
+    "add_new_address": "Dodaj Nowy Adres",
+    "default_badge": "Domyślny"
+  },
+  "order_confirmation_page": {
+    "title": "Zamówienie Przyjęte!",
+    "description": "Twoje zamówienie zostało pomyślnie złożone. Wysłaliśmy szczegóły zamówienia na Twój adres e-mail.",
+    "go_to_orders": "Przejdź do Zamówień",
+    "continue_shopping": "Kontynuuj Zakupy"
+  },
+  "invoice_dialog": {
+    "title": "Podgląd Faktury",
+    "title_with_order": "Podgląd Faktury - Zamówienie #{{orderNumber}}",
+    "download": "Pobierz",
+    "loading": "Ładowanie faktury...",
+    "load_error": "Nie udało się załadować faktury. Spróbuj ponownie."
   }
 }

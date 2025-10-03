@@ -93,23 +93,25 @@ export function AddressDialog({
         <DialogHeader>
           <DialogTitle>
             {address
-              ? t("addresses.edit_address")
-              : t("addresses.add_new_address")}
+              ? t("address_dialog.edit_title")
+              : t("address_dialog.add_title")}
           </DialogTitle>
           <DialogDescription>
             {address
-              ? t("address.update_description")
-              : t("address.add_description")}
+              ? t("address_dialog.update_description")
+              : t("address_dialog.add_description")}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="addressTitle">Adres Başlığı</Label>
+              <Label htmlFor="addressTitle">
+                {t("address_dialog.labels.address_title")}
+              </Label>
               <Input
                 id="addressTitle"
-                placeholder="Ev, İş, vb."
+                placeholder={t("address_dialog.placeholders.address_title")}
                 value={formData.addressTitle}
                 onChange={(e) =>
                   setFormData({ ...formData, addressTitle: e.target.value })
@@ -119,10 +121,12 @@ export function AddressDialog({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="street">Adres</Label>
+              <Label htmlFor="street">
+                {t("address_dialog.labels.street")}
+              </Label>
               <Input
                 id="street"
-                placeholder="Sokak, cadde, mahalle..."
+                placeholder={t("address_dialog.placeholders.street")}
                 value={formData.street}
                 onChange={(e) =>
                   setFormData({ ...formData, street: e.target.value })
@@ -133,10 +137,12 @@ export function AddressDialog({
 
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="city">Şehir</Label>
+                <Label htmlFor="city">
+                  {t("address_dialog.labels.city")}
+                </Label>
                 <Input
                   id="city"
-                  placeholder={t("address.city_placeholder")}
+                  placeholder={t("address_dialog.placeholders.city")}
                   value={formData.city}
                   onChange={(e) =>
                     setFormData({ ...formData, city: e.target.value })
@@ -146,10 +152,12 @@ export function AddressDialog({
               </div>
 
               <div className="grid gap-2">
-                <Label htmlFor="postalCode">Posta Kodu</Label>
+                <Label htmlFor="postalCode">
+                  {t("address_dialog.labels.postal_code")}
+                </Label>
                 <Input
                   id="postalCode"
-                  placeholder="00-001"
+                  placeholder={t("address_dialog.placeholders.postal_code")}
                   value={formData.postalCode}
                   onChange={(e) =>
                     setFormData({ ...formData, postalCode: e.target.value })
@@ -160,9 +168,12 @@ export function AddressDialog({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="country">Ülke</Label>
+              <Label htmlFor="country">
+                {t("address_dialog.labels.country")}
+              </Label>
               <Input
                 id="country"
+                placeholder={t("address_dialog.placeholders.country")}
                 value={formData.country}
                 onChange={(e) =>
                   setFormData({ ...formData, country: e.target.value })
@@ -184,7 +195,7 @@ export function AddressDialog({
                   }
                 />
                 <Label htmlFor="isDefaultDelivery" className="cursor-pointer">
-                  Varsayılan teslimat adresi
+                  {t("address_dialog.labels.default_delivery")}
                 </Label>
               </div>
 
@@ -200,7 +211,7 @@ export function AddressDialog({
                   }
                 />
                 <Label htmlFor="isDefaultBilling" className="cursor-pointer">
-                  Varsayılan fatura adresi
+                  {t("address_dialog.labels.default_billing")}
                 </Label>
               </div>
             </div>
@@ -213,10 +224,12 @@ export function AddressDialog({
               onClick={() => onOpenChange(false)}
               disabled={isLoading}
             >
-              İptal
+              {t("address_dialog.buttons.cancel")}
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? t("common.saving") : t("common.save")}
+              {isLoading
+                ? t("address_dialog.messages.loading")
+                : t("address_dialog.buttons.save")}
             </Button>
           </DialogFooter>
         </form>

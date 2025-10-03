@@ -32,7 +32,7 @@ type Order = OrderDetail & {
 };
 
 export default function OrderDetailPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -56,26 +56,26 @@ export default function OrderDetailPage() {
       // Sepeti temizle (backend + local)
       console.log("🧹 Clearing cart after successful payment...");
       clearCartMutation.mutate();
-      
-      toast.success("Ödeme Başarılı!", {
-        description: "Siparişiniz başarıyla oluşturuldu. Kısa sürede hazırlanacak.",
+
+      toast.success(t("order_detail.payment.success_title"), {
+        description: t("order_detail.payment.success_description"),
       });
-      
+
       // URL'den payment parametresini kaldır
       const newUrl = window.location.pathname;
       window.history.replaceState({}, "", newUrl);
     } else if (paymentStatus === "cancelled") {
-      toast.error("Ödeme İptal Edildi", {
-        description: "Ödeme işlemi iptal edildi. Tekrar deneyebilirsiniz.",
+      toast.error(t("order_detail.payment.cancelled_title"), {
+        description: t("order_detail.payment.cancelled_description"),
       });
-      
+
       // URL'den payment parametresini kaldır
       const newUrl = window.location.pathname;
       window.history.replaceState({}, "", newUrl);
     }
 
     fetchOrderDetail();
-  }, [accessToken, params.id, searchParams]);
+  }, [accessToken, params.id, searchParams, i18n.language]);
 
   const fetchOrderDetail = async () => {
     try {
@@ -149,7 +149,7 @@ export default function OrderDetailPage() {
       }
 
       toast.success(t("toast.items_added_to_cart"), {
-        description: `${order.items.length} ürün sepetinize eklendi.`,
+        description: t("order_detail.items_added_to_cart", { count: order.items.length }),
       });
 
       // Navigate to cart after a short delay
@@ -227,7 +227,7 @@ export default function OrderDetailPage() {
           </p>
           <Button onClick={() => router.push("/orders")}>
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Siparişlerime Dön
+            {t("order_detail.back_to_orders")}
           </Button>
         </div>
       </div>
@@ -245,13 +245,13 @@ export default function OrderDetailPage() {
           size="sm"
         >
           <ArrowLeft className="mr-1 h-4 w-4" />
-          Geri
+          {t("order_detail.back")}
         </Button>
 
         <div className="flex items-start justify-between mb-4">
           <div>
             <h1 className="text-lg font-bold mb-0.5">
-              Sipariş #{order.orderNumber}
+              {t("order_detail.order_number", { number: order.orderNumber })}
             </h1>
             <p className="text-sm text-muted-foreground">
               {formatDate(order.createdAt)}
@@ -378,7 +378,7 @@ export default function OrderDetailPage() {
                   size="sm"
                 >
                   <FileText className="mr-2 h-4 w-4" />
-                  Fatura Önizle
+                  {t("order_detail.invoice_preview")}
                 </Button>
                 <Button
                   variant="outline"
@@ -388,7 +388,7 @@ export default function OrderDetailPage() {
                   size="sm"
                 >
                   <ShoppingCart className="mr-2 h-4 w-4" />
-                  {reordering ? "Ekleniyor..." : "Yeniden Sipariş Ver"}
+                  {reordering ? t("order_detail.reordering") : t("order_detail.reorder")}
                 </Button>
                 <Button variant="outline" className="w-full justify-start" size="sm">
                   <HelpCircle className="mr-2 h-4 w-4" />

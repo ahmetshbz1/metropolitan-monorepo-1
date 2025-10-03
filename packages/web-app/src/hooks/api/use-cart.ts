@@ -9,10 +9,11 @@ import { useTranslation } from 'react-i18next';
 
 export const cartKeys = {
   all: ['cart'] as const,
-  items: (userId?: string, guestId?: string) => [
+  items: (userId?: string, guestId?: string, lang?: string) => [
     ...cartKeys.all,
     'items',
     userId || guestId || 'anonymous',
+    lang || 'tr',
   ] as const,
 };
 
@@ -29,6 +30,8 @@ export function useCart() {
   const accessToken = useAuthStore((state) => state.accessToken);
   const _hasHydrated = useAuthStore((state) => state._hasHydrated);
   const { isGuest, guestId, loginAsGuest } = useGuestAuth();
+  const { i18n } = useTranslation();
+  const lang = i18n.language?.split('-')[0] || 'tr';
 
   // Boolean değer olarak hesapla
   const isAuthenticated = Boolean(user && accessToken);
@@ -47,7 +50,7 @@ export function useCart() {
   }, [_hasHydrated, isAuthenticated, isGuest, guestId, loginAsGuest]);
 
   return useQuery({
-    queryKey: cartKeys.items(user?.id, guestId || undefined),
+    queryKey: cartKeys.items(user?.id, guestId || undefined, lang),
     queryFn: async () => {
       if (!hasValidSession) {
         clearCartStore();
@@ -83,6 +86,7 @@ export function useAddToCart() {
   const queryClient = useQueryClient();
   const setCart = useCartStore((state) => state.setCart);
   const { t, i18n } = useTranslation();
+  const lang = i18n.language?.split('-')[0] || 'tr';
 
   const user = useAuthStore((state) => state.user);
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -115,14 +119,14 @@ export function useAddToCart() {
       // Response CartResponse veya { success, message } olabilir
       if ('items' in response) {
         queryClient.setQueryData(
-          cartKeys.items(user?.id, guestId || undefined),
+          cartKeys.items(user?.id, guestId || undefined, lang),
           response
         );
         setCart(response.items, response.summary);
       } else {
         // Guest add response, cart'ı yeniden fetch et
         queryClient.invalidateQueries({
-          queryKey: cartKeys.items(user?.id, guestId || undefined),
+          queryKey: cartKeys.items(user?.id, guestId || undefined, lang),
         });
       }
     },
@@ -150,6 +154,8 @@ export function useAddToCart() {
 export function useUpdateCartItem() {
   const queryClient = useQueryClient();
   const setCart = useCartStore((state) => state.setCart);
+  const { i18n } = useTranslation();
+  const lang = i18n.language?.split('-')[0] || 'tr';
 
   const user = useAuthStore((state) => state.user);
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -184,13 +190,13 @@ export function useUpdateCartItem() {
     onSuccess: (response: any) => {
       if ('items' in response) {
         queryClient.setQueryData(
-          cartKeys.items(user?.id, guestId || undefined),
+          cartKeys.items(user?.id, guestId || undefined, lang),
           response
         );
         setCart(response.items, response.summary);
       } else {
         queryClient.invalidateQueries({
-          queryKey: cartKeys.items(user?.id, guestId || undefined),
+          queryKey: cartKeys.items(user?.id, guestId || undefined, lang),
         });
       }
     },
@@ -203,6 +209,8 @@ export function useUpdateCartItem() {
 export function useRemoveFromCart() {
   const queryClient = useQueryClient();
   const setCart = useCartStore((state) => state.setCart);
+  const { i18n } = useTranslation();
+  const lang = i18n.language?.split('-')[0] || 'tr';
 
   const user = useAuthStore((state) => state.user);
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -227,13 +235,13 @@ export function useRemoveFromCart() {
     onSuccess: (response: any) => {
       if ('items' in response) {
         queryClient.setQueryData(
-          cartKeys.items(user?.id, guestId || undefined),
+          cartKeys.items(user?.id, guestId || undefined, lang),
           response
         );
         setCart(response.items, response.summary);
       } else {
         queryClient.invalidateQueries({
-          queryKey: cartKeys.items(user?.id, guestId || undefined),
+          queryKey: cartKeys.items(user?.id, guestId || undefined, lang),
         });
       }
     },
@@ -247,6 +255,8 @@ export function useClearCart() {
   const queryClient = useQueryClient();
   const clearCartStore = useCartStore((state) => state.clearCart);
   const cartItems = useCartStore((state) => state.items);
+  const { i18n } = useTranslation();
+  const lang = i18n.language?.split('-')[0] || 'tr';
 
   const user = useAuthStore((state) => state.user);
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -262,7 +272,7 @@ export function useClearCart() {
       );
     },
     onSuccess: () => {
-      queryClient.setQueryData(cartKeys.items(user?.id, guestId || undefined), {
+      queryClient.setQueryData(cartKeys.items(user?.id, guestId || undefined, lang), {
         items: [],
         summary: {
           totalItems: 0,
