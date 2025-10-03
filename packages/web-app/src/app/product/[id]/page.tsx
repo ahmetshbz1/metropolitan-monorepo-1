@@ -114,6 +114,29 @@ export default function ProductDetailPage() {
     }
   };
 
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    // Allow empty input for better UX while typing
+    if (value === '') {
+      setQuantity(1);
+      return;
+    }
+
+    const numValue = parseInt(value, 10);
+
+    // Validate input
+    if (!isNaN(numValue)) {
+      if (numValue < 1) {
+        setQuantity(1);
+      } else if (product && numValue > product.stock) {
+        setQuantity(product.stock);
+      } else {
+        setQuantity(numValue);
+      }
+    }
+  };
+
   // Loading state
   if (loading) {
     return (
@@ -310,28 +333,14 @@ export default function ProductDetailPage() {
                     >
                       <Minus className="w-3 h-3" />
                     </motion.button>
-                    <div className="px-4 py-2 font-medium w-12 text-center text-sm flex items-center justify-center overflow-hidden">
-                      <div className="flex">
-                        {quantity
-                          .toString()
-                          .split("")
-                          .map((digit, index) => (
-                            <motion.span
-                              key={`${index}-${digit}`}
-                              initial={{ y: 20, opacity: 0 }}
-                              animate={{ y: 0, opacity: 1 }}
-                              exit={{ y: -20, opacity: 0 }}
-                              transition={{
-                                type: "spring",
-                                stiffness: 300,
-                                damping: 30,
-                              }}
-                            >
-                              {digit}
-                            </motion.span>
-                          ))}
-                      </div>
-                    </div>
+                    <input
+                      type="number"
+                      value={quantity}
+                      onChange={handleQuantityChange}
+                      min="1"
+                      max={product.stock}
+                      className="w-16 px-2 py-2 font-medium text-center text-sm bg-transparent border-none focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
                     <motion.button
                       onClick={increaseQuantity}
                       disabled={quantity >= product.stock}
