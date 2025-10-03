@@ -89,6 +89,11 @@
     "view_details": "Zobacz Szczegóły",
     "minimum_quantity_dialog": {
       "title": "Minimalna Ilość Zakupu"
+    },
+    "tooltip": {
+      "add_to_favorites": "Dodaj do Ulubionych",
+      "remove_from_favorites": "Usuń z Ulubionych",
+      "add_to_cart": "Dodaj do Koszyka"
     }
   },
   "product_detail": {

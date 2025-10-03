@@ -5,6 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## 🏗️ Monorepo Architecture
 
 **Bun workspaces** monorepo with e-commerce domain focus:
+
 - **packages/backend**: Elysia.js + Bun API (Domain-Driven Design)
 - **packages/mobile-app**: React Native + Expo mobile application
 - **packages/shared**: TypeScript types, constants, utilities (@metropolitan/shared)
@@ -12,6 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## 🚀 Production Deployment
 
 ### Server Information
+
 - **Server IP**: 91.99.232.146
 - **Domain**: api.metropolitanfg.pl
 - **SSH Alias**: metropolitan-deploy
@@ -19,7 +21,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Deploy Script**: /opt/deploy.sh
 
 ### SSH Configuration
+
 Add to `~/.ssh/config`:
+
 ```bash
 Host metropolitan-deploy
     HostName 91.99.232.146
@@ -28,6 +32,7 @@ Host metropolitan-deploy
 ```
 
 ### Quick Deploy Commands
+
 ```bash
 # SSH to production server
 ssh metropolitan-deploy
@@ -45,6 +50,7 @@ ssh metropolitan-deploy "docker-compose -f /opt/metropolitan-backend/docker-comp
 ## ⚡ Development Commands
 
 ### Workspace Operations
+
 ```bash
 # Install all dependencies
 bun run install:all
@@ -57,6 +63,7 @@ bun run dev:all
 ```
 
 ### Backend Development
+
 ```bash
 cd packages/backend
 
@@ -77,6 +84,7 @@ bun run test
 ```
 
 ### Mobile App Development
+
 ```bash
 cd packages/mobile-app
 
@@ -96,6 +104,7 @@ bun run analyze
 ## 🎯 Tech Stack Specifics
 
 ### Backend (DDD Architecture)
+
 - **Runtime**: Bun (modern JavaScript runtime)
 - **Framework**: Elysia.js (TypeScript-first)
 - **Database**: PostgreSQL + Drizzle ORM
@@ -107,6 +116,7 @@ bun run analyze
 - **Monitoring**: Sentry
 
 ### Mobile App (React Native + Expo)
+
 - **Framework**: Expo SDK 53 + React Native 0.79
 - **Router**: Expo Router v5 (file-based routing)
 - **State**: React Context API + custom hooks (NOT Zustand - just installed but unused)
@@ -117,6 +127,7 @@ bun run analyze
 - **i18n**: react-i18next (TR, EN, PL)
 
 ### Shared Package
+
 - **Import Pattern**: `@metropolitan/shared` alias
 - **Types**: Order, Product, User, Cart, Address, Payment
 - **Constants**: API_ENDPOINTS, ORDER_STATUS, ERROR_MESSAGES (Turkish)
@@ -162,12 +173,14 @@ context/
 ## 🔒 Business Logic Specifics
 
 ### Authentication Flow
+
 - Phone number + OTP (Twilio)
 - JWT tokens + Redis blacklisting
 - Individual vs Corporate user types
 - Guest user support
 
 ### Order Management
+
 - Complex calculation with shipping
 - Stock reservation (Redis)
 - Stripe payment processing
@@ -175,6 +188,7 @@ context/
 - Multi-step checkout process
 
 ### Polish Market Focus
+
 - NIP (tax number) validation + caching
 - Fakturownia integration for invoices
 - Polish addresses and phone formats
@@ -183,6 +197,7 @@ context/
 ## 📊 Database Schema (PostgreSQL + Drizzle)
 
 **Key Tables**:
+
 - `users` - Individual/corporate user data
 - `companies` - Corporate customer info (NIP validation)
 - `addresses` - Shipping/billing addresses
@@ -195,6 +210,7 @@ context/
 ## 🧪 Testing Strategy
 
 ### Backend Tests
+
 ```bash
 cd packages/backend
 bun run test                           # Run all tests
@@ -202,6 +218,7 @@ bun test src/tests/race-condition.test.ts  # Run specific test
 ```
 
 **Test Coverage**:
+
 - Race conditions (stock management)
 - Webhook idempotency (Stripe events)
 - Stock reservation/rollback (Redis)
@@ -209,8 +226,9 @@ bun test src/tests/race-condition.test.ts  # Run specific test
 - System validation (performance metrics)
 
 **Performance Targets**:
+
 - API response < 200ms
-- Database queries < 100ms  
+- Database queries < 100ms
 - Redis operations < 10ms
 - Stock operations > 95% success rate
 - Webhook idempotency > 95%
@@ -218,13 +236,14 @@ bun test src/tests/race-condition.test.ts  # Run specific test
 ## 🔧 Environment Setup
 
 ### Backend Environment Variables
+
 ```bash
 # Required for all environments
 JWT_SECRET=              # Min 32 characters
 NODE_ENV=                # development | production | test
 DATABASE_URL=            # PostgreSQL connection
 DB_HOST=                 # PostgreSQL host
-DB_PORT=                 # PostgreSQL port  
+DB_PORT=                 # PostgreSQL port
 POSTGRES_USER=           # Database user
 POSTGRES_PASSWORD=       # Database password
 POSTGRES_DB=             # Database name
@@ -242,6 +261,7 @@ SENTRY_DSN=              # Error monitoring
 ```
 
 ### Mobile App Environment
+
 ```bash
 # packages/mobile-app/.env
 EXPO_PUBLIC_API_BASE_URL=  # Backend API URL (e.g., http://172.20.10.2:3000)
@@ -250,12 +270,14 @@ EXPO_PUBLIC_API_BASE_URL=  # Backend API URL (e.g., http://172.20.10.2:3000)
 ## 📡 API Integration
 
 ### Mobile to Backend Connection
+
 - Development: Use local IP (e.g., `http://172.20.10.2:3000`)
 - Axios interceptors handle JWT token attachment
 - API client: `packages/mobile-app/core/api.ts`
 - Secure token storage: Expo SecureStore
 
 ### Key API Patterns
+
 - Auth: Phone + OTP verification
 - Cart: Automatic guest-to-user migration
 - Orders: Multi-step with Stripe payment
@@ -264,6 +286,7 @@ EXPO_PUBLIC_API_BASE_URL=  # Backend API URL (e.g., http://172.20.10.2:3000)
 ## 🎨 UI/UX Standards
 
 ### Mobile Design
+
 - Turkish UI text (default language)
 - Modern, minimalist design
 - Mobile-first responsive
@@ -271,6 +294,7 @@ EXPO_PUBLIC_API_BASE_URL=  # Backend API URL (e.g., http://172.20.10.2:3000)
 - Consistent spacing with Tailwind classes
 
 ### Error Handling
+
 - Turkish error messages (shared/constants)
 - User-friendly error states
 - Comprehensive logging to Sentry
@@ -278,51 +302,57 @@ EXPO_PUBLIC_API_BASE_URL=  # Backend API URL (e.g., http://172.20.10.2:3000)
 ## 🔄 Development Workflow
 
 ### Git Workflow
+
 - Feature branches from main
 - Turkish commit messages (Conventional Commits)
 - Automatic testing on PRs
 
 ### Deployment
+
 - Backend: Bun production builds
 - Mobile: Expo builds for iOS/Android
 - Environment-specific configurations
 
 ### Shared Types Usage
+
 ```typescript
 // Import from shared package
-import { Order, Product, API_ENDPOINTS } from '@metropolitan/shared'
+import { Order, Product, API_ENDPOINTS } from "@metropolitan/shared";
 
 // Use consistent types across backend and mobile
-const order: Order = await orderService.create(orderData)
+const order: Order = await orderService.create(orderData);
 ```
 
 ## 🚨 Critical Development Notes
 
 ### State Management
+
 - **Mobile**: React Context API (NOT Zustand despite package.json)
 - **Backend**: Domain services + repositories pattern
 - **Shared**: Immutable data patterns
 
 ### External Dependencies
+
 - **Stripe**: Payment processing + customer management
 - **Fakturownia**: Polish invoice generation
 - **Twilio**: SMS/OTP services
 - **Redis**: Caching + session management
 
 ### Performance Considerations
+
 - **Mobile**: NativeWind for styling, Expo optimizations
 - **Backend**: Redis caching, database indexing, connection pooling
 - **API**: JWT token auto-refresh, request/response compression
 
 ### Security Measures
+
 - Environment variable validation
 - JWT token blacklisting
 - Stripe webhook signature validation
 - Input sanitization and validation
 
-
 Kullanıcı istekleri,
-mobile-app de sadece tr.json dosyasına çevirileri ekle kullanıcı en sonunda en ve pl json dosyalarını tr.json dosyasından çoğaltacak 
+
 - hiçbir zaman mock veri kullanma bu kesinlikle yasak !!!!
 - Bundan sonra workflow'umuz:
   1. Main'de çalış

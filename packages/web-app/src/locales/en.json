@@ -89,6 +89,11 @@
     "view_details": "View Details",
     "minimum_quantity_dialog": {
       "title": "Minimum Purchase Quantity"
+    },
+    "tooltip": {
+      "add_to_favorites": "Add to Favorites",
+      "remove_from_favorites": "Remove from Favorites",
+      "add_to_cart": "Add to Cart"
     }
   },
   "product_detail": {

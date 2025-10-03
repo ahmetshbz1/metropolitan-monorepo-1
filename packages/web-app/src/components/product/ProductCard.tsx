@@ -11,6 +11,7 @@ import { useAuthStore } from "@/stores";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { MinimumQuantityDialog } from "./MinimumQuantityDialog";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 
 interface ProductCardProps {
   product: Product;
@@ -136,36 +137,50 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
                 )}
 
                 {/* Favorite Button - Top Left */}
-                <button
-                  onClick={toggleFavorite}
-                  disabled={addFavoriteMutation.isPending || removeFavoriteMutation.isPending}
-                  className="absolute top-2 left-2 w-6 h-6 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm flex items-center justify-center transition-all z-10 hover:scale-110"
-                >
-                  <Heart
-                    className={`w-3.5 h-3.5 transition-colors ${
-                      isFavorite
-                        ? "fill-red-500 text-red-500"
-                        : "text-gray-600 dark:text-gray-400"
-                    }`}
-                  />
-                </button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={toggleFavorite}
+                      disabled={addFavoriteMutation.isPending || removeFavoriteMutation.isPending}
+                      className="absolute top-2 left-2 w-6 h-6 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm flex items-center justify-center transition-all z-10 hover:scale-110"
+                    >
+                      <Heart
+                        className={`w-3.5 h-3.5 transition-colors ${
+                          isFavorite
+                            ? "fill-red-500 text-red-500"
+                            : "text-gray-600 dark:text-gray-400"
+                        }`}
+                      />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {isFavorite ? t("product_card.tooltip.remove_from_favorites") : t("product_card.tooltip.add_to_favorites")}
+                  </TooltipContent>
+                </Tooltip>
 
                 {/* Add to Cart Button - Top Right */}
-                <button
-                  onClick={handleAddToCart}
-                  disabled={isOutOfStock || addToCartMutation.isPending}
-                  className={`absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center transition-all z-10 ${
-                    isOutOfStock
-                      ? "bg-gray-100 dark:bg-gray-800 text-gray-400"
-                      : "bg-primary hover:bg-primary/90 text-white hover:scale-105"
-                  }`}
-                >
-                  {addToCartMutation.isPending ? (
-                    <div className="w-2 h-2 border border-white/30 border-t-white rounded-full animate-spin" />
-                  ) : (
-                    <span className="text-sm font-bold">+</span>
-                  )}
-                </button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={handleAddToCart}
+                      disabled={isOutOfStock || addToCartMutation.isPending}
+                      className={`absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center transition-all z-10 ${
+                        isOutOfStock
+                          ? "bg-gray-100 dark:bg-gray-800 text-gray-400"
+                          : "bg-primary hover:bg-primary/90 text-white hover:scale-105"
+                      }`}
+                    >
+                      {addToCartMutation.isPending ? (
+                        <div className="w-2 h-2 border border-white/30 border-t-white rounded-full animate-spin" />
+                      ) : (
+                        <span className="text-sm font-bold">+</span>
+                      )}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {t("product_card.tooltip.add_to_cart")}
+                  </TooltipContent>
+                </Tooltip>
 
                 {/* Out of Stock Overlay */}
                 {isOutOfStock && (
@@ -249,36 +264,50 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
             )}
 
             {/* Favorite Button - Top Left */}
-            <button
-              onClick={toggleFavorite}
-              disabled={addFavoriteMutation.isPending || removeFavoriteMutation.isPending}
-              className="absolute top-2 left-2 w-6 h-6 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm flex items-center justify-center transition-all z-10 hover:scale-110"
-            >
-              <Heart
-                className={`w-3.5 h-3.5 transition-colors ${
-                  isFavorite
-                    ? "fill-red-500 text-red-500"
-                    : "text-gray-600 dark:text-gray-400"
-                }`}
-              />
-            </button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={toggleFavorite}
+                  disabled={addFavoriteMutation.isPending || removeFavoriteMutation.isPending}
+                  className="absolute top-2 left-2 w-6 h-6 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm flex items-center justify-center transition-all z-10 hover:scale-110"
+                >
+                  <Heart
+                    className={`w-3.5 h-3.5 transition-colors ${
+                      isFavorite
+                        ? "fill-red-500 text-red-500"
+                        : "text-gray-600 dark:text-gray-400"
+                    }`}
+                  />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {isFavorite ? t("product_card.tooltip.remove_from_favorites") : t("product_card.tooltip.add_to_favorites")}
+              </TooltipContent>
+            </Tooltip>
 
             {/* Add to Cart Button - Top Right */}
-            <button
-              onClick={handleAddToCart}
-              disabled={isOutOfStock || addToCartMutation.isPending}
-              className={`absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center transition-all z-10 ${
-                isOutOfStock
-                  ? "bg-gray-100 dark:bg-gray-800 text-gray-400"
-                  : "bg-primary hover:bg-primary/90 text-white hover:scale-105"
-              }`}
-            >
-              {addToCartMutation.isPending ? (
-                <div className="w-2 h-2 border border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <span className="text-sm font-bold">+</span>
-              )}
-            </button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={handleAddToCart}
+                  disabled={isOutOfStock || addToCartMutation.isPending}
+                  className={`absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center transition-all z-10 ${
+                    isOutOfStock
+                      ? "bg-gray-100 dark:bg-gray-800 text-gray-400"
+                      : "bg-primary hover:bg-primary/90 text-white hover:scale-105"
+                  }`}
+                >
+                  {addToCartMutation.isPending ? (
+                    <div className="w-2 h-2 border border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <span className="text-sm font-bold">+</span>
+                  )}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {t("product_card.tooltip.add_to_cart")}
+              </TooltipContent>
+            </Tooltip>
 
             {/* Out of Stock Overlay */}
             {isOutOfStock && (

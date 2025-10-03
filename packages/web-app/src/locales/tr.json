@@ -89,6 +89,11 @@
     "view_details": "Detayları Görüntüle",
     "minimum_quantity_dialog": {
       "title": "Minimum Alım Miktarı"
+    },
+    "tooltip": {
+      "add_to_favorites": "Favorilere Ekle",
+      "remove_from_favorites": "Favorilerden Çıkar",
+      "add_to_cart": "Sepete Ekle"
     }
   },
   "product_detail": {
