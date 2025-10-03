@@ -102,10 +102,10 @@ export function Footer() {
   ];
 
   const socialLinks = [
-    { icon: Facebook, href: "https://facebook.com/metropolitanfg", label: "Facebook" },
-    { icon: Instagram, href: "https://instagram.com/metropolitanfg", label: "Instagram" },
-    { icon: Twitter, href: "https://twitter.com/metropolitanfg", label: "Twitter" },
-    { icon: Linkedin, href: "https://linkedin.com/company/metropolitanfg", label: "LinkedIn" },
+    { icon: Facebook, href: "https://www.facebook.com/profile.php?id=61581536105076", label: "Facebook" },
+    { icon: Instagram, href: "https://www.instagram.com/metropolitanfg_pl/", label: "Instagram" },
+    { icon: Twitter, href: "https://x.com/metropolitan_fg", label: "Twitter" },
+    { icon: Linkedin, href: "https://www.linkedin.com/in/metropolitan-food-group-57a003388/", label: "LinkedIn" },
   ];
 
   return (
