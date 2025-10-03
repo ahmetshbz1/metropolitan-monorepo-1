@@ -92,10 +92,10 @@ export default function SupportScreen() {
     {
       id: "instagram",
       title: t("support.instagram"),
-      subtitle: "@metropolitanfg",
+      subtitle: "@metropolitanfg_pl",
       icon: "instagram" as const,
       color: "#E4405F",
-      action: () => Linking.openURL("https://instagram.com/metropolitanfg"),
+      action: () => Linking.openURL("https://www.instagram.com/metropolitanfg_pl/"),
     },
     {
       id: "facebook",
@@ -103,15 +103,15 @@ export default function SupportScreen() {
       subtitle: "Metropolitan Food Group",
       icon: "facebook" as const,
       color: "#1877F2",
-      action: () => Linking.openURL("https://facebook.com/metropolitanfg"),
+      action: () => Linking.openURL("https://www.facebook.com/profile.php?id=61581536105076"),
     },
     {
       id: "twitter",
       title: t("support.twitter"),
-      subtitle: "@metropolitanfg",
+      subtitle: "@metropolitan_fg",
       icon: "twitter" as const,
       color: "#1DA1F2",
-      action: () => Linking.openURL("https://twitter.com/metropolitanfg"),
+      action: () => Linking.openURL("https://x.com/metropolitan_fg"),
     },
     {
       id: "linkedin",
@@ -120,7 +120,7 @@ export default function SupportScreen() {
       icon: "linkedin" as const,
       color: "#0A66C2",
       action: () =>
-        Linking.openURL("https://linkedin.com/company/metropolitanfg"),
+        Linking.openURL("https://www.linkedin.com/in/metropolitan-food-group-57a003388/"),
     },
   ];
 
