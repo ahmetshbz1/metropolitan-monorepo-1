@@ -437,8 +437,54 @@
     }
   },
   "support": {
+    "title": "Destek",
+    "contact_section": "İletişim",
+    "whatsapp": "WhatsApp",
+    "whatsapp_message": "Merhaba, Metropolitan Food Group hakkında yardım almak istiyorum.",
+    "call_us": "Bizi Arayın",
+    "email": "E-posta",
+    "address": "Adres",
+    "social_section": "Sosyal Medya",
+    "instagram": "Instagram",
+    "facebook": "Facebook",
+    "twitter": "Twitter",
+    "linkedin": "LinkedIn",
+    "faq_section": "Sık Sorulan Sorular",
+    "faq": {
+      "delivery_question": "Kargo süreci nasıl işliyor?",
+      "delivery_answer": "Siparişleriniz onaylandıktan sonra 1-3 iş günü içinde kargoya verilir. Kargo takip numaranız SMS ile gönderilir.",
+      "payment_question": "Hangi ödeme yöntemlerini kabul ediyorsunuz?",
+      "payment_answer": "Kredi kartı, banka kartı ve havale/EFT ile ödeme yapabilirsiniz. Kurumsal müşteriler için fatura ile ödeme imkanı sunuyoruz.",
+      "return_question": "İade ve değişim şartları nelerdir?",
+      "return_answer": "Ürünlerinizi teslim aldığınız tarihten itibaren 14 gün içinde, ambalajı açılmamış ve kullanılmamış olması koşuluyla iade edebilirsiniz.",
+      "cancel_question": "Siparişimi nasıl iptal edebilirim?",
+      "cancel_answer": "Siparişiniz kargoya verilmeden önce Siparişlerim bölümünden iptal edebilirsiniz. Kargoya verilen siparişler için müşteri hizmetleriyle iletişime geçiniz."
+    },
+    "help_center": "Yardım Merkezi",
+    "help_center_desc": "Size en iyi hizmeti sunmak için buradayız. Herhangi bir sorunuz olduğunda bizimle iletişime geçmekten çekinmeyin.",
     "working_hours": "Çalışma Saatleri",
     "working_hours_weekdays": "Pazartesi - Cuma: 09:00 - 18:00",
-    "working_hours_weekend": "Cumartesi: 09:00 - 14:00"
+    "working_hours_weekend": "Cumartesi: 09:00 - 14:00",
+    "working_hours_title": "Çalışma Saatleri",
+    "categories_title": "Yardım Kategorileri",
+    "contact_title": "Bize Ulaşın",
+    "contact_methods": {
+      "email": "E-posta",
+      "phone": "Telefon",
+      "whatsapp": "WhatsApp",
+      "live_support": "Canlı Destek"
+    }
+  },
+  "help_center": {
+    "title": "Yardım Merkezi",
+    "header": "Size nasıl yardımcı olabiliriz?",
+    "search_placeholder": "Aramak için yazın...",
+    "categories": {
+      "orders": "Siparişler",
+      "returns": "İadeler ve Geri Ödemeler",
+      "account": "Hesap Yönetimi",
+      "payment": "Ödeme Seçenekleri",
+      "security": "Güvenlik ve Gizlilik"
+    }
   }
 }
