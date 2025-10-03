@@ -3,7 +3,7 @@
 // Based on mobile-app's interceptors but adapted for web
 
 import { AxiosInstance } from 'axios';
-import { getDeviceHeaders } from './device-fingerprint';
+import { getDeviceHeaders, extractSessionIdFromToken, saveSessionId, clearSessionId } from './device-fingerprint';
 import { useAuthStore } from '@/stores/auth-store';
 
 let isRefreshing = false;
@@ -49,6 +49,7 @@ async function clearAuthAndRedirect() {
   if (typeof window !== 'undefined') {
     try {
       useAuthStore.getState().clearAuth();
+      clearSessionId(); // Clear session ID from sessionStorage
 
       // Redirect to login page
       window.location.href = '/auth/phone-login';
@@ -90,6 +91,12 @@ async function refreshAccessToken(api: AxiosInstance): Promise<string | null> {
       // Save new access token to Zustand (this also saves to localStorage)
       useAuthStore.getState().setTokens(newAccessToken, refreshToken);
 
+      // Extract and save session ID from token
+      const sessionId = extractSessionIdFromToken(newAccessToken);
+      if (sessionId) {
+        saveSessionId(sessionId);
+      }
+
       return newAccessToken;
     }
 
@@ -125,6 +132,21 @@ export function setupRequestInterceptor(api: AxiosInstance) {
       const token = useAuthStore.getState().accessToken;
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+
+        // Ensure session ID is saved (only if not already in sessionStorage)
+        if (typeof window !== 'undefined') {
+          try {
+            const existingSessionId = sessionStorage.getItem('metropolitan_session_id');
+            if (!existingSessionId) {
+              const sessionId = extractSessionIdFromToken(token);
+              if (sessionId) {
+                saveSessionId(sessionId);
+              }
+            }
+          } catch (error) {
+            // Ignore session storage errors
+          }
+        }
       }
 
       // Add device fingerprint headers

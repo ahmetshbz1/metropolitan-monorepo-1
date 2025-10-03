@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SocialAuthData, WebUser } from "./types";
 import { useAuthStore } from "@/stores/auth-store";
+import { extractSessionIdFromToken, saveSessionId } from "@/lib/device-fingerprint";
 
 // Firebase auth for Google
 import { auth } from "@/lib/firebase";
@@ -128,6 +129,12 @@ export const useAuthHook = () => {
         setTokens(response.data.accessToken, response.data.refreshToken);
         setToken(response.data.accessToken); // Backward compatibility
 
+        // Extract and save session ID
+        const sessionId = extractSessionIdFromToken(response.data.accessToken);
+        if (sessionId) {
+          saveSessionId(sessionId);
+        }
+
         // Clear guest session
         setGuest(false, null);
 
@@ -209,6 +216,12 @@ export const useAuthHook = () => {
           // Save to Zustand store
           setTokens(response.data.accessToken, response.data.refreshToken);
           setToken(response.data.accessToken); // Backward compatibility
+
+          // Extract and save session ID
+          const sessionId = extractSessionIdFromToken(response.data.accessToken);
+          if (sessionId) {
+            saveSessionId(sessionId);
+          }
         }
 
         setRegistrationToken(null);
@@ -392,6 +405,12 @@ export const useAuthHook = () => {
               setUser(response.data.user);
               setTokens(response.data.accessToken, response.data.refreshToken);
               setToken(response.data.accessToken); // Backward compatibility
+
+              // Extract and save session ID
+              const sessionId = extractSessionIdFromToken(response.data.accessToken);
+              if (sessionId) {
+                saveSessionId(sessionId);
+              }
 
               router.push("/");
               return { success: true };

@@ -1,5 +1,6 @@
 import type { SocialAuthData, WebUser } from "@/context/auth/types";
 import { create } from "zustand";
+import { clearSessionId } from "@/lib/device-fingerprint";
 
 interface AuthState {
   // State
@@ -88,7 +89,16 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   setTokens: (accessToken, refreshToken) => {
     set({ accessToken, refreshToken, isGuest: false, guestId: null });
-    saveToLocalStorage({ ...get(), accessToken, refreshToken, isGuest: false, guestId: null });
+    // Explicitly save with guest data cleared
+    saveToLocalStorage({
+      user: get().user,
+      accessToken,
+      refreshToken,
+      registrationToken: get().registrationToken,
+      isGuest: false,
+      guestId: null,
+      socialAuthData: get().socialAuthData,
+    });
   },
 
   setRegistrationToken: (token) => {
@@ -98,7 +108,16 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   setGuest: (isGuest, guestId) => {
     set({ isGuest, guestId });
-    saveToLocalStorage({ ...get(), isGuest, guestId });
+    // Explicitly save all fields to ensure clean state
+    saveToLocalStorage({
+      user: get().user,
+      accessToken: get().accessToken,
+      refreshToken: get().refreshToken,
+      registrationToken: get().registrationToken,
+      isGuest,
+      guestId,
+      socialAuthData: get().socialAuthData,
+    });
   },
 
   setPhoneNumber: (phone) => set({ phoneNumber: phone }),
@@ -122,10 +141,10 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       socialAuthData: null,
     });
 
-    // Clear from localStorage
+    // Clear from localStorage and sessionStorage
     if (typeof window !== "undefined") {
       localStorage.removeItem("metropolitan-auth-storage");
-      sessionStorage.removeItem("metropolitan_session_id");
+      clearSessionId(); // Clear session ID using device-fingerprint function
     }
   },
 }));
@@ -134,6 +153,13 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 if (typeof window !== "undefined") {
   const stored = loadFromLocalStorage();
   if (stored) {
+    // Clean up: If user is authenticated, remove any guest data from localStorage
+    if (stored.accessToken && (stored.isGuest || stored.guestId)) {
+      stored.isGuest = false;
+      stored.guestId = null;
+      localStorage.setItem("metropolitan-auth-storage", JSON.stringify(stored));
+    }
+
     const { setUser, setRegistrationToken, setGuest, setSocialAuthData, setHasHydrated } = useAuthStore.getState();
 
     if (stored.user) setUser(stored.user);
@@ -150,7 +176,7 @@ if (typeof window !== "undefined") {
     if (stored.isGuest && stored.guestId && !stored.accessToken) {
       setGuest(stored.isGuest, stored.guestId);
     } else if (stored.accessToken) {
-      // User is authenticated, clear any guest data
+      // User is authenticated, ensure no guest data
       setGuest(false, null);
     }
 
