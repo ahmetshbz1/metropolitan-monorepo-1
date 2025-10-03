@@ -48,12 +48,12 @@ export default function NotificationsPage() {
           <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
             <Bell className="h-12 w-12 text-muted-foreground" />
           </div>
-          <h2 className="text-2xl font-bold mb-2">Bildirimlerinizi görmek için giriş yapın</h2>
+          <h2 className="text-2xl font-bold mb-2">{t("notifications.login_required_title")}</h2>
           <p className="text-muted-foreground mb-6">
-            Sipariş güncellemeleri ve özel tekliflerden haberdar olun.
+            {t("notifications.login_desc")}
           </p>
           <Button asChild>
-            <Link href="/auth/phone-login">Giriş Yap</Link>
+            <Link href="/auth/phone-login">{t("dropdown.login")}</Link>
           </Button>
         </div>
       </div>

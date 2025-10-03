@@ -89,9 +89,9 @@ export default function CategoriesPage() {
       <div className="min-h-[60vh] flex items-center justify-center">
         <div className="text-center">
           <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Henüz kategori bulunmuyor</h2>
+          <h2 className="text-2xl font-bold mb-2">{t("categories.no_categories")}</h2>
           <p className="text-muted-foreground">
-            Ürünler eklendiğinde burada görünecek.
+            {t("categories.no_categories_desc")}
           </p>
         </div>
       </div>
@@ -120,7 +120,7 @@ export default function CategoriesPage() {
                 ) : (
                   <>
                     <Package className="h-4 w-4" />
-                    <span>Tüm Kategoriler</span>
+                    <span>{t("categories.all_categories")}</span>
                   </>
                 )}
                 <ChevronDown className="h-4 w-4 ml-2" />
@@ -134,7 +134,7 @@ export default function CategoriesPage() {
                 >
                   <span className="flex items-center gap-2">
                     <Package className="size-4" />
-                    <span className="text-sm">Tüm Kategoriler</span>
+                    <span className="text-sm">{t("categories.all_categories")}</span>
                   </span>
                 </DropdownMenuItem>
                 {categories.map((category) => (
@@ -164,7 +164,7 @@ export default function CategoriesPage() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold">{selectedCategory}</h2>
               <span className="text-sm text-muted-foreground">
-                {filteredProducts.length} ürün
+                {t("categories.product_count", { count: filteredProducts.length })}
               </span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -180,7 +180,7 @@ export default function CategoriesPage() {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-2xl font-bold">{category}</h2>
                 <span className="text-sm text-muted-foreground">
-                  {categorizedProducts[category].length} ürün
+                  {t("categories.product_count", { count: categorizedProducts[category].length })}
                 </span>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">

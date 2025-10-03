@@ -44,10 +44,10 @@ export default function OffersPage() {
             <Sparkles className="h-12 w-12 text-orange-500" />
           </div>
           <h2 className="text-2xl font-bold mb-2">
-            Şu anda kampanya bulunmuyor
+            {t("offers.no_offers_title")}
           </h2>
           <p className="text-muted-foreground">
-            Yeni kampanyalar eklendiğinde burada görünecek.
+            {t("offers.no_offers_desc")}
           </p>
         </div>
       </div>
@@ -62,9 +62,9 @@ export default function OffersPage() {
             <Sparkles className="h-6 w-6 text-orange-500" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold">Fırsatlar</h1>
+            <h1 className="text-3xl font-bold">{t("offers.title")}</h1>
             <p className="text-muted-foreground">
-              {offerProducts.length} indirimli ürün bulundu
+              {t("offers.discounted_products", { count: offerProducts.length })}
             </p>
           </div>
         </div>

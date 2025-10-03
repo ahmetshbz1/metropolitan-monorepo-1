@@ -120,9 +120,9 @@ export default function ProfilePage() {
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
         {/* Compact Header */}
         <div className="mb-4">
-          <h1 className="text-lg font-bold">Profil</h1>
+          <h1 className="text-lg font-bold">{t("profile.title")}</h1>
           <p className="text-sm text-muted-foreground">
-            Hesap bilgilerinizi ve tercihlerinizi yönetin
+            {t("profile.subtitle")}
           </p>
         </div>
 
@@ -162,12 +162,12 @@ export default function ProfilePage() {
                         {item.label}
                       </h3>
                       <p className="text-xs text-muted-foreground">
-                        {sectionIndex === 0 && itemIndex === 0 && "Beğendiğiniz ürünler"}
-                        {sectionIndex === 0 && itemIndex === 1 && "Teslimat adresleri"}
-                        {sectionIndex === 0 && itemIndex === 2 && "Bildirim ayarları"}
-                        {sectionIndex === 0 && itemIndex === 3 && "Hesap bilgileri"}
-                        {sectionIndex === 1 && itemIndex === 0 && "SSS ve destek"}
-                        {sectionIndex === 2 && itemIndex === 0 && "Şartlar ve politikalar"}
+                        {sectionIndex === 0 && itemIndex === 0 && t("profile.menu_items.favorites_desc")}
+                        {sectionIndex === 0 && itemIndex === 1 && t("profile.menu_items.addresses_desc")}
+                        {sectionIndex === 0 && itemIndex === 2 && t("profile.menu_items.notifications_desc")}
+                        {sectionIndex === 0 && itemIndex === 3 && t("profile.menu_items.account_settings_desc")}
+                        {sectionIndex === 1 && itemIndex === 0 && t("profile.menu_items.help_center_desc")}
+                        {sectionIndex === 2 && itemIndex === 0 && t("profile.menu_items.legal_desc")}
                       </p>
                     </div>
                     <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform flex-shrink-0 mt-1" />

@@ -92,7 +92,7 @@ export default function ProductsPage() {
         <div className="mb-6">
           <h1 className="text-3xl font-bold mb-2">{t("tabs.products")}</h1>
           <p className="text-muted-foreground">
-            {filteredProducts.length} ürün bulundu
+            {t("products.product_count_found", { count: filteredProducts.length })}
           </p>
         </div>
 
@@ -146,15 +146,15 @@ export default function ProductsPage() {
             <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-4">
               <Search className="h-12 w-12 text-muted-foreground" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">Ürün bulunamadı</h3>
+            <h3 className="text-xl font-semibold mb-2">{t("products.not_found")}</h3>
             <p className="text-muted-foreground mb-4">
-              Aradığınız kriterlere uygun ürün bulunmamaktadır.
+              {t("products.not_found_desc")}
             </p>
             <Button onClick={() => {
               setSearchQuery("");
               setSelectedCategory(null);
             }}>
-              Filtreleri Temizle
+              {t("products.clear_filters")}
             </Button>
           </div>
         ) : (

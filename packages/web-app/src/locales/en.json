@@ -293,7 +293,8 @@
     "found": "{{count}} products found",
     "not_found": "No Products Found",
     "not_found_desc": "No products matching your criteria were found.",
-    "clear_filters": "Clear Filters"
+    "clear_filters": "Clear Filters",
+    "product_count_found": "{{count}} products found"
   },
   "search": {
     "results_for": "Search results for \"{{query}}\"",
@@ -307,12 +308,20 @@
     "related_desc": "You might also like these",
     "no_products": "No products available yet."
   },
+  "offers": {
+    "title": "Special Offers",
+    "no_offers_title": "No campaigns yet",
+    "no_offers_desc": "New campaigns will appear here when added.",
+    "discounted_products": "{{count}} discounted products found"
+  },
   "categories": {
     "all": "All",
     "title": "Categories",
     "no_categories": "No categories yet",
     "no_categories_desc": "Categories will appear here when products are added.",
-    "product_count": "{{count}} products"
+    "product_count": "{{count}} products",
+    "all_categories": "All Categories",
+    "product_count_text": "products"
   },
   "cart": {
     "title": "My Cart",
@@ -327,6 +336,7 @@
   },
   "orders": {
     "title": "My Orders",
+    "subtitle": "View and track all your orders",
     "empty": {
       "title": "You don't have any orders yet",
       "subtitle": "You haven't placed any orders yet. Start shopping!",
@@ -362,7 +372,8 @@
     "actions": {
       "download_invoice": "Download Invoice"
     },
-    "help": "Help"
+    "help": "Help",
+    "items_added_to_cart": "{{count}} items added to your cart."
   },
   "profile": {
     "guest_title": "Guest User",
@@ -382,7 +393,17 @@
     "help_center": "Help Center",
     "legal": "Legal Information",
     "version": "Version {{version}}",
-    "header_edit": "Edit"
+    "header_edit": "Edit",
+    "title": "Profile",
+    "subtitle": "Manage your account information and preferences",
+    "menu_items": {
+      "favorites_desc": "Your favorite products",
+      "addresses_desc": "Delivery addresses",
+      "notifications_desc": "Notification settings",
+      "account_settings_desc": "Account information",
+      "help_center_desc": "FAQ and support",
+      "legal_desc": "Terms and policies"
+    }
   },
   "favorites": {
     "title": "My Favorites",
@@ -413,7 +434,8 @@
     "empty_message": "Notifications about your orders and special offers will appear here.",
     "mark_all_read": "Mark All as Read",
     "login_required": "Sign in to view your notifications",
-    "login_desc": "Stay informed about order updates and special offers."
+    "login_desc": "Stay informed about order updates and special offers.",
+    "login_required_title": "Sign in to view your notifications"
   },
   "help_center": {
     "title": "Help Center",
@@ -514,6 +536,7 @@
   },
   "account_settings": {
     "title": "Account Settings",
+    "subtitle": "Manage your profile information and settings",
     "general": "General",
     "edit_profile": "Edit Profile",
     "edit_profile_desc": "Edit your name, email, and other information",
@@ -524,9 +547,12 @@
     "danger_zone": "Danger Zone",
     "export_data": "Export My Data",
     "export_data_desc": "Download your account data",
+    "export_data_full_desc": "Download all your data",
     "delete_account": "Delete Account",
     "delete_account_desc": "Permanently delete your account",
-    "login_required": "You must sign in to view your account settings."
+    "login_required": "You must sign in to view your account settings.",
+    "addresses_section_title": "Addresses",
+    "addresses_section_desc": "Delivery addresses"
   },
   "app_settings": {
     "title": "App Settings",

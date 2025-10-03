@@ -136,7 +136,7 @@ export default function OrdersPage() {
         <div className="mb-4">
           <h1 className="text-lg font-bold">{t("tabs.orders")}</h1>
           <p className="text-sm text-muted-foreground">
-            Tüm siparişlerinizi görüntüleyin ve takip edin
+            {t("orders.subtitle")}
           </p>
         </div>
 

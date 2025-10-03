@@ -150,9 +150,9 @@ export default function AccountSettingsPage() {
             <Icon icon="solar:arrow-left-line-duotone" className="size-4" />
           </Button>
           <div>
-            <h1 className="text-lg font-bold">Hesap Ayarları</h1>
+            <h1 className="text-lg font-bold">{t("account_settings.title")}</h1>
             <p className="text-xs text-muted-foreground">
-              Profil bilgilerinizi ve ayarlarınızı yönetin
+              {t("account_settings.subtitle")}
             </p>
           </div>
         </div>

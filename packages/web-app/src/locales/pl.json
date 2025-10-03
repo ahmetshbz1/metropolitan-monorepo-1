@@ -293,14 +293,23 @@
     "found": "Znaleziono {{count}} produktów",
     "not_found": "Nie znaleziono produktów",
     "not_found_desc": "Nie znaleziono produktów spełniających podane kryteria.",
-    "clear_filters": "Wyczyść Filtry"
+    "clear_filters": "Wyczyść Filtry",
+    "product_count_found": "Znaleziono {{count}} produktów"
+  },
+  "offers": {
+    "title": "Oferty Specjalne",
+    "no_offers_title": "Brak kampanii",
+    "no_offers_desc": "Nowe kampanie pojawią się tutaj po dodaniu.",
+    "discounted_products": "Znaleziono {{count}} produktów w promocji"
   },
   "categories": {
     "all": "Wszystkie",
     "title": "Kategorie",
     "no_categories": "Brak kategorii",
     "no_categories_desc": "Kategorie pojawią się tutaj po dodaniu produktów.",
-    "product_count": "{{count}} produktów"
+    "product_count": "{{count}} produktów",
+    "all_categories": "Wszystkie Kategorie",
+    "product_count_text": "produktów"
   },
   "cart": {
     "title": "Mój Koszyk",
@@ -315,6 +324,7 @@
   },
   "orders": {
     "title": "Moje Zamówienia",
+    "subtitle": "Zobacz i śledź wszystkie swoje zamówienia",
     "empty": {
       "title": "Nie masz jeszcze żadnych zamówień",
       "subtitle": "Nie złożyłeś jeszcze żadnego zamówienia. Rozpocznij zakupy!",
@@ -350,7 +360,8 @@
     "actions": {
       "download_invoice": "Pobierz Fakturę"
     },
-    "help": "Pomoc"
+    "help": "Pomoc",
+    "items_added_to_cart": "{{count}} produktów dodano do koszyka."
   },
   "profile": {
     "guest_title": "Użytkownik Gość",
@@ -370,7 +381,17 @@
     "help_center": "Centrum Pomocy",
     "legal": "Informacje Prawne",
     "version": "Wersja {{version}}",
-    "header_edit": "Edytuj"
+    "header_edit": "Edytuj",
+    "title": "Profil",
+    "subtitle": "Zarządzaj informacjami o koncie i preferencjami",
+    "menu_items": {
+      "favorites_desc": "Twoje ulubione produkty",
+      "addresses_desc": "Adresy dostawy",
+      "notifications_desc": "Ustawienia powiadomień",
+      "account_settings_desc": "Informacje o koncie",
+      "help_center_desc": "FAQ i wsparcie",
+      "legal_desc": "Regulamin i polityki"
+    }
   },
   "favorites": {
     "title": "Moje Ulubione",
@@ -401,7 +422,8 @@
     "empty_message": "Powiadomienia o zamówieniach i ofertach specjalnych pojawią się tutaj.",
     "mark_all_read": "Oznacz Wszystkie jako Przeczytane",
     "login_required": "Zaloguj się, aby zobaczyć powiadomienia",
-    "login_desc": "Bądź na bieżąco z aktualizacjami zamówień i ofertami specjalnymi."
+    "login_desc": "Bądź na bieżąco z aktualizacjami zamówień i ofertami specjalnymi.",
+    "login_required_title": "Zaloguj się, aby zobaczyć powiadomienia"
   },
   "help_center": {
     "title": "Centrum Pomocy",
@@ -502,6 +524,7 @@
   },
   "account_settings": {
     "title": "Ustawienia Konta",
+    "subtitle": "Zarządzaj informacjami o profilu i ustawieniami",
     "general": "Ogólne",
     "edit_profile": "Edytuj Profil",
     "edit_profile_desc": "Edytuj imię, e-mail i inne informacje",
@@ -512,9 +535,12 @@
     "danger_zone": "Strefa Niebezpieczna",
     "export_data": "Pobierz Moje Dane",
     "export_data_desc": "Pobierz dane swojego konta",
+    "export_data_full_desc": "Pobierz wszystkie swoje dane",
     "delete_account": "Usuń Konto",
     "delete_account_desc": "Usuń swoje konto na stałe",
-    "login_required": "Musisz zalogować się, aby zobaczyć ustawienia konta."
+    "login_required": "Musisz zalogować się, aby zobaczyć ustawienia konta.",
+    "addresses_section_title": "Adresy",
+    "addresses_section_desc": "Adresy dostawy"
   },
   "app_settings": {
     "title": "Ustawienia Aplikacji",

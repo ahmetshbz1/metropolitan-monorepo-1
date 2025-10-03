@@ -293,7 +293,8 @@
     "found": "{{count}} ürün bulundu",
     "not_found": "Ürün bulunamadı",
     "not_found_desc": "Aradığınız kriterlere uygun ürün bulunmamaktadır.",
-    "clear_filters": "Filtreleri Temizle"
+    "clear_filters": "Filtreleri Temizle",
+    "product_count_found": "{{count}} ürün bulundu"
   },
   "search": {
     "results_for": "\"{{query}}\" için arama sonuçları",
@@ -307,12 +308,20 @@
     "related_desc": "Bunlar da ilginizi çekebilir",
     "no_products": "Henüz gösterilecek ürün bulunmuyor."
   },
+  "offers": {
+    "title": "Özel Teklifler",
+    "no_offers_title": "Henüz kampanya bulunmuyor",
+    "no_offers_desc": "Yeni kampanyalar eklendiğinde burada görünecek.",
+    "discounted_products": "{{count}} indirimli ürün bulundu"
+  },
   "categories": {
     "all": "Tümü",
     "title": "Kategoriler",
     "no_categories": "Henüz kategori bulunmuyor",
     "no_categories_desc": "Ürünler eklendiğinde burada görünecek.",
-    "product_count": "{{count}} ürün"
+    "product_count": "{{count}} ürün",
+    "all_categories": "Tüm Kategoriler",
+    "product_count_text": "ürün"
   },
   "cart": {
     "title": "Sepetim",
@@ -327,6 +336,7 @@
   },
   "orders": {
     "title": "Siparişlerim",
+    "subtitle": "Tüm siparişlerinizi görüntüleyin ve takip edin",
     "empty": {
       "title": "Henüz hiç siparişiniz yok",
       "subtitle": "Henüz sipariş vermediniz. Alışverişe başlayın!",
@@ -362,7 +372,8 @@
     "actions": {
       "download_invoice": "Faturayı İndir"
     },
-    "help": "Yardım"
+    "help": "Yardım",
+    "items_added_to_cart": "{{count}} ürün sepetinize eklendi."
   },
   "profile": {
     "guest_title": "Misafir Kullanıcı",
@@ -382,7 +393,17 @@
     "help_center": "Yardım Merkezi",
     "legal": "Yasal Bilgiler",
     "version": "Versiyon {{version}}",
-    "header_edit": "Düzenle"
+    "header_edit": "Düzenle",
+    "title": "Profil",
+    "subtitle": "Hesap bilgilerinizi ve tercihlerinizi yönetin",
+    "menu_items": {
+      "favorites_desc": "Beğendiğiniz ürünler",
+      "addresses_desc": "Teslimat adresleri",
+      "notifications_desc": "Bildirim ayarları",
+      "account_settings_desc": "Hesap bilgileri",
+      "help_center_desc": "SSS ve destek",
+      "legal_desc": "Şartlar ve politikalar"
+    }
   },
   "favorites": {
     "title": "Favorilerim",
@@ -413,7 +434,8 @@
     "empty_message": "Siparişleriniz ve özel teklifler hakkında bildirimler burada görünecek.",
     "mark_all_read": "Hepsini Okundu Say",
     "login_required": "Bildirimlerinizi görmek için giriş yapın",
-    "login_desc": "Sipariş güncellemeleri ve özel tekliflerden haberdar olun."
+    "login_desc": "Sipariş güncellemeleri ve özel tekliflerden haberdar olun.",
+    "login_required_title": "Bildirimlerinizi görmek için giriş yapın"
   },
   "help_center": {
     "title": "Yardım Merkezi",
@@ -514,6 +536,7 @@
   },
   "account_settings": {
     "title": "Hesap Ayarları",
+    "subtitle": "Profil bilgilerinizi ve ayarlarınızı yönetin",
     "general": "Genel",
     "edit_profile": "Profili Düzenle",
     "edit_profile_desc": "İsim, email ve diğer bilgilerinizi düzenleyin",
@@ -524,9 +547,12 @@
     "danger_zone": "Tehlikeli Bölge",
     "export_data": "Verilerimi İndir",
     "export_data_desc": "Hesap verilerinizi indirin",
+    "export_data_full_desc": "Tüm verilerinizi indirin",
     "delete_account": "Hesabı Sil",
     "delete_account_desc": "Hesabınızı kalıcı olarak silin",
-    "login_required": "Hesap ayarlarınızı görmek için giriş yapmalısınız."
+    "login_required": "Hesap ayarlarınızı görmek için giriş yapmalısınız.",
+    "addresses_section_title": "Adresler",
+    "addresses_section_desc": "Teslimat adresleri"
   },
   "app_settings": {
     "title": "Uygulama Ayarları",
