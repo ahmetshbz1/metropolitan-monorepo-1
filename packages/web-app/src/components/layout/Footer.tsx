@@ -57,25 +57,25 @@ export function Footer() {
     {
       icon: MapPin,
       label: t("footer.address"),
-      value: t("footer.address_value"),
-      link: "https://maps.google.com/?q=ul.+Aleja+Krakowska+44,+05-090+Janki,+Warsaw",
+      value: "Aleja Krakowska 44, 05-090 Janki",
+      link: "https://www.google.com/maps/search/?api=1&query=Aleja+Krakowska+44,+05-090+Janki,+Warsaw,+Poland",
     },
     {
       icon: Phone,
       label: t("footer.phone"),
-      value: t("footer.phone_value"),
-      link: `tel:${t("footer.phone_value")}`,
+      value: "+48 600 790 035",
+      link: "tel:+48600790035",
     },
     {
       icon: Mail,
       label: t("footer.email"),
-      value: t("footer.email_value"),
-      link: `mailto:${t("footer.email_value")}`,
+      value: "info@metropolitanfg.pl",
+      link: "mailto:info@metropolitanfg.pl",
     },
     {
       icon: Clock,
       label: t("footer.working_hours"),
-      value: t("footer.working_hours_value"),
+      value: t("support.working_hours_weekdays") + "\n" + t("support.working_hours_weekend"),
       link: null,
     },
   ];
@@ -88,11 +88,11 @@ export function Footer() {
   ];
 
   const customerServiceLinks = [
-    { label: t("footer.help_center"), href: "/help" },
-    { label: t("footer.contact_us"), href: "/contact" },
-    { label: t("footer.faq"), href: "/faq" },
-    { label: t("footer.delivery_info"), href: "/delivery" },
-    { label: t("footer.return_policy"), href: "/returns" },
+    { label: t("footer.help_center"), href: "/support" },
+    { label: t("footer.contact_us"), href: "/support" },
+    { label: t("footer.faq"), href: "/support" },
+    { label: t("footer.delivery_info"), href: "/support" },
+    { label: t("footer.return_policy"), href: "/support" },
   ];
 
   const legalLinks = [
@@ -102,10 +102,10 @@ export function Footer() {
   ];
 
   const socialLinks = [
-    { icon: Facebook, href: "#", label: "Facebook" },
-    { icon: Instagram, href: "#", label: "Instagram" },
-    { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Linkedin, href: "#", label: "LinkedIn" },
+    { icon: Facebook, href: "https://facebook.com/metropolitanfg", label: "Facebook" },
+    { icon: Instagram, href: "https://instagram.com/metropolitanfg", label: "Instagram" },
+    { icon: Twitter, href: "https://twitter.com/metropolitanfg", label: "Twitter" },
+    { icon: Linkedin, href: "https://linkedin.com/company/metropolitanfg", label: "LinkedIn" },
   ];
 
   return (
@@ -114,182 +114,124 @@ export function Footer() {
       <div className="bg-background border-t border-border">
         <div className="max-w-7xl mx-auto px-6 py-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Company Info - like "Fox Hakkında" */}
+            {/* Company Info */}
             <div>
               <h3 className="text-lg font-bold mb-4 text-foreground">
                 {t("footer.about_us")}
               </h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <a
-                    href="#"
-                    className="text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center gap-1"
-                  >
-                    {t("footer.company_name")}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/about"
-                    className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                  >
-                    Faaliyet gösterdiğimiz şehirler
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/work-with-us"
-                    className="text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center gap-1"
-                  >
-                    Bizimle çalışmak <ExternalLink size={12} />
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/media"
-                    className="text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center gap-1"
-                  >
-                    Medya için <ExternalLink size={12} />
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/corporate"
-                    className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                  >
-                    Kurumsal Kart
-                  </a>
-                </li>
-              </ul>
+              <p className="text-sm text-muted-foreground mb-4">
+                {t("footer.about_description")}
+              </p>
 
               {/* Social Media Icons */}
               <div className="flex space-x-3 mt-6">
-                <a
-                  href="#"
-                  className="w-9 h-9 bg-muted hover:bg-primary hover:text-primary-foreground rounded-full flex items-center justify-center transition-colors duration-200"
-                >
-                  <Instagram size={18} />
-                </a>
-                <a
-                  href="#"
-                  className="w-9 h-9 bg-muted hover:bg-primary hover:text-primary-foreground rounded-full flex items-center justify-center transition-colors duration-200"
-                >
-                  <Facebook size={18} />
-                </a>
-                <a
-                  href="#"
-                  className="w-9 h-9 bg-muted hover:bg-primary hover:text-primary-foreground rounded-full flex items-center justify-center transition-colors duration-200"
-                >
-                  <Twitter size={18} />
-                </a>
+                {socialLinks.map((social) => {
+                  const Icon = social.icon;
+                  return (
+                    <a
+                      key={social.label}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-9 h-9 bg-muted hover:bg-primary hover:text-primary-foreground rounded-full flex items-center justify-center transition-colors duration-200"
+                    >
+                      <Icon size={18} />
+                    </a>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Help - like "Yardım" */}
+            {/* Contact Info */}
             <div>
               <h3 className="text-lg font-bold mb-4 text-foreground">
-                {t("footer.customer_service")}
+                {t("footer.contact_info")}
+              </h3>
+              <ul className="space-y-3 text-sm">
+                <li>
+                  <div className="flex items-start gap-2">
+                    <MapPin size={16} className="text-primary mt-0.5 flex-shrink-0" />
+                    <a
+                      href="https://www.google.com/maps/search/?api=1&query=Aleja+Krakowska+44,+05-090+Janki,+Warsaw,+Poland"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      Aleja Krakowska 44,<br />05-090 Janki, Warsaw
+                    </a>
+                  </div>
+                </li>
+                <li>
+                  <div className="flex items-start gap-2">
+                    <Phone size={16} className="text-primary mt-0.5 flex-shrink-0" />
+                    <a
+                      href="tel:+48600790035"
+                      className="text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      +48 600 790 035
+                    </a>
+                  </div>
+                </li>
+                <li>
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-start gap-2">
+                      <Mail size={16} className="text-primary mt-0.5 flex-shrink-0" />
+                      <div className="flex flex-col gap-1">
+                        <a
+                          href="mailto:info@metropolitanfg.pl"
+                          className="text-muted-foreground hover:text-primary transition-colors"
+                        >
+                          info@metropolitanfg.pl
+                        </a>
+                        <a
+                          href="mailto:accounts@metropolitanfg.pl"
+                          className="text-muted-foreground hover:text-primary transition-colors"
+                        >
+                          accounts@metropolitanfg.pl
+                        </a>
+                        <a
+                          href="mailto:sales@metropolitanfg.pl"
+                          className="text-muted-foreground hover:text-primary transition-colors"
+                        >
+                          sales@metropolitanfg.pl
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h3 className="text-lg font-bold mb-4 text-foreground">
+                {t("footer.quick_links")}
               </h3>
               <ul className="space-y-2 text-sm">
-                <li>
-                  <a
-                    href="/help"
-                    className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                  >
-                    SSS
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/delivery"
-                    className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                  >
-                    {t("footer.delivery_info")}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/working-hours"
-                    className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                  >
-                    Açılış saatleri
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/complaints"
-                    className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                  >
-                    İadeler
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/contact"
-                    className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                  >
-                    Temas etmek
-                  </a>
-                </li>
+                {quickLinks.map((link) => (
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      className="text-muted-foreground hover:text-primary transition-colors duration-200"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+                {legalLinks.map((link) => (
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      className="text-muted-foreground hover:text-primary transition-colors duration-200"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
 
-            {/* Legal - like "Bilgi" */}
-            <div>
-              <h3 className="text-lg font-bold mb-4 text-foreground">Bilgi</h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <a
-                    href="/store-management"
-                    className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                  >
-                    Mağaza yöneticileri
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/promotions"
-                    className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                  >
-                    Promosyon ve yarışma kuralları
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/privacy"
-                    className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                  >
-                    {t("footer.privacy_policy")}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/accessibility"
-                    className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                  >
-                    Erişilebilirlik Beyanı
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/discontinued-products"
-                    className="text-muted-foreground hover:text-primary transition-colors duration-200"
-                  >
-                    Üretimi durdurulan ürünler
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/cookies"
-                    className="text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center gap-1"
-                  >
-                    Çerezler <ExternalLink size={12} />
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Mobile App - like "Uygulama" */}
+            {/* Mobile App */}
             <div>
               <h3 className="text-lg font-bold mb-4 text-foreground">
                 {t("footer.mobile_app")}
