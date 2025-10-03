@@ -90,12 +90,16 @@ interface UserDropdownProps {
     isGuest: boolean;
     userType?: "individual" | "corporate";
   };
+  favoritesCount?: number;
+  ordersCount?: number;
   onAction?: (action: string, route?: string) => void;
   onLogin?: () => void;
 }
 
 export const UserDropdown = ({
   user,
+  favoritesCount = 0,
+  ordersCount = 0,
   onAction,
   onLogin,
 }: UserDropdownProps) => {
@@ -174,31 +178,48 @@ export const UserDropdown = ({
       },
     ],
   };
-  const renderMenuItem = (item, index) => (
-    <DropdownMenuItem
-      key={index}
-      className={cn(
-        "p-2 rounded-lg cursor-pointer transition-colors font-medium",
-        item.danger ? "text-red-600 dark:text-red-400" : ""
-      )}
-      onClick={() => onAction?.(item.action, item.route)}
-    >
-      <span className="flex items-center gap-2">
-        <Icon
-          icon={item.icon}
-          className={cn(
-            "size-4",
-            item.danger
-              ? "text-red-600 dark:text-red-400"
-              : "text-gray-500 dark:text-gray-400"
+  const renderMenuItem = (item, index) => {
+    const getBadgeCount = () => {
+      if (item.action === "favorites") return favoritesCount;
+      if (item.action === "orders") return ordersCount;
+      return 0;
+    };
+
+    const badgeCount = getBadgeCount();
+
+    return (
+      <DropdownMenuItem
+        key={index}
+        className={cn(
+          "p-2 rounded-lg cursor-pointer transition-colors font-medium",
+          item.danger ? "text-red-600 dark:text-red-400" : ""
+        )}
+        onClick={() => onAction?.(item.action, item.route)}
+      >
+        <span className="flex items-center gap-2 w-full justify-between">
+          <span className="flex items-center gap-2">
+            <Icon
+              icon={item.icon}
+              className={cn(
+                "size-4",
+                item.danger
+                  ? "text-red-600 dark:text-red-400"
+                  : "text-gray-500 dark:text-gray-400"
+              )}
+            />
+            <span className="text-sm">
+              {item.labelKey ? t(item.labelKey) : item.label}
+            </span>
+          </span>
+          {badgeCount > 0 && (
+            <Badge variant="secondary" className="text-xs px-2 py-0 h-5 ml-auto">
+              {badgeCount}
+            </Badge>
           )}
-        />
-        <span className="text-sm">
-          {item.labelKey ? t(item.labelKey) : item.label}
         </span>
-      </span>
-    </DropdownMenuItem>
-  );
+      </DropdownMenuItem>
+    );
+  };
 
   return (
     <DropdownMenu>
@@ -302,12 +323,19 @@ export const UserDropdown = ({
                 className="p-2 rounded-lg cursor-pointer transition-colors font-medium"
                 onClick={() => onAction?.("favorites", "/favorites")}
               >
-                <span className="flex items-center gap-2">
-                  <Icon
-                    icon="solar:heart-line-duotone"
-                    className="size-4 text-gray-500 dark:text-gray-400"
-                  />
-                  <span className="text-sm">{t("dropdown.favorites")}</span>
+                <span className="flex items-center gap-2 w-full justify-between">
+                  <span className="flex items-center gap-2">
+                    <Icon
+                      icon="solar:heart-line-duotone"
+                      className="size-4 text-gray-500 dark:text-gray-400"
+                    />
+                    <span className="text-sm">{t("dropdown.favorites")}</span>
+                  </span>
+                  {favoritesCount > 0 && (
+                    <Badge variant="secondary" className="text-xs px-2 py-0 h-5 ml-auto">
+                      {favoritesCount}
+                    </Badge>
+                  )}
                 </span>
               </DropdownMenuItem>
             </DropdownMenuGroup>

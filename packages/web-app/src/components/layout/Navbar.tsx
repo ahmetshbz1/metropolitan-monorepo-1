@@ -11,6 +11,8 @@ import {
 import { UserDropdown } from "@/components/ui/user-dropdown";
 import { useCurrentUser, useLogout } from "@/hooks/api";
 import { useCart } from "@/hooks/api/use-cart";
+import { useFavorites } from "@/hooks/api/use-favorites";
+import { useOrders } from "@/hooks/api/use-orders";
 import { useAuthInit } from "@/hooks/use-auth-init";
 import { useHydration } from "@/hooks/use-hydration";
 import { useAuthStore } from "@/stores";
@@ -56,6 +58,10 @@ export function Navbar() {
 
   // Get cart summary for display (directly access summary for reactivity)
   const cartSummary = useCartStore((state) => state.summary);
+
+  // Fetch favorites and orders data
+  const { data: favoritesData } = useFavorites();
+  const { data: ordersData } = useOrders();
 
   // Check if user came from cart after authentication
   useEffect(() => {
@@ -153,6 +159,8 @@ export function Navbar() {
                           }
                         : undefined
                     }
+                    favoritesCount={favoritesData?.length || 0}
+                    ordersCount={ordersData?.length || 0}
                     onAction={handleUserAction}
                     onLogin={handleLogin}
                   />
