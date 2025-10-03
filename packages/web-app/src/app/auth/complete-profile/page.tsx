@@ -231,7 +231,7 @@ export default function CompleteProfilePage() {
                         Kabul ediyorum:{" "}
                       </span>
                       <Link
-                        href={`https://metropolitanfg.pl/terms-of-service?lang=${t("common.lang_code") || "tr"}`}
+                        href="/legal?type=terms-of-service"
                         target="_blank"
                         className="text-primary font-medium hover:underline"
                       >
@@ -264,7 +264,7 @@ export default function CompleteProfilePage() {
                         Kabul ediyorum:{" "}
                       </span>
                       <Link
-                        href={`https://metropolitanfg.pl/privacy-policy?lang=${t("common.lang_code") || "tr"}`}
+                        href="/legal?type=privacy-policy"
                         target="_blank"
                         className="text-primary font-medium hover:underline"
                       >

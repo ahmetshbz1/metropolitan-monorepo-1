@@ -4,6 +4,8 @@ import { useCartStore } from '@/stores/cart-store';
 import { useAuthStore } from '@/stores';
 import { useGuestAuth } from '../use-guest-auth';
 import { useEffect } from 'react';
+import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export const cartKeys = {
   all: ['cart'] as const,
@@ -75,6 +77,7 @@ export function useCart() {
 export function useAddToCart() {
   const queryClient = useQueryClient();
   const setCart = useCartStore((state) => state.setCart);
+  const { t, i18n } = useTranslation();
 
   const user = useAuthStore((state) => state.user);
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -116,6 +119,21 @@ export function useAddToCart() {
         queryClient.invalidateQueries({
           queryKey: cartKeys.items(user?.id, guestId || undefined),
         });
+      }
+    },
+    onError: (error: any) => {
+      // Backend'den gelen structured error'ı handle et
+      const errorPayload = error.response?.data;
+      const key = errorPayload?.key;
+
+      if (key && i18n.exists(`errors.${key}`)) {
+        const params = errorPayload.params || {};
+        const translatedMessage = t(`errors.${key}`, params);
+        toast.error(translatedMessage);
+      } else {
+        // Fallback mesaj
+        const defaultMessage = error.response?.data?.message || t('errors.CART_ADD_ERROR');
+        toast.error(defaultMessage);
       }
     },
   });

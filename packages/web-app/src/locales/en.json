@@ -98,5 +98,37 @@
       "payment": "Payment Options",
       "security": "Security and Privacy"
     }
+  },
+  "errors": {
+    "INSUFFICIENT_STOCK": "You can add a maximum of {{stock}} units of this product.",
+    "INSUFFICIENT_STOCK_ALREADY_IN_CART": "You have {{inCart}} units of this product in your cart. You can add a maximum of {{canAdd}} more units.",
+    "MIN_QUANTITY_NOT_MET": "Minimum {{minQuantity}} pieces required for this product.",
+    "PRODUCT_NOT_FOUND": "Product not found.",
+    "CART_ITEM_NOT_FOUND": "Cart item not found.",
+    "CART_ADD_ERROR": "An unexpected error occurred while adding the product to the cart. Please try again.",
+    "CART_UPDATE_ERROR": "An unexpected error occurred while updating the product. Please try again.",
+    "ERROR_BOUNDARY_TITLE": "An Error Occurred",
+    "ERROR_BOUNDARY_DESCRIPTION": "An unexpected error occurred in our application. We will fix this as soon as possible.",
+    "ERROR_BOUNDARY_RELOAD": "Reload App",
+    "ERROR_BOUNDARY_RETRY": "Try Again",
+    "ERROR_BOUNDARY_SUPPORT": "If the problem persists, you can contact our support team.",
+    "ERROR_BOUNDARY_SUPPORT_EMAIL": "info@metropolitanfg.pl",
+    "UNEXPECTED_ERROR": "An unexpected error occurred",
+    "TRY_AGAIN_LATER": "Please try again later",
+    "RATE_LIMIT_DEFAULT": "Too many requests, please try again later.",
+    "RATE_LIMIT_AUTH": "Too many authentication attempts. Please try again later.",
+    "RATE_LIMIT_OTP_SEND": "Too many OTP requests. Please wait 1 minute before trying again.",
+    "RATE_LIMIT_OTP_VERIFY": "Too many verification attempts. Please wait 5 minutes.",
+    "RATE_LIMIT_REFRESH_TOKEN": "Too many token refresh attempts. Please try again later.",
+    "RATE_LIMIT_ORDER_CREATION": "Too many order requests. Please slow down.",
+    "RATE_LIMIT_DATA_EXPORT": "Data export limit reached. Please try again tomorrow.",
+    "RATE_LIMIT_SEARCH": "Too many search requests. Please slow down.",
+    "RATE_LIMIT_WEBHOOK": "Webhook rate limit exceeded.",
+    "SERVER_ERROR": "Internal server error",
+    "NOT_FOUND_ERROR": "The requested resource was not found",
+    "VALIDATION_ERROR": "Validation error",
+    "UNAUTHORIZED_ERROR": "Authentication required",
+    "FORBIDDEN_ERROR": "Insufficient permissions",
+    "UPLOAD_PHOTO_FAILED": "Failed to upload photo"
   }
 }

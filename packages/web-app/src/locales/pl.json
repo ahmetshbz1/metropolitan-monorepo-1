@@ -98,5 +98,37 @@
       "payment": "Opcje płatności",
       "security": "Bezpieczeństwo i prywatność"
     }
+  },
+  "errors": {
+    "INSUFFICIENT_STOCK": "Możesz dodać maksymalnie {{stock}} sztuk tego produktu.",
+    "INSUFFICIENT_STOCK_ALREADY_IN_CART": "Masz {{inCart}} sztuk tego produktu w koszyku. Możesz dodać maksymalnie {{canAdd}} sztuk więcej.",
+    "MIN_QUANTITY_NOT_MET": "Minimalna ilość zamówienia dla tego produktu to {{minQuantity}} sztuk.",
+    "PRODUCT_NOT_FOUND": "Produkt nie znaleziony.",
+    "CART_ITEM_NOT_FOUND": "Element koszyka nie znaleziony.",
+    "CART_ADD_ERROR": "Podczas dodawania produktu do koszyka wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
+    "CART_UPDATE_ERROR": "Podczas aktualizacji produktu wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
+    "ERROR_BOUNDARY_TITLE": "Wystąpił Błąd",
+    "ERROR_BOUNDARY_DESCRIPTION": "W naszej aplikacji wystąpił nieoczekiwany błąd. Naprawimy to jak najszybciej.",
+    "ERROR_BOUNDARY_RELOAD": "Przeładuj Aplikację",
+    "ERROR_BOUNDARY_RETRY": "Spróbuj Ponownie",
+    "ERROR_BOUNDARY_SUPPORT": "Jeśli problem nadal występuje, skontaktuj się z naszym zespołem wsparcia.",
+    "ERROR_BOUNDARY_SUPPORT_EMAIL": "info@metropolitanfg.pl",
+    "UNEXPECTED_ERROR": "Wystąpił nieoczekiwany błąd",
+    "TRY_AGAIN_LATER": "Spróbuj ponownie później",
+    "RATE_LIMIT_DEFAULT": "Zbyt wiele żądań, spróbuj ponownie później.",
+    "RATE_LIMIT_AUTH": "Zbyt wiele prób uwierzytelnienia. Spróbuj ponownie później.",
+    "RATE_LIMIT_OTP_SEND": "Zbyt wiele żądań OTP. Poczekaj 1 minutę przed kolejną próbą.",
+    "RATE_LIMIT_OTP_VERIFY": "Zbyt wiele prób weryfikacji. Poczekaj 5 minut.",
+    "RATE_LIMIT_REFRESH_TOKEN": "Zbyt wiele prób odświeżenia tokenu. Spróbuj ponownie później.",
+    "RATE_LIMIT_ORDER_CREATION": "Zbyt wiele żądań zamówień. Zwolnij tempo.",
+    "RATE_LIMIT_DATA_EXPORT": "Osiągnięto limit eksportu danych. Spróbuj ponownie jutro.",
+    "RATE_LIMIT_SEARCH": "Zbyt wiele zapytań wyszukiwania. Zwolnij tempo.",
+    "RATE_LIMIT_WEBHOOK": "Przekroczono limit webhooków.",
+    "SERVER_ERROR": "Błąd serwera wewnętrznego",
+    "NOT_FOUND_ERROR": "Żądany zasób nie został znaleziony",
+    "VALIDATION_ERROR": "Błąd walidacji",
+    "UNAUTHORIZED_ERROR": "Wymagane uwierzytelnienie",
+    "FORBIDDEN_ERROR": "Niewystarczające uprawnienia",
+    "UPLOAD_PHOTO_FAILED": "Nie udało się przesłać zdjęcia"
   }
 }
