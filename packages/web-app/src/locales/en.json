@@ -10,8 +10,6 @@
     "login": "Sign In",
     "notifications": "Notifications",
     "view_cart": "View My Cart",
-    "offers": "Offers",
-    "fast_delivery": "Fast Delivery",
     "all_categories": "All Categories",
     "searching": "Searching...",
     "in_stock": "In Stock",
@@ -540,12 +538,6 @@
     "language": "Language",
     "language_desc": "Select app language",
     "info": "More settings options will be added soon"
-  },
-  "offers": {
-    "title": "Offers",
-    "no_offers": "No campaigns currently available",
-    "no_offers_desc": "New campaigns will appear here when added.",
-    "found": "{{count}} discounted products found"
   },
   "status": {
     "pending": "Pending",

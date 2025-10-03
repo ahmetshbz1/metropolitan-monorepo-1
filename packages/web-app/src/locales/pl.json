@@ -10,8 +10,6 @@
     "login": "Zaloguj się",
     "notifications": "Powiadomienia",
     "view_cart": "Zobacz Mój Koszyk",
-    "offers": "Oferty",
-    "fast_delivery": "Szybka Dostawa",
     "all_categories": "Wszystkie Kategorie",
     "searching": "Wyszukiwanie...",
     "in_stock": "Dostępny",
@@ -528,12 +526,6 @@
     "language": "Język",
     "language_desc": "Wybierz język aplikacji",
     "info": "Więcej opcji ustawień wkrótce"
-  },
-  "offers": {
-    "title": "Oferty",
-    "no_offers": "Brak aktualnych ofert",
-    "no_offers_desc": "Nowe oferty pojawią się tutaj po ich dodaniu.",
-    "found": "Znaleziono {{count}} produktów w promocji"
   },
   "status": {
     "pending": "Oczekujące",

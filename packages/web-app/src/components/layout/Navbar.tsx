@@ -15,7 +15,7 @@ import { useAuthInit } from "@/hooks/use-auth-init";
 import { useHydration } from "@/hooks/use-hydration";
 import { useAuthStore } from "@/stores";
 import { useCartStore } from "@/stores/cart-store";
-import { Menu, ShoppingBag, Sparkles, Truck } from "lucide-react";
+import { Menu, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -120,28 +120,6 @@ export function Navbar() {
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-1">
               <CategoryMenu />
-
-              <Button
-                variant="ghost"
-                className="flex items-center gap-2 font-medium hover:bg-primary/10"
-                asChild
-              >
-                <Link href="/offers">
-                  <Sparkles className="h-4 w-4 text-orange-500" />
-                  <span className="text-orange-500">{t("navbar.offers")}</span>
-                </Link>
-              </Button>
-
-              <Button
-                variant="ghost"
-                className="flex items-center gap-2 font-medium hover:bg-primary/10"
-                asChild
-              >
-                <Link href="/fast-delivery">
-                  <Truck className="h-4 w-4 text-green-500" />
-                  <span>{t("navbar.fast_delivery")}</span>
-                </Link>
-              </Button>
             </div>
 
             {/* Search Bar - Desktop */}
@@ -165,11 +143,11 @@ export function Navbar() {
                     user={
                       isAuthenticated && user
                         ? {
-                            name: `${user.firstName} ${user.lastName}`,
-                            username: user.phone || "",
-                            email: user.email,
+                            name: `${user.firstName || ""} ${user.lastName || ""}`.trim(),
+                            username: user.phone || user.phoneNumber || "",
+                            email: user.email || "",
                             avatar: user.profilePhotoUrl || "",
-                            initials: `${user.firstName?.charAt(0)}${user.lastName?.charAt(0)}`,
+                            initials: `${user.firstName?.charAt(0) || ""}${user.lastName?.charAt(0) || ""}`,
                             isGuest: false,
                             userType: user.userType,
                           }

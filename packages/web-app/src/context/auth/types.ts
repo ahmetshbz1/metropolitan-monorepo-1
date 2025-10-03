@@ -6,6 +6,7 @@ import type {
 // Extended User type for web-specific fields
 export interface WebUser extends User {
   profilePhotoUrl?: string; // Backend'in kullandığı alan adı
+  phoneNumber?: string; // Backend compat - same as phone
   nip?: string;
   userType?: "individual" | "corporate";
   authProvider?: string | null; // 'google' or null for phone-only

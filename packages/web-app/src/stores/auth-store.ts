@@ -1,7 +1,6 @@
 import type { SocialAuthData, WebUser } from "@/context/auth/types";
 import { tokenStorage } from "@/lib/token-storage";
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
 
 interface AuthState {
   // State
@@ -29,10 +28,98 @@ interface AuthState {
   setHasHydrated: (hasHydrated: boolean) => void;
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set, get) => ({
-      // Initial state
+// Helper: Save to localStorage
+const saveToLocalStorage = (state: Partial<AuthState>) => {
+  if (typeof window !== "undefined") {
+    try {
+      const data = {
+        user: state.user,
+        accessToken: state.accessToken,
+        refreshToken: state.refreshToken,
+        registrationToken: state.registrationToken,
+        isGuest: state.isGuest,
+        guestId: state.guestId,
+        socialAuthData: state.socialAuthData,
+      };
+      localStorage.setItem("metropolitan-auth-storage", JSON.stringify(data));
+      console.log("💾 Saved to localStorage:", data);
+    } catch (error) {
+      console.error("Failed to save to localStorage:", error);
+    }
+  }
+};
+
+// Helper: Load from localStorage
+const loadFromLocalStorage = (): Partial<AuthState> | null => {
+  if (typeof window !== "undefined") {
+    try {
+      const stored = localStorage.getItem("metropolitan-auth-storage");
+      if (stored) {
+        const data = JSON.parse(stored);
+        console.log("📦 Loaded from localStorage:", data);
+        return data;
+      }
+    } catch (error) {
+      console.error("Failed to load from localStorage:", error);
+    }
+  }
+  return null;
+};
+
+export const useAuthStore = create<AuthState>()((set, get) => ({
+  // Initial state
+  user: null,
+  accessToken: null,
+  refreshToken: null,
+  registrationToken: null,
+  isGuest: false,
+  guestId: null,
+  phoneNumber: null,
+  socialAuthData: null,
+  _hasHydrated: false,
+
+  // Computed
+  get isAuthenticated() {
+    const state = get();
+    return !!(state.user && state.accessToken);
+  },
+
+  // Actions
+  setUser: (user) => {
+    set({ user });
+    saveToLocalStorage({ ...get(), user });
+  },
+
+  setTokens: (accessToken, refreshToken) => {
+    // Save to both Zustand and tokenStorage
+    tokenStorage.saveTokens(accessToken, refreshToken);
+    set({ accessToken, refreshToken, isGuest: false, guestId: null });
+    saveToLocalStorage({ ...get(), accessToken, refreshToken, isGuest: false, guestId: null });
+  },
+
+  setRegistrationToken: (token) => {
+    set({ registrationToken: token });
+    saveToLocalStorage({ ...get(), registrationToken: token });
+  },
+
+  setGuest: (isGuest, guestId) => {
+    set({ isGuest, guestId });
+    saveToLocalStorage({ ...get(), isGuest, guestId });
+  },
+
+  setPhoneNumber: (phone) => set({ phoneNumber: phone }),
+
+  setSocialAuthData: (data) => {
+    set({ socialAuthData: data });
+    saveToLocalStorage({ ...get(), socialAuthData: data });
+  },
+
+  setHasHydrated: (hasHydrated) => set({ _hasHydrated: hasHydrated }),
+
+  clearAuth: () => {
+    // Clear both Zustand and tokenStorage
+    tokenStorage.clearTokens();
+    set({
       user: null,
       accessToken: null,
       refreshToken: null,
@@ -41,92 +128,48 @@ export const useAuthStore = create<AuthState>()(
       guestId: null,
       phoneNumber: null,
       socialAuthData: null,
-      _hasHydrated: false,
+    });
 
-      // Computed
-      get isAuthenticated() {
-        const state = get();
-        return !!(state.user && state.accessToken);
-      },
-
-      // Actions
-      setUser: (user) => set({ user }),
-
-      setTokens: (accessToken, refreshToken) => {
-        // Save to both Zustand and tokenStorage
-        tokenStorage.saveTokens(accessToken, refreshToken);
-        set({ accessToken, refreshToken, isGuest: false, guestId: null });
-      },
-
-      setRegistrationToken: (token) => set({ registrationToken: token }),
-
-      setGuest: (isGuest, guestId) => set({ isGuest, guestId }),
-
-      setPhoneNumber: (phone) => set({ phoneNumber: phone }),
-
-      setSocialAuthData: (data) => set({ socialAuthData: data }),
-
-      setHasHydrated: (hasHydrated) => set({ _hasHydrated: hasHydrated }),
-
-      clearAuth: () => {
-        // Clear both Zustand and tokenStorage
-        tokenStorage.clearTokens();
-        set({
-          user: null,
-          accessToken: null,
-          refreshToken: null,
-          registrationToken: null,
-          isGuest: false,
-          guestId: null,
-          phoneNumber: null,
-          socialAuthData: null,
-        });
-
-        // CRITICAL: Also clear from localStorage + sessionStorage manually
-        // Because Zustand persist might not sync immediately
-        if (typeof window !== "undefined") {
-          localStorage.removeItem("metropolitan-auth-storage");
-          sessionStorage.removeItem("metropolitan_session_id"); // Backend-generated session ID
-          console.log("🧹 Cleared auth from localStorage + sessionStorage");
-        }
-      },
-    }),
-    {
-      name: "metropolitan-auth-storage",
-      storage: createJSONStorage(() => {
-        // Only use localStorage on client side
-        if (typeof window !== "undefined") {
-          return localStorage;
-        }
-        // Return a dummy storage for SSR
-        return {
-          getItem: () => null,
-          setItem: () => {},
-          removeItem: () => {},
-        };
-      }),
-      partialize: (state) => ({
-        user: state.user,
-        accessToken: state.accessToken,
-        refreshToken: state.refreshToken,
-        registrationToken: state.registrationToken,
-        isGuest: state.isGuest,
-        guestId: state.guestId,
-        socialAuthData: state.socialAuthData,
-      }),
-      onRehydrateStorage: () => (state) => {
-        // After Zustand persist rehydrates, sync tokens to tokenStorage
-        if (state) {
-          console.log("✅ Zustand hydration complete");
-          state.setHasHydrated(true);
-
-          if (state.accessToken && state.refreshToken) {
-            console.log("🔄 Syncing tokens from Zustand to tokenStorage");
-            console.log("📦 User from storage:", state.user);
-            tokenStorage.saveTokens(state.accessToken, state.refreshToken);
-          }
-        }
-      },
+    // Clear from localStorage
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("metropolitan-auth-storage");
+      sessionStorage.removeItem("metropolitan_session_id");
+      console.log("🧹 Cleared auth from localStorage + sessionStorage");
     }
-  )
-);
+  },
+}));
+
+// Initialize from localStorage on client side
+if (typeof window !== "undefined") {
+  const stored = loadFromLocalStorage();
+  if (stored) {
+    const { setUser, setTokens, setRegistrationToken, setGuest, setSocialAuthData, setHasHydrated } = useAuthStore.getState();
+
+    if (stored.user) setUser(stored.user);
+    if (stored.accessToken && stored.refreshToken) {
+      tokenStorage.saveTokens(stored.accessToken, stored.refreshToken);
+      useAuthStore.setState({
+        accessToken: stored.accessToken,
+        refreshToken: stored.refreshToken
+      });
+    }
+    if (stored.registrationToken) setRegistrationToken(stored.registrationToken);
+
+    // Only restore guest session if user is NOT authenticated
+    // If user has accessToken, they are logged in and should NOT be a guest
+    if (stored.isGuest && stored.guestId && !stored.accessToken) {
+      setGuest(stored.isGuest, stored.guestId);
+    } else if (stored.accessToken) {
+      // User is authenticated, clear any guest data
+      setGuest(false, null);
+    }
+
+    if (stored.socialAuthData) setSocialAuthData(stored.socialAuthData);
+
+    console.log("✅ Auth state restored from localStorage");
+    setHasHydrated(true);
+  } else {
+    console.log("ℹ️ No auth data in localStorage");
+    useAuthStore.getState().setHasHydrated(true);
+  }
+}

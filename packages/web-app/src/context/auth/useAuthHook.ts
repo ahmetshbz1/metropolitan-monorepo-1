@@ -13,6 +13,7 @@ import {
 import { tokenStorage } from "@/lib/token-storage";
 import { syncDeviceIdFromToken } from "@/lib/device-id";
 import { SocialAuthData, WebUser } from "./types";
+import { useAuthStore } from "@/stores/auth-store";
 
 // Firebase auth for Google
 import { auth } from "@/lib/firebase";
@@ -22,97 +23,88 @@ export const useAuthHook = () => {
   const { t } = useTranslation();
   const router = useRouter();
 
-  // Auth state
-  const [user, setUser] = useState<WebUser | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [refreshToken, setRefreshToken] = useState<string | null>(null);
+  // Use Zustand store for auth state (single source of truth)
+  const user = useAuthStore((state) => state.user);
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const refreshToken = useAuthStore((state) => state.refreshToken);
+  const registrationToken = useAuthStore((state) => state.registrationToken);
+  const isGuest = useAuthStore((state) => state.isGuest);
+  const guestId = useAuthStore((state) => state.guestId);
+  const phoneNumber = useAuthStore((state) => state.phoneNumber);
+  const socialAuthData = useAuthStore((state) => state.socialAuthData);
+  const _hasHydrated = useAuthStore((state) => state._hasHydrated);
 
-  const [registrationToken, setRegistrationToken] = useState<string | null>(
-    null
-  );
-  const [isGuest, setIsGuest] = useState(false);
-  const [guestId, setGuestId] = useState<string | null>(null);
-  const [phoneNumber, setPhoneNumber] = useState<string | null>(null);
-  const [socialAuthData, setSocialAuthData] = useState<SocialAuthData | null>(
-    null
-  );
+  // Actions from Zustand
+  const setUser = useAuthStore((state) => state.setUser);
+  const setTokens = useAuthStore((state) => state.setTokens);
+  const setRegistrationToken = useAuthStore((state) => state.setRegistrationToken);
+  const setGuest = useAuthStore((state) => state.setGuest);
+  const setPhoneNumber = useAuthStore((state) => state.setPhoneNumber);
+  const setSocialAuthData = useAuthStore((state) => state.setSocialAuthData);
+  const clearAuth = useAuthStore((state) => state.clearAuth);
+
+  // Backward compatibility
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Initialize auth state from storage
+  // Sync token with accessToken for backward compatibility
   useEffect(() => {
-    let isMounted = true;
+    if (accessToken) {
+      setToken(accessToken);
+    }
+  }, [accessToken]);
 
-    const initAuth = async () => {
-      try {
-        // Add timeout to prevent infinite loading
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Auth init timeout')), 3000)
-        );
+  // Initialize auth state from storage - Zustand persist already handles this
+  // We just need to wait for hydration and set loading to false
+  useEffect(() => {
+    console.log("🔄 Waiting for Zustand hydration...");
 
-        const initPromise = (async () => {
-          // Load tokens
-          const savedAccessToken = await tokenStorage.getAccessToken();
-          const savedRefreshToken = await tokenStorage.getRefreshToken();
-          const savedUser = await userStorage.get();
-          const savedGuestId = await guestStorage.getGuestId();
-          const savedSocialAuthData = await socialAuthStorage.get();
-          const savedRegistrationToken = await registrationStorage.getToken();
+    let attempts = 0;
+    const maxAttempts = 30; // 3 seconds max wait
 
-          if (!isMounted) return;
+    // Wait for Zustand to hydrate from localStorage
+    const checkHydration = () => {
+      attempts++;
 
-          // Sadece user da varsa token'ları restore et
-          if (savedAccessToken && savedRefreshToken && savedUser) {
-            setAccessToken(savedAccessToken);
-            setRefreshToken(savedRefreshToken);
-            setToken(savedAccessToken);
-            setUser(savedUser);
-            setIsGuest(false);
-            await syncDeviceIdFromToken(savedAccessToken);
-          } else if (savedGuestId) {
-            setGuestId(savedGuestId);
-            setIsGuest(true);
-          }
-
-          if (savedSocialAuthData) {
-            setSocialAuthData(savedSocialAuthData);
-          }
-
-          if (savedRegistrationToken) {
-            setRegistrationToken(savedRegistrationToken);
-          }
-        })();
-
-        await Promise.race([initPromise, timeoutPromise]);
-      } catch (error) {
-        console.error("Auth initialization error:", error);
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
+      if (_hasHydrated) {
+        console.log("✅ Zustand hydrated, auth state ready");
+        console.log("📦 Auth state:", {
+          hasUser: !!user,
+          hasAccessToken: !!accessToken,
+          hasRefreshToken: !!refreshToken,
+          isGuest,
+          guestId,
+        });
+        setLoading(false);
+      } else if (attempts >= maxAttempts) {
+        console.warn("⚠️ Hydration timeout - forcing hydration complete");
+        // Force hydration to complete to unblock the app
+        useAuthStore.getState().setHasHydrated(true);
+        setLoading(false);
+      } else {
+        console.log(`⏳ Waiting for hydration... (${attempts}/${maxAttempts})`);
+        // Check again in 100ms
+        setTimeout(checkHydration, 100);
       }
     };
 
-    initAuth();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+    // Start checking
+    checkHydration();
+  }, [_hasHydrated, user, accessToken, refreshToken, isGuest, guestId]);
 
   // Send OTP
   const sendOTP = async (
-    phoneNumber: string,
+    phone: string,
     userType: "individual" | "corporate" = "individual"
   ) => {
     try {
       const response = await api.post("/auth/send-otp", {
-        phoneNumber,
+        phoneNumber: phone,
         userType,
       });
 
       if (response.data.success) {
-        setPhoneNumber(phoneNumber);
+        setPhoneNumber(phone); // Save to Zustand store
         return { success: true, message: response.data.message };
       } else {
         return { success: false, message: response.data.message };
@@ -150,18 +142,14 @@ export const useAuthHook = () => {
         };
       }
 
-      // 2. Token varsa kaydet
+      // 2. Token varsa kaydet (use Zustand setters)
       if (response.data.accessToken && response.data.refreshToken) {
-        setAccessToken(response.data.accessToken);
-        setRefreshToken(response.data.refreshToken);
-        setToken(response.data.accessToken);
-        setIsGuest(false);
-        setGuestId(null);
+        // Save to Zustand store (this will also save to localStorage via persist middleware)
+        setTokens(response.data.accessToken, response.data.refreshToken);
+        setToken(response.data.accessToken); // Backward compatibility
 
-        await tokenStorage.saveTokens(
-          response.data.accessToken,
-          response.data.refreshToken
-        );
+        // Clear guest session in both store and storage
+        setGuest(false, null);
         await guestStorage.clearGuestId();
 
         // 3. Profile fetch et (manual token header)
@@ -241,18 +229,13 @@ export const useAuthHook = () => {
 
       if (response.data.success) {
         if (response.data.accessToken && response.data.refreshToken) {
-          setAccessToken(response.data.accessToken);
-          setRefreshToken(response.data.refreshToken);
-          setToken(response.data.accessToken);
-          await tokenStorage.saveTokens(
-            response.data.accessToken,
-            response.data.refreshToken
-          );
+          // Save to Zustand store
+          setTokens(response.data.accessToken, response.data.refreshToken);
+          setToken(response.data.accessToken); // Backward compatibility
         }
 
         setRegistrationToken(null);
-        setIsGuest(false);
-        setGuestId(null);
+        setGuest(false, null);
 
         // Clear storage
         await registrationStorage.clearToken();
@@ -330,7 +313,7 @@ export const useAuthHook = () => {
       if (response.data.success && response.data.data) {
         const updatedUser = {
           ...user,
-          profilePicture: response.data.data.photoUrl,
+          profilePhotoUrl: response.data.data.photoUrl,
         };
         setUser(updatedUser);
         await userStorage.save(updatedUser);
@@ -367,8 +350,7 @@ export const useAuthHook = () => {
     try {
       const response = await api.post("/auth/guest-login");
       if (response.data.success) {
-        setGuestId(response.data.guestId);
-        setIsGuest(true);
+        setGuest(true, response.data.guestId);
         await guestStorage.saveGuestId(response.data.guestId);
       }
     } catch (error) {
@@ -376,7 +358,7 @@ export const useAuthHook = () => {
     }
   };
 
-  // Logout - Mobile pattern'i
+  // Logout - Use Zustand clearAuth
   const logout = async () => {
     try {
       // Server'a logout isteği gönder (manual header)
@@ -392,19 +374,10 @@ export const useAuthHook = () => {
       // Server hatası olsa bile local logout devam etsin
     }
 
-    // Local state'i temizle
-    setUser(null);
-    setToken(null);
-    setAccessToken(null);
-    setRefreshToken(null);
-    setRegistrationToken(null);
-    setIsGuest(false);
-    setGuestId(null);
-    setPhoneNumber(null);
-    setSocialAuthData(null);
+    // Clear Zustand store (this clears everything including localStorage)
+    clearAuth();
 
-    // Tüm storage'ı temizle
-    await tokenStorage.clearTokens();
+    // Also clear legacy storage
     await userStorage.clear();
     await socialAuthStorage.clear();
     await guestStorage.clearGuestId();
@@ -456,15 +429,10 @@ export const useAuthHook = () => {
             ) {
               // User exists with complete profile, login successful
               setUser(response.data.user);
-              setAccessToken(response.data.accessToken);
-              setRefreshToken(response.data.refreshToken);
-              setToken(response.data.accessToken);
+              setTokens(response.data.accessToken, response.data.refreshToken);
+              setToken(response.data.accessToken); // Backward compatibility
 
-              // Save tokens to storage
-              await tokenStorage.saveTokens(
-                response.data.accessToken,
-                response.data.refreshToken
-              );
+              // Save user to storage
               await userStorage.save(response.data.user);
 
               router.push("/");

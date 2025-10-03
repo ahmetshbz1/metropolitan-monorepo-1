@@ -27,6 +27,7 @@ export function useCart() {
 
   const user = useAuthStore((state) => state.user);
   const accessToken = useAuthStore((state) => state.accessToken);
+  const _hasHydrated = useAuthStore((state) => state._hasHydrated);
   const { isGuest, guestId, loginAsGuest } = useGuestAuth();
 
   // Boolean değer olarak hesapla
@@ -34,12 +35,22 @@ export function useCart() {
   const hasValidSession = Boolean(isAuthenticated || (isGuest && guestId));
 
   // Eğer ne user ne de guest session varsa, otomatik guest session oluştur
+  // CRITICAL: Wait for Zustand hydration before creating guest session
   useEffect(() => {
+    if (!_hasHydrated) {
+      console.log('⏳ Waiting for auth hydration before checking session...');
+      return;
+    }
+
     if (!isAuthenticated && !isGuest && !guestId) {
       console.log('🔄 No session found, creating guest session...');
       loginAsGuest();
+    } else if (isAuthenticated) {
+      console.log('✅ User authenticated, skipping guest session');
+    } else if (isGuest && guestId) {
+      console.log('✅ Guest session exists');
     }
-  }, [isAuthenticated, isGuest, guestId, loginAsGuest]);
+  }, [_hasHydrated, isAuthenticated, isGuest, guestId, loginAsGuest]);
 
   return useQuery({
     queryKey: cartKeys.items(user?.id, guestId || undefined),

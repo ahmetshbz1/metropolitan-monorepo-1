@@ -10,8 +10,6 @@
     "login": "Giriş Yap",
     "notifications": "Bildirimler",
     "view_cart": "Sepetimi Görüntüle",
-    "offers": "Fırsatlar",
-    "fast_delivery": "Hızlı Teslimat",
     "all_categories": "Tüm Kategoriler",
     "searching": "Aranıyor...",
     "in_stock": "Stokta",
@@ -540,12 +538,6 @@
     "language": "Dil",
     "language_desc": "Uygulama dili seçin",
     "info": "Daha fazla ayar seçeneği yakında eklenecek"
-  },
-  "offers": {
-    "title": "Fırsatlar",
-    "no_offers": "Şu anda kampanya bulunmuyor",
-    "no_offers_desc": "Yeni kampanyalar eklendiğinde burada görünecek.",
-    "found": "{{count}} indirimli ürün bulundu"
   },
   "status": {
     "pending": "Beklemede",

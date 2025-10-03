@@ -13,18 +13,29 @@ import {
 import { useProducts } from "@/hooks/api/use-products";
 import { useAddFavorite, useFavoriteIds, useRemoveFavorite } from "@/hooks/api/use-favorites";
 import { useFavoritesStore } from "@/stores/favorites-store";
-import { useAddToCart } from "@/hooks/api/use-cart";
+import { useAddToCart, useCart, useUpdateCartItem } from "@/hooks/api/use-cart";
+import { useAuth } from "@/context/AuthContext";
+import { useAuthStore } from "@/stores";
 import { motion } from "framer-motion";
 import { ArrowLeft, Heart, Minus, Plus, ShoppingCart } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const storeUser = useAuthStore((state) => state.user);
   const { data: products = [], isLoading: loadingProducts } = useProducts();
+
+  console.log('👤 User Debug:', {
+    contextUser: user,
+    storeUser: storeUser,
+    contextUserType: user?.userType,
+    storeUserType: storeUser?.userType
+  });
 
   // Favorites
   useFavoriteIds(); // Load favorites from backend
@@ -34,14 +45,54 @@ export default function ProductDetailPage() {
 
   // Cart
   const addToCartMutation = useAddToCart();
-
-  const [quantity, setQuantity] = useState(1);
+  const updateCartMutation = useUpdateCartItem();
+  const { data: cartData } = useCart();
 
   // Get product by ID
   const product = useMemo(() =>
     products.find(p => p.id === params.id as string),
     [products, params.id]
   );
+
+  // Calculate minimum quantity based on user type
+  const minQuantity = useMemo(() => {
+    if (!product) return 1;
+    // Use storeUser as fallback since context user might be null
+    const currentUser = user || storeUser;
+    const userType = currentUser?.userType || 'individual';
+    const calculatedMin = userType === 'corporate'
+      ? (product.minQuantityCorporate ?? 1)
+      : (product.minQuantityIndividual ?? 1);
+
+    console.log('🔢 MinQuantity Debug:', {
+      user,
+      storeUser,
+      currentUser,
+      userType,
+      minQuantityCorporate: product.minQuantityCorporate,
+      minQuantityIndividual: product.minQuantityIndividual,
+      calculatedMin,
+      productName: product.name
+    });
+
+    return calculatedMin;
+  }, [product, user?.userType, storeUser?.userType]);
+
+  // Find existing cart item for this product
+  const existingCartItem = useMemo(() => {
+    return cartData?.items?.find(item => item.product.id === params.id);
+  }, [cartData?.items, params.id]);
+
+  const [quantity, setQuantity] = useState(minQuantity);
+
+  // Update quantity when cart changes or minQuantity changes
+  useEffect(() => {
+    if (existingCartItem) {
+      setQuantity(existingCartItem.quantity);
+    } else if (quantity < minQuantity) {
+      setQuantity(minQuantity);
+    }
+  }, [existingCartItem, minQuantity]);
 
   const loading = loadingProducts;
   const error = !loading && !product ? t("error.product_not_found") : null;
@@ -63,18 +114,22 @@ export default function ProductDetailPage() {
   const handleAddToCart = async () => {
     if (!product || product.stock === 0) return;
 
-    // NOT: Guest kullanıcılar da sepete ekleyebilir artık
-    // Login kontrolü kaldırıldı, useCart hook otomatik guest session oluşturacak
-
     try {
-      await addToCartMutation.mutateAsync({
-        productId: product.id,
-        quantity: quantity,
-      });
-      // Reset quantity after successful add
-      setQuantity(1);
+      if (existingCartItem) {
+        // Update existing cart item
+        await updateCartMutation.mutateAsync({
+          productId: product.id,
+          quantity: quantity,
+        });
+      } else {
+        // Add new item to cart
+        await addToCartMutation.mutateAsync({
+          productId: product.id,
+          quantity: quantity,
+        });
+      }
     } catch (error) {
-      console.error("Error adding to cart:", error);
+      console.error("Error adding/updating cart:", error);
     }
   };
 
@@ -102,24 +157,32 @@ export default function ProductDetailPage() {
     }).format(price);
   };
 
-  const increaseQuantity = () => {
+  const increaseQuantity = useCallback(() => {
+    console.log('➕ Increase clicked:', { currentQuantity: quantity, minQuantity, willAdd: minQuantity });
     if (product && quantity < product.stock) {
-      setQuantity(quantity + 1);
+      const newQuantity = quantity + minQuantity;
+      console.log('➕ New quantity will be:', newQuantity);
+      // Don't exceed stock
+      if (newQuantity <= product.stock) {
+        setQuantity(newQuantity);
+      } else {
+        setQuantity(product.stock);
+      }
     }
-  };
+  }, [product, quantity, minQuantity]);
 
-  const decreaseQuantity = () => {
-    if (quantity > 1) {
-      setQuantity(quantity - 1);
+  const decreaseQuantity = useCallback(() => {
+    if (quantity > minQuantity) {
+      setQuantity(quantity - minQuantity);
     }
-  };
+  }, [quantity, minQuantity]);
 
-  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleQuantityChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
 
     // Allow empty input for better UX while typing
     if (value === '') {
-      setQuantity(1);
+      setQuantity(minQuantity);
       return;
     }
 
@@ -127,15 +190,23 @@ export default function ProductDetailPage() {
 
     // Validate input
     if (!isNaN(numValue)) {
-      if (numValue < 1) {
-        setQuantity(1);
+      if (numValue < minQuantity) {
+        setQuantity(minQuantity);
       } else if (product && numValue > product.stock) {
         setQuantity(product.stock);
       } else {
-        setQuantity(numValue);
+        // Round to nearest multiple of minQuantity
+        const remainder = numValue % minQuantity;
+        if (remainder === 0) {
+          setQuantity(numValue);
+        } else {
+          // Round down to nearest multiple
+          const roundedValue = numValue - remainder;
+          setQuantity(roundedValue > 0 ? roundedValue : minQuantity);
+        }
       }
     }
-  };
+  }, [product, minQuantity]);
 
   // Loading state
   if (loading) {
@@ -321,7 +392,7 @@ export default function ProductDetailPage() {
                   <div className="flex items-center bg-muted rounded-lg">
                     <motion.button
                       onClick={decreaseQuantity}
-                      disabled={quantity <= 1}
+                      disabled={quantity <= minQuantity}
                       className="p-2 hover:bg-muted-foreground/10 disabled:opacity-50 disabled:cursor-not-allowed rounded-l-lg transition-colors"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
@@ -337,8 +408,9 @@ export default function ProductDetailPage() {
                       type="number"
                       value={quantity}
                       onChange={handleQuantityChange}
-                      min="1"
+                      min={minQuantity}
                       max={product.stock}
+                      step={minQuantity}
                       className="w-16 px-2 py-2 font-medium text-center text-sm bg-transparent border-none focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
                     <motion.button
@@ -367,17 +439,19 @@ export default function ProductDetailPage() {
             <div className="flex gap-2 pt-3">
               <Button
                 onClick={handleAddToCart}
-                disabled={isOutOfStock || addToCartMutation.isPending}
+                disabled={isOutOfStock || addToCartMutation.isPending || updateCartMutation.isPending}
                 size="lg"
                 className="flex-1"
               >
-                {addToCartMutation.isPending ? (
+                {(addToCartMutation.isPending || updateCartMutation.isPending) ? (
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
                   <ShoppingCart className="mr-2 h-5 w-5" />
                 )}
                 {isOutOfStock
                   ? t("product.out_of_stock")
+                  : existingCartItem
+                  ? t("product.update_cart")
                   : t("product.add_to_cart")}
               </Button>
 

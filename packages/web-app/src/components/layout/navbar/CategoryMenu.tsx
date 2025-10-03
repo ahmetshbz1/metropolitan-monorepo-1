@@ -14,6 +14,7 @@ import { Icon } from "@iconify/react";
 import { ChevronDown, Package } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
 
 const getCategoryIcon = (slug: string) => {
   const iconMap: Record<string, string> = {
@@ -32,8 +33,13 @@ const getCategoryIcon = (slug: string) => {
 export function CategoryMenu() {
   const { t } = useTranslation();
   const { data: categories = [], isLoading } = useCategories();
+  const [mounted, setMounted] = useState(false);
 
-  if (isLoading) {
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || isLoading) {
     return (
       <Button
         variant="ghost"
@@ -41,7 +47,7 @@ export function CategoryMenu() {
         disabled
       >
         <Package className="h-4 w-4" />
-        {t("navbar.categories")}
+        <span suppressHydrationWarning>Categories</span>
         <ChevronDown className="h-4 w-4" />
       </Button>
     );

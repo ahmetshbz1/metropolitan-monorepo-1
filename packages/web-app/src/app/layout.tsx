@@ -4,6 +4,7 @@ import { I18nProvider } from "@/components/providers/I18nProvider";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { ToasterProvider } from "@/components/providers/toaster-provider";
+import { AuthProvider } from "@/context/AuthContext";
 import { CheckoutProvider } from "@/context/CheckoutContext";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import type { Metadata } from "next";
@@ -46,17 +47,19 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <I18nProvider>
-            <QueryProvider>
-              <CheckoutProvider>
-                <ToasterProvider />
-                <ProgressBar />
-                <div className="min-h-screen flex flex-col">
-                  <Navbar />
-                  <main className="flex-1">{children}</main>
-                  <Footer />
-                </div>
-              </CheckoutProvider>
-            </QueryProvider>
+            <AuthProvider>
+              <QueryProvider>
+                <CheckoutProvider>
+                  <ToasterProvider />
+                  <ProgressBar />
+                  <div className="min-h-screen flex flex-col">
+                    <Navbar />
+                    <main className="flex-1">{children}</main>
+                    <Footer />
+                  </div>
+                </CheckoutProvider>
+              </QueryProvider>
+            </AuthProvider>
           </I18nProvider>
         </ThemeProvider>
       </body>
