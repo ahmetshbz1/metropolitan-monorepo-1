@@ -1,6 +1,6 @@
 "use client";
 
-import { ShoppingCart, Loader2 } from "lucide-react";
+import { ShoppingCart, Loader2, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   Dialog,
@@ -33,7 +33,16 @@ export function MinimumQuantityDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]" showCloseButton={!loading}>
+      <DialogContent className="sm:max-w-[425px]" showCloseButton={false}>
+        {/* Close Button - QR Dialog Style */}
+        <button
+          onClick={() => !loading && onOpenChange(false)}
+          disabled={loading}
+          className="absolute right-4 top-4 rounded-full p-1 hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <X size={24} className="text-muted-foreground" />
+        </button>
+
         <DialogHeader>
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
             <ShoppingCart className="h-8 w-8 text-primary" />
