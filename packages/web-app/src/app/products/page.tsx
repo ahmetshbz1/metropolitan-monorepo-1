@@ -6,14 +6,24 @@ import { Input } from "@/components/ui/input";
 import { useProducts } from "@/hooks/api/use-products";
 import { Product } from "@metropolitan/shared";
 import { Search, SlidersHorizontal, X } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "next/navigation";
 
 export default function ProductsPage() {
   const { t } = useTranslation();
+  const searchParams = useSearchParams();
   const { data: products = [], isLoading: loadingProducts } = useProducts();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  // Set category from URL on mount
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get('category');
+    if (categoryFromUrl) {
+      setSelectedCategory(categoryFromUrl);
+    }
+  }, [searchParams]);
 
   // Get unique categories
   const categories = useMemo(() => {

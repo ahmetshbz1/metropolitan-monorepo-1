@@ -73,7 +73,7 @@ export function CategoryMenu() {
               className="p-2 rounded-lg cursor-pointer transition-colors font-medium"
               asChild
             >
-              <Link href={`/category/${category.slug}`}>
+              <Link href={`/products?category=${category.slug}`}>
                 <span className="flex items-center gap-2">
                   <Icon
                     icon={getCategoryIcon(category.slug)}
