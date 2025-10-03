@@ -18,35 +18,35 @@ export function ProgressIndicator() {
   const currentStepIndex = STEPS.findIndex((s) => s.id === state.currentStep);
 
   return (
-    <div className="px-4 py-3 border-b bg-background">
-      <div className="flex items-center justify-center gap-1.5 max-w-2xl mx-auto">
+    <div className="px-6 py-4 bg-muted/30">
+      <div className="flex items-center justify-center gap-2 max-w-3xl mx-auto">
         {STEPS.map((step, index) => {
           const isActive = index === currentStepIndex;
           const isCompleted = index < currentStepIndex;
           const isLast = index === STEPS.length - 1;
 
           return (
-            <div key={step.id} className="flex items-center">
+            <div key={step.id} className="flex items-center flex-1">
               {/* Step Circle */}
-              <div className="flex flex-col items-center min-w-[44px] sm:min-w-[52px]">
+              <div className="flex flex-col items-center flex-1">
                 <div
                   className={`
-                    w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-xs font-semibold transition-colors
+                    w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 shadow-sm
                     ${
                       isCompleted
-                        ? "bg-primary text-primary-foreground"
+                        ? "bg-primary text-primary-foreground shadow-primary/20"
                         : isActive
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground"
+                        ? "bg-primary text-primary-foreground ring-4 ring-primary/20 shadow-primary/20"
+                        : "bg-background text-muted-foreground border-2 border-muted"
                     }
                   `}
                 >
-                  {isCompleted ? <Check className="w-4 h-4" /> : step.number}
+                  {isCompleted ? <Check className="w-5 h-5" /> : step.number}
                 </div>
                 <span
                   className={`
-                    text-[10px] sm:text-xs font-medium mt-1 transition-colors whitespace-nowrap
-                    ${isActive || isCompleted ? "text-foreground" : "text-muted-foreground"}
+                    text-[11px] sm:text-xs font-medium mt-2 transition-colors whitespace-nowrap
+                    ${isActive || isCompleted ? "text-foreground font-semibold" : "text-muted-foreground"}
                   `}
                 >
                   {step.label}
@@ -55,12 +55,14 @@ export function ProgressIndicator() {
 
               {/* Connector Line */}
               {!isLast && (
-                <div
-                  className={`
-                    h-0.5 w-6 sm:w-10 md:w-12 mx-1 sm:mx-1.5 transition-colors
-                    ${isCompleted ? "bg-primary" : "bg-muted"}
-                  `}
-                />
+                <div className="flex-1 px-2 pb-8">
+                  <div
+                    className={`
+                      h-1 w-full rounded-full transition-all duration-300
+                      ${isCompleted ? "bg-primary" : "bg-muted"}
+                    `}
+                  />
+                </div>
               )}
             </div>
           );

@@ -77,7 +77,7 @@ function DrawerHeader({ className, ...props }: React.ComponentProps<'div'>) {
 		<div
 			data-slot="drawer-header"
 			className={cn(
-				'flex w-full flex-col gap-1 rounded-t-3xl border-b px-4 py-2 md:mx-auto md:max-w-md',
+				'flex w-full flex-col gap-1 border-b px-4 py-2',
 				className,
 			)}
 			{...props}
@@ -89,7 +89,7 @@ function DrawerBody({ className, ...props }: React.ComponentProps<'div'>) {
 	return (
 		<div
 			data-slot="drawer-body"
-			className={cn('w-full px-4 py-6 md:mx-auto md:max-w-md', className)}
+			className={cn('w-full px-4 py-6', className)}
 			{...props}
 		/>
 	);
@@ -100,7 +100,7 @@ function DrawerFooter({ className, ...props }: React.ComponentProps<'div'>) {
 		<div
 			data-slot="drawer-footer"
 			className={cn(
-				'mt-auto grid w-full gap-2 border-t px-4 py-3 md:mx-auto md:max-w-md',
+				'mt-auto grid w-full gap-2 border-t px-4 py-3',
 				className,
 			)}
 			{...props}

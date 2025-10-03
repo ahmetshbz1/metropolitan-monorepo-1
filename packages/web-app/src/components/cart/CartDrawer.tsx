@@ -3,12 +3,11 @@
 import { ProgressIndicator } from "@/components/checkout/ProgressIndicator";
 import { Button } from "@/components/ui/button";
 import {
-  Drawer,
-  DrawerBody,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useCheckout } from "@/context/CheckoutContext";
 import { useCartStore } from "@/stores/cart-store";
 import { ArrowLeft, X } from "lucide-react";
@@ -93,36 +92,42 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
   };
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="h-[80vh] max-h-[80vh] min-h-[80vh] flex flex-col">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        className="max-w-[calc(100vw-0.5rem)] md:max-w-[calc(100vw-1rem)] lg:max-w-[calc(100vw-1.5rem)] h-[calc(100vh-0.5rem)] md:h-[calc(100vh-1rem)] lg:h-[calc(100vh-1.5rem)] flex flex-col p-0 gap-0 overflow-hidden rounded-xl md:rounded-2xl shadow-2xl"
+        showCloseButton={false}
+      >
         {/* Header */}
-        <DrawerHeader className="border-b flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon" onClick={handleBack}>
-                {state.currentStep === "cart" ? (
-                  <X className="h-5 w-5" />
-                ) : (
-                  <ArrowLeft className="h-5 w-5" />
-                )}
-              </Button>
-              <DrawerTitle className="text-xl font-bold">
-                {getStepTitle()}
-              </DrawerTitle>
-            </div>
+        <DialogHeader className="border-b flex-shrink-0 px-6 py-4 bg-background/95 backdrop-blur-xl rounded-t-xl md:rounded-t-2xl">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleBack}
+              className="flex-shrink-0"
+            >
+              {state.currentStep === "cart" ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <ArrowLeft className="h-5 w-5" />
+              )}
+            </Button>
+            <DialogTitle className="text-xl font-bold">
+              {getStepTitle()}
+            </DialogTitle>
           </div>
-        </DrawerHeader>
 
-        {/* Progress Indicator */}
-        <div className="flex-shrink-0">
-          <ProgressIndicator />
-        </div>
+          {/* Progress Indicator */}
+          <div className="mt-4">
+            <ProgressIndicator />
+          </div>
+        </DialogHeader>
 
         {/* Step Content */}
-        <DrawerBody className="flex flex-col flex-1 overflow-hidden p-0">
+        <div className="flex flex-col flex-1 overflow-hidden">
           {getStepComponent()}
-        </DrawerBody>
-      </DrawerContent>
-    </Drawer>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
