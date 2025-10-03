@@ -200,12 +200,14 @@ export default function OrderDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background py-8">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <div className="animate-pulse space-y-6">
-            <div className="h-8 bg-muted rounded w-48"></div>
-            <div className="h-64 bg-muted rounded-xl"></div>
-            <div className="h-48 bg-muted rounded-xl"></div>
+      <div className="min-h-screen bg-background py-6">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+          <div className="animate-pulse space-y-4">
+            <div className="h-6 bg-muted rounded w-32"></div>
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-4">
+              <div className="h-80 bg-muted rounded-lg"></div>
+              <div className="h-64 bg-muted rounded-lg"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -233,154 +235,168 @@ export default function OrderDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
-        {/* Header */}
+    <div className="min-h-screen bg-background py-6">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+        {/* Header - Compact */}
         <Button
           variant="ghost"
           onClick={() => router.back()}
-          className="mb-4"
+          className="mb-3 -ml-2"
+          size="sm"
         >
-          <ArrowLeft className="mr-2 h-4 w-4" />
+          <ArrowLeft className="mr-1 h-4 w-4" />
           Geri
         </Button>
 
-        <div className="flex items-start justify-between mb-8">
+        <div className="flex items-start justify-between mb-4">
           <div>
-            <h1 className="text-3xl font-bold mb-2">
+            <h1 className="text-lg font-bold mb-0.5">
               Sipariş #{order.orderNumber}
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               {formatDate(order.createdAt)}
             </p>
           </div>
-          <Badge className={getStatusColor(order.status)}>
+          <Badge className={`${getStatusColor(order.status)} text-xs`}>
             {t(`status.${order.status}`)}
           </Badge>
         </div>
 
-        {/* Order Items */}
-        <div className="bg-card rounded-xl border border-border p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">
-            {t("order_detail.products.section_title")}
-          </h2>
-          {/* Scrollable container for items - max 5 items visible */}
-          <div className="max-h-[440px] overflow-y-auto space-y-4 pr-2">
-            {order.items.map((item) => (
-              <Link
-                href={`/product/${item.productId || item.id}`}
-                key={item.id}
-                className="flex gap-4 pb-4 border-b border-border last:border-b-0 last:pb-0 transition-colors rounded-lg p-2 -m-2"
-              >
-                <div className="w-20 h-20 bg-card rounded-lg flex-shrink-0 overflow-hidden">
-                  {item.image ? (
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-contain p-2"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Package className="h-8 w-8 text-muted-foreground" />
+        {/* Two Column Layout - Desktop, Single Column Mobile */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-4">
+          {/* Left Column - Main Content */}
+          <div className="space-y-4">
+            {/* Order Items - Compact Grid */}
+            <div className="bg-card rounded-lg border p-4">
+              <h2 className="text-base font-semibold mb-3">
+                {t("order_detail.products.section_title")}
+              </h2>
+              {/* Grid Layout for Products - 2 columns on larger screens */}
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
+                {order.items.map((item) => (
+                  <Link
+                    href={`/product/${item.productId || item.id}`}
+                    key={item.id}
+                    className="flex gap-3 p-2 rounded-lg hover:bg-muted transition-colors"
+                  >
+                    <div className="w-14 h-14 bg-muted rounded flex-shrink-0 overflow-hidden">
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-full h-full object-contain p-1"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Package className="h-6 w-6 text-muted-foreground" />
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold mb-1 hover:text-primary transition-colors">{item.name}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {t("order_detail.products.quantity", { count: item.quantity })}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="font-semibold">
-                    {formatPrice(item.price * item.quantity, item.currency)}
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-sm mb-0.5 hover:text-primary transition-colors truncate">
+                        {item.name}
+                      </h3>
+                      <p className="text-xs text-muted-foreground">
+                        {t("order_detail.products.quantity", { count: item.quantity })}
+                      </p>
+                      <p className="font-semibold text-xs mt-1">
+                        {formatPrice(item.price * item.quantity, item.currency)}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
 
-        {/* Order Summary */}
-        <div className="bg-card rounded-xl border border-border p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">
-            {t("order_detail.summary.section_title")}
-          </h2>
-          <div className="space-y-3">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">
-                {t("order_detail.summary.subtotal")}
-              </span>
-              <span className="font-medium">
-                {formatPrice(order.subtotal, order.currency)}
-              </span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">
-                {t("order_detail.summary.shipping")}
-              </span>
-              <span className="font-medium text-green-600">
-                {order.shippingCost === 0
-                  ? t("order_detail.summary.free_shipping")
-                  : formatPrice(order.shippingCost, order.currency)}
-              </span>
-            </div>
-            <div className="border-t border-border pt-3">
-              <div className="flex justify-between">
-                <span className="font-semibold">
-                  {t("order_detail.summary.total")}
-                </span>
-                <span className="font-bold text-xl text-primary">
-                  {formatPrice(order.totalAmount, order.currency)}
-                </span>
+            {/* Delivery Address - Compact */}
+            {order.shippingAddress && (
+              <div className="bg-card rounded-lg border p-4">
+                <h2 className="text-base font-semibold mb-3">
+                  {t("order_detail.delivery_payment.delivery_address")}
+                </h2>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {order.shippingAddress.addressTitle && (
+                    <>
+                      <strong className="text-foreground">{order.shippingAddress.addressTitle}</strong>
+                      <br />
+                    </>
+                  )}
+                  {order.shippingAddress.street}
+                  <br />
+                  {order.shippingAddress.postalCode} {order.shippingAddress.city}
+                  <br />
+                  {order.shippingAddress.country}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Right Column - Sticky Sidebar */}
+          <div className="space-y-4">
+            {/* Order Summary - Sticky on Desktop */}
+            <div className="bg-card rounded-lg border p-4 lg:sticky lg:top-6">
+              <h2 className="text-base font-semibold mb-3">
+                {t("order_detail.summary.section_title")}
+              </h2>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">
+                    {t("order_detail.summary.subtotal")}
+                  </span>
+                  <span className="font-medium">
+                    {formatPrice(order.subtotal, order.currency)}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">
+                    {t("order_detail.summary.shipping")}
+                  </span>
+                  <span className="font-medium text-green-600">
+                    {order.shippingCost === 0
+                      ? t("order_detail.summary.free_shipping")
+                      : formatPrice(order.shippingCost, order.currency)}
+                  </span>
+                </div>
+                <div className="border-t pt-2 mt-2">
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold text-sm">
+                      {t("order_detail.summary.total")}
+                    </span>
+                    <span className="font-bold text-lg text-primary">
+                      {formatPrice(order.totalAmount, order.currency)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons - Compact Stack */}
+              <div className="space-y-2 mt-4 pt-4 border-t">
+                <Button
+                  variant="outline"
+                  onClick={handleDownloadInvoice}
+                  className="w-full justify-start"
+                  size="sm"
+                >
+                  <FileText className="mr-2 h-4 w-4" />
+                  Fatura Önizle
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleReorder}
+                  disabled={reordering}
+                  className="w-full justify-start"
+                  size="sm"
+                >
+                  <ShoppingCart className="mr-2 h-4 w-4" />
+                  {reordering ? "Ekleniyor..." : "Yeniden Sipariş Ver"}
+                </Button>
+                <Button variant="outline" className="w-full justify-start" size="sm">
+                  <HelpCircle className="mr-2 h-4 w-4" />
+                  {t("order_detail.help")}
+                </Button>
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Delivery Address */}
-        {order.shippingAddress && (
-          <div className="bg-card rounded-xl border border-border p-6 mb-6">
-            <h2 className="text-xl font-semibold mb-4">
-              {t("order_detail.delivery_payment.delivery_address")}
-            </h2>
-            <p className="text-muted-foreground">
-              {order.shippingAddress.addressTitle && (
-                <>
-                  <strong>{order.shippingAddress.addressTitle}</strong>
-                  <br />
-                </>
-              )}
-              {order.shippingAddress.street}
-              <br />
-              {order.shippingAddress.postalCode} {order.shippingAddress.city}
-              <br />
-              {order.shippingAddress.country}
-            </p>
-          </div>
-        )}
-
-        {/* Action Buttons */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <Button
-            variant="outline"
-            onClick={handleDownloadInvoice}
-          >
-            <FileText className="mr-2 h-4 w-4" />
-            Fatura Önizle
-          </Button>
-          <Button
-            variant="outline"
-            onClick={handleReorder}
-            disabled={reordering}
-          >
-            <ShoppingCart className="mr-2 h-4 w-4" />
-            {reordering ? "Ekleniyor..." : "Yeniden Sipariş Ver"}
-          </Button>
-          <Button variant="outline">
-            <HelpCircle className="mr-2 h-4 w-4" />
-            {t("order_detail.help")}
-          </Button>
         </div>
       </div>
 

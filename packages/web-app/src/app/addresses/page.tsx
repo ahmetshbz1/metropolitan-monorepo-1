@@ -91,66 +91,76 @@ export default function AddressesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold">{t("addresses.title")}</h1>
+    <div className="min-h-screen bg-background py-6">
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl">
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-lg font-bold">{t("addresses.title")}</h1>
           <Button onClick={() => {
             setEditingAddress(null);
             setDialogOpen(true);
-          }}>
-            <Plus className="mr-2 h-5 w-5" />
+          }} size="sm">
+            <Plus className="mr-1.5 h-4 w-4" />
             {t("addresses.add_new_address")}
           </Button>
         </div>
 
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {addresses.map((address) => (
             <div
               key={address.id}
-              className="bg-card rounded-xl border border-border p-6"
+              className="group relative bg-card rounded-lg border border-border p-4 hover:shadow-md hover:border-primary/30 transition-all"
             >
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h3 className="font-semibold text-lg mb-1">{address.addressTitle}</h3>
-                  <div className="flex gap-2 mb-2">
-                    {address.isDefaultDelivery && (
-                      <Badge variant="secondary">
-                        {t("addresses.default_delivery")}
-                      </Badge>
-                    )}
-                    {address.isDefaultBilling && (
-                      <Badge variant="secondary">
-                        {t("addresses.default_billing")}
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setEditingAddress(address);
-                      setDialogOpen(true);
-                    }}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => deleteAddress.mutate(address.id)}
-                    disabled={deleteAddress.isPending}
-                  >
-                    <Trash2 className="h-4 w-4 text-red-500" />
-                  </Button>
+              {/* Action Buttons - Show on Hover */}
+              <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 hover:bg-primary hover:text-primary-foreground"
+                  onClick={() => {
+                    setEditingAddress(address);
+                    setDialogOpen(true);
+                  }}
+                >
+                  <Edit className="h-3.5 w-3.5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 hover:bg-destructive hover:text-destructive-foreground"
+                  onClick={() => deleteAddress.mutate(address.id)}
+                  disabled={deleteAddress.isPending}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+
+              <div className="flex items-start gap-2.5 mb-3">
+                <MapPin className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0 pr-14">
+                  <h3 className="font-semibold text-sm mb-1 truncate">{address.addressTitle}</h3>
+                  {(address.isDefaultDelivery || address.isDefaultBilling) && (
+                    <div className="flex gap-1.5 mb-2">
+                      {address.isDefaultDelivery && (
+                        <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
+                          {t("addresses.default_delivery")}
+                        </Badge>
+                      )}
+                      {address.isDefaultBilling && (
+                        <Badge variant="secondary" className="text-xs px-1.5 py-0.5">
+                          {t("addresses.default_billing")}
+                        </Badge>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
-              <p className="text-muted-foreground">
+
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 {address.street}
                 <br />
-                {address.postalCode} {address.city}, {address.country}
+                {address.postalCode} {address.city}
+                <br />
+                {address.country}
               </p>
             </div>
           ))}

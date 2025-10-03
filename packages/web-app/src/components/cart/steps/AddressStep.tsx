@@ -6,8 +6,10 @@ import { useAddresses } from "@/hooks/api/use-addresses";
 import { AddressDialog } from "@/components/address/AddressDialog";
 import { MapPin, Plus, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export function AddressStep() {
+  const { t } = useTranslation();
   const { state, setDeliveryAddress, nextStep, canProceedToNext } = useCheckout();
   const { data: addresses = [], isLoading } = useAddresses();
   const [isAddressDialogOpen, setIsAddressDialogOpen] = useState(false);
@@ -30,7 +32,7 @@ export function AddressStep() {
     return (
       <div className="flex flex-col items-center justify-center h-full p-8">
         <Loader2 className="w-8 h-8 animate-spin text-primary mb-4" />
-        <p className="text-muted-foreground">Adresler yükleniyor...</p>
+        <p className="text-muted-foreground">{t("address.loading")}</p>
       </div>
     );
   }
@@ -41,13 +43,13 @@ export function AddressStep() {
         <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-4">
           <MapPin className="w-10 h-10 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold mb-2">Kayıtlı Adresiniz Yok</h3>
+        <h3 className="text-lg font-semibold mb-2">{t("address.empty.title")}</h3>
         <p className="text-muted-foreground mb-6">
-          Sipariş vermek için önce bir teslimat adresi eklemelisiniz
+          {t("address.empty.description")}
         </p>
         <Button onClick={() => setIsAddressDialogOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
-          Adres Ekle
+          {t("address.actions.add_address")}
         </Button>
       </div>
     );
@@ -58,10 +60,10 @@ export function AddressStep() {
       <div className="flex flex-col h-full min-h-0">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b">
-          <h3 className="font-semibold text-base">Teslimat Adresi Seçin</h3>
+          <h3 className="font-semibold text-base">{t("address.select_title")}</h3>
           <Button variant="outline" size="sm" onClick={() => setIsAddressDialogOpen(true)}>
             <Plus className="h-4 w-4 mr-1.5" />
-            Yeni Adres
+            {t("address.actions.new_address")}
           </Button>
         </div>
 
@@ -90,7 +92,7 @@ export function AddressStep() {
                       <h4 className="font-semibold text-sm truncate">{address.addressTitle}</h4>
                       {address.isDefaultDelivery && (
                         <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-full whitespace-nowrap">
-                          Varsayılan
+                          {t("address.labels.default")}
                         </span>
                       )}
                     </div>
@@ -108,7 +110,7 @@ export function AddressStep() {
         {/* Footer */}
         <div className="border-t px-4 py-3 flex-shrink-0 bg-background">
           <Button onClick={nextStep} size="lg" className="w-full" disabled={!canProceedToNext()}>
-            Devam Et
+            {t("cart.actions.continue")}
           </Button>
         </div>
       </div>

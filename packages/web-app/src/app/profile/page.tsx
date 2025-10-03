@@ -29,29 +29,16 @@ export default function ProfilePage() {
   // Loading skeleton
   if (userLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-8">
-          {/* Header skeleton */}
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-20 h-20 rounded-full bg-muted animate-pulse"></div>
-            <div className="space-y-2">
-              <div className="h-7 bg-muted rounded w-48 animate-pulse"></div>
-              <div className="h-4 bg-muted rounded w-32 animate-pulse"></div>
+      <div className="min-h-screen bg-background py-6">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+          <div className="h-6 bg-muted rounded w-32 mb-4 animate-pulse"></div>
+          <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-4">
+            <div className="h-48 bg-muted rounded-lg animate-pulse"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="h-24 bg-muted rounded-lg animate-pulse"></div>
+              ))}
             </div>
-          </div>
-
-          {/* Menu sections skeleton */}
-          <div className="space-y-6">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="space-y-2">
-                <div className="h-5 bg-muted rounded w-32 mb-3 animate-pulse"></div>
-                <div className="space-y-2">
-                  {[1, 2, 3].map((j) => (
-                    <div key={j} className="h-14 bg-muted rounded-lg animate-pulse"></div>
-                  ))}
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </div>
@@ -129,66 +116,86 @@ export default function ProfilePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-background py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
-        {/* User Info Header */}
-        <div className="bg-card rounded-xl border border-border p-6 mb-6">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-              <User className="h-8 w-8 text-primary" />
-            </div>
-            <div className="flex-1">
-              <h1 className="text-2xl font-bold">
+    <div className="min-h-screen bg-background py-6">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+        {/* Compact Header */}
+        <div className="mb-4">
+          <h1 className="text-lg font-bold">Profil</h1>
+          <p className="text-sm text-muted-foreground">
+            Hesap bilgilerinizi ve tercihlerinizi yönetin
+          </p>
+        </div>
+
+        {/* Two Column Layout - Desktop */}
+        <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-4">
+          {/* Left - User Info Card */}
+          <div className="bg-card rounded-lg border p-4">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-3">
+                <User className="h-8 w-8 text-primary" />
+              </div>
+              <h2 className="text-base font-bold mb-0.5">
                 {user.firstName} {user.lastName}
-              </h1>
-              <p className="text-muted-foreground">{user.phone || user.email}</p>
+              </h2>
+              <p className="text-xs text-muted-foreground mb-3">{user.phone || user.email}</p>
+              <Button variant="outline" asChild size="sm" className="w-full">
+                <Link href="/edit-profile">{t("profile.header_edit")}</Link>
+              </Button>
             </div>
-            <Button variant="outline" asChild>
-              <Link href="/edit-profile">{t("profile.header_edit")}</Link>
-            </Button>
+          </div>
+
+          {/* Right - Menu Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {menuSections.map((section, sectionIndex) => (
+              section.items.map((item, itemIndex) => (
+                <Link
+                  key={`${sectionIndex}-${itemIndex}`}
+                  href={item.href}
+                  className="group bg-card rounded-lg border p-4 hover:shadow-md hover:border-primary/30 transition-all"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <item.icon className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-sm mb-0.5 group-hover:text-primary transition-colors">
+                        {item.label}
+                      </h3>
+                      <p className="text-xs text-muted-foreground">
+                        {sectionIndex === 0 && itemIndex === 0 && "Beğendiğiniz ürünler"}
+                        {sectionIndex === 0 && itemIndex === 1 && "Teslimat adresleri"}
+                        {sectionIndex === 0 && itemIndex === 2 && "Bildirim ayarları"}
+                        {sectionIndex === 0 && itemIndex === 3 && "Hesap bilgileri"}
+                        {sectionIndex === 1 && itemIndex === 0 && "SSS ve destek"}
+                        {sectionIndex === 2 && itemIndex === 0 && "Şartlar ve politikalar"}
+                      </p>
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform flex-shrink-0 mt-1" />
+                  </div>
+                </Link>
+              ))
+            ))}
           </div>
         </div>
 
-        {/* Menu Sections */}
-        {menuSections.map((section, index) => (
-          <div key={index} className="mb-6">
-            <h2 className="text-sm font-semibold text-muted-foreground uppercase mb-3 px-2">
-              {section.title}
-            </h2>
-            <div className="bg-card rounded-xl border border-border overflow-hidden">
-              {section.items.map((item, itemIndex) => (
-                <Link
-                  key={itemIndex}
-                  href={item.href}
-                  className="flex items-center gap-4 p-4 hover:bg-muted transition-colors border-b border-border last:border-b-0"
-                >
-                  <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                    <item.icon className="h-5 w-5 text-primary" />
-                  </div>
-                  <span className="flex-1 font-medium">{item.label}</span>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                </Link>
-              ))}
-            </div>
+        {/* Logout Button - Full Width Below */}
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Button
+            variant="destructive"
+            className="w-full"
+            onClick={() => logout.mutate()}
+            disabled={logout.isPending}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            {logout.isPending ? t("profile.logging_out") : t("profile.logout")}
+          </Button>
+
+          {/* Version Info */}
+          <div className="flex items-center justify-center md:justify-start">
+            <p className="text-sm text-muted-foreground">
+              {t("profile.version", { version: "1.0.0" })}
+            </p>
           </div>
-        ))}
-
-        {/* Logout Button */}
-        <Button
-          variant="destructive"
-          className="w-full"
-          onClick={() => logout.mutate()}
-          disabled={logout.isPending}
-        >
-          <LogOut className="mr-2 h-5 w-5" />
-          {logout.isPending ? t("profile.logging_out") : t("profile.logout")}
-        </Button>
-
-        {/* Version Info */}
-        <div className="text-center mt-6">
-          <p className="text-sm text-muted-foreground">
-            {t("profile.version", { version: "1.0.0" })}
-          </p>
         </div>
       </div>
     </div>

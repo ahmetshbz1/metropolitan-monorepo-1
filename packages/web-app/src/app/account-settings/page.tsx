@@ -138,33 +138,33 @@ export default function AccountSettingsPage() {
 
   return (
     <div className="min-h-screen bg-background py-6">
-      <div className="container mx-auto px-4 max-w-6xl">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+        {/* Header - Compact */}
+        <div className="flex items-center gap-2 mb-4">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => router.back()}
-            className="rounded-full"
+            className="rounded-full h-8 w-8"
           >
-            <Icon icon="solar:arrow-left-line-duotone" className="size-5" />
+            <Icon icon="solar:arrow-left-line-duotone" className="size-4" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">Hesap Ayarları</h1>
-            <p className="text-sm text-muted-foreground">
+            <h1 className="text-lg font-bold">Hesap Ayarları</h1>
+            <p className="text-xs text-muted-foreground">
               Profil bilgilerinizi ve ayarlarınızı yönetin
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-          {/* Left Column - Profile Card */}
+        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-4">
+          {/* Left Column - Profile Card - Compact */}
           <div className="lg:col-span-1">
-            <div className="bg-card rounded-xl border border-border p-4 sticky top-6">
+            <div className="bg-card rounded-lg border p-3 lg:sticky lg:top-6">
               <div className="flex flex-col items-center text-center">
-                {/* Avatar */}
-                <div className="relative group cursor-pointer mb-3">
-                  <Avatar className="size-20">
+                {/* Avatar - Compact */}
+                <div className="relative group cursor-pointer mb-2">
+                  <Avatar className="size-16">
                     <AvatarImage
                       src={currentUser?.profilePhotoUrl}
                       alt={currentUser?.firstName}
@@ -172,7 +172,7 @@ export default function AccountSettingsPage() {
                     <AvatarFallback className="bg-primary/20">
                       <Icon
                         icon="solar:user-bold"
-                        className="size-10 text-primary"
+                        className="size-8 text-primary"
                       />
                     </AvatarFallback>
                   </Avatar>
@@ -181,7 +181,7 @@ export default function AccountSettingsPage() {
                   <button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploadPhoto.isPending}
-                    className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-primary shadow-lg flex items-center justify-center transform transition-transform hover:scale-110 disabled:opacity-50"
+                    className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-primary shadow-lg flex items-center justify-center transform transition-transform hover:scale-110 disabled:opacity-50"
                   >
                     <Icon
                       icon={
@@ -189,7 +189,7 @@ export default function AccountSettingsPage() {
                           ? "svg-spinners:ring-resize"
                           : "solar:camera-add-bold"
                       }
-                      className="size-4 text-white"
+                      className="size-3 text-white"
                     />
                   </button>
 
@@ -202,28 +202,28 @@ export default function AccountSettingsPage() {
                   />
                 </div>
 
-                {/* Name & Badge */}
-                <h3 className="text-lg font-semibold mb-1">
+                {/* Name & Badge - Compact */}
+                <h3 className="text-sm font-semibold mb-0.5">
                   {currentUser?.firstName} {currentUser?.lastName}
                 </h3>
-                <Badge variant="secondary" className="text-xs mb-3">
+                <Badge variant="secondary" className="text-xs mb-2">
                   {currentUser?.userType === "corporate"
                     ? "Kurumsal"
                     : t("user_types.individual")}
                 </Badge>
 
-                {/* Stats */}
+                {/* Stats - Compact */}
                 <div className="w-full grid grid-cols-2 gap-2">
-                  <div className="bg-muted/50 rounded-lg p-2">
-                    <div className="text-xl font-bold text-primary">0</div>
+                  <div className="bg-muted/50 rounded p-1.5">
+                    <div className="text-base font-bold text-primary">0</div>
                     <div className="text-xs text-muted-foreground">
-                      Siparişler
+                      Sipariş
                     </div>
                   </div>
-                  <div className="bg-muted/50 rounded-lg p-2">
-                    <div className="text-xl font-bold text-primary">0</div>
+                  <div className="bg-muted/50 rounded p-1.5">
+                    <div className="text-base font-bold text-primary">0</div>
                     <div className="text-xs text-muted-foreground">
-                      Favoriler
+                      Favori
                     </div>
                   </div>
                 </div>
@@ -231,13 +231,13 @@ export default function AccountSettingsPage() {
             </div>
           </div>
 
-          {/* Right Column - Settings Forms */}
-          <div className="lg:col-span-3 space-y-4">
+          {/* Right Column - Settings Forms - Compact */}
+          <div className="space-y-4">
             {/* Profile Information */}
-            <div className="bg-card rounded-xl border border-border">
+            <div className="bg-card rounded-lg border">
               <div className="p-4">
-                <div className="mb-4">
-                  <h2 className="text-base font-semibold">Kişisel Bilgiler</h2>
+                <div className="mb-3">
+                  <h2 className="text-sm font-semibold">Kişisel Bilgiler</h2>
                   <p className="text-xs text-muted-foreground">
                     Adınız, soyadınız ve email adresiniz
                   </p>
@@ -339,20 +339,20 @@ export default function AccountSettingsPage() {
               </div>
             </div>
 
-            {/* Quick Links */}
-            <div className="bg-card rounded-xl border border-border">
+            {/* Quick Links - Compact Grid */}
+            <div className="bg-card rounded-lg border">
               <div className="p-4">
-                <div className="mb-4">
-                  <h2 className="text-base font-semibold">Diğer Ayarlar</h2>
+                <div className="mb-3">
+                  <h2 className="text-sm font-semibold">Diğer Ayarlar</h2>
                   <p className="text-xs text-muted-foreground">
                     Güvenlik ve gizlilik ayarları
                   </p>
                 </div>
 
-                <div className="space-y-1">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                   <Link
                     href="/addresses"
-                    className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-muted transition-colors group"
+                    className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted transition-colors group border"
                   >
                     <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0">
                       <Icon
@@ -361,22 +361,16 @@ export default function AccountSettingsPage() {
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-sm">Adreslerim</h3>
+                      <h3 className="font-medium text-xs">Adreslerim</h3>
                       <p className="text-xs text-muted-foreground truncate">
-                        Teslimat ve fatura adresleri
+                        Teslimat adresleri
                       </p>
                     </div>
-                    <Icon
-                      icon="solar:alt-arrow-right-line-duotone"
-                      className="size-4 text-muted-foreground group-hover:translate-x-1 transition-transform flex-shrink-0"
-                    />
                   </Link>
-
-                  <Separator className="my-1" />
 
                   <Link
                     href="/security-settings"
-                    className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-muted transition-colors group"
+                    className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted transition-colors group border"
                   >
                     <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center flex-shrink-0">
                       <Icon
@@ -385,22 +379,16 @@ export default function AccountSettingsPage() {
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-sm">Güvenlik</h3>
+                      <h3 className="font-medium text-xs">Güvenlik</h3>
                       <p className="text-xs text-muted-foreground truncate">
-                        Şifre ve oturum yönetimi
+                        Oturum yönetimi
                       </p>
                     </div>
-                    <Icon
-                      icon="solar:alt-arrow-right-line-duotone"
-                      className="size-4 text-muted-foreground group-hover:translate-x-1 transition-transform flex-shrink-0"
-                    />
                   </Link>
-
-                  <Separator className="my-1" />
 
                   <Link
                     href="/privacy-settings"
-                    className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-muted transition-colors group"
+                    className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted transition-colors group border"
                   >
                     <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center flex-shrink-0">
                       <Icon
@@ -409,25 +397,21 @@ export default function AccountSettingsPage() {
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-sm">Gizlilik</h3>
+                      <h3 className="font-medium text-xs">Gizlilik</h3>
                       <p className="text-xs text-muted-foreground truncate">
-                        Veri ve gizlilik tercihleri
+                        Veri tercihleri
                       </p>
                     </div>
-                    <Icon
-                      icon="solar:alt-arrow-right-line-duotone"
-                      className="size-4 text-muted-foreground group-hover:translate-x-1 transition-transform flex-shrink-0"
-                    />
                   </Link>
                 </div>
               </div>
             </div>
 
-            {/* Danger Zone */}
-            <div className="bg-card rounded-xl border border-red-200 dark:border-red-900/50">
+            {/* Danger Zone - Compact */}
+            <div className="bg-card rounded-lg border border-red-200 dark:border-red-900/50">
               <div className="p-4">
-                <div className="mb-4">
-                  <h2 className="text-base font-semibold text-red-600 dark:text-red-400">
+                <div className="mb-3">
+                  <h2 className="text-sm font-semibold text-red-600 dark:text-red-400">
                     Tehlikeli Bölge
                   </h2>
                   <p className="text-xs text-muted-foreground">
@@ -435,49 +419,39 @@ export default function AccountSettingsPage() {
                   </p>
                 </div>
 
-                <div className="space-y-1">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   <Link
                     href="/export-data"
-                    className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors group"
+                    className="flex items-center gap-2 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors group border"
                   >
                     <Icon
                       icon="solar:download-line-duotone"
                       className="size-4 text-muted-foreground flex-shrink-0"
                     />
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-sm">Verilerimi İndir</h3>
+                      <h3 className="font-medium text-xs">Verilerimi İndir</h3>
                       <p className="text-xs text-muted-foreground truncate">
-                        Tüm kişisel verilerinizi indirin
+                        Tüm verilerinizi indirin
                       </p>
                     </div>
-                    <Icon
-                      icon="solar:alt-arrow-right-line-duotone"
-                      className="size-4 text-muted-foreground group-hover:translate-x-1 transition-transform flex-shrink-0"
-                    />
                   </Link>
-
-                  <Separator className="my-1" />
 
                   <Link
                     href="/delete-account"
-                    className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors group"
+                    className="flex items-center gap-2 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors group border border-red-200 dark:border-red-900/50"
                   >
                     <Icon
                       icon="solar:trash-bin-trash-line-duotone"
                       className="size-4 text-red-600 dark:text-red-400 flex-shrink-0"
                     />
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-sm text-red-600 dark:text-red-400">
+                      <h3 className="font-medium text-xs text-red-600 dark:text-red-400">
                         Hesabı Sil
                       </h3>
                       <p className="text-xs text-muted-foreground truncate">
-                        Hesabınızı kalıcı olarak silin
+                        Kalıcı olarak silin
                       </p>
                     </div>
-                    <Icon
-                      icon="solar:alt-arrow-right-line-duotone"
-                      className="size-4 text-red-600 dark:text-red-400 group-hover:translate-x-1 transition-transform flex-shrink-0"
-                    />
                   </Link>
                 </div>
               </div>

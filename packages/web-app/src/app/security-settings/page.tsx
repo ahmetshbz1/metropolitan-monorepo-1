@@ -198,31 +198,31 @@ export default function SecuritySettingsPage() {
 
   return (
     <div className="min-h-screen bg-background py-6">
-      <div className="container mx-auto px-4 max-w-4xl">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+        {/* Header - Compact */}
+        <div className="flex items-center gap-2 mb-4">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => router.back()}
-            className="rounded-full"
+            className="rounded-full h-8 w-8"
           >
-            <Icon icon="solar:arrow-left-line-duotone" className="size-5" />
+            <Icon icon="solar:arrow-left-line-duotone" className="size-4" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">{t("security_settings.title")}</h1>
-            <p className="text-sm text-muted-foreground">
+            <h1 className="text-lg font-bold">{t("security_settings.title")}</h1>
+            <p className="text-xs text-muted-foreground">
               {t("security_settings.subtitle")}
             </p>
           </div>
         </div>
 
-        <div className="space-y-4">
-          {/* Linked Accounts */}
-          <div className="bg-card rounded-xl border border-border">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Linked Accounts - Compact */}
+          <div className="bg-card rounded-lg border">
             <div className="p-4">
-              <div className="mb-4">
-                <h2 className="text-base font-semibold">{t("security_settings.linked_accounts.title")}</h2>
+              <div className="mb-3">
+                <h2 className="text-sm font-semibold">{t("security_settings.linked_accounts.title")}</h2>
                 <p className="text-xs text-muted-foreground">
                   {t("security_settings.linked_accounts.subtitle")}
                 </p>
@@ -312,11 +312,11 @@ export default function SecuritySettingsPage() {
             </div>
           </div>
 
-          {/* Phone Number */}
-          <div className="bg-card rounded-xl border border-border">
+          {/* Phone Number - Compact */}
+          <div className="bg-card rounded-lg border">
             <div className="p-4">
-              <div className="mb-4">
-                <h2 className="text-base font-semibold">{t("security_settings.phone_number.title")}</h2>
+              <div className="mb-3">
+                <h2 className="text-sm font-semibold">{t("security_settings.phone_number.title")}</h2>
                 <p className="text-xs text-muted-foreground">
                   {t("security_settings.phone_number.subtitle")}
                 </p>
@@ -347,11 +347,11 @@ export default function SecuritySettingsPage() {
             </div>
           </div>
 
-          {/* Active Sessions */}
-          <div className="bg-card rounded-xl border border-border">
+          {/* Active Sessions - Compact */}
+          <div className="bg-card rounded-lg border">
             <div className="p-4">
-              <div className="mb-4">
-                <h2 className="text-base font-semibold">Aktif Oturumlar</h2>
+              <div className="mb-3">
+                <h2 className="text-sm font-semibold">Aktif Oturumlar</h2>
                 <p className="text-xs text-muted-foreground">
                   Hesabınızda oturum açık olan cihazlar
                 </p>
@@ -383,11 +383,11 @@ export default function SecuritySettingsPage() {
             </div>
           </div>
 
-          {/* Security Settings */}
-          <div className="bg-card rounded-xl border border-border">
+          {/* Security Settings - Compact - Full Width */}
+          <div className="bg-card rounded-lg border md:col-span-2">
             <div className="p-4">
-              <div className="mb-4">
-                <h2 className="text-base font-semibold">Hesap Güvenliği</h2>
+              <div className="mb-3">
+                <h2 className="text-sm font-semibold">Hesap Güvenliği</h2>
                 <p className="text-xs text-muted-foreground">
                   Güvenlik ayarlarınızı yönetin
                 </p>

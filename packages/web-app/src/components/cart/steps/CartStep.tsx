@@ -8,6 +8,7 @@ import { useProducts } from "@/hooks/api/use-products";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
 interface CartStepProps {
   onNext: () => void;
@@ -16,6 +17,7 @@ interface CartStepProps {
 }
 
 export function CartStep({ onNext, canProceed, onClose }: CartStepProps) {
+  const { t } = useTranslation();
   const items = useCartStore((state) => state.items);
   const summary = useCartStore((state) => state.summary);
   const isGuest = useAuthStore((state) => state.isGuest);
@@ -89,8 +91,8 @@ export function CartStep({ onNext, canProceed, onClose }: CartStepProps) {
         <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center mb-4">
           <ShoppingBag className="w-12 h-12 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold mb-2">Sepetiniz Boş</h3>
-        <p className="text-muted-foreground">Alışverişe başlamak için ürünleri sepete ekleyin</p>
+        <h3 className="text-lg font-semibold mb-2">{t("cart.empty.title")}</h3>
+        <p className="text-muted-foreground">{t("cart.empty.description")}</p>
       </div>
     );
   }
@@ -193,11 +195,11 @@ export function CartStep({ onNext, canProceed, onClose }: CartStepProps) {
           {/* Summary */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Toplam Ürün:</span>
-              <span className="font-medium">{summary.totalItems} Adet</span>
+              <span className="text-muted-foreground">{t("cart.summary.total_items")}:</span>
+              <span className="font-medium">{summary.totalItems} {t("cart.summary.pieces")}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="font-semibold">Ara Toplam:</span>
+              <span className="font-semibold">{t("cart.summary.subtotal")}:</span>
               <span className="text-lg font-bold text-primary">
                 {formatPrice(
                   typeof summary.totalAmount === "string"
@@ -223,7 +225,7 @@ export function CartStep({ onNext, canProceed, onClose }: CartStepProps) {
             className="w-full"
             disabled={!canProceed}
           >
-            {!isAuthenticated ? "Giriş Yap" : "Devam Et"}
+            {!isAuthenticated ? t("cart.actions.login") : t("cart.actions.continue")}
           </Button>
         </div>
       )}

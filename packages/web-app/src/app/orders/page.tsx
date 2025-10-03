@@ -92,14 +92,14 @@ export default function OrdersPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background py-8">
-        <div className="container mx-auto px-4">
-          <div className="h-8 bg-muted rounded w-48 mb-6 animate-pulse"></div>
-          <div className="space-y-4">
-            {[1, 2, 3, 4].map((i) => (
+      <div className="min-h-screen bg-background py-6">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+          <div className="h-6 bg-muted rounded w-32 mb-4 animate-pulse"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
               <div
                 key={i}
-                className="h-32 bg-muted rounded-xl animate-pulse"
+                className="h-28 bg-muted rounded-lg animate-pulse"
               ></div>
             ))}
           </div>
@@ -130,38 +130,47 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-8">
-      <div className="container mx-auto px-4">
-        <h1 className="text-3xl font-bold mb-8">{t("tabs.orders")}</h1>
+    <div className="min-h-screen bg-background py-6">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+        {/* Compact Header */}
+        <div className="mb-4">
+          <h1 className="text-lg font-bold">{t("tabs.orders")}</h1>
+          <p className="text-sm text-muted-foreground">
+            Tüm siparişlerinizi görüntüleyin ve takip edin
+          </p>
+        </div>
 
-        <div className="space-y-4">
+        {/* Grid Layout - Responsive */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {orders.map((order) => (
             <Link
               key={order.id}
               href={`/order/${order.id}`}
-              className="block bg-card rounded-xl border border-border p-6 hover:border-primary transition-colors"
+              className="group bg-card rounded-lg border p-4 hover:shadow-md hover:border-primary/30 transition-all"
             >
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h3 className="font-semibold text-lg mb-1">
+              {/* Header with Status */}
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-sm mb-0.5 truncate">
                     {t("orders.order_number", { number: order.orderNumber })}
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs text-muted-foreground">
                     {formatDate(order.createdAt)}
                   </p>
                 </div>
-                <Badge className={getStatusColor(order.status)}>
+                <Badge className={`${getStatusColor(order.status)} text-xs ml-2 flex-shrink-0`}>
                   {t(`status.${order.status}`)}
                 </Badge>
               </div>
 
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-muted-foreground">
+              {/* Price - Compact */}
+              <div className="flex items-center justify-between pt-2 border-t">
+                <span className="text-xs text-muted-foreground">
                   {t("order_detail.summary.total")}
-                </div>
-                <div className="font-bold text-lg text-primary">
+                </span>
+                <span className="font-bold text-sm text-primary">
                   {formatPrice(order.totalAmount, order.currency)}
-                </div>
+                </span>
               </div>
             </Link>
           ))}

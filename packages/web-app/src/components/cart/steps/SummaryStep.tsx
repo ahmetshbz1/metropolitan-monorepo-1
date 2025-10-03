@@ -132,7 +132,7 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
             <div className="bg-card rounded-lg border p-3">
               <div className="flex items-center gap-2 text-sm font-semibold mb-2">
                 <MapPin className="h-3.5 w-3.5 text-primary" />
-                <span>Teslimat Adresi</span>
+                <span>{t("summary.delivery_address")}</span>
               </div>
               {state.deliveryAddress ? (
                 <div className="bg-muted/50 rounded-md p-2.5 text-sm">
@@ -146,7 +146,7 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
                   </p>
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground">Adres seçilmedi</p>
+                <p className="text-sm text-muted-foreground">{t("summary.no_address")}</p>
               )}
             </div>
 
@@ -154,7 +154,7 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
             <div className="bg-card rounded-lg border p-3">
               <div className="flex items-center gap-2 text-sm font-semibold mb-2">
                 <CreditCard className="h-3.5 w-3.5 text-primary" />
-                <span>Ödeme Yöntemi</span>
+                <span>{t("summary.payment_method")}</span>
               </div>
               {state.selectedPaymentMethod ? (
                 <div className="bg-muted/50 rounded-md p-2.5 text-sm">
@@ -166,15 +166,15 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
                   )}
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground">Ödeme yöntemi seçilmedi</p>
+                <p className="text-sm text-muted-foreground">{t("summary.no_payment_method")}</p>
               )}
             </div>
 
             {/* Order Notes */}
             <div className="bg-card rounded-lg border p-3">
-              <label className="text-sm font-semibold mb-2 block">Sipariş Notu (İsteğe Bağlı)</label>
+              <label className="text-sm font-semibold mb-2 block">{t("summary.order_notes")}</label>
               <Textarea
-                placeholder="Sipariş ile ilgili özel bir notunuz var mı?"
+                placeholder={t("summary.notes_placeholder")}
                 value={state.notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={3}
@@ -189,7 +189,7 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
             <div className="bg-card rounded-lg border p-3">
               <div className="flex items-center gap-2 text-sm font-semibold mb-2">
                 <Package className="h-3.5 w-3.5 text-primary" />
-                <span>Sipariş Ürünleri</span>
+                <span>{t("summary.order_items")}</span>
               </div>
               <div className="space-y-2 max-h-64 overflow-y-auto">
                 {items.map((item) => (
@@ -199,7 +199,7 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
                   >
                     <div className="flex-1 min-w-0 pr-2">
                       <p className="font-medium text-sm line-clamp-2">{item.product.name}</p>
-                      <p className="text-muted-foreground text-xs mt-0.5">Adet: {item.quantity}</p>
+                      <p className="text-muted-foreground text-xs mt-0.5">{t("summary.quantity")}: {item.quantity}</p>
                     </div>
                     <p className="font-semibold text-sm whitespace-nowrap">
                       {formatPrice(item.product.price * item.quantity, item.product.currency)}
@@ -214,7 +214,7 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
               <div className="bg-card rounded-lg border p-3">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Ara Toplam:</span>
+                    <span className="text-muted-foreground">{t("summary.subtotal")}:</span>
                     <span className="font-medium">
                       {formatPrice(
                         typeof summary.totalAmount === "string"
@@ -225,11 +225,11 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Kargo:</span>
-                    <span className="font-medium text-green-600">Ücretsiz</span>
+                    <span className="text-muted-foreground">{t("summary.shipping")}:</span>
+                    <span className="font-medium text-green-600">{t("summary.free")}</span>
                   </div>
                   <div className="flex items-center justify-between pt-2 border-t">
-                    <span className="font-semibold">Toplam:</span>
+                    <span className="font-semibold">{t("summary.total")}:</span>
                     <span className="text-lg font-bold text-primary">
                       {formatPrice(
                         typeof summary.totalAmount === "string"

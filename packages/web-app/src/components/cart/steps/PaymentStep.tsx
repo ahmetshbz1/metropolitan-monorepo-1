@@ -4,15 +4,17 @@ import { Button } from "@/components/ui/button";
 import { useCheckout } from "@/context/CheckoutContext";
 import { Icon } from "@iconify/react";
 import { Check } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function PaymentStep() {
+  const { t } = useTranslation();
   const { state, setPaymentMethod, nextStep, canProceedToNext } = useCheckout();
 
   return (
     <div className="flex flex-col h-full min-h-0">
       {/* Header */}
       <div className="px-4 py-3 border-b">
-        <h3 className="font-semibold text-base">Ödeme Yöntemi Seçin</h3>
+        <h3 className="font-semibold text-base">{t("payment.select_title")}</h3>
       </div>
 
       {/* Payment Methods Grid */}
@@ -76,7 +78,7 @@ export function PaymentStep() {
       {/* Footer */}
       <div className="border-t px-4 py-3 flex-shrink-0 bg-background">
         <Button onClick={nextStep} size="lg" className="w-full" disabled={!canProceedToNext()}>
-          Devam Et
+          {t("cart.actions.continue")}
         </Button>
       </div>
     </div>

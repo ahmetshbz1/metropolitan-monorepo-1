@@ -91,31 +91,31 @@ export default function PrivacySettingsPage() {
 
   return (
     <div className="min-h-screen bg-background py-6">
-      <div className="container mx-auto px-4 max-w-4xl">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-6">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+        {/* Header - Compact */}
+        <div className="flex items-center gap-2 mb-4">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => router.back()}
-            className="rounded-full"
+            className="rounded-full h-8 w-8"
           >
-            <Icon icon="solar:arrow-left-line-duotone" className="size-5" />
+            <Icon icon="solar:arrow-left-line-duotone" className="size-4" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">{t("privacy_settings.title")}</h1>
-            <p className="text-sm text-muted-foreground">
+            <h1 className="text-lg font-bold">{t("privacy_settings.title")}</h1>
+            <p className="text-xs text-muted-foreground">
               {t("privacy_settings.subtitle")}
             </p>
           </div>
         </div>
 
-        <div className="space-y-4">
-          {/* Data Sharing */}
-          <div className="bg-card rounded-xl border border-border">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Data Sharing - Compact */}
+          <div className="bg-card rounded-lg border">
             <div className="p-4">
-              <div className="mb-4">
-                <h2 className="text-base font-semibold">{t("privacy_settings.data_sharing.title")}</h2>
+              <div className="mb-3">
+                <h2 className="text-sm font-semibold">{t("privacy_settings.data_sharing.title")}</h2>
                 <p className="text-xs text-muted-foreground">
                   {t("privacy_settings.data_sharing.subtitle")}
                 </p>
@@ -163,11 +163,11 @@ export default function PrivacySettingsPage() {
             </div>
           </div>
 
-          {/* Marketing Preferences */}
-          <div className="bg-card rounded-xl border border-border">
+          {/* Marketing Preferences - Compact */}
+          <div className="bg-card rounded-lg border">
             <div className="p-4">
-              <div className="mb-4">
-                <h2 className="text-base font-semibold">{t("privacy_settings.marketing_preferences.title")}</h2>
+              <div className="mb-3">
+                <h2 className="text-sm font-semibold">{t("privacy_settings.marketing_preferences.title")}</h2>
                 <p className="text-xs text-muted-foreground">
                   {t("privacy_settings.marketing_preferences.subtitle")}
                 </p>
@@ -194,73 +194,63 @@ export default function PrivacySettingsPage() {
             </div>
           </div>
 
-          {/* Data Rights */}
-          <div className="bg-card rounded-xl border border-border">
+          {/* Data Rights - Compact - Full Width */}
+          <div className="bg-card rounded-lg border md:col-span-2">
             <div className="p-4">
-              <div className="mb-4">
-                <h2 className="text-base font-semibold">{t("privacy_settings.data_rights.title")}</h2>
+              <div className="mb-3">
+                <h2 className="text-sm font-semibold">{t("privacy_settings.data_rights.title")}</h2>
                 <p className="text-xs text-muted-foreground">
                   {t("privacy_settings.data_rights.subtitle")}
                 </p>
               </div>
 
-              <div className="space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <Link
                   href="/account-settings"
-                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors group"
+                  className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted transition-colors group border"
                 >
-                  <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0">
                     <Icon
                       icon="solar:download-line-duotone"
-                      className="size-5 text-blue-600 dark:text-blue-400"
+                      className="size-4 text-blue-600 dark:text-blue-400"
                     />
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium text-sm">{t("privacy_settings.data_rights.export_data")}</h3>
-                    <p className="text-xs text-muted-foreground">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium text-xs">{t("privacy_settings.data_rights.export_data")}</h3>
+                    <p className="text-xs text-muted-foreground truncate">
                       {t("privacy_settings.data_rights.export_data_desc")}
                     </p>
                   </div>
-                  <Icon
-                    icon="solar:alt-arrow-right-line-duotone"
-                    className="size-5 text-muted-foreground group-hover:translate-x-1 transition-transform"
-                  />
                 </Link>
-
-                <Separator />
 
                 <Link
                   href="/account-settings"
-                  className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors group"
+                  className="flex items-center gap-2 p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors group border border-red-200 dark:border-red-900/50"
                 >
-                  <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center flex-shrink-0">
                     <Icon
                       icon="solar:trash-bin-trash-line-duotone"
-                      className="size-5 text-red-600 dark:text-red-400"
+                      className="size-4 text-red-600 dark:text-red-400"
                     />
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium text-sm text-red-600 dark:text-red-400">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium text-xs text-red-600 dark:text-red-400">
                       {t("privacy_settings.data_rights.delete_account")}
                     </h3>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-muted-foreground truncate">
                       {t("privacy_settings.data_rights.delete_account_desc")}
                     </p>
                   </div>
-                  <Icon
-                    icon="solar:alt-arrow-right-line-duotone"
-                    className="size-5 text-red-600 dark:text-red-400 group-hover:translate-x-1 transition-transform"
-                  />
                 </Link>
               </div>
             </div>
           </div>
 
-          {/* Cookie Preferences */}
-          <div className="bg-card rounded-xl border border-border">
+          {/* Cookie Preferences - Compact - Full Width */}
+          <div className="bg-card rounded-lg border md:col-span-2">
             <div className="p-4">
-              <div className="mb-4">
-                <h2 className="text-base font-semibold">{t("cookie.settings.title")}</h2>
+              <div className="mb-3">
+                <h2 className="text-sm font-semibold">{t("cookie.settings.title")}</h2>
                 <p className="text-xs text-muted-foreground">
                   {t("cookie.settings.subtitle")}
                 </p>
