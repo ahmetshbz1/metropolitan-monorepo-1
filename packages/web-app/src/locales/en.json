@@ -36,6 +36,7 @@
   },
   "product": {
     "add_to_cart": "Add to Cart",
+    "update_cart": "Update",
     "adding": "Adding...",
     "out_of_stock": "Out of Stock",
     "low_stock": "Only {{count}} left",

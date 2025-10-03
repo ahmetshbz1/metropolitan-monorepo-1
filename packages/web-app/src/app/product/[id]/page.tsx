@@ -118,6 +118,7 @@ export default function ProductDetailPage() {
       if (existingCartItem) {
         // Update existing cart item
         await updateCartMutation.mutateAsync({
+          itemId: existingCartItem.id,
           productId: product.id,
           quantity: quantity,
         });

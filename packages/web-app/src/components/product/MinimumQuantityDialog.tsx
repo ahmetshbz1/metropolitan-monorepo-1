@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -50,10 +49,10 @@ export function MinimumQuantityDialog({
           <DialogTitle className="text-center">
             {t("product_card.minimum_quantity_dialog.title")}
           </DialogTitle>
-          <DialogDescription className="text-center space-y-2">
-            <p className="font-medium text-foreground">{productName}</p>
-            <p>{t("errors.MIN_QUANTITY_NOT_MET", { minQuantity })}</p>
-          </DialogDescription>
+          <div className="text-center space-y-2 text-sm text-muted-foreground">
+            <div className="font-medium text-foreground">{productName}</div>
+            <div>{t("errors.MIN_QUANTITY_NOT_MET", { minQuantity })}</div>
+          </div>
         </DialogHeader>
 
         <DialogFooter className="sm:justify-center gap-3 mt-4">

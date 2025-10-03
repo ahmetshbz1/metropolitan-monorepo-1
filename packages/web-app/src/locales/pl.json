@@ -36,6 +36,7 @@
   },
   "product": {
     "add_to_cart": "Dodaj do Koszyka",
+    "update_cart": "Aktualizuj",
     "adding": "Dodawanie...",
     "out_of_stock": "Brak w Magazynie",
     "low_stock": "Ostatnie {{count}} sztuk",
