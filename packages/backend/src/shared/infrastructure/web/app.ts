@@ -40,11 +40,17 @@ export const createApp = () =>
     .onError(({ error, code, set, requestContext }) => {
       const errorId = Math.random().toString(36).substr(2, 9);
 
-      // Parse structured errors from CartValidationService  
+      // Parse structured errors from CartValidationService
       let structuredError = null;
       try {
         structuredError = JSON.parse(error.message);
-      } catch {
+        console.log("🟡 [Backend Error Handler] Parsed error:", {
+          structuredError,
+          hasKey: !!structuredError?.key,
+          rawMessage: error.message,
+        });
+      } catch (e) {
+        console.log("🟡 [Backend Error Handler] Not a JSON error:", error.message);
         // Not a structured error, continue normally
       }
 
@@ -73,11 +79,17 @@ export const createApp = () =>
 
       // Handle structured errors (from cart validation, etc.)
       if (structuredError?.key) {
+        console.log("🔴 [Backend Error Handler] Structured error detected:", {
+          key: structuredError.key,
+          params: structuredError.params,
+          message: structuredError.message,
+          status: 400,
+        });
         set.status = 400;
         return {
           key: structuredError.key,
           params: structuredError.params,
-          message: error.message,
+          message: structuredError.message, // Use parsed message, not raw JSON string
           errorId,
         };
       }

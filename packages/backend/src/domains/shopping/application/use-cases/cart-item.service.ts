@@ -122,6 +122,14 @@ export class CartItemService {
     if (existingItem) {
       // Mevcut öğeyi güncelle
       const newQuantity = existingItem.quantity + quantity;
+      console.log("🔴 [CartItemService] Adding to existing cart item:", {
+        productId,
+        existingQuantity: existingItem.quantity,
+        addingQuantity: quantity,
+        newQuantity,
+        userType,
+      });
+
       await CartValidationService.validateMinQuantity(productId, newQuantity, userType);
       await CartValidationService.validateStock(
         productId,

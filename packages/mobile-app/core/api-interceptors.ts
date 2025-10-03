@@ -109,7 +109,7 @@ export function setupRequestInterceptor(api: AxiosInstance) {
       Object.assign(config.headers, deviceHeaders);
 
       // Add Accept-Language header for i18n
-      config.headers['Accept-Language'] = i18n.language || 'tr';
+      config.headers['Accept-Language'] = i18n.language || 'en';
 
       return config;
     },
@@ -126,6 +126,11 @@ export function setupResponseInterceptor(api: AxiosInstance) {
   api.interceptors.response.use(
     (response) => response,
     async (error) => {
+      console.log("🔴 [API INTERCEPTOR] Error response:", {
+        status: error.response?.status,
+        data: error.response?.data,
+        url: error.config?.url,
+      });
       const originalRequest = error.config;
 
       // Skip refresh endpoint errors - let them bubble up to the refresh function

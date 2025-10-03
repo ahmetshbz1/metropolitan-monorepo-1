@@ -76,13 +76,17 @@ export const useCartActions = ({
       await refreshCart();
     } catch (error) {
       const apiError = error as APIError;
-      // Removed console statement
-      
+      console.log("🔴 [useCartActions] addToCart error caught:", {
+        status: apiError.response?.status,
+        data: apiError.response?.data,
+        error,
+      });
+
       // Auth error'ı olduğu gibi fırlat
       if ((error as StructuredError).code === "AUTH_REQUIRED") {
         throw error;
       }
-      
+
       // Backend'den gelen structured error'ı handle et
       const errorPayload = apiError.response?.data;
       const key = errorPayload?.key;
@@ -91,11 +95,14 @@ export const useCartActions = ({
         const params = errorPayload.params;
         const translatedMessage = t(`errors.${key}`, params);
         setError(translatedMessage);
-        
+
         // Error'ı structured olarak fırlat
-        const structuredError: StructuredError = new Error(translatedMessage);
+        const structuredError = new Error(translatedMessage) as StructuredError;
         structuredError.key = key;
         structuredError.params = params;
+        structuredError.message = translatedMessage;
+
+        console.log("🔴 [useCartActions] Throwing structured error:", structuredError);
         throw structuredError;
       } else {
         // Generic error

@@ -96,7 +96,15 @@ export class CartValidationService {
             oldCartQuantity
           )
         : CartValidationErrors.INSUFFICIENT_STOCK(availableStock);
-      
+
+      console.log("🔴 [CartValidationService] Stock validation failed:", {
+        productId,
+        availableStock,
+        newTotalQuantity,
+        oldCartQuantity,
+        error,
+      });
+
       throw new Error(JSON.stringify(error));
     }
 

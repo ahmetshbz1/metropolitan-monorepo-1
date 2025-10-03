@@ -82,7 +82,7 @@ export const PurchaseSection = memo<PurchaseSectionProps>(function PurchaseSecti
       if (numQuantity < minQuantity) {
         setMinQuantityToAdd(minQuantity);
         setShowMinQuantityDialog(true);
-        throw new Error("Minimum quantity not met");
+        return; // Dialog göster ve işlemi durdur
       }
 
       const cartItem = cartItems.find((item) => item.product.id === product.id);
@@ -98,46 +98,67 @@ export const PurchaseSection = memo<PurchaseSectionProps>(function PurchaseSecti
         throw new Error("Stock limit exceeded");
       }
 
-      // Move heavy cart operation to after interactions
-      await InteractionManager.runAfterInteractions(async () => {
-        await addToCart(product.id, numQuantity);
+      // Cart operation - error handling için await kullan
+      await addToCart(product.id, numQuantity);
 
-        // Başarılı ekleme/güncelleme sonrası hafif titreşim
-        triggerHaptic(true);
+      // Başarılı ekleme/güncelleme sonrası hafif titreşim
+      triggerHaptic(true);
 
-        if (!cartItem) {
-          // Use startTransition for UI state updates
-          startTransition(() => {
-            setIsAdded(true);
+      if (!cartItem) {
+        // Use startTransition for UI state updates
+        startTransition(() => {
+          setIsAdded(true);
 
-            // Önceki timeout'u temizle
-            if (timeoutRef.current) {
-              clearTimeout(timeoutRef.current);
-            }
+          // Önceki timeout'u temizle
+          if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+          }
 
-            // Yeni timeout oluştur
-            timeoutRef.current = setTimeout(() => {
-              startTransition(() => {
-                setIsAdded(false);
-                timeoutRef.current = null;
-              });
-            }, 2000);
-          });
-        }
-      });
+          // Yeni timeout oluştur
+          timeoutRef.current = setTimeout(() => {
+            startTransition(() => {
+              setIsAdded(false);
+              timeoutRef.current = null;
+            });
+          }, 2000);
+        });
+      }
     } catch (error) {
-      // Removed console statement
+      console.log("🔴 [PurchaseSection] Error caught:", error);
       const structuredError = error as StructuredError;
 
-      // useCartState'ten gelen structured error'ı handle et
+      // useCartActions'tan gelen structured error'ı handle et
       if (structuredError.key) {
+        console.log("🔴 [PurchaseSection] Showing toast for structured error:", {
+          key: structuredError.key,
+          message: structuredError.message,
+          params: structuredError.params,
+        });
+
+        // Stok hatası varsa, maksimum eklenebilir miktarı input'a yaz
+        if (structuredError.key === "INSUFFICIENT_STOCK_ALREADY_IN_CART" && structuredError.params?.canAdd) {
+          const maxCanAdd = structuredError.params.canAdd;
+          const currentInCart = structuredError.params.inCart || 0;
+
+          // canAdd değeri "daha eklenebilecek miktar"
+          // Kullanıcı bunu sepete eklerse toplam = currentInCart + canAdd olur
+          // Bu da tam stok limitine denk gelir, güvenle kullanabiliriz
+          onQuantityChange(String(maxCanAdd));
+        } else if (structuredError.key === "INSUFFICIENT_STOCK" && structuredError.params?.stock) {
+          // Sepette hiç yok, direkt stok limitini göster
+          const maxStock = structuredError.params.stock;
+          onQuantityChange(String(maxStock));
+        }
+
         showToast(structuredError.message, "error");
       } else if (structuredError.code === "AUTH_REQUIRED") {
+        console.log("🔴 [PurchaseSection] Auth required error");
         showToast(structuredError.message, "warning");
       } else {
+        console.log("🔴 [PurchaseSection] Generic error");
         showToast(t("product_detail.purchase.generic_error_message"), "error");
       }
-      throw error;
+      // Error'u kullanıcıya gösterdik, tekrar fırlatmaya gerek yok
     } finally {
       startTransition(() => {
         setIsLoading(false);
