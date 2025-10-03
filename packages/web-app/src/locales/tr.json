@@ -864,5 +864,41 @@
       "confirm": "Bağlantıyı Kes",
       "disconnecting": "Kesiliyor"
     }
+  },
+  "cookie": {
+    "banner": {
+      "title": "Çerez Tercihlerinizi Yönetin",
+      "description": "Deneyiminizi kişiselleştirmek ve hizmetlerimizi geliştirmek için çerezler kullanıyoruz. Tercihlerinizi seçin veya varsayılan ayarları kabul edin.",
+      "learn_more": "Çerez politikamız hakkında daha fazla bilgi edinin",
+      "accept_all": "Tümünü Kabul Et",
+      "reject_all": "Tümünü Reddet",
+      "customize": "Özelleştir"
+    },
+    "settings": {
+      "title": "Çerez Ayarları",
+      "subtitle": "Çerez tercihlerinizi özelleştirin",
+      "description": "Aşağıdaki çerez kategorilerini kullanarak tercihlerinizi yönetebilirsiniz. Detaylı bilgi için çerez politikamızı inceleyebilirsiniz.",
+      "info_text": "Web sitemizde farklı amaçlar için çerezler kullanıyoruz. Çerezlerin nasıl kullanıldığı hakkında daha fazla bilgi edinmek için politikamızı okuyun.",
+      "read_policy": "Çerez Politikasını Oku",
+      "required": "Gerekli",
+      "save_preferences": "Tercihleri Kaydet",
+      "manage_cookies": "Çerez Ayarlarını Yönet",
+      "essential": {
+        "title": "Zorunlu Çerezler",
+        "description": "Web sitemizin düzgün çalışması için gerekli olan temel çerezlerdir. Bunlar olmadan site işlevlerini yerine getiremez."
+      },
+      "analytics": {
+        "title": "Analitik Çerezleri",
+        "description": "Ziyaretçi davranışlarını analiz ederek web sitemizi geliştirmemize yardımcı olur. Anonim istatistik verileri toplar."
+      },
+      "marketing": {
+        "title": "Pazarlama Çerezleri",
+        "description": "Size özel reklamlar göstermek ve kampanyalarımızı kişiselleştirmek için kullanılır. İlgi alanlarınıza uygun içerik sunar."
+      },
+      "preferences": {
+        "title": "Tercih Çerezleri",
+        "description": "Dil, tema ve diğer tercihlerinizi hatırlayarak size özelleştirilmiş bir deneyim sunar."
+      }
+    }
   }
 }

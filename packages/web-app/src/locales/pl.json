@@ -852,5 +852,41 @@
       "confirm": "Rozłącz",
       "disconnecting": "Rozłączanie"
     }
+  },
+  "cookie": {
+    "banner": {
+      "title": "Zarządzaj preferencjami plików cookie",
+      "description": "Używamy plików cookie, aby personalizować Twoje doświadczenia i ulepszać nasze usługi. Wybierz swoje preferencje lub zaakceptuj ustawienia domyślne.",
+      "learn_more": "Dowiedz się więcej o naszej polityce plików cookie",
+      "accept_all": "Zaakceptuj wszystkie",
+      "reject_all": "Odrzuć wszystkie",
+      "customize": "Dostosuj"
+    },
+    "settings": {
+      "title": "Ustawienia plików cookie",
+      "subtitle": "Dostosuj swoje preferencje dotyczące plików cookie",
+      "description": "Możesz zarządzać swoimi preferencjami za pomocą poniższych kategorii plików cookie. Aby uzyskać więcej informacji, zapoznaj się z naszą polityką plików cookie.",
+      "info_text": "Używamy plików cookie na naszej stronie internetowej w różnych celach. Przeczytaj naszą politykę, aby dowiedzieć się więcej o sposobie wykorzystywania plików cookie.",
+      "read_policy": "Przeczytaj politykę plików cookie",
+      "required": "Wymagane",
+      "save_preferences": "Zapisz preferencje",
+      "manage_cookies": "Zarządzaj ustawieniami plików cookie",
+      "essential": {
+        "title": "Niezbędne pliki cookie",
+        "description": "Są to niezbędne pliki cookie wymagane do prawidłowego funkcjonowania naszej witryny. Witryna nie może wykonywać swoich funkcji bez nich."
+      },
+      "analytics": {
+        "title": "Pliki cookie analityczne",
+        "description": "Pomagają nam ulepszać naszą witrynę poprzez analizowanie zachowań odwiedzających. Zbierają anonimowe dane statystyczne."
+      },
+      "marketing": {
+        "title": "Pliki cookie marketingowe",
+        "description": "Używane do pokazywania spersonalizowanych reklam i dostosowywania naszych kampanii. Dostarczają treści dostosowane do Twoich zainteresowań."
+      },
+      "preferences": {
+        "title": "Pliki cookie preferencji",
+        "description": "Zapewniają spersonalizowane doświadczenie, zapamiętując Twój język, motyw i inne preferencje."
+      }
+    }
   }
 }

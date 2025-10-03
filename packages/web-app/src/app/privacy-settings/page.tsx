@@ -7,6 +7,8 @@ import { Switch } from "@/components/ui/switch";
 import { useCurrentUser } from "@/hooks/api/use-user";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores";
+import { useCookieConsentStore } from "@/stores/cookie-consent-store";
+import { CookieSettingsDialog } from "@/components/cookie/CookieSettingsDialog";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -27,6 +29,8 @@ export default function PrivacySettingsPage() {
   });
 
   const [isSaving, setIsSaving] = useState(false);
+  const [showCookieSettings, setShowCookieSettings] = useState(false);
+  const { preferences: cookiePreferences } = useCookieConsentStore();
 
   // Load user's current privacy settings
   React.useEffect(() => {
@@ -252,8 +256,59 @@ export default function PrivacySettingsPage() {
             </div>
           </div>
 
+          {/* Cookie Preferences */}
+          <div className="bg-card rounded-xl border border-border">
+            <div className="p-4">
+              <div className="mb-4">
+                <h2 className="text-base font-semibold">{t("cookie.settings.title")}</h2>
+                <p className="text-xs text-muted-foreground">
+                  {t("cookie.settings.subtitle")}
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                {/* Current Cookie Status */}
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                  <div className="flex-1 grid grid-cols-2 gap-2 text-xs">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${cookiePreferences.essential ? "bg-green-500" : "bg-gray-300"}`} />
+                      <span>{t("cookie.settings.essential.title")}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${cookiePreferences.analytics ? "bg-green-500" : "bg-gray-300"}`} />
+                      <span>{t("cookie.settings.analytics.title")}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${cookiePreferences.marketing ? "bg-green-500" : "bg-gray-300"}`} />
+                      <span>{t("cookie.settings.marketing.title")}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${cookiePreferences.preferences ? "bg-green-500" : "bg-gray-300"}`} />
+                      <span>{t("cookie.settings.preferences.title")}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <Button
+                  onClick={() => setShowCookieSettings(true)}
+                  variant="outline"
+                  className="w-full"
+                >
+                  <Icon icon="solar:settings-line-duotone" className="size-4 mr-2" />
+                  {t("cookie.settings.manage_cookies")}
+                </Button>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
+
+      {/* Cookie Settings Dialog */}
+      <CookieSettingsDialog
+        open={showCookieSettings}
+        onOpenChange={setShowCookieSettings}
+      />
     </div>
   );
 }

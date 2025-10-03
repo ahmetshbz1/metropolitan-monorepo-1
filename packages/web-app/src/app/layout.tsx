@@ -7,6 +7,7 @@ import { ToasterProvider } from "@/components/providers/toaster-provider";
 import { AuthProvider } from "@/context/AuthContext";
 import { CheckoutProvider } from "@/context/CheckoutContext";
 import { ProgressBar } from "@/components/ui/progress-bar";
+import { CookieConsentBanner } from "@/components/cookie/CookieConsentBanner";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -57,6 +58,7 @@ export default function RootLayout({
                     <main className="flex-1">{children}</main>
                     <Footer />
                   </div>
+                  <CookieConsentBanner />
                 </CheckoutProvider>
               </QueryProvider>
             </AuthProvider>
