@@ -1,18 +1,245 @@
 {
   "navbar": {
     "products": "Products",
-    "categories": "Categories", 
+    "categories": "Categories",
     "about": "About Us",
     "contact": "Contact",
     "search_placeholder": "Search products...",
     "favorites": "Favorites",
     "cart": "Cart",
-    "login": "Login"
+    "login": "Sign In",
+    "notifications": "Notifications"
+  },
+  "hero": {
+    "title_1": "Quality Food Products",
+    "subtitle_1": "Nature's freshest products at your doorstep",
+    "title_2": "Fast and Secure Delivery",
+    "subtitle_2": "At your door within 24 hours",
+    "title_3": "Reliable Shopping",
+    "subtitle_3": "Always by your side",
+    "shop_now": "Start Shopping"
+  },
+  "home": {
+    "featured_products": "Featured Products",
+    "weekly_products": "This Week's Special Products",
+    "bestsellers": "Bestsellers",
+    "new_arrivals": "New Arrivals",
+    "discover_all": "Discover All Our Products",
+    "discover_subtitle": "Find the most suitable products for you among thousands of quality items. Enjoy fast delivery and secure shopping.",
+    "view_all_products": "View All Products"
+  },
+  "product": {
+    "add_to_cart": "Add to Cart",
+    "adding": "Adding...",
+    "out_of_stock": "Out of Stock",
+    "low_stock": "Only {{count}} left",
+    "in_stock": "In Stock",
+    "organic": "Organic",
+    "halal": "Halal",
+    "vegetarian": "Vegetarian",
+    "vegan": "Vegan",
+    "gluten_free": "Gluten Free",
+    "lactose_free": "Lactose Free",
+    "no_image": "No Image",
+    "description": "Description",
+    "quantity": "Quantity",
+    "max_stock": "Maximum {{count}} items",
+    "guarantee": "Quality Guarantee",
+    "quality_guarantee": "100% secure",
+    "fast_delivery": "Fast Delivery",
+    "same_day_delivery": "Same day shipping",
+    "return_policy": "Return Guarantee",
+    "easy_return": "Easy return",
+    "certificates": "Certificates",
+    "general_info": "General Information",
+    "net_quantity": "Net Quantity",
+    "origin_country": "Country of Origin",
+    "expiry_date": "Expiry Date",
+    "brand": "Brand",
+    "allergens": "Allergen Information",
+    "nutritional_values": "Nutritional Values",
+    "per_100g": "Per 100g",
+    "energy": "Energy",
+    "fat": "Fat",
+    "saturated_fat": "Saturated Fat",
+    "carbohydrates": "Carbohydrates",
+    "sugar": "Sugar",
+    "protein": "Protein",
+    "salt": "Salt",
+    "storage_conditions": "Storage Conditions",
+    "manufacturer_info": "Manufacturer Information",
+    "manufacturer_name": "Manufacturer",
+    "manufacturer_address": "Address",
+    "manufacturer_phone": "Phone",
+    "manufacturer_email": "Email",
+    "similar_products": "Similar Products"
+  },
+  "product_card": {
+    "add_to_cart": "Add to Cart",
+    "add_to_favorites": "Add to Favorites",
+    "remove_from_favorites": "Remove from Favorites",
+    "share": "Share",
+    "view_details": "View Details",
+    "minimum_quantity_dialog": {
+      "title": "Minimum Purchase Quantity"
+    }
+  },
+  "product_detail": {
+    "purchase": {
+      "add_to_cart": "Add to Cart",
+      "adding_to_cart": "Adding",
+      "added_to_cart": "Added to Cart",
+      "update_cart": "Update",
+      "go_to_cart": "Go to Cart",
+      "out_of_stock": "Out of Stock",
+      "notify_me": "Notify Me",
+      "notify_success": "Notification Added",
+      "notify_success_message": "We will notify you when {{productName}} is back in stock.",
+      "stock_error_title": "Stock Limit Exceeded",
+      "stock_error_message": "You can only purchase up to {{count}} items of this product.",
+      "generic_error_title": "Error",
+      "generic_error_message": "An error occurred while adding to cart. Please try again.",
+      "add_min_quantity": "Add {{count}} Items"
+    }
+  },
+  "dropdown": {
+    "orders": "My Orders",
+    "favorites": "My Favorites",
+    "addresses": "My Addresses",
+    "notifications": "Notifications",
+    "account_settings": "Account Settings",
+    "app_settings": "App Settings",
+    "help_center": "Help Center",
+    "legal": "Legal Information",
+    "logout": "Sign Out",
+    "login": "Sign In",
+    "theme": "Theme",
+    "language": "Language",
+    "light_theme": "Light Theme",
+    "dark_theme": "Dark Theme",
+    "system_theme": "System",
+    "turkish": "Turkish",
+    "english": "English",
+    "polish": "Polish",
+    "guest": "Guest",
+    "guest_account": "Guest account",
+    "profile_menu": "Profile menu",
+    "individual": "Individual",
+    "corporate": "Corporate"
+  },
+  "loading": {
+    "loading_products": "Loading products...",
+    "loading": "Loading..."
+  },
+  "error": {
+    "error_occurred": "An Error Occurred",
+    "try_again": "Try Again",
+    "loading_error": "An error occurred while loading data",
+    "no_products": "No Products Yet",
+    "no_products_desc": "Products may be loading, please try again later.",
+    "product_not_found": "Product not found"
+  },
+  "common": {
+    "back": "Back",
+    "go_back": "Go Back",
+    "lang_code": "en",
+    "ok": "OK",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving...",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "close": "Close",
+    "continue": "Continue"
+  },
+  "auth": {
+    "phoneLogin": {
+      "b2bNote": "Corporate customers can only join with phone number.",
+      "title": "Phone Sign In",
+      "subtitle": "We will send you a verification code",
+      "sending_code": "Sending Code...",
+      "google_signing_in": "Signing in with Google...",
+      "divider_or": "or",
+      "terms_text": "By continuing, you accept our",
+      "terms_and": "and",
+      "terms_accept": "."
+    },
+    "complete_profile": {
+      "title": "Complete My Profile",
+      "subtitle": "Enter your information to create your account",
+      "complete_title": "Complete Your Profile",
+      "complete_subtitle": "Complete your information so we can serve you better",
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "email": "Email",
+      "nip": "Tax Number (NIP)",
+      "contracts_permissions": "Contracts and Permissions",
+      "accept_prefix": "I accept:",
+      "terms_of_service": "Terms of Service",
+      "privacy_policy": "Privacy Policy",
+      "marketing_text": "I accept marketing communications",
+      "marketing_desc": "I would like to receive campaign, discount, and new product announcements via email. (Optional)",
+      "completing": "Completing Profile..."
+    },
+    "verifyOtp": {
+      "title": "Verification Code",
+      "subtitle": "Enter the 6-digit code sent to {{phone}}.",
+      "helper": "Enter the 6-digit verification code",
+      "verifying": "Verifying...",
+      "submit": "Verify",
+      "resending": "Sending...",
+      "resend": "Resend Code",
+      "resendReady": "You can resend the code now.",
+      "resendIn": "Resend code in {{second}}s.",
+      "notReceived": {
+        "title": "Didn't receive the code?",
+        "help": "Check your spam folder or wait a few minutes."
+      },
+      "errors": {
+        "phoneMissing": "Phone number not found. Please sign in again.",
+        "invalidLength": "Please enter the 6-digit verification code.",
+        "verifyFailed": "An error occurred while verifying the code.",
+        "resendFailed": "An error occurred while resending the code."
+      },
+      "info": {
+        "resent": "Code has been resent"
+      }
+    },
+    "account_type": "Account Type",
+    "country_code": "Country Code",
+    "phone_number": "Phone Number",
+    "phone_placeholder": "XXX XXX XXX",
+    "send_verification_code": "Send Verification Code",
+    "google_sign_in": "Sign In with Google",
+    "have_account": "Already have an account?",
+    "otp_send_error": "An error occurred while sending OTP",
+    "phone_not_found": "Phone number not found. Please sign in again.",
+    "enter_6_digit_code": "Please enter the 6-digit verification code.",
+    "unexpected_response": "Unexpected response received. Please try again.",
+    "verification_check_error": "An error occurred while verifying the code.",
+    "resend_code_error": "An error occurred while resending the code.",
+    "check_spam_folder": "Check your spam folder or wait a few minutes.",
+    "verification_code": "Verification Code",
+    "verify_code": "Verify Code",
+    "resend_code": "Resend Code",
+    "enter_sms_code": "Enter the 6-digit code sent via SMS",
+    "didnt_receive_code": "Didn't receive the code?",
+    "personal_info": "Personal Information",
+    "company_info": "Company Information",
+    "accept_terms": "I accept the Terms of Service",
+    "accept_privacy": "I accept the Privacy Policy",
+    "marketing_consent": "I want to be informed about campaigns and announcements"
   },
   "footer": {
     "company_name": "Metropolitan Food Group",
     "about_us": "About Us",
-    "about_description": "A trusted food platform that brings nature's freshest products to your doorstep. Quality and customer satisfaction are our priority.",
+    "about_description": "A trusted food platform bringing nature's freshest products to your doorstep. Quality and customer satisfaction are our priorities.",
     "quick_links": "Quick Links",
     "products": "Products",
     "categories": "Categories",
@@ -21,9 +248,9 @@
     "customer_service": "Customer Service",
     "help_center": "Help Center",
     "contact_us": "Contact Us",
-    "faq": "FAQ",
+    "faq": "Frequently Asked Questions",
     "delivery_info": "Delivery Information",
-    "return_policy": "Return & Exchange",
+    "return_policy": "Returns and Exchanges",
     "privacy_policy": "Privacy Policy",
     "terms_of_service": "Terms of Service",
     "cookie_policy": "Cookie Policy",
@@ -36,17 +263,295 @@
     "email_value": "info@metropolitanfg.pl",
     "follow_us": "Follow Us",
     "newsletter": "Newsletter",
-    "newsletter_description": "Subscribe to our newsletter to stay updated with special offers and innovations.",
+    "newsletter_description": "Subscribe to our newsletter to stay informed about special offers and updates.",
     "newsletter_placeholder": "Your email address",
     "subscribe": "Subscribe",
     "copyright": "© {{year}} Metropolitan Food Group. All rights reserved.",
     "working_hours": "Working Hours",
     "working_hours_value": "Monday - Friday: 08:00 - 18:00\nSaturday - Sunday: Closed",
     "mobile_app": "Mobile App",
-    "mobile_app_description": "Click on QR code to enlarge. Scan with your phone to go to the store.",
-    "download_app": "Download App",
+    "mobile_app_description": "Click on the QR code to enlarge. Scan with your phone to visit the store.",
+    "download_app": "Download the App",
     "app_store": "App Store",
     "google_play": "Google Play"
+  },
+  "tabs": {
+    "products": "Products",
+    "orders": "My Orders",
+    "profile": "Profile",
+    "search_placeholder": "Search products..."
+  },
+  "products": {
+    "title": "Products",
+    "found": "{{count}} products found",
+    "not_found": "No Products Found",
+    "not_found_desc": "No products matching your criteria were found.",
+    "clear_filters": "Clear Filters"
+  },
+  "categories": {
+    "all": "All",
+    "title": "Categories",
+    "no_categories": "No categories yet",
+    "no_categories_desc": "Categories will appear here when products are added.",
+    "product_count": "{{count}} products"
+  },
+  "cart": {
+    "title": "My Cart",
+    "empty": {
+      "title": "Your cart is empty",
+      "subtitle": "Add products to start shopping.",
+      "button": "Start Shopping"
+    },
+    "checkout": "Complete Order",
+    "continue_shopping": "Continue shopping",
+    "item_removed": "Product removed from cart"
+  },
+  "orders": {
+    "title": "My Orders",
+    "empty": {
+      "title": "You don't have any orders yet",
+      "subtitle": "You haven't placed any orders yet. Start shopping!",
+      "button": "Start Shopping"
+    },
+    "guest_empty": {
+      "title": "Sign in to view order history",
+      "subtitle": "You need to sign in to your account to view and track your orders.",
+      "button": "Sign In"
+    },
+    "order_number": "Order #{{number}}",
+    "items": "{{count}} items"
+  },
+  "order_detail": {
+    "title": "Order #{{number}}",
+    "not_found_title": "Order Not Found",
+    "not_found_body": "The requested order could not be found.",
+    "back_to_orders": "Back to My Orders",
+    "products": {
+      "section_title": "Order Contents",
+      "quantity": "{{count}} items"
+    },
+    "summary": {
+      "section_title": "Order Summary",
+      "subtotal": "Subtotal",
+      "shipping": "Shipping",
+      "free_shipping": "Free",
+      "total": "Total"
+    },
+    "delivery_payment": {
+      "delivery_address": "Delivery Address"
+    },
+    "actions": {
+      "download_invoice": "Download Invoice"
+    },
+    "help": "Help"
+  },
+  "profile": {
+    "guest_title": "Guest User",
+    "guest_message": "You must sign in to view your profile information.",
+    "login": "Sign In",
+    "logout": "Sign Out",
+    "logging_out": "Signing out...",
+    "account_section": "Account",
+    "app_section": "Application",
+    "support_section": "Support",
+    "legal_section": "Legal",
+    "favorites": "My Favorites",
+    "addresses": "My Addresses",
+    "notifications": "My Notifications",
+    "account_settings": "Account Settings",
+    "app_settings": "App Settings",
+    "help_center": "Help Center",
+    "legal": "Legal Information",
+    "version": "Version {{version}}",
+    "header_edit": "Edit"
+  },
+  "favorites": {
+    "title": "My Favorites",
+    "empty": {
+      "title": "Your favorites list is empty",
+      "subtitle": "Add products you like to favorites for easy access.",
+      "browse_button": "Browse Products"
+    },
+    "login_required": "Sign in to view your favorite products"
+  },
+  "addresses": {
+    "title": "My Addresses",
+    "empty": {
+      "title": "You don't have any addresses yet",
+      "subtitle": "Add your first address to start shopping quickly.",
+      "add_button": "Add New Address"
+    },
+    "add_new_address": "Add New Address",
+    "default_delivery": "Default Delivery",
+    "default_billing": "Default Billing",
+    "login_required": "Sign in to view your addresses",
+    "login_desc": "Save your delivery addresses and place orders quickly."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty_title": "No notifications yet",
+    "empty_message": "Notifications about your orders and special offers will appear here.",
+    "mark_all_read": "Mark All as Read",
+    "login_required": "Sign in to view your notifications",
+    "login_desc": "Stay informed about order updates and special offers."
+  },
+  "help_center": {
+    "title": "Help Center",
+    "header": "How can we help you?",
+    "search_placeholder": "Type to search...",
+    "contact": "Contact Us",
+    "categories": {
+      "orders": "Orders",
+      "returns": "Returns and Refunds",
+      "account": "Account Management",
+      "payment": "Payment Options",
+      "security": "Security and Privacy"
+    }
+  },
+  "legal": {
+    "title": "Legal",
+    "documents_section": "Legal Documents",
+    "terms_of_service": "Terms of Service",
+    "terms_desc": "Service usage terms",
+    "privacy_policy": "Privacy Policy",
+    "privacy_desc": "Data protection and privacy",
+    "cookie_policy": "Cookie Policy",
+    "cookie_desc": "Cookie usage information",
+    "gdpr": "GDPR",
+    "gdpr_desc": "Personal data protection",
+    "company_info_section": "Company Information",
+    "notice_title": "Legal Notice",
+    "notice_desc": "All content and materials in this application are owned by Metropolitan Food Group Sp. z o.o. and protected by copyright.",
+    "privacy_hero_title": "Your Privacy Matters",
+    "cookie_hero_title": "Our Cookie Policy",
+    "terms_hero_title": "Our Terms of Service",
+    "loading": "Loading...",
+    "error": "Error loading content",
+    "copyright": "© 2025 Metropolitan Food Group. All rights reserved.",
+    "back_to_top": "Back to top"
+  },
+  "checkout": {
+    "steps": {
+      "cart": "Cart",
+      "address": "Address",
+      "payment": "Payment",
+      "summary": "Summary"
+    },
+    "delivery_address": "Delivery Address",
+    "billing_address": "Billing Address",
+    "same_billing_address": "Billing address is the same as delivery address",
+    "add_new_address": "Add New Address",
+    "continue_to_payment": "Continue to Payment",
+    "payment_method": "Payment Method",
+    "secure_payment": "Secure Payment",
+    "secure_payment_desc": "All your payments are encrypted with SSL and processed on secure servers.",
+    "more_payment_methods_soon": "More payment options will be added soon",
+    "continue_to_summary": "Continue to Summary",
+    "no_payment_method_selected": "No payment method selected",
+    "order_summary": "Order Summary",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "free": "Free",
+    "total": "Grand Total",
+    "items": "items",
+    "agree_terms": "I agree to the terms of service and privacy policy",
+    "complete_order": "Complete Order",
+    "missing_info": "Please fill in all required information.",
+    "missing_fields": "Please fill in all required fields.",
+    "order_error": "An error occurred while creating the order. Please try again.",
+    "order_creation_failed": "Order could not be created. Please try again.",
+    "payment_error": "Payment processing failed. Please try again.",
+    "payment_methods": {
+      "card": {
+        "title": "Credit / Debit Card",
+        "subtitle": "Visa, Mastercard, Maestro"
+      },
+      "bank_transfer": {
+        "title": "Bank Transfer / EFT",
+        "subtitle": "Make manual payment to our bank account"
+      }
+    },
+    "address_select": {
+      "title": "Add Address",
+      "desc": "You must first add a delivery address to complete your order."
+    }
+  },
+  "payment": {
+    "stripe_load_failed": "Payment system could not be loaded. Please refresh the page.",
+    "payment_failed": "Payment failed. Please try again.",
+    "unsupported_payment_method": "This payment method is not yet supported.",
+    "unknown_error": "An unknown error occurred. Please try again.",
+    "client_secret_missing": "Payment information is missing. Please try again."
+  },
+  "order": {
+    "creation_failed": "Order could not be created. Please try again."
+  },
+  "order_confirmation": {
+    "title": "Your Order Has Been Received!",
+    "description": "Your order has been successfully created. We have sent your order details to your email address.",
+    "go_to_orders": "Go to My Orders",
+    "continue_shopping": "Continue Shopping"
+  },
+  "account_settings": {
+    "title": "Account Settings",
+    "general": "General",
+    "edit_profile": "Edit Profile",
+    "edit_profile_desc": "Edit your name, email, and other information",
+    "privacy": "Privacy",
+    "privacy_desc": "Manage your privacy preferences",
+    "security": "Security",
+    "security_desc": "Configure security settings",
+    "danger_zone": "Danger Zone",
+    "export_data": "Export My Data",
+    "export_data_desc": "Download your account data",
+    "delete_account": "Delete Account",
+    "delete_account_desc": "Permanently delete your account",
+    "login_required": "You must sign in to view your account settings."
+  },
+  "app_settings": {
+    "title": "App Settings",
+    "appearance": "Appearance",
+    "theme": "Theme",
+    "theme_desc": "Select app theme",
+    "theme_system": "System",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
+    "language": "Language",
+    "language_desc": "Select app language",
+    "info": "More settings options will be added soon"
+  },
+  "offers": {
+    "title": "Offers",
+    "no_offers": "No campaigns currently available",
+    "no_offers_desc": "New campaigns will appear here when added.",
+    "found": "{{count}} discounted products found"
+  },
+  "status": {
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "preparing": "Preparing",
+    "shipped": "Shipped",
+    "delivered": "Delivered",
+    "cancelled": "Cancelled"
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "q1": {
+      "question": "How can I cancel my order?",
+      "answer": "You can cancel your order from the 'My Orders' section before the status changes to 'Preparing'. Orders that have been shipped cannot be cancelled."
+    },
+    "q2": {
+      "question": "How does the product return process work?",
+      "answer": "You can return your products within 14 days. After creating a return request from My Account > My Orders, you can send the product free of charge using the provided tracking code."
+    },
+    "q3": {
+      "question": "How much is the shipping cost?",
+      "answer": "Shipping is free for all orders. There is no minimum order requirement."
+    },
+    "q4": {
+      "question": "What payment methods can I use?",
+      "answer": "You can pay with credit card, debit card, and PayPal. We also offer cash on delivery option."
+    }
   },
   "support": {
     "title": "Support",
@@ -63,17 +568,17 @@
     "linkedin": "LinkedIn",
     "faq_section": "Frequently Asked Questions",
     "faq": {
-      "delivery_question": "How does shipping work?",
-      "delivery_answer": "Your orders are shipped within 1-3 business days after confirmation. Tracking number is sent via SMS.",
-      "payment_question": "Which payment methods do you accept?",
-      "payment_answer": "We accept credit cards, debit cards and wire transfers. Corporate customers can pay by invoice.",
-      "return_question": "What are the return and exchange terms?",
-      "return_answer": "You can return products within 14 days of delivery, provided they are unopened and unused.",
+      "delivery_question": "How does the shipping process work?",
+      "delivery_answer": "Your orders are shipped within 1-3 business days after confirmation. Your tracking number is sent via SMS.",
+      "payment_question": "What payment methods do you accept?",
+      "payment_answer": "You can pay with credit card, debit card, and bank transfer/EFT. We offer invoiced payment for corporate customers.",
+      "return_question": "What are the return and exchange conditions?",
+      "return_answer": "You can return your products within 14 days from the delivery date, provided they are unopened and unused.",
       "cancel_question": "How can I cancel my order?",
-      "cancel_answer": "You can cancel from My Orders section before shipping. For shipped orders, please contact customer service."
+      "cancel_answer": "You can cancel from the My Orders section before your order is shipped. For shipped orders, please contact customer service."
     },
     "help_center": "Help Center",
-    "help_center_desc": "We are here to provide you with the best service. Don't hesitate to contact us with any questions.",
+    "help_center_desc": "We are here to provide you with the best service. Don't hesitate to contact us whenever you have questions.",
     "working_hours": "Working Hours",
     "working_hours_weekdays": "Monday - Friday: 09:00 - 18:00",
     "working_hours_weekend": "Saturday: 09:00 - 14:00",
@@ -87,121 +592,173 @@
       "live_support": "Live Support"
     }
   },
-  "help_center": {
-    "title": "Help Center",
-    "header": "How can we help you?",
-    "search_placeholder": "Type to search...",
-    "categories": {
-      "orders": "Orders",
-      "returns": "Returns and Refunds",
-      "account": "Account Management",
-      "payment": "Payment Options",
-      "security": "Security and Privacy"
-    }
-  },
   "errors": {
-    "INSUFFICIENT_STOCK": "You can add a maximum of {{stock}} units of this product.",
-    "INSUFFICIENT_STOCK_ALREADY_IN_CART": "You have {{inCart}} units of this product in your cart. You can add a maximum of {{canAdd}} more units.",
-    "MIN_QUANTITY_NOT_MET": "Minimum {{minQuantity}} pieces required for this product.",
+    "INSUFFICIENT_STOCK": "You can add a maximum of {{stock}} items of this product.",
+    "INSUFFICIENT_STOCK_ALREADY_IN_CART": "You have {{inCart}} items of this product in your cart. You can add up to {{canAdd}} more items.",
+    "MIN_QUANTITY_NOT_MET": "This product requires a minimum purchase of {{minQuantity}} items.",
     "PRODUCT_NOT_FOUND": "Product not found.",
     "CART_ITEM_NOT_FOUND": "Cart item not found.",
-    "CART_ADD_ERROR": "An unexpected error occurred while adding the product to the cart. Please try again.",
-    "CART_UPDATE_ERROR": "An unexpected error occurred while updating the product. Please try again.",
+    "CART_ADD_ERROR": "An unexpected error occurred while adding product to cart. Please try again.",
+    "CART_UPDATE_ERROR": "An unexpected error occurred while updating product. Please try again.",
     "ERROR_BOUNDARY_TITLE": "An Error Occurred",
-    "ERROR_BOUNDARY_DESCRIPTION": "An unexpected error occurred in our application. We will fix this as soon as possible.",
-    "ERROR_BOUNDARY_RELOAD": "Reload App",
+    "ERROR_BOUNDARY_DESCRIPTION": "An unexpected error occurred in our application. We will fix this issue as soon as possible.",
+    "ERROR_BOUNDARY_RELOAD": "Reload Application",
     "ERROR_BOUNDARY_RETRY": "Try Again",
     "ERROR_BOUNDARY_SUPPORT": "If the problem persists, you can contact our support team.",
     "ERROR_BOUNDARY_SUPPORT_EMAIL": "info@metropolitanfg.pl",
     "UNEXPECTED_ERROR": "An unexpected error occurred",
     "TRY_AGAIN_LATER": "Please try again later",
-    "RATE_LIMIT_DEFAULT": "Too many requests, please try again later.",
+    "RATE_LIMIT_DEFAULT": "Too many requests sent, please try again later.",
     "RATE_LIMIT_AUTH": "Too many authentication attempts. Please try again later.",
-    "RATE_LIMIT_OTP_SEND": "Too many OTP requests. Please wait 1 minute before trying again.",
-    "RATE_LIMIT_OTP_VERIFY": "Too many verification attempts. Please wait 5 minutes."
-  },
-  "product": {
-    "add_to_cart": "Add to Cart",
-    "adding": "Adding...",
-    "out_of_stock": "Out of Stock",
-    "low_stock": "Last {{count}} units",
-    "in_stock": "In Stock"
-  },
-  "product_card": {
-    "add_to_cart": "Add to Cart",
-    "add_to_favorites": "Add to Favorites",
-    "remove_from_favorites": "Remove from Favorites",
-    "share": "Share",
-    "view_details": "View Details",
-    "minimum_quantity_dialog": {
-      "title": "Minimum Order Quantity"
-    }
-  },
-  "product_detail": {
-    "purchase": {
-      "add_to_cart": "Add to Cart",
-      "adding_to_cart": "Adding",
-      "added_to_cart": "Added to Cart",
-      "update_cart": "Update",
-      "go_to_cart": "Go to Cart",
-      "out_of_stock": "Out of Stock",
-      "notify_me": "Notify Me",
-      "notify_success": "Notification Added",
-      "notify_success_message": "We'll notify you when {{productName}} is back in stock.",
-      "stock_error_title": "Stock Limit Exceeded",
-      "stock_error_message": "You can add a maximum of {{count}} units of this product.",
-      "generic_error_title": "Error",
-      "generic_error_message": "An error occurred while adding to cart. Please try again.",
-      "add_min_quantity": "Add {{count}} Pieces"
-    }
-  },
-  "dropdown": {
-    "orders": "My Orders",
-    "favorites": "My Favorites",
-    "addresses": "My Addresses",
-    "notifications": "Notifications",
-    "account_settings": "Account Settings",
-    "app_settings": "App Settings",
-    "help_center": "Help Center",
-    "legal": "Legal Information",
-    "logout": "Logout",
-    "login": "Login",
-    "theme": "Theme",
-    "language": "Language",
-    "light_theme": "Light Theme",
-    "dark_theme": "Dark Theme",
-    "system_theme": "System",
-    "turkish": "Türkçe",
-    "english": "English",
-    "polish": "Polski",
-    "guest": "Guest",
-    "guest_account": "Guest account",
-    "profile_menu": "Profile menu",
-    "individual": "Individual",
-    "corporate": "Corporate"
-  },
-  "common": {
-    "ok": "OK",
-    "cancel": "Cancel",
-    "save": "Save",
-    "loading": "Loading...",
-    "error": "Error",
-    "success": "Success",
-    "confirm": "Confirm",
-    "close": "Close"
-  },
-  "errors": {
+    "RATE_LIMIT_OTP_SEND": "Too many OTP requests. Please wait 1 minute and try again.",
     "RATE_LIMIT_OTP_VERIFY": "Too many verification attempts. Please wait 5 minutes.",
     "RATE_LIMIT_REFRESH_TOKEN": "Too many token refresh attempts. Please try again later.",
     "RATE_LIMIT_ORDER_CREATION": "Too many order requests. Please slow down.",
     "RATE_LIMIT_DATA_EXPORT": "Data export limit reached. Please try again tomorrow.",
     "RATE_LIMIT_SEARCH": "Too many search requests. Please slow down.",
     "RATE_LIMIT_WEBHOOK": "Webhook rate limit exceeded.",
-    "SERVER_ERROR": "Internal server error",
-    "NOT_FOUND_ERROR": "The requested resource was not found",
+    "SERVER_ERROR": "Server error occurred",
+    "NOT_FOUND_ERROR": "Requested resource not found",
     "VALIDATION_ERROR": "Validation error",
     "UNAUTHORIZED_ERROR": "Authentication required",
-    "FORBIDDEN_ERROR": "Insufficient permissions",
-    "UPLOAD_PHOTO_FAILED": "Failed to upload photo"
+    "FORBIDDEN_ERROR": "You don't have sufficient permissions",
+    "UPLOAD_PHOTO_FAILED": "Photo could not be uploaded"
+  },
+  "metadata": {
+    "title": "Metropolitan Food Group - Quality Food Products",
+    "description": "Nature's freshest products at your doorstep. Fast delivery and secure shopping."
+  },
+  "toast": {
+    "items_added_to_cart": "Items added to cart",
+    "reorder_failed": "Reorder failed",
+    "phone_required": "Phone number required",
+    "phone_mismatch": "Phone number does not match your account",
+    "verification_code_sent": "Verification code sent",
+    "code_send_failed": "Code could not be sent",
+    "account_deleted": "Your account has been successfully deleted",
+    "verification_failed": "Verification failed",
+    "code_resent": "Code has been resent",
+    "no_changes": "No changes made",
+    "profile_updated": "Profile updated",
+    "profile_update_failed": "Profile could not be updated",
+    "only_images_allowed": "Only image files can be uploaded",
+    "profile_photo_updated": "Profile photo updated",
+    "photo_upload_failed": "Photo could not be uploaded",
+    "privacy_settings_updated": "Privacy settings updated",
+    "privacy_settings_update_failed": "Privacy settings could not be updated",
+    "feature_coming_soon": "This feature will be added soon",
+    "security_settings_updated": "Security settings updated",
+    "security_settings_update_failed": "Security settings could not be updated",
+    "disconnect_failed": "Could not disconnect",
+    "file_size_limit": "File size must be less than 5MB"
+  },
+  "user_types": {
+    "corporate": "Corporate",
+    "individual": "Individual"
+  },
+  "form": {
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "email": "Email",
+    "company_name": "Company Name",
+    "nip": "NIP (Tax Number)",
+    "first_name_placeholder": "Jan",
+    "last_name_placeholder": "Kowalski",
+    "email_placeholder": "example@email.com",
+    "company_name_placeholder": "Your Company Name",
+    "nip_placeholder": "1234567890",
+    "phone_number_invalid": "Please enter a valid phone number",
+    "fill_required_fields": "Please fill in all required fields",
+    "profile_completion_error": "An error occurred while completing profile"
+  },
+  "favorites_action": {
+    "add": "Add to favorites",
+    "remove": "Remove from favorites"
+  },
+  "payment_methods": {
+    "google_pay_subtitle": "Fast mobile payment"
+  },
+  "connection_status": {
+    "connected": "Connected",
+    "not_connected": "Not connected",
+    "not_registered": "Not registered"
+  },
+  "categories_default": {
+    "other": "Other"
+  },
+  "auth_errors": {
+    "google_sign_in_failed": "Google sign in failed"
+  },
+  "delete_account": {
+    "login_required": "You must sign in to delete your account."
+  },
+  "address": {
+    "update_description": "Update your address information",
+    "add_description": "Add new delivery address",
+    "city_placeholder": "Warsaw"
+  },
+  "invoice": {
+    "preview_load_error": "Invoice preview could not be loaded",
+    "downloading": "Downloading invoice",
+    "download_error": "Invoice could not be downloaded"
+  },
+  "security_settings": {
+    "title": "Security Settings",
+    "subtitle": "Control your account security and session management",
+    "login_required_title": "Sign In",
+    "login_required_desc": "You must sign in to view your security settings.",
+    "login_button": "Sign In",
+    "linked_accounts": {
+      "title": "Linked Accounts",
+      "subtitle": "Quick sign in with your social media accounts",
+      "google": "Google",
+      "apple": "Apple",
+      "disconnect": "Disconnect",
+      "connect": "Connect",
+      "apple_mobile_only": "Use the mobile app to connect with Apple",
+      "google_signin_failed": "Google Sign-In failed",
+      "google_connected": "Google account successfully connected",
+      "google_connect_failed": "Google account could not be connected",
+      "disconnected": "{{provider}} account disconnected"
+    },
+    "phone_number": {
+      "title": "Phone Number",
+      "subtitle": "Phone number registered to your account (OTP sign in)",
+      "label": "Phone Number",
+      "connected": "Connected",
+      "change_help": "Contact support to change your phone number"
+    },
+    "active_sessions": {
+      "title": "Active Sessions",
+      "subtitle": "Devices signed in to your account",
+      "current_device": "Current Device (Web)",
+      "last_activity": "Last activity: Now",
+      "active": "Active",
+      "other_sessions_soon": "View other sessions feature coming soon"
+    },
+    "account_security": {
+      "title": "Account Security",
+      "subtitle": "Manage your security settings",
+      "two_factor": {
+        "title": "Two-Factor Authentication",
+        "desc": "Extra security layer for your account",
+        "coming_soon": "Coming Soon"
+      },
+      "login_alerts": {
+        "title": "Login Alerts",
+        "desc": "Get notified when new devices sign in"
+      },
+      "device_tracking": {
+        "title": "Device Tracking",
+        "desc": "Monitor devices connected to your account"
+      }
+    },
+    "unlink_dialog": {
+      "title": "Disconnect",
+      "description": "Are you sure you want to disconnect your {{provider}} account?",
+      "cancel": "Cancel",
+      "confirm": "Disconnect",
+      "disconnecting": "Disconnecting"
+    }
   }
 }

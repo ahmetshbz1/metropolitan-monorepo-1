@@ -13,6 +13,7 @@ import { useCheckout } from "@/context/CheckoutContext";
 import { useCartStore } from "@/stores/cart-store";
 import { ArrowLeft, X } from "lucide-react";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 // Step Components
 import { AddressStep } from "./steps/AddressStep";
@@ -26,6 +27,7 @@ interface CartDrawerProps {
 }
 
 export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
+  const { t } = useTranslation();
   const { state, nextStep, prevStep, canProceedToNext, resetCheckout } =
     useCheckout();
   const items = useCartStore((state) => state.items);
@@ -57,15 +59,15 @@ export function CartDrawer({ open, onOpenChange }: CartDrawerProps) {
   const getStepTitle = () => {
     switch (state.currentStep) {
       case "cart":
-        return "Sepetim";
+        return t("cart.title");
       case "address":
-        return "Teslimat Adresi";
+        return t("checkout.delivery_address");
       case "payment":
-        return "Ödeme Yöntemi";
+        return t("checkout.payment_method");
       case "summary":
-        return "Sipariş Özeti";
+        return t("checkout.order_summary");
       default:
-        return "Sepetim";
+        return t("cart.title");
     }
   };
 

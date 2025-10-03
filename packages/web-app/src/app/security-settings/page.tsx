@@ -26,6 +26,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface SecuritySettings {
   twoFactorEnabled: boolean;
@@ -34,6 +35,7 @@ interface SecuritySettings {
 }
 
 export default function SecuritySettingsPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const queryClient = useQueryClient();
   const { user, accessToken, _hasHydrated, setUser } = useAuthStore();
@@ -65,12 +67,12 @@ export default function SecuritySettingsPage() {
             icon="solar:shield-warning-line-duotone"
             className="size-16 text-muted-foreground mx-auto mb-4"
           />
-          <h2 className="text-2xl font-bold mb-2">Giriş Yapın</h2>
+          <h2 className="text-2xl font-bold mb-2">{t("security_settings.login_required_title")}</h2>
           <p className="text-muted-foreground mb-6">
-            Güvenlik ayarlarınızı görmek için giriş yapmalısınız.
+            {t("security_settings.login_required_desc")}
           </p>
           <Button asChild>
-            <Link href="/auth/phone-login">Giriş Yap</Link>
+            <Link href="/auth/phone-login">{t("security_settings.login_button")}</Link>
           </Button>
         </div>
       </div>
@@ -80,7 +82,7 @@ export default function SecuritySettingsPage() {
   const updateSetting = async (key: keyof SecuritySettings, value: boolean) => {
     // İki faktörlü doğrulama henüz hazır değil
     if (key === "twoFactorEnabled") {
-      toast.info("Bu özellik yakında eklenecek");
+      toast.info(t("toast.feature_coming_soon"));
       return;
     }
 
@@ -90,10 +92,10 @@ export default function SecuritySettingsPage() {
     setLoading(true);
     try {
       await api.put("/users/user/security-settings", newSettings);
-      toast.success("Güvenlik ayarları güncellendi");
+      toast.success(t("toast.security_settings_updated"));
     } catch (error: any) {
       setSettings(settings); // Revert on error
-      toast.error(error.response?.data?.message || "Güvenlik ayarları güncellenemedi");
+      toast.error(error.response?.data?.message || t("toast.security_settings_update_failed"));
     } finally {
       setLoading(false);
     }
@@ -102,7 +104,7 @@ export default function SecuritySettingsPage() {
   const handleLinkProvider = async (provider: 'apple' | 'google') => {
     if (provider === 'apple') {
       // Apple Sign In sadece mobile'da çalışır
-      toast.info('Apple ile bağlanmak için mobile uygulamayı kullanın', {
+      toast.info(t("security_settings.linked_accounts.apple_mobile_only"), {
         duration: 5000,
       });
       return;
@@ -115,7 +117,7 @@ export default function SecuritySettingsPage() {
       const result = await signInWithPopup(auth, googleProvider);
 
       if (!result.user) {
-        throw new Error('Google Sign-In başarısız');
+        throw new Error(t("security_settings.linked_accounts.google_signin_failed"));
       }
 
       // Backend'e link isteği gönder
@@ -140,7 +142,7 @@ export default function SecuritySettingsPage() {
         setUser(updatedUser);
       }
 
-      toast.success('Google hesabı başarıyla bağlandı');
+      toast.success(t("security_settings.linked_accounts.google_connected"));
     } catch (error: any) {
       console.error('Link provider error:', error);
 
@@ -149,7 +151,7 @@ export default function SecuritySettingsPage() {
       } else if (error?.response?.data?.error === 'ALREADY_LINKED') {
         toast.error(error.response.data.message);
       } else {
-        toast.error('Google hesabı bağlanamadı');
+        toast.error(t("security_settings.linked_accounts.google_connect_failed"));
       }
     } finally {
       setLoading(false);
@@ -184,9 +186,9 @@ export default function SecuritySettingsPage() {
         setUser(updatedUser);
       }
 
-      toast.success(`${providerToUnlink === 'apple' ? 'Apple' : 'Google'} hesabı bağlantısı kesildi`);
+      toast.success(t("security_settings.linked_accounts.disconnected", { provider: providerToUnlink === 'apple' ? 'Apple' : 'Google' }));
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "Bağlantı kesilemedi");
+      toast.error(error.response?.data?.message || t("toast.disconnect_failed"));
     } finally {
       setLoading(false);
       setUnlinkDialogOpen(false);
@@ -208,9 +210,9 @@ export default function SecuritySettingsPage() {
             <Icon icon="solar:arrow-left-line-duotone" className="size-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">Güvenlik Ayarları</h1>
+            <h1 className="text-2xl font-bold">{t("security_settings.title")}</h1>
             <p className="text-sm text-muted-foreground">
-              Hesap güvenliğinizi ve oturum yönetiminizi kontrol edin
+              {t("security_settings.subtitle")}
             </p>
           </div>
         </div>
@@ -220,9 +222,9 @@ export default function SecuritySettingsPage() {
           <div className="bg-card rounded-xl border border-border">
             <div className="p-4">
               <div className="mb-4">
-                <h2 className="text-base font-semibold">Bağlı Hesaplar</h2>
+                <h2 className="text-base font-semibold">{t("security_settings.linked_accounts.title")}</h2>
                 <p className="text-xs text-muted-foreground">
-                  Sosyal medya hesaplarınızla hızlı giriş yapın
+                  {t("security_settings.linked_accounts.subtitle")}
                 </p>
               </div>
 
@@ -236,11 +238,11 @@ export default function SecuritySettingsPage() {
                     />
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-sm">Google</p>
+                    <p className="font-medium text-sm">{t("security_settings.linked_accounts.google")}</p>
                     <p className="text-xs text-muted-foreground">
                       {currentUser?.authProvider === "google" && currentUser?.email
                         ? currentUser.email
-                        : "Bağlı değil"}
+                        : t("connection_status.not_connected")}
                     </p>
                   </div>
                   {currentUser?.authProvider === "google" ? (
@@ -251,7 +253,7 @@ export default function SecuritySettingsPage() {
                       disabled={loading}
                       className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/10 text-xs h-7 px-2"
                     >
-                      Bağlantıyı Kes
+                      {t("security_settings.linked_accounts.disconnect")}
                     </Button>
                   ) : (
                     <Button
@@ -261,7 +263,7 @@ export default function SecuritySettingsPage() {
                       disabled={loading}
                       className="text-primary hover:bg-primary/10 text-xs h-7 px-2"
                     >
-                      Bağla
+                      {t("security_settings.linked_accounts.connect")}
                     </Button>
                   )}
                 </div>
@@ -277,11 +279,11 @@ export default function SecuritySettingsPage() {
                     />
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-sm">Apple</p>
+                    <p className="font-medium text-sm">{t("security_settings.linked_accounts.apple")}</p>
                     <p className="text-xs text-muted-foreground">
                       {currentUser?.authProvider === "apple"
-                        ? currentUser?.email || "Bağlı"
-                        : "Bağlı değil"}
+                        ? currentUser?.email || t("connection_status.connected")
+                        : t("connection_status.not_connected")}
                     </p>
                   </div>
                   {currentUser?.authProvider === "apple" ? (
@@ -292,7 +294,7 @@ export default function SecuritySettingsPage() {
                       disabled={loading}
                       className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/10 text-xs h-7 px-2"
                     >
-                      Bağlantıyı Kes
+                      {t("security_settings.linked_accounts.disconnect")}
                     </Button>
                   ) : (
                     <Button
@@ -302,7 +304,7 @@ export default function SecuritySettingsPage() {
                       disabled={loading}
                       className="text-primary hover:bg-primary/10 text-xs h-7 px-2"
                     >
-                      Bağla
+                      {t("security_settings.linked_accounts.connect")}
                     </Button>
                   )}
                 </div>
@@ -314,9 +316,9 @@ export default function SecuritySettingsPage() {
           <div className="bg-card rounded-xl border border-border">
             <div className="p-4">
               <div className="mb-4">
-                <h2 className="text-base font-semibold">Telefon Numarası</h2>
+                <h2 className="text-base font-semibold">{t("security_settings.phone_number.title")}</h2>
                 <p className="text-xs text-muted-foreground">
-                  Hesabınıza kayıtlı telefon numarası (OTP ile giriş)
+                  {t("security_settings.phone_number.subtitle")}
                 </p>
               </div>
 
@@ -329,17 +331,17 @@ export default function SecuritySettingsPage() {
                     />
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-sm">Telefon Numarası</p>
+                    <p className="font-medium text-sm">{t("security_settings.phone_number.label")}</p>
                     <p className="text-xs text-muted-foreground">
-                      {user.phone || "Kayıtlı değil"}
+                      {user.phone || t("connection_status.not_registered")}
                     </p>
                   </div>
                   <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                    Bağlı
+                    {t("security_settings.phone_number.connected")}
                   </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Telefon numaranızı değiştirmek için destek ile iletişime geçin
+                  {t("security_settings.phone_number.change_help")}
                 </p>
               </div>
             </div>

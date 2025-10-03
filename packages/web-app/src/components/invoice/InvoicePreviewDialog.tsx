@@ -1,12 +1,12 @@
 "use client";
 
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@/components/ui/visually-hidden";
+import { ordersApi } from "@/services/api/orders-api";
 import { Download, Loader2, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { ordersApi } from "@/services/api/orders-api";
 import { toast } from "sonner";
-import { VisuallyHidden } from "@/components/ui/visually-hidden";
 
 interface InvoicePreviewDialogProps {
   open: boolean;
@@ -46,7 +46,7 @@ export function InvoicePreviewDialog({
       setPdfUrl(url);
     } catch (error) {
       console.error("Failed to load invoice preview:", error);
-      toast.error("Fatura önizleme yüklenemedi");
+      toast.error(t("invoice.preview_load_error"));
       onOpenChange(false);
     } finally {
       setLoading(false);
@@ -65,10 +65,10 @@ export function InvoicePreviewDialog({
       link.click();
       document.body.removeChild(link);
 
-      toast.success("Fatura indiriliyor");
+      toast.success(t("invoice.downloading"));
     } catch (error) {
       console.error("Failed to download invoice:", error);
-      toast.error("Fatura indirilemedi");
+      toast.error(t("invoice.download_error"));
     } finally {
       setDownloading(false);
     }
@@ -76,7 +76,10 @@ export function InvoicePreviewDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl h-[90vh] flex flex-col p-0" showCloseButton={false}>
+      <DialogContent
+        className="max-w-5xl h-[90vh] flex flex-col p-0"
+        showCloseButton={false}
+      >
         {/* Accessibility Title */}
         <VisuallyHidden>
           <DialogTitle>Fatura Önizleme</DialogTitle>

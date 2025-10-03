@@ -1,162 +1,106 @@
 {
   "navbar": {
     "products": "Produkty",
-    "categories": "Kategorie", 
+    "categories": "Kategorie",
     "about": "O nas",
     "contact": "Kontakt",
-    "search_placeholder": "Szukaj produktów...",
+    "search_placeholder": "Szukaj produktu...",
     "favorites": "Ulubione",
     "cart": "Koszyk",
-    "login": "Zaloguj się"
+    "login": "Zaloguj się",
+    "notifications": "Powiadomienia"
   },
-  "footer": {
-    "company_name": "Metropolitan Food Group",
-    "about_us": "O nas",
-    "about_description": "Zaufana platforma żywnościowa, która dostarcza najświeższe produkty natury pod Twoje drzwi. Jakość i zadowolenie klienta to nasz priorytet.",
-    "quick_links": "Szybkie linki",
-    "products": "Produkty",
-    "categories": "Kategorie",
-    "special_offers": "Oferty specjalne",
+  "hero": {
+    "title_1": "Wysokiej Jakości Produkty Spożywcze",
+    "subtitle_1": "Najświeższe produkty natury pod Twoimi drzwiami",
+    "title_2": "Szybka i Bezpieczna Dostawa",
+    "subtitle_2": "Pod Twoimi drzwiami w ciągu 24 godzin",
+    "title_3": "Zaufane Zakupy",
+    "subtitle_3": "Zawsze przy Tobie",
+    "shop_now": "Rozpocznij Zakupy"
+  },
+  "home": {
+    "featured_products": "Wyróżnione Produkty",
+    "weekly_products": "Specjalne Produkty Tygodnia",
+    "bestsellers": "Bestsellery",
     "new_arrivals": "Nowości",
-    "customer_service": "Obsługa klienta",
-    "help_center": "Centrum pomocy",
-    "contact_us": "Skontaktuj się z nami",
-    "faq": "FAQ",
-    "delivery_info": "Informacje o dostawie",
-    "return_policy": "Zwroty i wymiana",
-    "privacy_policy": "Polityka prywatności",
-    "terms_of_service": "Warunki użytkowania",
-    "cookie_policy": "Polityka cookies",
-    "contact_info": "Informacje kontaktowe",
-    "address": "Adres",
-    "address_value": "ul. Aleja Krakowska 44, 05-090 Janki, Warsaw",
-    "phone": "Telefon",
-    "phone_value": "+48 600 790 035",
-    "email": "Email",
-    "email_value": "info@metropolitanfg.pl",
-    "follow_us": "Śledź nas",
-    "newsletter": "Newsletter",
-    "newsletter_description": "Zapisz się do naszego newslettera, aby być na bieżąco z ofertami specjalnymi i nowościami.",
-    "newsletter_placeholder": "Twój adres email",
-    "subscribe": "Subskrybuj",
-    "copyright": "© {{year}} Metropolitan Food Group. Wszelkie prawa zastrzeżone.",
-    "working_hours": "Godziny pracy",
-    "working_hours_value": "Poniedziałek - Piątek: 08:00 - 18:00\nSobota - Niedziela: Zamknięte",
-    "mobile_app": "Aplikacja mobilna",
-    "mobile_app_description": "Kliknij kod QR, aby powiększyć. Zeskanuj telefonem, aby przejść do sklepu.",
-    "download_app": "Pobierz aplikację",
-    "app_store": "App Store",
-    "google_play": "Google Play"
-  },
-  "support": {
-    "title": "Wsparcie",
-    "contact_section": "Kontakt",
-    "whatsapp": "WhatsApp",
-    "whatsapp_message": "Cześć, chciałbym uzyskać pomoc dotyczącą Metropolitan Food Group.",
-    "call_us": "Zadzwoń do nas",
-    "email": "E-mail",
-    "address": "Adres",
-    "social_section": "Media społecznościowe",
-    "instagram": "Instagram",
-    "facebook": "Facebook",
-    "twitter": "Twitter",
-    "linkedin": "LinkedIn",
-    "faq_section": "Często zadawane pytania",
-    "faq": {
-      "delivery_question": "Jak przebiega proces wysyłki?",
-      "delivery_answer": "Twoje zamówienia są wysyłane w ciągu 1-3 dni roboczych po potwierdzeniu. Numer śledzenia jest wysyłany SMS-em.",
-      "payment_question": "Jakie metody płatności akceptujecie?",
-      "payment_answer": "Akceptujemy karty kredytowe, karty debetowe i przelewy bankowe. Klienci korporacyjni mogą płacić fakturą.",
-      "return_question": "Jakie są warunki zwrotu i wymiany?",
-      "return_answer": "Możesz zwrócić produkty w ciągu 14 dni od dostawy, pod warunkiem, że są nieotwarte i niezużyte.",
-      "cancel_question": "Jak mogę anulować zamówienie?",
-      "cancel_answer": "Możesz anulować z sekcji Moje zamówienia przed wysyłką. W przypadku zamówień już wysłanych, skontaktuj się z obsługą klienta."
-    },
-    "help_center": "Centrum pomocy",
-    "help_center_desc": "Jesteśmy tutaj, aby zapewnić Ci najlepsze wsparcie. Nie wahaj się skontaktować z nami w razie jakichkolwiek pytań.",
-    "working_hours": "Godziny pracy",
-    "working_hours_weekdays": "Poniedziałek - Piątek: 09:00 - 18:00",
-    "working_hours_weekend": "Sobota: 09:00 - 14:00",
-    "working_hours_title": "Godziny pracy",
-    "categories_title": "Kategorie pomocy",
-    "contact_title": "Skontaktuj się z nami",
-    "contact_methods": {
-      "email": "E-mail",
-      "phone": "Telefon",
-      "whatsapp": "WhatsApp",
-      "live_support": "Wsparcie na żywo"
-    }
-  },
-  "help_center": {
-    "title": "Centrum Pomocy",
-    "header": "Jak możemy Ci pomóc?",
-    "search_placeholder": "Wpisz, aby wyszukać...",
-    "categories": {
-      "orders": "Zamówienia",
-      "returns": "Zwroty i refundacje",
-      "account": "Zarządzanie kontem",
-      "payment": "Opcje płatności",
-      "security": "Bezpieczeństwo i prywatność"
-    }
-  },
-  "errors": {
-    "INSUFFICIENT_STOCK": "Możesz dodać maksymalnie {{stock}} sztuk tego produktu.",
-    "INSUFFICIENT_STOCK_ALREADY_IN_CART": "Masz {{inCart}} sztuk tego produktu w koszyku. Możesz dodać maksymalnie {{canAdd}} sztuk więcej.",
-    "MIN_QUANTITY_NOT_MET": "Minimalna ilość zamówienia dla tego produktu to {{minQuantity}} sztuk.",
-    "PRODUCT_NOT_FOUND": "Produkt nie znaleziony.",
-    "CART_ITEM_NOT_FOUND": "Element koszyka nie znaleziony.",
-    "CART_ADD_ERROR": "Wystąpił nieoczekiwany błąd podczas dodawania do koszyka. Spróbuj ponownie.",
-    "CART_UPDATE_ERROR": "Wystąpił nieoczekiwany błąd podczas aktualizacji. Spróbuj ponownie.",
-    "UNEXPECTED_ERROR": "Wystąpił nieoczekiwany błąd",
-    "RATE_LIMIT_DEFAULT": "Zbyt wiele żądań, proszę spróbować później.",
-    "RATE_LIMIT_AUTH": "Zbyt wiele prób uwierzytelniania. Proszę spróbować później.",
-    "RATE_LIMIT_OTP_SEND": "Zbyt wiele żądań OTP. Proszę poczekać 1 minutę i spróbować ponownie.",
-    "RATE_LIMIT_OTP_VERIFY": "Zbyt wiele prób weryfikacji. Proszę poczekać 5 minut."
+    "discover_all": "Odkryj Wszystkie Nasze Produkty",
+    "discover_subtitle": "Znajdź najlepsze dla siebie spośród tysięcy wysokiej jakości produktów. Ciesz się szybką dostawą i bezpiecznymi zakupami.",
+    "view_all_products": "Zobacz Wszystkie Produkty"
   },
   "product": {
-    "add_to_cart": "Dodaj do koszyka",
+    "add_to_cart": "Dodaj do Koszyka",
     "adding": "Dodawanie...",
-    "out_of_stock": "Brak w magazynie",
+    "out_of_stock": "Brak w Magazynie",
     "low_stock": "Ostatnie {{count}} sztuk",
-    "in_stock": "Dostępny w magazynie"
+    "in_stock": "Dostępny w Magazynie",
+    "organic": "Organiczny",
+    "halal": "Halal",
+    "vegetarian": "Wegetariański",
+    "vegan": "Wegański",
+    "gluten_free": "Bezglutenowy",
+    "lactose_free": "Bez Laktozy",
+    "no_image": "Brak Zdjęcia",
+    "description": "Opis",
+    "quantity": "Ilość",
+    "max_stock": "Maksymalnie {{count}} sztuk",
+    "guarantee": "Gwarancja Jakości",
+    "quality_guarantee": "100% bezpiecznie",
+    "fast_delivery": "Szybka Dostawa",
+    "same_day_delivery": "Wysyłka tego samego dnia",
+    "return_policy": "Gwarancja Zwrotu",
+    "easy_return": "Łatwy zwrot",
+    "certificates": "Certyfikaty",
+    "general_info": "Informacje Ogólne",
+    "net_quantity": "Ilość Netto",
+    "origin_country": "Kraj Pochodzenia",
+    "expiry_date": "Data Ważności",
+    "brand": "Marka",
+    "allergens": "Informacje o Alergenach",
+    "nutritional_values": "Wartości Odżywcze",
+    "per_100g": "na 100g",
+    "energy": "Energia",
+    "fat": "Tłuszcz",
+    "saturated_fat": "Tłuszcze Nasycone",
+    "carbohydrates": "Węglowodany",
+    "sugar": "Cukier",
+    "protein": "Białko",
+    "salt": "Sól",
+    "storage_conditions": "Warunki Przechowywania",
+    "manufacturer_info": "Informacje o Producencie",
+    "manufacturer_name": "Producent",
+    "manufacturer_address": "Adres",
+    "manufacturer_phone": "Telefon",
+    "manufacturer_email": "E-mail",
+    "similar_products": "Podobne Produkty"
   },
   "product_card": {
-    "add_to_cart": "Dodaj do koszyka",
-    "add_to_favorites": "Dodaj do ulubionych",
-    "remove_from_favorites": "Usuń z ulubionych",
+    "add_to_cart": "Dodaj do Koszyka",
+    "add_to_favorites": "Dodaj do Ulubionych",
+    "remove_from_favorites": "Usuń z Ulubionych",
     "share": "Udostępnij",
-    "view_details": "Zobacz szczegóły",
+    "view_details": "Zobacz Szczegóły",
     "minimum_quantity_dialog": {
-      "title": "Minimalna ilość zamówienia"
+      "title": "Minimalna Ilość Zakupu"
     }
   },
   "product_detail": {
     "purchase": {
-      "add_to_cart": "Dodaj do koszyka",
+      "add_to_cart": "Dodaj do Koszyka",
       "adding_to_cart": "Dodawanie",
-      "added_to_cart": "Dodano do koszyka",
+      "added_to_cart": "Dodano do Koszyka",
       "update_cart": "Aktualizuj",
-      "go_to_cart": "Przejdź do koszyka",
-      "out_of_stock": "Brak w magazynie",
-      "notify_me": "Powiadom mnie",
-      "notify_success": "Powiadomienie dodane",
-      "notify_success_message": "Powiadomimy Cię, gdy {{productName}} będzie ponownie dostępny.",
-      "stock_error_title": "Przekroczono Limit Stanu Magazynowego",
-      "stock_error_message": "Możesz dodać maksymalnie {{count}} sztuk tego produktu.",
+      "go_to_cart": "Przejdź do Koszyka",
+      "out_of_stock": "Brak w Magazynie",
+      "notify_me": "Powiadom Mnie",
+      "notify_success": "Powiadomienie Dodane",
+      "notify_success_message": "Powiadomimy Cię, gdy {{productName}} będzie dostępny.",
+      "stock_error_title": "Przekroczono Limit Magazynowy",
+      "stock_error_message": "Możesz kupić maksymalnie {{count}} sztuk tego produktu.",
       "generic_error_title": "Błąd",
-      "generic_error_message": "Wystąpił błąd podczas dodawania do koszyka. Proszę spróbować ponownie.",
-      "add_min_quantity": "Dodaj {{count}} sztuk"
+      "generic_error_message": "Wystąpił problem podczas dodawania do koszyka. Spróbuj ponownie.",
+      "add_min_quantity": "Dodaj {{count}} Sztuk"
     }
-  },
-  "common": {
-    "ok": "OK",
-    "cancel": "Anuluj",
-    "save": "Zapisz",
-    "loading": "Ładowanie...",
-    "error": "Błąd",
-    "success": "Sukces",
-    "confirm": "Potwierdź",
-    "close": "Zamknij"
   },
   "dropdown": {
     "orders": "Moje Zamówienia",
@@ -167,59 +111,654 @@
     "app_settings": "Ustawienia Aplikacji",
     "help_center": "Centrum Pomocy",
     "legal": "Informacje Prawne",
-    "logout": "Wyloguj",
-    "login": "Zaloguj",
+    "logout": "Wyloguj się",
+    "login": "Zaloguj się",
     "theme": "Motyw",
     "language": "Język",
     "light_theme": "Jasny Motyw",
     "dark_theme": "Ciemny Motyw",
     "system_theme": "System",
-    "turkish": "Türkçe",
+    "turkish": "Turecki",
     "english": "English",
     "polish": "Polski",
     "guest": "Gość",
     "guest_account": "Konto gościa",
     "profile_menu": "Menu profilu",
     "individual": "Indywidualny",
-    "corporate": "Korporacyjny"
+    "corporate": "Firmowy"
+  },
+  "loading": {
+    "loading_products": "Ładowanie produktów...",
+    "loading": "Ładowanie..."
+  },
+  "error": {
+    "error_occurred": "Wystąpił Błąd",
+    "try_again": "Spróbuj Ponownie",
+    "loading_error": "Wystąpił błąd podczas ładowania danych",
+    "no_products": "Brak Produktów",
+    "no_products_desc": "Produkty mogą być w trakcie ładowania, spróbuj ponownie później.",
+    "product_not_found": "Nie znaleziono produktu"
   },
   "common": {
+    "back": "Wstecz",
+    "go_back": "Powrót",
+    "lang_code": "pl",
     "ok": "OK",
     "cancel": "Anuluj",
     "save": "Zapisz",
+    "saving": "Zapisywanie...",
+    "delete": "Usuń",
+    "edit": "Edytuj",
+    "add": "Dodaj",
+    "search": "Szukaj",
     "loading": "Ładowanie...",
     "error": "Błąd",
     "success": "Sukces",
     "confirm": "Potwierdź",
-    "close": "Zamknij"
+    "close": "Zamknij",
+    "continue": "Kontynuuj"
+  },
+  "auth": {
+    "phoneLogin": {
+      "b2bNote": "Klienci firmowi mogą dołączyć tylko za pomocą numeru telefonu.",
+      "title": "Logowanie przez Telefon",
+      "subtitle": "Wyślemy Ci kod weryfikacyjny",
+      "sending_code": "Wysyłanie Kodu...",
+      "google_signing_in": "Logowanie przez Google...",
+      "divider_or": "lub",
+      "terms_text": "Kontynuując, akceptujesz",
+      "terms_and": "oraz",
+      "terms_accept": "."
+    },
+    "complete_profile": {
+      "title": "Uzupełnij Profil",
+      "subtitle": "Wprowadź swoje dane, aby utworzyć konto",
+      "complete_title": "Uzupełnij Swój Profil",
+      "complete_subtitle": "Uzupełnij swoje dane, abyśmy mogli lepiej Ci służyć",
+      "first_name": "Imię",
+      "last_name": "Nazwisko",
+      "email": "E-mail",
+      "nip": "Numer NIP",
+      "contracts_permissions": "Umowy i Uprawnienia",
+      "accept_prefix": "Akceptuję:",
+      "terms_of_service": "Regulamin",
+      "privacy_policy": "Polityka Prywatności",
+      "marketing_text": "Akceptuję komunikację marketingową",
+      "marketing_desc": "Chcę otrzymywać informacje o kampaniach, zniżkach i nowych produktach przez e-mail. (Opcjonalnie)",
+      "completing": "Uzupełnianie Profilu..."
+    },
+    "verifyOtp": {
+      "title": "Kod Weryfikacyjny",
+      "subtitle": "Wprowadź 6-cyfrowy kod wysłany na {{phone}}.",
+      "helper": "Wprowadź 6-cyfrowy kod weryfikacyjny",
+      "verifying": "Weryfikacja...",
+      "submit": "Weryfikuj",
+      "resending": "Wysyłanie...",
+      "resend": "Wyślij Kod Ponownie",
+      "resendReady": "Możesz ponownie wysłać kod.",
+      "resendIn": "Ponowne wysłanie za {{second}} sek.",
+      "notReceived": {
+        "title": "Nie otrzymałeś kodu?",
+        "help": "Sprawdź folder spam lub poczekaj kilka minut."
+      },
+      "errors": {
+        "phoneMissing": "Nie znaleziono numeru telefonu. Zaloguj się ponownie.",
+        "invalidLength": "Wprowadź 6-cyfrowy kod weryfikacyjny.",
+        "verifyFailed": "Wystąpił błąd podczas weryfikacji kodu.",
+        "resendFailed": "Wystąpił błąd podczas ponownego wysyłania kodu."
+      },
+      "info": {
+        "resent": "Kod został wysłany ponownie"
+      }
+    },
+    "account_type": "Typ Konta",
+    "country_code": "Kod Kraju",
+    "phone_number": "Numer Telefonu",
+    "phone_placeholder": "XXX XXX XXX",
+    "send_verification_code": "Wyślij Kod Weryfikacyjny",
+    "google_sign_in": "Zaloguj się przez Google",
+    "have_account": "Masz konto?",
+    "otp_send_error": "Wystąpił błąd podczas wysyłania OTP",
+    "phone_not_found": "Nie znaleziono numeru telefonu. Zaloguj się ponownie.",
+    "enter_6_digit_code": "Wprowadź 6-cyfrowy kod weryfikacyjny.",
+    "unexpected_response": "Otrzymano nieoczekiwaną odpowiedź. Spróbuj ponownie.",
+    "verification_check_error": "Wystąpił błąd podczas weryfikacji kodu.",
+    "resend_code_error": "Wystąpił błąd podczas ponownego wysyłania kodu.",
+    "check_spam_folder": "Sprawdź folder spam lub poczekaj kilka minut.",
+    "verification_code": "Kod Weryfikacyjny",
+    "verify_code": "Weryfikuj Kod",
+    "resend_code": "Wyślij Kod Ponownie",
+    "enter_sms_code": "Wprowadź 6-cyfrowy kod wysłany SMS-em",
+    "didnt_receive_code": "Nie otrzymałeś kodu?",
+    "personal_info": "Dane Osobowe",
+    "company_info": "Dane Firmy",
+    "accept_terms": "Akceptuję Regulamin",
+    "accept_privacy": "Akceptuję Politykę Prywatności",
+    "marketing_consent": "Chcę otrzymywać informacje o kampaniach i nowościach"
+  },
+  "footer": {
+    "company_name": "Metropolitan Food Group",
+    "about_us": "O nas",
+    "about_description": "Zaufana platforma spożywcza dostarczająca najświeższe produkty natury pod Twoje drzwi. Jakość i zadowolenie klienta to nasz priorytet.",
+    "quick_links": "Szybkie Linki",
+    "products": "Produkty",
+    "categories": "Kategorie",
+    "special_offers": "Oferty Specjalne",
+    "new_arrivals": "Nowości",
+    "customer_service": "Obsługa Klienta",
+    "help_center": "Centrum Pomocy",
+    "contact_us": "Kontakt",
+    "faq": "Najczęściej Zadawane Pytania",
+    "delivery_info": "Informacje o Dostawie",
+    "return_policy": "Zwroty i Wymiany",
+    "privacy_policy": "Polityka Prywatności",
+    "terms_of_service": "Regulamin",
+    "cookie_policy": "Polityka Cookies",
+    "contact_info": "Dane Kontaktowe",
+    "address": "Adres",
+    "address_value": "ul. Aleja Krakowska 44, 05-090 Janki, Warsaw",
+    "phone": "Telefon",
+    "phone_value": "+48 600 790 035",
+    "email": "E-mail",
+    "email_value": "info@metropolitanfg.pl",
+    "follow_us": "Obserwuj Nas",
+    "newsletter": "Newsletter",
+    "newsletter_description": "Zapisz się do naszego newslettera, aby otrzymywać informacje o ofertach specjalnych i nowościach.",
+    "newsletter_placeholder": "Twój adres e-mail",
+    "subscribe": "Zapisz się",
+    "copyright": "© {{year}} Metropolitan Food Group. Wszelkie prawa zastrzeżone.",
+    "working_hours": "Godziny Pracy",
+    "working_hours_value": "Poniedziałek - Piątek: 08:00 - 18:00\nSobota - Niedziela: Zamknięte",
+    "mobile_app": "Aplikacja",
+    "mobile_app_description": "Kliknij kod QR, aby powiększyć. Zeskanuj telefonem, aby przejść do sklepu.",
+    "download_app": "Pobierz Aplikację",
+    "app_store": "App Store",
+    "google_play": "Google Play"
+  },
+  "tabs": {
+    "products": "Produkty",
+    "orders": "Moje Zamówienia",
+    "profile": "Profil",
+    "search_placeholder": "Szukaj produktu..."
+  },
+  "products": {
+    "title": "Produkty",
+    "found": "Znaleziono {{count}} produktów",
+    "not_found": "Nie znaleziono produktów",
+    "not_found_desc": "Nie znaleziono produktów spełniających podane kryteria.",
+    "clear_filters": "Wyczyść Filtry"
+  },
+  "categories": {
+    "all": "Wszystkie",
+    "title": "Kategorie",
+    "no_categories": "Brak kategorii",
+    "no_categories_desc": "Kategorie pojawią się tutaj po dodaniu produktów.",
+    "product_count": "{{count}} produktów"
+  },
+  "cart": {
+    "title": "Mój Koszyk",
+    "empty": {
+      "title": "Twój koszyk jest pusty",
+      "subtitle": "Dodaj produkty, aby rozpocząć zakupy.",
+      "button": "Rozpocznij Zakupy"
+    },
+    "checkout": "Złóż Zamówienie",
+    "continue_shopping": "Kontynuuj zakupy",
+    "item_removed": "Produkt usunięty z koszyka"
+  },
+  "orders": {
+    "title": "Moje Zamówienia",
+    "empty": {
+      "title": "Nie masz jeszcze żadnych zamówień",
+      "subtitle": "Nie złożyłeś jeszcze żadnego zamówienia. Rozpocznij zakupy!",
+      "button": "Rozpocznij Zakupy"
+    },
+    "guest_empty": {
+      "title": "Zaloguj się, aby zobaczyć historię zamówień",
+      "subtitle": "Musisz zalogować się na swoje konto, aby wyświetlić i śledzić zamówienia.",
+      "button": "Zaloguj się"
+    },
+    "order_number": "Zamówienie #{{number}}",
+    "items": "{{count}} produktów"
+  },
+  "order_detail": {
+    "title": "Zamówienie #{{number}}",
+    "not_found_title": "Nie Znaleziono Zamówienia",
+    "not_found_body": "Nie znaleziono żądanego zamówienia.",
+    "back_to_orders": "Wróć do Zamówień",
+    "products": {
+      "section_title": "Zawartość Zamówienia",
+      "quantity": "{{count}} szt."
+    },
+    "summary": {
+      "section_title": "Podsumowanie Zamówienia",
+      "subtotal": "Suma Częściowa",
+      "shipping": "Dostawa",
+      "free_shipping": "Darmowa",
+      "total": "Razem"
+    },
+    "delivery_payment": {
+      "delivery_address": "Adres Dostawy"
+    },
+    "actions": {
+      "download_invoice": "Pobierz Fakturę"
+    },
+    "help": "Pomoc"
+  },
+  "profile": {
+    "guest_title": "Użytkownik Gość",
+    "guest_message": "Musisz zalogować się, aby zobaczyć informacje o profilu.",
+    "login": "Zaloguj się",
+    "logout": "Wyloguj się",
+    "logging_out": "Wylogowywanie...",
+    "account_section": "Konto",
+    "app_section": "Aplikacja",
+    "support_section": "Wsparcie",
+    "legal_section": "Prawne",
+    "favorites": "Moje Ulubione",
+    "addresses": "Moje Adresy",
+    "notifications": "Moje Powiadomienia",
+    "account_settings": "Ustawienia Konta",
+    "app_settings": "Ustawienia Aplikacji",
+    "help_center": "Centrum Pomocy",
+    "legal": "Informacje Prawne",
+    "version": "Wersja {{version}}",
+    "header_edit": "Edytuj"
+  },
+  "favorites": {
+    "title": "Moje Ulubione",
+    "empty": {
+      "title": "Twoja lista ulubionych jest pusta",
+      "subtitle": "Dodaj produkty, które lubisz do ulubionych i łatwo do nich wracaj.",
+      "browse_button": "Przeglądaj Produkty"
+    },
+    "login_required": "Zaloguj się, aby zobaczyć ulubione produkty"
+  },
+  "addresses": {
+    "title": "Moje Adresy",
+    "empty": {
+      "title": "Nie masz jeszcze żadnych adresów",
+      "subtitle": "Dodaj swój pierwszy adres, aby szybko rozpocząć zakupy.",
+      "add_button": "Dodaj Nowy Adres"
+    },
+    "add_new_address": "Dodaj Nowy Adres",
+    "default_delivery": "Domyślny Adres Dostawy",
+    "default_billing": "Domyślny Adres Rozliczeniowy",
+    "login_required": "Zaloguj się, aby zobaczyć swoje adresy",
+    "login_desc": "Zapisz swoje adresy dostawy i składaj zamówienia szybciej."
+  },
+  "notifications": {
+    "title": "Powiadomienia",
+    "empty_title": "Brak powiadomień",
+    "empty_message": "Powiadomienia o zamówieniach i ofertach specjalnych pojawią się tutaj.",
+    "mark_all_read": "Oznacz Wszystkie jako Przeczytane",
+    "login_required": "Zaloguj się, aby zobaczyć powiadomienia",
+    "login_desc": "Bądź na bieżąco z aktualizacjami zamówień i ofertami specjalnymi."
+  },
+  "help_center": {
+    "title": "Centrum Pomocy",
+    "header": "W czym możemy Ci pomóc?",
+    "search_placeholder": "Wpisz, aby wyszukać...",
+    "contact": "Skontaktuj się z Nami",
+    "categories": {
+      "orders": "Zamówienia",
+      "returns": "Zwroty i Zwroty Kosztów",
+      "account": "Zarządzanie Kontem",
+      "payment": "Opcje Płatności",
+      "security": "Bezpieczeństwo i Prywatność"
+    }
+  },
+  "legal": {
+    "title": "Prawne",
+    "documents_section": "Dokumenty Prawne",
+    "terms_of_service": "Regulamin",
+    "terms_desc": "Warunki korzystania z usługi",
+    "privacy_policy": "Polityka Prywatności",
+    "privacy_desc": "Ochrona danych i prywatność",
+    "cookie_policy": "Polityka Cookies",
+    "cookie_desc": "Informacje o używaniu cookies",
+    "gdpr": "RODO",
+    "gdpr_desc": "Ochrona danych osobowych",
+    "company_info_section": "Informacje o Firmie",
+    "notice_title": "Informacja Prawna",
+    "notice_desc": "Wszystkie treści i materiały w tej aplikacji są własnością Metropolitan Food Group Sp. z o.o. i chronione prawem autorskim.",
+    "privacy_hero_title": "Twoja Prywatność Jest Ważna",
+    "cookie_hero_title": "Nasza Polityka Cookies",
+    "terms_hero_title": "Nasz Regulamin",
+    "loading": "Ładowanie...",
+    "error": "Błąd podczas ładowania treści",
+    "copyright": "© 2025 Metropolitan Food Group. Wszelkie prawa zastrzeżone.",
+    "back_to_top": "Wróć do góry"
+  },
+  "checkout": {
+    "steps": {
+      "cart": "Koszyk",
+      "address": "Adres",
+      "payment": "Płatność",
+      "summary": "Podsumowanie"
+    },
+    "delivery_address": "Adres Dostawy",
+    "billing_address": "Adres Rozliczeniowy",
+    "same_billing_address": "Adres rozliczeniowy taki sam jak adres dostawy",
+    "add_new_address": "Dodaj Nowy Adres",
+    "continue_to_payment": "Przejdź do Płatności",
+    "payment_method": "Metoda Płatności",
+    "secure_payment": "Bezpieczna Płatność",
+    "secure_payment_desc": "Wszystkie płatności są szyfrowane SSL i przetwarzane na bezpiecznych serwerach.",
+    "more_payment_methods_soon": "Więcej opcji płatności wkrótce",
+    "continue_to_summary": "Przejdź do Podsumowania",
+    "no_payment_method_selected": "Nie wybrano metody płatności",
+    "order_summary": "Podsumowanie Zamówienia",
+    "subtotal": "Suma Częściowa",
+    "shipping": "Dostawa",
+    "free": "Darmowa",
+    "total": "Razem",
+    "items": "produktów",
+    "agree_terms": "Akceptuję regulamin i politykę prywatności",
+    "complete_order": "Złóż Zamówienie",
+    "missing_info": "Wypełnij wszystkie wymagane informacje.",
+    "missing_fields": "Wypełnij wszystkie wymagane pola.",
+    "order_error": "Wystąpił błąd podczas tworzenia zamówienia. Spróbuj ponownie.",
+    "order_creation_failed": "Nie udało się utworzyć zamówienia. Spróbuj ponownie.",
+    "payment_error": "Płatność nie powiodła się. Spróbuj ponownie.",
+    "payment_methods": {
+      "card": {
+        "title": "Karta Kredytowa / Debetowa",
+        "subtitle": "Visa, Mastercard, Maestro"
+      },
+      "bank_transfer": {
+        "title": "Przelew Bankowy",
+        "subtitle": "Ręczna płatność na nasze konto bankowe"
+      }
+    },
+    "address_select": {
+      "title": "Dodaj Adres",
+      "desc": "Musisz najpierw dodać adres dostawy, aby ukończyć zamówienie."
+    }
+  },
+  "payment": {
+    "stripe_load_failed": "Nie udało się załadować systemu płatności. Odśwież stronę.",
+    "payment_failed": "Płatność nie powiodła się. Spróbuj ponownie.",
+    "unsupported_payment_method": "Ta metoda płatności nie jest jeszcze obsługiwana.",
+    "unknown_error": "Wystąpił nieznany błąd. Spróbuj ponownie.",
+    "client_secret_missing": "Brak informacji o płatności. Spróbuj ponownie."
+  },
+  "order": {
+    "creation_failed": "Nie udało się utworzyć zamówienia. Spróbuj ponownie."
+  },
+  "order_confirmation": {
+    "title": "Zamówienie Przyjęte!",
+    "description": "Twoje zamówienie zostało pomyślnie złożone. Wysłaliśmy szczegóły zamówienia na Twój adres e-mail.",
+    "go_to_orders": "Przejdź do Zamówień",
+    "continue_shopping": "Kontynuuj Zakupy"
+  },
+  "account_settings": {
+    "title": "Ustawienia Konta",
+    "general": "Ogólne",
+    "edit_profile": "Edytuj Profil",
+    "edit_profile_desc": "Edytuj imię, e-mail i inne informacje",
+    "privacy": "Prywatność",
+    "privacy_desc": "Zarządzaj ustawieniami prywatności",
+    "security": "Bezpieczeństwo",
+    "security_desc": "Skonfiguruj ustawienia bezpieczeństwa",
+    "danger_zone": "Strefa Niebezpieczna",
+    "export_data": "Pobierz Moje Dane",
+    "export_data_desc": "Pobierz dane swojego konta",
+    "delete_account": "Usuń Konto",
+    "delete_account_desc": "Usuń swoje konto na stałe",
+    "login_required": "Musisz zalogować się, aby zobaczyć ustawienia konta."
+  },
+  "app_settings": {
+    "title": "Ustawienia Aplikacji",
+    "appearance": "Wygląd",
+    "theme": "Motyw",
+    "theme_desc": "Wybierz motyw aplikacji",
+    "theme_system": "System",
+    "theme_light": "Jasny",
+    "theme_dark": "Ciemny",
+    "language": "Język",
+    "language_desc": "Wybierz język aplikacji",
+    "info": "Więcej opcji ustawień wkrótce"
+  },
+  "offers": {
+    "title": "Oferty",
+    "no_offers": "Brak aktualnych ofert",
+    "no_offers_desc": "Nowe oferty pojawią się tutaj po ich dodaniu.",
+    "found": "Znaleziono {{count}} produktów w promocji"
+  },
+  "status": {
+    "pending": "Oczekujące",
+    "confirmed": "Potwierdzone",
+    "preparing": "Przygotowywane",
+    "shipped": "Wysłane",
+    "delivered": "Dostarczone",
+    "cancelled": "Anulowane"
+  },
+  "faq": {
+    "title": "Najczęściej Zadawane Pytania",
+    "q1": {
+      "question": "Jak mogę anulować zamówienie?",
+      "answer": "Możesz anulować zamówienie z sekcji 'Moje Zamówienia', zanim jego status zmieni się na 'Przygotowywane'. Po wysłaniu zamówienia nie można go anulować."
+    },
+    "q2": {
+      "question": "Jak działa proces zwrotu produktu?",
+      "answer": "Możesz zwrócić otrzymane produkty w ciągu 14 dni. Po utworzeniu żądania zwrotu w Moje Konto > Moje Zamówienia możesz wysłać produkt bezpłatnie, używając podanego kodu kurierskiego."
+    },
+    "q3": {
+      "question": "Ile kosztuje dostawa?",
+      "answer": "Dostawa jest darmowa dla wszystkich zamówień. Brak minimalnego limitu."
+    },
+    "q4": {
+      "question": "Jakich metod płatności mogę użyć?",
+      "answer": "Możesz płacić kartą kredytową, kartą debetową i PayPal. Dostępna jest również opcja płatności przy odbiorze."
+    }
+  },
+  "support": {
+    "title": "Wsparcie",
+    "contact_section": "Kontakt",
+    "whatsapp": "WhatsApp",
+    "whatsapp_message": "Witam, chciałbym uzyskać pomoc dotyczącą Metropolitan Food Group.",
+    "call_us": "Zadzwoń do Nas",
+    "email": "E-mail",
+    "address": "Adres",
+    "social_section": "Media Społecznościowe",
+    "instagram": "Instagram",
+    "facebook": "Facebook",
+    "twitter": "Twitter",
+    "linkedin": "LinkedIn",
+    "faq_section": "Najczęściej Zadawane Pytania",
+    "faq": {
+      "delivery_question": "Jak działa proces dostawy?",
+      "delivery_answer": "Zamówienia są wysyłane w ciągu 1-3 dni roboczych po potwierdzeniu. Numer śledzenia paczki zostanie wysłany SMS-em.",
+      "payment_question": "Jakie metody płatności akceptujecie?",
+      "payment_answer": "Akceptujemy płatności kartą kredytową, kartą debetową i przelewem bankowym. Klientom firmowym oferujemy możliwość płatności fakturą.",
+      "return_question": "Jakie są warunki zwrotu i wymiany?",
+      "return_answer": "Możesz zwrócić produkty w ciągu 14 dni od daty otrzymania, pod warunkiem że opakowanie nie zostało otwarte i produkt nie był używany.",
+      "cancel_question": "Jak mogę anulować zamówienie?",
+      "cancel_answer": "Możesz anulować zamówienie z sekcji Moje Zamówienia, zanim zostanie wysłane. W przypadku zamówień, które już zostały wysłane, skontaktuj się z obsługą klienta."
+    },
+    "help_center": "Centrum Pomocy",
+    "help_center_desc": "Jesteśmy tutaj, aby zapewnić Ci najlepszą obsługę. Nie wahaj się z nami skontaktować, jeśli masz jakiekolwiek pytania.",
+    "working_hours": "Godziny Pracy",
+    "working_hours_weekdays": "Poniedziałek - Piątek: 09:00 - 18:00",
+    "working_hours_weekend": "Sobota: 09:00 - 14:00",
+    "working_hours_title": "Godziny Pracy",
+    "categories_title": "Kategorie Pomocy",
+    "contact_title": "Skontaktuj się z Nami",
+    "contact_methods": {
+      "email": "E-mail",
+      "phone": "Telefon",
+      "whatsapp": "WhatsApp",
+      "live_support": "Wsparcie na Żywo"
+    }
   },
   "errors": {
-    "PRODUCT_NOT_FOUND": "Produkt nie znaleziony.",
-    "CART_ITEM_NOT_FOUND": "Element koszyka nie znaleziony.",
-    "CART_ADD_ERROR": "Podczas dodawania produktu do koszyka wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
-    "CART_UPDATE_ERROR": "Podczas aktualizacji produktu wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
+    "INSUFFICIENT_STOCK": "Możesz dodać maksymalnie {{stock}} sztuk tego produktu.",
+    "INSUFFICIENT_STOCK_ALREADY_IN_CART": "Masz {{inCart}} sztuk tego produktu w koszyku. Możesz dodać maksymalnie {{canAdd}} więcej.",
+    "MIN_QUANTITY_NOT_MET": "Minimalna ilość zakupu tego produktu to {{minQuantity}} sztuk.",
+    "PRODUCT_NOT_FOUND": "Nie znaleziono produktu.",
+    "CART_ITEM_NOT_FOUND": "Nie znaleziono pozycji w koszyku.",
+    "CART_ADD_ERROR": "Wystąpił nieoczekiwany błąd podczas dodawania produktu do koszyka. Spróbuj ponownie.",
+    "CART_UPDATE_ERROR": "Wystąpił nieoczekiwany błąd podczas aktualizacji produktu. Spróbuj ponownie.",
     "ERROR_BOUNDARY_TITLE": "Wystąpił Błąd",
     "ERROR_BOUNDARY_DESCRIPTION": "W naszej aplikacji wystąpił nieoczekiwany błąd. Naprawimy to jak najszybciej.",
-    "ERROR_BOUNDARY_RELOAD": "Przeładuj Aplikację",
+    "ERROR_BOUNDARY_RELOAD": "Odśwież Aplikację",
     "ERROR_BOUNDARY_RETRY": "Spróbuj Ponownie",
-    "ERROR_BOUNDARY_SUPPORT": "Jeśli problem nadal występuje, skontaktuj się z naszym zespołem wsparcia.",
+    "ERROR_BOUNDARY_SUPPORT": "Jeśli problem będzie się powtarzał, możesz skontaktować się z naszym zespołem wsparcia.",
     "ERROR_BOUNDARY_SUPPORT_EMAIL": "info@metropolitanfg.pl",
     "UNEXPECTED_ERROR": "Wystąpił nieoczekiwany błąd",
-    "TRY_AGAIN_LATER": "Spróbuj ponownie później",
-    "RATE_LIMIT_DEFAULT": "Zbyt wiele żądań, spróbuj ponownie później.",
-    "RATE_LIMIT_AUTH": "Zbyt wiele prób uwierzytelnienia. Spróbuj ponownie później.",
-    "RATE_LIMIT_OTP_SEND": "Zbyt wiele żądań OTP. Poczekaj 1 minutę przed kolejną próbą.",
+    "TRY_AGAIN_LATER": "Spróbuj ponownie za chwilę",
+    "RATE_LIMIT_DEFAULT": "Wysłano zbyt wiele żądań, spróbuj ponownie za chwilę.",
+    "RATE_LIMIT_AUTH": "Zbyt wiele prób uwierzytelnienia. Spróbuj ponownie za chwilę.",
+    "RATE_LIMIT_OTP_SEND": "Zbyt wiele żądań OTP. Poczekaj 1 minutę i spróbuj ponownie.",
     "RATE_LIMIT_OTP_VERIFY": "Zbyt wiele prób weryfikacji. Poczekaj 5 minut.",
-    "RATE_LIMIT_REFRESH_TOKEN": "Zbyt wiele prób odświeżenia tokenu. Spróbuj ponownie później.",
-    "RATE_LIMIT_ORDER_CREATION": "Zbyt wiele żądań zamówień. Zwolnij tempo.",
+    "RATE_LIMIT_REFRESH_TOKEN": "Zbyt wiele prób odświeżenia tokenu. Spróbuj ponownie za chwilę.",
+    "RATE_LIMIT_ORDER_CREATION": "Zbyt wiele żądań zamówień. Zwolnij.",
     "RATE_LIMIT_DATA_EXPORT": "Osiągnięto limit eksportu danych. Spróbuj ponownie jutro.",
-    "RATE_LIMIT_SEARCH": "Zbyt wiele zapytań wyszukiwania. Zwolnij tempo.",
-    "RATE_LIMIT_WEBHOOK": "Przekroczono limit webhooków.",
-    "SERVER_ERROR": "Błąd serwera wewnętrznego",
-    "NOT_FOUND_ERROR": "Żądany zasób nie został znaleziony",
+    "RATE_LIMIT_SEARCH": "Zbyt wiele żądań wyszukiwania. Zwolnij.",
+    "RATE_LIMIT_WEBHOOK": "Przekroczono limit szybkości webhooka.",
+    "SERVER_ERROR": "Wystąpił błąd serwera",
+    "NOT_FOUND_ERROR": "Nie znaleziono żądanego zasobu",
     "VALIDATION_ERROR": "Błąd walidacji",
     "UNAUTHORIZED_ERROR": "Wymagane uwierzytelnienie",
     "FORBIDDEN_ERROR": "Niewystarczające uprawnienia",
     "UPLOAD_PHOTO_FAILED": "Nie udało się przesłać zdjęcia"
+  },
+  "metadata": {
+    "title": "Metropolitan Food Group - Wysokiej Jakości Produkty Spożywcze",
+    "description": "Najświeższe produkty natury pod Twoimi drzwiami. Szybka dostawa i bezpieczne zakupy."
+  },
+  "toast": {
+    "items_added_to_cart": "Produkty dodane do koszyka",
+    "reorder_failed": "Nie udało się ponownie zamówić",
+    "phone_required": "Numer telefonu jest wymagany",
+    "phone_mismatch": "Numer telefonu nie pasuje do Twojego konta",
+    "verification_code_sent": "Kod weryfikacyjny wysłany",
+    "code_send_failed": "Nie udało się wysłać kodu",
+    "account_deleted": "Twoje konto zostało pomyślnie usunięte",
+    "verification_failed": "Weryfikacja nie powiodła się",
+    "code_resent": "Kod wysłany ponownie",
+    "no_changes": "Nie wprowadzono zmian",
+    "profile_updated": "Profil zaktualizowany",
+    "profile_update_failed": "Nie udało się zaktualizować profilu",
+    "only_images_allowed": "Można przesyłać tylko pliki obrazów",
+    "profile_photo_updated": "Zdjęcie profilowe zaktualizowane",
+    "photo_upload_failed": "Nie udało się przesłać zdjęcia",
+    "privacy_settings_updated": "Ustawienia prywatności zaktualizowane",
+    "privacy_settings_update_failed": "Nie udało się zaktualizować ustawień prywatności",
+    "feature_coming_soon": "Ta funkcja zostanie wkrótce dodana",
+    "security_settings_updated": "Ustawienia bezpieczeństwa zaktualizowane",
+    "security_settings_update_failed": "Nie udało się zaktualizować ustawień bezpieczeństwa",
+    "disconnect_failed": "Nie udało się rozłączyć",
+    "file_size_limit": "Rozmiar pliku musi być mniejszy niż 5MB"
+  },
+  "user_types": {
+    "corporate": "Firmowy",
+    "individual": "Indywidualny"
+  },
+  "form": {
+    "first_name": "Imię",
+    "last_name": "Nazwisko",
+    "email": "E-mail",
+    "company_name": "Nazwa Firmy",
+    "nip": "NIP (Numer Identyfikacji Podatkowej)",
+    "first_name_placeholder": "Jan",
+    "last_name_placeholder": "Kowalski",
+    "email_placeholder": "przyklad@email.com",
+    "company_name_placeholder": "Nazwa Twojej Firmy",
+    "nip_placeholder": "1234567890",
+    "phone_number_invalid": "Wprowadź prawidłowy numer telefonu",
+    "fill_required_fields": "Wypełnij wszystkie wymagane pola",
+    "profile_completion_error": "Wystąpił błąd podczas uzupełniania profilu"
+  },
+  "favorites_action": {
+    "add": "Dodaj do ulubionych",
+    "remove": "Usuń z ulubionych"
+  },
+  "payment_methods": {
+    "google_pay_subtitle": "Szybka płatność mobilna"
+  },
+  "connection_status": {
+    "connected": "Połączono",
+    "not_connected": "Niepołączono",
+    "not_registered": "Niezarejestrowano"
+  },
+  "categories_default": {
+    "other": "Inne"
+  },
+  "auth_errors": {
+    "google_sign_in_failed": "Logowanie przez Google nie powiodło się"
+  },
+  "delete_account": {
+    "login_required": "Musisz zalogować się, aby usunąć swoje konto."
+  },
+  "address": {
+    "update_description": "Zaktualizuj dane adresowe",
+    "add_description": "Dodaj nowy adres dostawy",
+    "city_placeholder": "Warszawa"
+  },
+  "invoice": {
+    "preview_load_error": "Nie udało się załadować podglądu faktury",
+    "downloading": "Pobieranie faktury",
+    "download_error": "Nie udało się pobrać faktury"
+  },
+  "security_settings": {
+    "title": "Ustawienia Bezpieczeństwa",
+    "subtitle": "Kontroluj bezpieczeństwo konta i zarządzanie sesjami",
+    "login_required_title": "Zaloguj się",
+    "login_required_desc": "Musisz zalogować się, aby zobaczyć ustawienia bezpieczeństwa.",
+    "login_button": "Zaloguj się",
+    "linked_accounts": {
+      "title": "Połączone Konta",
+      "subtitle": "Szybkie logowanie za pomocą kont mediów społecznościowych",
+      "google": "Google",
+      "apple": "Apple",
+      "disconnect": "Rozłącz",
+      "connect": "Połącz",
+      "apple_mobile_only": "Użyj aplikacji mobilnej, aby połączyć z Apple",
+      "google_signin_failed": "Logowanie Google nie powiodło się",
+      "google_connected": "Konto Google pomyślnie połączone",
+      "google_connect_failed": "Nie udało się połączyć konta Google",
+      "disconnected": "Rozłączono konto {{provider}}"
+    },
+    "phone_number": {
+      "title": "Numer Telefonu",
+      "subtitle": "Numer telefonu zarejestrowany na Twoim koncie (logowanie OTP)",
+      "label": "Numer Telefonu",
+      "connected": "Połączono",
+      "change_help": "Skontaktuj się z obsługą, aby zmienić numer telefonu"
+    },
+    "active_sessions": {
+      "title": "Aktywne Sesje",
+      "subtitle": "Urządzenia zalogowane na Twoim koncie",
+      "current_device": "Bieżące Urządzenie (Web)",
+      "last_activity": "Ostatnia aktywność: Teraz",
+      "active": "Aktywne",
+      "other_sessions_soon": "Wkrótce możliwość wyświetlania innych sesji"
+    },
+    "account_security": {
+      "title": "Bezpieczeństwo Konta",
+      "subtitle": "Zarządzaj ustawieniami bezpieczeństwa",
+      "two_factor": {
+        "title": "Uwierzytelnianie Dwuskładnikowe",
+        "desc": "Dodatkowa warstwa bezpieczeństwa dla Twojego konta",
+        "coming_soon": "Wkrótce"
+      },
+      "login_alerts": {
+        "title": "Powiadomienia o Logowaniu",
+        "desc": "Otrzymuj powiadomienia o logowaniach z nowych urządzeń"
+      },
+      "device_tracking": {
+        "title": "Śledzenie Urządzeń",
+        "desc": "Monitoruj urządzenia połączone z Twoim kontem"
+      }
+    },
+    "unlink_dialog": {
+      "title": "Rozłącz",
+      "description": "Czy na pewno chcesz rozłączyć swoje konto {{provider}}?",
+      "cancel": "Anuluj",
+      "confirm": "Rozłącz",
+      "disconnecting": "Rozłączanie"
+    }
   }
 }

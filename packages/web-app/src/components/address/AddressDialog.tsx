@@ -98,8 +98,8 @@ export function AddressDialog({
           </DialogTitle>
           <DialogDescription>
             {address
-              ? "Adres bilgilerinizi güncelleyin"
-              : "Yeni teslimat adresi ekleyin"}
+              ? t("address.update_description")
+              : t("address.add_description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -136,7 +136,7 @@ export function AddressDialog({
                 <Label htmlFor="city">Şehir</Label>
                 <Input
                   id="city"
-                  placeholder="Warszawa"
+                  placeholder={t("address.city_placeholder")}
                   value={formData.city}
                   onChange={(e) =>
                     setFormData({ ...formData, city: e.target.value })
@@ -216,7 +216,7 @@ export function AddressDialog({
               İptal
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? "Kaydediliyor..." : "Kaydet"}
+              {isLoading ? t("common.saving") : t("common.save")}
             </Button>
           </DialogFooter>
         </form>

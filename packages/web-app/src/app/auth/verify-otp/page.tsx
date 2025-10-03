@@ -87,7 +87,7 @@ export default function VerifyOtpPage() {
       setError(
         t(
           "auth.verifyOtp.errors.phoneMissing",
-          "Telefon numarası bulunamadı. Lütfen tekrar giriş yapın."
+          t("auth.phone_not_found")
         )
       );
       return;
@@ -97,7 +97,7 @@ export default function VerifyOtpPage() {
       setError(
         t(
           "auth.verifyOtp.errors.invalidLength",
-          "Lütfen 6 haneli doğrulama kodunu giriniz."
+          t("auth.enter_6_digit_code")
         )
       );
       return;
@@ -136,14 +136,14 @@ export default function VerifyOtpPage() {
               }
             } else {
               console.log("⚠️ Unexpected response structure:", result);
-              setError("Beklenmeyen yanıt alındı. Lütfen tekrar deneyin.");
+              setError(t("auth.unexpected_response"));
             }
           } else {
             setError(
               result.message ||
                 t(
                   "auth.verifyOtp.errors.verifyFailed",
-                  "Doğrulama kodu kontrol edilirken bir hata oluştu."
+                  t("auth.verification_check_error")
                 )
             );
           }
@@ -152,7 +152,7 @@ export default function VerifyOtpPage() {
           setError(
             t(
               "auth.verifyOtp.errors.verifyFailed",
-              "Doğrulama kodu kontrol edilirken bir hata oluştu."
+              t("auth.verification_check_error")
             )
           );
         },
@@ -179,7 +179,7 @@ export default function VerifyOtpPage() {
               result.message ||
                 t(
                   "auth.verifyOtp.info.resent",
-                  "Yeni doğrulama kodu gönderildi."
+                  t("toast.code_resent")
                 )
             );
           } else {
@@ -187,7 +187,7 @@ export default function VerifyOtpPage() {
               result.message ||
                 t(
                   "auth.verifyOtp.errors.resendFailed",
-                  "Kod tekrar gönderilirken bir hata oluştu."
+                  t("auth.resend_code_error")
                 )
             );
           }
@@ -196,7 +196,7 @@ export default function VerifyOtpPage() {
           setError(
             t(
               "auth.verifyOtp.errors.resendFailed",
-              "Kod tekrar gönderilirken bir hata oluştu."
+              t("auth.resend_code_error")
             )
           );
         },
@@ -232,7 +232,7 @@ export default function VerifyOtpPage() {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
-                  <p>Geri Dön</p>
+                  <p>{t("common.go_back")}</p>
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -241,7 +241,7 @@ export default function VerifyOtpPage() {
             </div>
             <div>
               <CardTitle className="text-2xl font-bold">
-                {t("auth.verifyOtp.title", "Doğrulama Kodu")}
+                {t("auth.verifyOtp.title", t("auth.verification_code"))}
               </CardTitle>
               <CardDescription className="text-base">
                 {t(
@@ -323,7 +323,7 @@ export default function VerifyOtpPage() {
                       {t("auth.verifyOtp.resending", "Gönderiliyor...")}
                     </>
                   ) : (
-                    t("auth.verifyOtp.resend", "Kodu Tekrar Gönder")
+                    t("auth.verifyOtp.resend", t("auth.resend_code"))
                   )}
                 </Button>
               </div>
@@ -335,7 +335,7 @@ export default function VerifyOtpPage() {
                 <p>
                   {t(
                     "auth.verifyOtp.notReceived.help",
-                    "Spam klasörünüzü kontrol edin veya birkaç dakika bekleyin."
+                    t("auth.check_spam_folder")
                   )}
                 </p>
               </div>

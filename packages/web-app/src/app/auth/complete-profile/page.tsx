@@ -62,7 +62,7 @@ export default function CompleteProfilePage() {
     e.preventDefault();
 
     if (!isFormValid()) {
-      setError("Lütfen tüm gerekli alanları doldurunuz");
+      setError(t("form.fill_required_fields"));
       return;
     }
 
@@ -96,7 +96,7 @@ export default function CompleteProfilePage() {
           }
         },
         onError: (error: any) => {
-          setError(error.message || "Profil tamamlanırken bir hata oluştu");
+          setError(error.message || t("form.profile_completion_error"));
         },
       }
     );
@@ -125,7 +125,7 @@ export default function CompleteProfilePage() {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
-                  <p>Geri Dön</p>
+                  <p>{t("common.go_back")}</p>
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -134,10 +134,10 @@ export default function CompleteProfilePage() {
             </div>
             <div>
               <CardTitle className="text-2xl font-bold">
-                Profilinizi Tamamlayın
+                {t("auth.complete_profile.complete_title")}
               </CardTitle>
               <CardDescription className="text-base">
-                Size daha iyi hizmet verebilmek için bilgilerinizi tamamlayın
+                {t("auth.complete_profile.complete_subtitle")}
               </CardDescription>
             </div>
           </CardHeader>
@@ -148,7 +148,7 @@ export default function CompleteProfilePage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName" className="text-sm font-medium">
-                    Ad *
+                    {t("auth.complete_profile.first_name")} *
                   </Label>
                   <Input
                     id="firstName"
@@ -160,7 +160,7 @@ export default function CompleteProfilePage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName" className="text-sm font-medium">
-                    Soyad *
+                    {t("auth.complete_profile.last_name")} *
                   </Label>
                   <Input
                     id="lastName"
@@ -175,7 +175,7 @@ export default function CompleteProfilePage() {
               {/* Email */}
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-medium">
-                  E-posta *
+                  {t("auth.complete_profile.email")} *
                 </Label>
                 <Input
                   id="email"
@@ -190,14 +190,14 @@ export default function CompleteProfilePage() {
               {formData.userType === "corporate" && (
                 <div className="space-y-2">
                   <Label htmlFor="nip" className="text-sm font-medium">
-                    Vergi Numarası (NIP) *
+                    {t("auth.complete_profile.nip")} *
                   </Label>
                   <Input
                     id="nip"
                     type="text"
                     value={formData.nip}
                     onChange={handleInputChange("nip")}
-                    placeholder="1234567890"
+                    placeholder={t("form.nip_placeholder")}
                     maxLength={10}
                   />
                 </div>
@@ -206,7 +206,7 @@ export default function CompleteProfilePage() {
               {/* Terms Section - Mobile-app style */}
               <div className="space-y-4">
                 <Label className="text-sm font-medium">
-                  Sözleşmeler ve İzinler
+                  {t("auth.complete_profile.contracts_permissions")}
                 </Label>
 
                 {/* Terms of Service */}
@@ -228,14 +228,14 @@ export default function CompleteProfilePage() {
                       className="text-sm cursor-pointer"
                     >
                       <span className="text-muted-foreground">
-                        Kabul ediyorum:{" "}
+                        {t("auth.complete_profile.accept_prefix")}{" "}
                       </span>
                       <Link
                         href="/legal?type=terms-of-service"
                         target="_blank"
                         className="text-primary font-medium hover:underline"
                       >
-                        Kullanım Koşulları
+                        {t("auth.complete_profile.terms_of_service")}
                       </Link>
                       <span className="text-red-500 ml-1">*</span>
                     </Label>
@@ -261,14 +261,14 @@ export default function CompleteProfilePage() {
                       className="text-sm cursor-pointer"
                     >
                       <span className="text-muted-foreground">
-                        Kabul ediyorum:{" "}
+                        {t("auth.complete_profile.accept_prefix")}{" "}
                       </span>
                       <Link
                         href="/legal?type=privacy-policy"
                         target="_blank"
                         className="text-primary font-medium hover:underline"
                       >
-                        Gizlilik Politikası
+                        {t("auth.complete_profile.privacy_policy")}
                       </Link>
                       <span className="text-red-500 ml-1">*</span>
                     </Label>
@@ -293,11 +293,10 @@ export default function CompleteProfilePage() {
                       htmlFor="marketingAccepted"
                       className="text-sm cursor-pointer"
                     >
-                      Pazarlama iletişimlerini kabul ediyorum
+                      {t("auth.complete_profile.marketing_text")}
                     </Label>
                     <div className="text-xs text-muted-foreground mt-1">
-                      Kampanya, indirim ve yeni ürün duyurularını e-posta ile
-                      almak istiyorum. (İsteğe bağlı)
+                      {t("auth.complete_profile.marketing_desc")}
                     </div>
                   </div>
                 </div>
@@ -319,10 +318,10 @@ export default function CompleteProfilePage() {
                 {completeProfile.isPending ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Profil Tamamlanıyor...
+                    {t("auth.complete_profile.completing")}
                   </>
                 ) : (
-                  "Profilimi Tamamla"
+                  t("auth.complete_profile.title")
                 )}
               </Button>
             </form>

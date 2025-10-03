@@ -391,7 +391,7 @@ export default function ProductDetailPage() {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent className="hidden md:block">
-                  <p>{product && isFavorite(product.id) ? "Favorilerden çıkar" : "Favorilere ekle"}</p>
+                  <p>{product && isFavorite(product.id) ? t("favorites_action.remove") : t("favorites_action.add")}</p>
                 </TooltipContent>
               </Tooltip>
             </div>

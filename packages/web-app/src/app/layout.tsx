@@ -20,6 +20,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Note: metadata is static in Next.js App Router and cannot use translations
+// The translations are defined in locales/tr.json under "metadata" key
 export const metadata: Metadata = {
   title: "Metropolitan Food Group - Kaliteli Gıda Ürünleri",
   description:

@@ -2,16 +2,19 @@
 
 import { Check } from "lucide-react";
 import { useCheckout, type CheckoutStep } from "@/context/CheckoutContext";
-
-const STEPS: { id: CheckoutStep; label: string; number: number }[] = [
-  { id: "cart", label: "Sepet", number: 1 },
-  { id: "address", label: "Adres", number: 2 },
-  { id: "payment", label: "Ödeme", number: 3 },
-  { id: "summary", label: "Özet", number: 4 },
-];
+import { useTranslation } from "react-i18next";
 
 export function ProgressIndicator() {
+  const { t } = useTranslation();
   const { state } = useCheckout();
+  
+  const STEPS: { id: CheckoutStep; label: string; number: number }[] = [
+    { id: "cart", label: t("checkout.steps.cart"), number: 1 },
+    { id: "address", label: t("checkout.steps.address"), number: 2 },
+    { id: "payment", label: t("checkout.steps.payment"), number: 3 },
+    { id: "summary", label: t("checkout.steps.summary"), number: 4 },
+  ];
+  
   const currentStepIndex = STEPS.findIndex((s) => s.id === state.currentStep);
 
   return (

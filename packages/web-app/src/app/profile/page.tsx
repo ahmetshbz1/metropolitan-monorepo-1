@@ -181,7 +181,7 @@ export default function ProfilePage() {
           disabled={logout.isPending}
         >
           <LogOut className="mr-2 h-5 w-5" />
-          {logout.isPending ? "Çıkış yapılıyor..." : t("profile.logout")}
+          {logout.isPending ? t("profile.logging_out") : t("profile.logout")}
         </Button>
 
         {/* Version Info */}

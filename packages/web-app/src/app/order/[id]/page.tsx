@@ -148,7 +148,7 @@ export default function OrderDetailPage() {
         });
       }
 
-      toast.success("Ürünler sepete eklendi", {
+      toast.success(t("toast.items_added_to_cart"), {
         description: `${order.items.length} ürün sepetinize eklendi.`,
       });
 
@@ -158,8 +158,8 @@ export default function OrderDetailPage() {
       }, 1000);
     } catch (error) {
       console.error("Failed to reorder:", error);
-      toast.error("Yeniden sipariş verilemedi", {
-        description: "Ürünler sepete eklenirken bir hata oluştu.",
+      toast.error(t("toast.reorder_failed"), {
+        description: t("cart.add_error"),
       });
     } finally {
       setReordering(false);

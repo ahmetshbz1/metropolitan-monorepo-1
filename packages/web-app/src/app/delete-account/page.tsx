@@ -69,13 +69,13 @@ export default function DeleteAccountPage() {
 
   const handleSendOTP = async () => {
     if (!phoneNumber.trim()) {
-      toast.error("Telefon numarası gerekli");
+      toast.error(t("toast.phone_required"));
       return;
     }
 
     // Phone number validation
     if (user?.phone && phoneNumber.replace(/[\s\-\(\)]/g, "") !== user.phone.replace(/[\s\-\(\)]/g, "")) {
-      toast.error("Telefon numarası hesabınızdaki ile eşleşmiyor");
+      toast.error(t("toast.phone_mismatch"));
       return;
     }
 
@@ -88,13 +88,13 @@ export default function DeleteAccountPage() {
       if (response.data.success) {
         setStep("otp");
         setResendTimer(60);
-        toast.success("Doğrulama kodu gönderildi");
+        toast.success(t("toast.verification_code_sent"));
       } else {
-        toast.error(response.data.message || "Kod gönderilemedi");
+        toast.error(response.data.message || t("toast.code_send_failed"));
       }
     } catch (error: any) {
       console.error("Send OTP error:", error);
-      toast.error(error.response?.data?.message || "Kod gönderilemedi");
+      toast.error(error.response?.data?.message || t("toast.code_send_failed"));
     } finally {
       setLoading(false);
     }
@@ -103,7 +103,7 @@ export default function DeleteAccountPage() {
   const handleVerifyOTP = async () => {
     if (otpCode.length !== 6) {
       setOtpError(true);
-      toast.error("Doğrulama kodu 6 haneli olmalıdır");
+      toast.error(t("otp.invalid_code"));
       return;
     }
 
@@ -116,7 +116,7 @@ export default function DeleteAccountPage() {
       });
 
       if (response.data.success) {
-        toast.success("Hesabınız başarıyla silindi");
+        toast.success(t("toast.account_deleted"));
 
         // Clear auth tokens and state
         await tokenStorage.remove();
@@ -131,13 +131,13 @@ export default function DeleteAccountPage() {
         return;
       } else {
         setOtpError(true);
-        toast.error(response.data.message || "Doğrulama başarısız");
+        toast.error(response.data.message || t("toast.verification_failed"));
         setLoading(false);
       }
     } catch (error: any) {
       console.error("Verify OTP error:", error);
       setOtpError(true);
-      toast.error(error.response?.data?.message || "Doğrulama başarısız");
+      toast.error(error.response?.data?.message || t("toast.verification_failed"));
       setLoading(false);
     }
   };
@@ -153,13 +153,13 @@ export default function DeleteAccountPage() {
 
       if (response.data.success) {
         setResendTimer(60);
-        toast.success("Kod yeniden gönderildi");
+        toast.success(t("toast.code_resent"));
       } else {
-        toast.error(response.data.message || "Kod gönderilemedi");
+        toast.error(response.data.message || t("toast.code_send_failed"));
       }
     } catch (error: any) {
       console.error("Resend OTP error:", error);
-      toast.error(error.response?.data?.message || "Kod gönderilemedi");
+      toast.error(error.response?.data?.message || t("toast.code_send_failed"));
     } finally {
       setLoading(false);
     }

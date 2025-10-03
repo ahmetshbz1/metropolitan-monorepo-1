@@ -85,7 +85,7 @@ export default function AccountSettingsPage() {
       formData.lastName === currentUser?.lastName &&
       formData.email === currentUser?.email
     ) {
-      toast.info("Değişiklik yapılmadı");
+      toast.info(t("toast.no_changes"));
       return;
     }
 
@@ -95,9 +95,9 @@ export default function AccountSettingsPage() {
         lastName: formData.lastName,
         email: formData.email,
       });
-      toast.success("Profil güncellendi");
+      toast.success(t("toast.profile_updated"));
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "Profil güncellenemedi");
+      toast.error(error.response?.data?.message || t("toast.profile_update_failed"));
     }
   };
 
@@ -113,16 +113,16 @@ export default function AccountSettingsPage() {
 
     // Check file type
     if (!file.type.startsWith("image/")) {
-      toast.error("Sadece resim dosyaları yüklenebilir");
+      toast.error(t("toast.only_images_allowed"));
       return;
     }
 
     try {
       await uploadPhoto.mutateAsync(file);
-      toast.success("Profil fotoğrafı güncellendi");
+      toast.success(t("toast.profile_photo_updated"));
     } catch (error: any) {
       toast.error(
-        error.response?.data?.message || "Fotoğraf yüklenemedi"
+        error.response?.data?.message || t("toast.photo_upload_failed")
       );
     }
   };
@@ -209,7 +209,7 @@ export default function AccountSettingsPage() {
                 <Badge variant="secondary" className="text-xs mb-3">
                   {currentUser?.userType === "corporate"
                     ? "Kurumsal"
-                    : "Bireysel"}
+                    : t("user_types.individual")}
                 </Badge>
 
                 {/* Stats */}
@@ -253,7 +253,7 @@ export default function AccountSettingsPage() {
                         onChange={(e) =>
                           handleChange("firstName", e.target.value)
                         }
-                        placeholder="Adınız"
+                        placeholder={t("form.first_name_placeholder")}
                       />
                     </div>
                     <div className="space-y-2">
@@ -264,7 +264,7 @@ export default function AccountSettingsPage() {
                         onChange={(e) =>
                           handleChange("lastName", e.target.value)
                         }
-                        placeholder="Soyadınız"
+                        placeholder={t("form.last_name_placeholder")}
                       />
                     </div>
                   </div>

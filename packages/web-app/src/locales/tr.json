@@ -146,6 +146,7 @@
     "ok": "Tamam",
     "cancel": "İptal",
     "save": "Kaydet",
+    "saving": "Kaydediliyor...",
     "delete": "Sil",
     "edit": "Düzenle",
     "add": "Ekle",
@@ -154,12 +155,86 @@
     "error": "Hata",
     "success": "Başarılı",
     "confirm": "Onayla",
-    "close": "Kapat"
+    "close": "Kapat",
+    "continue": "Devam Et"
   },
   "auth": {
     "phoneLogin": {
-      "b2bNote": "Kurumsal müşteriler sadece telefon numarası ile katılabilir."
-    }
+      "b2bNote": "Kurumsal müşteriler sadece telefon numarası ile katılabilir.",
+      "title": "Telefon ile Giriş",
+      "subtitle": "Size bir doğrulama kodu göndereceğiz",
+      "sending_code": "Kod Gönderiliyor...",
+      "google_signing_in": "Google ile giriş yapılıyor...",
+      "divider_or": "veya",
+      "terms_text": "Devam ederek",
+      "terms_and": "ve",
+      "terms_accept": "'nı kabul etmiş olursunuz."
+    },
+    "complete_profile": {
+      "title": "Profilimi Tamamla",
+      "subtitle": "Hesabınızı oluşturmak için bilgilerinizi girin",
+      "complete_title": "Profilinizi Tamamlayın",
+      "complete_subtitle": "Size daha iyi hizmet verebilmek için bilgilerinizi tamamlayın",
+      "first_name": "Ad",
+      "last_name": "Soyad",
+      "email": "E-posta",
+      "nip": "Vergi Numarası (NIP)",
+      "contracts_permissions": "Sözleşmeler ve İzinler",
+      "accept_prefix": "Kabul ediyorum:",
+      "terms_of_service": "Kullanım Koşulları",
+      "privacy_policy": "Gizlilik Politikası",
+      "marketing_text": "Pazarlama iletişimlerini kabul ediyorum",
+      "marketing_desc": "Kampanya, indirim ve yeni ürün duyurularını e-posta ile almak istiyorum. (İsteğe bağlı)",
+      "completing": "Profil Tamamlanıyor..."
+    },
+    "verifyOtp": {
+      "title": "Doğrulama Kodu",
+      "subtitle": "{{phone}} numarasına gönderilen 6 haneli kodu giriniz.",
+      "helper": "6 haneli doğrulama kodunu giriniz",
+      "verifying": "Doğrulanıyor...",
+      "submit": "Doğrula",
+      "resending": "Gönderiliyor...",
+      "resend": "Kodu Tekrar Gönder",
+      "resendReady": "Tekrar kod gönderebilirsiniz.",
+      "resendIn": "Tekrar kod için {{second}} sn.",
+      "notReceived": {
+        "title": "Kod gelmedi mi?",
+        "help": "Spam klasörünüzü kontrol edin veya birkaç dakika bekleyin."
+      },
+      "errors": {
+        "phoneMissing": "Telefon numarası bulunamadı. Lütfen tekrar giriş yapın.",
+        "invalidLength": "Lütfen 6 haneli doğrulama kodunu giriniz.",
+        "verifyFailed": "Doğrulama kodu kontrol edilirken bir hata oluştu.",
+        "resendFailed": "Kod tekrar gönderilirken bir hata oluştu."
+      },
+      "info": {
+        "resent": "Kod yeniden gönderildi"
+      }
+    },
+    "account_type": "Hesap Türü",
+    "country_code": "Ülke Kodu",
+    "phone_number": "Telefon Numarası",
+    "phone_placeholder": "XXX XXX XXX",
+    "send_verification_code": "Doğrulama Kodu Gönder",
+    "google_sign_in": "Google ile Giriş Yap",
+    "have_account": "Hesabınız var mı?",
+    "otp_send_error": "OTP gönderilirken bir hata oluştu",
+    "phone_not_found": "Telefon numarası bulunamadı. Lütfen tekrar giriş yapın.",
+    "enter_6_digit_code": "Lütfen 6 haneli doğrulama kodunu giriniz.",
+    "unexpected_response": "Beklenmeyen yanıt alındı. Lütfen tekrar deneyin.",
+    "verification_check_error": "Doğrulama kodu kontrol edilirken bir hata oluştu.",
+    "resend_code_error": "Kod tekrar gönderilirken bir hata oluştu.",
+    "check_spam_folder": "Spam klasörünüzü kontrol edin veya birkaç dakika bekleyin.",
+    "verification_code": "Doğrulama Kodu",
+    "verify_code": "Kodu Doğrula",
+    "resend_code": "Kodu Tekrar Gönder",
+    "enter_sms_code": "SMS ile gönderilen 6 haneli kodu giriniz",
+    "didnt_receive_code": "Kod almadınız mı?",
+    "personal_info": "Kişisel Bilgiler",
+    "company_info": "Şirket Bilgileri",
+    "accept_terms": "Kullanım Koşullarını kabul ediyorum",
+    "accept_privacy": "Gizlilik Politikasını kabul ediyorum",
+    "marketing_consent": "Kampanya ve duyurulardan haberdar olmak istiyorum"
   },
   "footer": {
     "company_name": "Metropolitan Food Group",
@@ -275,6 +350,7 @@
     "guest_message": "Profil bilgilerinizi görmek için giriş yapmalısınız.",
     "login": "Giriş Yap",
     "logout": "Çıkış Yap",
+    "logging_out": "Çıkış yapılıyor...",
     "account_section": "Hesap",
     "app_section": "Uygulama",
     "support_section": "Destek",
@@ -323,7 +399,14 @@
     "title": "Yardım Merkezi",
     "header": "Size nasıl yardımcı olabiliriz?",
     "search_placeholder": "Aramak için yazın...",
-    "contact": "Bize Ulaşın"
+    "contact": "Bize Ulaşın",
+    "categories": {
+      "orders": "Siparişler",
+      "returns": "İadeler ve Geri Ödemeler",
+      "account": "Hesap Yönetimi",
+      "payment": "Ödeme Seçenekleri",
+      "security": "Güvenlik ve Gizlilik"
+    }
   },
   "legal": {
     "title": "Yasal",
@@ -349,6 +432,7 @@
   },
   "checkout": {
     "steps": {
+      "cart": "Sepet",
       "address": "Adres",
       "payment": "Ödeme",
       "summary": "Özet"
@@ -508,18 +592,6 @@
       "live_support": "Canlı Destek"
     }
   },
-  "help_center": {
-    "title": "Yardım Merkezi",
-    "header": "Size nasıl yardımcı olabiliriz?",
-    "search_placeholder": "Aramak için yazın...",
-    "categories": {
-      "orders": "Siparişler",
-      "returns": "İadeler ve Geri Ödemeler",
-      "account": "Hesap Yönetimi",
-      "payment": "Ödeme Seçenekleri",
-      "security": "Güvenlik ve Gizlilik"
-    }
-  },
   "errors": {
     "INSUFFICIENT_STOCK": "Bu üründen en fazla {{stock}} adet ekleyebilirsiniz.",
     "INSUFFICIENT_STOCK_ALREADY_IN_CART": "Sepetinizde bu üründen {{inCart}} adet var. En fazla {{canAdd}} adet daha ekleyebilirsiniz.",
@@ -551,5 +623,142 @@
     "UNAUTHORIZED_ERROR": "Kimlik doğrulaması gerekli",
     "FORBIDDEN_ERROR": "Yeterli izniniz bulunmuyor",
     "UPLOAD_PHOTO_FAILED": "Fotoğraf yüklenemedi"
+  },
+  "metadata": {
+    "title": "Metropolitan Food Group - Kaliteli Gıda Ürünleri",
+    "description": "Doğanın en taze ürünleri kapınızda. Hızlı teslimat ve güvenli alışveriş."
+  },
+  "toast": {
+    "items_added_to_cart": "Ürünler sepete eklendi",
+    "reorder_failed": "Yeniden sipariş verilemedi",
+    "phone_required": "Telefon numarası gerekli",
+    "phone_mismatch": "Telefon numarası hesabınızdaki ile eşleşmiyor",
+    "verification_code_sent": "Doğrulama kodu gönderildi",
+    "code_send_failed": "Kod gönderilemedi",
+    "account_deleted": "Hesabınız başarıyla silindi",
+    "verification_failed": "Doğrulama başarısız",
+    "code_resent": "Kod yeniden gönderildi",
+    "no_changes": "Değişiklik yapılmadı",
+    "profile_updated": "Profil güncellendi",
+    "profile_update_failed": "Profil güncellenemedi",
+    "only_images_allowed": "Sadece resim dosyaları yüklenebilir",
+    "profile_photo_updated": "Profil fotoğrafı güncellendi",
+    "photo_upload_failed": "Fotoğraf yüklenemedi",
+    "privacy_settings_updated": "Gizlilik ayarları güncellendi",
+    "privacy_settings_update_failed": "Gizlilik ayarları güncellenemedi",
+    "feature_coming_soon": "Bu özellik yakında eklenecek",
+    "security_settings_updated": "Güvenlik ayarları güncellendi",
+    "security_settings_update_failed": "Güvenlik ayarları güncellenemedi",
+    "disconnect_failed": "Bağlantı kesilemedi",
+    "file_size_limit": "Dosya boyutu 5MB'dan küçük olmalıdır"
+  },
+  "user_types": {
+    "corporate": "Kurumsal",
+    "individual": "Bireysel"
+  },
+  "form": {
+    "first_name": "Ad",
+    "last_name": "Soyad",
+    "email": "E-posta",
+    "company_name": "Şirket Adı",
+    "nip": "NIP (Vergi Numarası)",
+    "first_name_placeholder": "Jan",
+    "last_name_placeholder": "Kowalski",
+    "email_placeholder": "przyklad@email.com",
+    "company_name_placeholder": "Şirket Adınız",
+    "nip_placeholder": "1234567890",
+    "phone_number_invalid": "Lütfen geçerli bir telefon numarası giriniz",
+    "fill_required_fields": "Lütfen tüm gerekli alanları doldurunuz",
+    "profile_completion_error": "Profil tamamlanırken bir hata oluştu"
+  },
+  "favorites_action": {
+    "add": "Favorilere ekle",
+    "remove": "Favorilerden çıkar"
+  },
+  "payment_methods": {
+    "google_pay_subtitle": "Hızlı mobil ödeme"
+  },
+  "connection_status": {
+    "connected": "Bağlı",
+    "not_connected": "Bağlı değil",
+    "not_registered": "Kayıtlı değil"
+  },
+  "categories_default": {
+    "other": "Diğer"
+  },
+  "auth_errors": {
+    "google_sign_in_failed": "Google giriş başarısız"
+  },
+  "delete_account": {
+    "login_required": "Hesabınızı silmek için giriş yapmalısınız."
+  },
+  "address": {
+    "update_description": "Adres bilgilerinizi güncelleyin",
+    "add_description": "Yeni teslimat adresi ekleyin",
+    "city_placeholder": "Warszawa"
+  },
+  "invoice": {
+    "preview_load_error": "Fatura önizleme yüklenemedi",
+    "downloading": "Fatura indiriliyor",
+    "download_error": "Fatura indirilemedi"
+  },
+  "security_settings": {
+    "title": "Güvenlik Ayarları",
+    "subtitle": "Hesap güvenliğinizi ve oturum yönetiminizi kontrol edin",
+    "login_required_title": "Giriş Yapın",
+    "login_required_desc": "Güvenlik ayarlarınızı görmek için giriş yapmalısınız.",
+    "login_button": "Giriş Yap",
+    "linked_accounts": {
+      "title": "Bağlı Hesaplar",
+      "subtitle": "Sosyal medya hesaplarınızla hızlı giriş yapın",
+      "google": "Google",
+      "apple": "Apple",
+      "disconnect": "Bağlantıyı Kes",
+      "connect": "Bağla",
+      "apple_mobile_only": "Apple ile bağlanmak için mobile uygulamayı kullanın",
+      "google_signin_failed": "Google Sign-In başarısız",
+      "google_connected": "Google hesabı başarıyla bağlandı",
+      "google_connect_failed": "Google hesabı bağlanamadı",
+      "disconnected": "{{provider}} hesabı bağlantısı kesildi"
+    },
+    "phone_number": {
+      "title": "Telefon Numarası",
+      "subtitle": "Hesabınıza kayıtlı telefon numarası (OTP ile giriş)",
+      "label": "Telefon Numarası",
+      "connected": "Bağlı",
+      "change_help": "Telefon numaranızı değiştirmek için destek ile iletişime geçin"
+    },
+    "active_sessions": {
+      "title": "Aktif Oturumlar",
+      "subtitle": "Hesabınızda oturum açık olan cihazlar",
+      "current_device": "Mevcut Cihaz (Web)",
+      "last_activity": "Son aktivite: Şimdi",
+      "active": "Aktif",
+      "other_sessions_soon": "Diğer oturumları görmek için yakında eklenecek"
+    },
+    "account_security": {
+      "title": "Hesap Güvenliği",
+      "subtitle": "Güvenlik ayarlarınızı yönetin",
+      "two_factor": {
+        "title": "İki Faktörlü Doğrulama",
+        "desc": "Hesabınız için ekstra güvenlik katmanı",
+        "coming_soon": "Yakında"
+      },
+      "login_alerts": {
+        "title": "Giriş Bildirimleri",
+        "desc": "Yeni cihaz girişlerinde bildirim al"
+      },
+      "device_tracking": {
+        "title": "Cihaz Takibi",
+        "desc": "Hesabınıza bağlı cihazları izleyin"
+      }
+    },
+    "unlink_dialog": {
+      "title": "Bağlantıyı Kes",
+      "description": "{{provider}} hesabınızın bağlantısını kesmek istediğinize emin misiniz?",
+      "cancel": "İptal",
+      "confirm": "Bağlantıyı Kes",
+      "disconnecting": "Kesiliyor"
+    }
   }
 }

@@ -44,7 +44,7 @@ export default function CheckoutPaymentPage() {
       id: "blik",
       icon: Smartphone,
       title: "BLIK",
-      subtitle: "Hızlı mobil ödeme",
+      subtitle: t("payment_methods.google_pay_subtitle"),
       isAvailable: true,
     },
     {

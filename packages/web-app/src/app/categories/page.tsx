@@ -40,7 +40,7 @@ export default function CategoriesPage() {
     const grouped: Record<string, any[]> = {};
     
     products.forEach((product) => {
-      const category = product.category || "Diğer";
+      const category = product.category || t("categories_default.other");
       if (!grouped[category]) {
         grouped[category] = [];
       }

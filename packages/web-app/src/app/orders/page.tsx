@@ -119,7 +119,7 @@ export default function OrdersPage() {
             {t("orders.empty.title")}
           </h2>
           <p className="text-muted-foreground mb-6">
-            Henüz sipariş vermediniz. Alışverişe başlayın!
+            {t("orders.empty.subtitle")}
           </p>
           <Button asChild>
             <Link href="/products">{t("orders.empty.button")}</Link>
@@ -144,7 +144,7 @@ export default function OrdersPage() {
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="font-semibold text-lg mb-1">
-                    Sipariş #{order.orderNumber}
+                    {t("orders.order_number", { number: order.orderNumber })}
                   </h3>
                   <p className="text-sm text-muted-foreground">
                     {formatDate(order.createdAt)}
@@ -157,7 +157,7 @@ export default function OrdersPage() {
 
               <div className="flex items-center justify-between">
                 <div className="text-sm text-muted-foreground">
-                  Toplam Tutar
+                  {t("order_detail.summary.total")}
                 </div>
                 <div className="font-bold text-lg text-primary">
                   {formatPrice(order.totalAmount, order.currency)}

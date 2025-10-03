@@ -38,7 +38,7 @@ export default function PhoneLoginPage() {
 
   const handleSendOTP = async () => {
     if (!isValidPhoneNumber) {
-      setError("Lütfen geçerli bir telefon numarası giriniz");
+      setError(t("form.phone_number_invalid"));
       return;
     }
 
@@ -57,7 +57,7 @@ export default function PhoneLoginPage() {
           }
         },
         onError: (error: any) => {
-          setError(error.message || "OTP gönderilirken bir hata oluştu");
+          setError(error.message || t("auth.otp_send_error"));
         },
       }
     );
@@ -67,7 +67,7 @@ export default function PhoneLoginPage() {
     setError("");
     googleAuth.mutate(undefined, {
       onError: (error: any) => {
-        setError(error.message || "Google giriş başarısız");
+        setError(error.message || t("auth_errors.google_sign_in_failed"));
       },
     });
   };
@@ -82,10 +82,10 @@ export default function PhoneLoginPage() {
             </div>
             <div>
               <CardTitle className="text-2xl font-bold">
-                Telefon ile Giriş
+                {t("auth.phone_login.title")}
               </CardTitle>
               <CardDescription className="text-base">
-                Size bir doğrulama kodu göndereceğiz
+                {t("auth.phone_login.subtitle")}
               </CardDescription>
             </div>
           </CardHeader>
@@ -93,7 +93,7 @@ export default function PhoneLoginPage() {
           <CardContent className="space-y-6">
             {/* User Type Selection */}
             <div className="space-y-3">
-              <Label>Hesap Türü</Label>
+              <Label>{t("auth.account_type")}</Label>
               <div className="grid grid-cols-2 gap-2">
                 <Button
                   type="button"
@@ -101,7 +101,7 @@ export default function PhoneLoginPage() {
                   onClick={() => setUserType("individual")}
                   className="h-11"
                 >
-                  Bireysel
+                  {t("dropdown.individual")}
                 </Button>
                 <Button
                   type="button"
@@ -109,14 +109,14 @@ export default function PhoneLoginPage() {
                   onClick={() => setUserType("corporate")}
                   className="h-11"
                 >
-                  Kurumsal
+                  {t("dropdown.corporate")}
                 </Button>
               </div>
             </div>
 
             {/* Phone Number Input */}
             <div className="space-y-2">
-              <Label>Telefon Numarası</Label>
+              <Label>{t("auth.phone_number")}</Label>
               <div className="flex gap-3">
                 <div className="w-20">
                   <Input
@@ -164,10 +164,10 @@ export default function PhoneLoginPage() {
               {sendOTP.isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Kod Gönderiliyor...
+                  {t("auth.phone_login.sending_code")}
                 </>
               ) : (
-                "Doğrulama Kodu Gönder"
+                t("auth.send_verification_code")
               )}
             </Button>
 
@@ -181,7 +181,7 @@ export default function PhoneLoginPage() {
                   </div>
                   <div className="relative flex justify-center text-xs uppercase">
                     <span className="bg-background px-2 text-muted-foreground">
-                      veya
+                      {t("auth.phone_login.divider_or")}
                     </span>
                   </div>
                 </div>
@@ -196,7 +196,7 @@ export default function PhoneLoginPage() {
                   {googleAuth.isPending ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Google ile giriş yapılıyor...
+                      {t("auth.phone_login.google_signing_in")}
                     </>
                   ) : (
                     <>
@@ -218,7 +218,7 @@ export default function PhoneLoginPage() {
                           d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                         />
                       </svg>
-                      Google ile Giriş Yap
+                      {t("auth.google_sign_in")}
                     </>
                   )}
                 </Button>
@@ -234,15 +234,15 @@ export default function PhoneLoginPage() {
 
             {/* Terms */}
             <p className="text-xs text-center text-muted-foreground">
-              Devam ederek{" "}
+              {t("auth.phone_login.terms_text")}{" "}
               <Link href="/terms" className="underline hover:text-foreground">
-                Kullanım Koşulları
+                {t("auth.complete_profile.terms_of_service")}
               </Link>{" "}
-              ve{" "}
+              {t("auth.phone_login.terms_and")}{" "}
               <Link href="/privacy" className="underline hover:text-foreground">
-                Gizlilik Politikası
+                {t("auth.complete_profile.privacy_policy")}
               </Link>
-              &apos;nı kabul etmiş olursunuz.
+              {t("auth.phone_login.terms_accept")}
             </p>
           </CardContent>
         </Card>
