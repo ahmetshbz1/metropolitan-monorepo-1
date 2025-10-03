@@ -8,7 +8,15 @@
     "favorites": "Favorites",
     "cart": "Cart",
     "login": "Sign In",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "view_cart": "View My Cart",
+    "offers": "Offers",
+    "fast_delivery": "Fast Delivery",
+    "all_categories": "All Categories",
+    "searching": "Searching...",
+    "in_stock": "In Stock",
+    "out_of_stock": "Out of Stock",
+    "view_all_results": "View all results for \"{{query}}\""
   },
   "hero": {
     "title_1": "Quality Food Products",
@@ -287,6 +295,18 @@
     "not_found": "No Products Found",
     "not_found_desc": "No products matching your criteria were found.",
     "clear_filters": "Clear Filters"
+  },
+  "search": {
+    "results_for": "Search results for \"{{query}}\"",
+    "products_found": "{{count}} products found",
+    "no_results": "No Results Found",
+    "no_results_desc": "No products found for \"{{query}}\". Try a different search term.",
+    "browse_all": "Browse All Products",
+    "recommended": "Recommended Products",
+    "recommended_desc": "Our picks for you",
+    "related": "Related Products",
+    "related_desc": "You might also like these",
+    "no_products": "No products available yet."
   },
   "categories": {
     "all": "All",

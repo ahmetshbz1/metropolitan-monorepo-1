@@ -13,6 +13,7 @@ import { useCategories } from "@/hooks/api";
 import { Icon } from "@iconify/react";
 import { ChevronDown, Package } from "lucide-react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 const getCategoryIcon = (slug: string) => {
   const iconMap: Record<string, string> = {
@@ -29,6 +30,7 @@ const getCategoryIcon = (slug: string) => {
 };
 
 export function CategoryMenu() {
+  const { t } = useTranslation();
   const { data: categories = [], isLoading } = useCategories();
 
   if (isLoading) {
@@ -39,7 +41,7 @@ export function CategoryMenu() {
         disabled
       >
         <Package className="h-4 w-4" />
-        Kategoriler
+        {t("navbar.categories")}
         <ChevronDown className="h-4 w-4" />
       </Button>
     );
@@ -53,7 +55,7 @@ export function CategoryMenu() {
           className="flex items-center gap-2 font-medium hover:bg-primary/10"
         >
           <Package className="h-4 w-4" />
-          Kategoriler
+          {t("navbar.categories")}
           <ChevronDown className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
@@ -91,7 +93,7 @@ export function CategoryMenu() {
                   icon="solar:list-line-duotone"
                   className="size-4 text-primary"
                 />
-                <span className="text-sm text-primary">Tüm Kategoriler</span>
+                <span className="text-sm text-primary">{t("navbar.all_categories")}</span>
               </span>
             </Link>
           </DropdownMenuItem>

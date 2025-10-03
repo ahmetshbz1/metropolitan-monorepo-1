@@ -120,7 +120,7 @@ export function SearchBar({ onProductClick }: SearchBarProps) {
           {isLoading ? (
             <div className="p-4 text-center text-muted-foreground">
               <div className="animate-spin w-4 h-4 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2" />
-              Aranıyor...
+              {t("navbar.searching")}
             </div>
           ) : (
             <>
@@ -156,11 +156,11 @@ export function SearchBar({ onProductClick }: SearchBarProps) {
                       </span>
                       {product.stock > 0 ? (
                         <Badge className="text-xs bg-green-100 text-green-700 hover:bg-green-100">
-                          Stokta
+                          {t("navbar.in_stock")}
                         </Badge>
                       ) : (
                         <Badge className="text-xs bg-red-100 text-red-700 hover:bg-red-100">
-                          Tükendi
+                          {t("navbar.out_of_stock")}
                         </Badge>
                       )}
                     </div>
@@ -173,7 +173,7 @@ export function SearchBar({ onProductClick }: SearchBarProps) {
                     onClick={handleSubmit}
                     className="w-full text-center text-sm text-primary hover:text-primary/80 transition-colors"
                   >
-                    "{searchQuery}" için tüm sonuçları gör →
+                    {t("navbar.view_all_results", { query: searchQuery })} →
                   </button>
                 </div>
               )}

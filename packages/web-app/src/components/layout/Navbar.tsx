@@ -20,11 +20,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CategoryMenu } from "./navbar/CategoryMenu";
 import { MobileMenu } from "./navbar/MobileMenu";
 import { SearchBar } from "./navbar/SearchBar";
 
 export function Navbar() {
+  const { t } = useTranslation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const router = useRouter();
@@ -126,7 +128,7 @@ export function Navbar() {
               >
                 <Link href="/offers">
                   <Sparkles className="h-4 w-4 text-orange-500" />
-                  <span className="text-orange-500">Fırsatlar</span>
+                  <span className="text-orange-500">{t("navbar.offers")}</span>
                 </Link>
               </Button>
 
@@ -137,7 +139,7 @@ export function Navbar() {
               >
                 <Link href="/fast-delivery">
                   <Truck className="h-4 w-4 text-green-500" />
-                  <span>Hızlı Teslimat</span>
+                  <span>{t("navbar.fast_delivery")}</span>
                 </Link>
               </Button>
             </div>
@@ -220,7 +222,7 @@ export function Navbar() {
                         </button>
                       </TooltipTrigger>
                       <TooltipContent side="bottom">
-                        <p>Sepetimi Görüntüle</p>
+                        <p>{t("navbar.view_cart")}</p>
                       </TooltipContent>
                     </Tooltip>
                   )}

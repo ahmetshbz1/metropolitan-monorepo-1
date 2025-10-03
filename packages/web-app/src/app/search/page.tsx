@@ -116,9 +116,9 @@ export default function SearchPage() {
                   <Sparkles className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold">Önerilen Ürünler</h1>
+                  <h1 className="text-2xl font-bold">{t("search.recommended")}</h1>
                   <p className="text-sm text-muted-foreground">
-                    Sizin için seçtiklerimiz
+                    {t("search.recommended_desc")}
                   </p>
                 </div>
               </div>
@@ -149,9 +149,9 @@ export default function SearchPage() {
                   <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-6">
                     <Search className="h-12 w-12 text-muted-foreground" />
                   </div>
-                  <h2 className="text-2xl font-bold mb-2">Ürün bulunamadı</h2>
+                  <h2 className="text-2xl font-bold mb-2">{t("error.no_products")}</h2>
                   <p className="text-muted-foreground text-center max-w-md">
-                    Henüz gösterilecek ürün bulunmuyor.
+                    {t("search.no_products")}
                   </p>
                 </div>
               )}
@@ -162,10 +162,10 @@ export default function SearchPage() {
             {/* Results Header */}
             <div className="mb-6">
               <h1 className="text-2xl font-bold mb-2">
-                "{searchQuery}" için arama sonuçları
+                {t("search.results_for", { query: searchQuery })}
               </h1>
               <p className="text-muted-foreground">
-                {searchResults.length} ürün bulundu
+                {t("search.products_found", { count: searchResults.length })}
               </p>
             </div>
 
@@ -175,13 +175,12 @@ export default function SearchPage() {
                 <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-6">
                   <Search className="h-12 w-12 text-muted-foreground" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Sonuç bulunamadı</h3>
+                <h3 className="text-xl font-semibold mb-2">{t("search.no_results")}</h3>
                 <p className="text-muted-foreground mb-6 text-center max-w-md">
-                  "{searchQuery}" için hiç ürün bulunamadı. Farklı bir arama
-                  terimi deneyin.
+                  {t("search.no_results_desc", { query: searchQuery })}
                 </p>
                 <Button onClick={() => router.push("/products")}>
-                  Tüm Ürünlere Gözat
+                  {t("search.browse_all")}
                 </Button>
               </div>
             ) : (
@@ -195,16 +194,11 @@ export default function SearchPage() {
             {/* Recommended Products Section - Show after search results */}
             {searchResults.length > 0 && recommendedProducts.length > 0 && (
               <div className="mt-12 pt-8 border-t border-border">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <Sparkles className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-bold">Alakalı Ürünler</h2>
-                    <p className="text-sm text-muted-foreground">
-                      Bunlar da ilginizi çekebilir
-                    </p>
-                  </div>
+                <div className="mb-6">
+                  <h2 className="text-xl font-bold">{t("search.related")}</h2>
+                  <p className="text-sm text-muted-foreground">
+                    {t("search.related_desc")}
+                  </p>
                 </div>
                 <div className="space-y-3">
                   {/* First Row */}

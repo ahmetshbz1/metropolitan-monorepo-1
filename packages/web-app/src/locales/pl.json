@@ -8,7 +8,15 @@
     "favorites": "Ulubione",
     "cart": "Koszyk",
     "login": "Zaloguj się",
-    "notifications": "Powiadomienia"
+    "notifications": "Powiadomienia",
+    "view_cart": "Zobacz Mój Koszyk",
+    "offers": "Oferty",
+    "fast_delivery": "Szybka Dostawa",
+    "all_categories": "Wszystkie Kategorie",
+    "searching": "Wyszukiwanie...",
+    "in_stock": "Dostępny",
+    "out_of_stock": "Wyprzedane",
+    "view_all_results": "Zobacz wszystkie wyniki dla \"{{query}}\""
   },
   "hero": {
     "title_1": "Wysokiej Jakości Produkty Spożywcze",

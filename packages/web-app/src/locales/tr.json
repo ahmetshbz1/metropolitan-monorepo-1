@@ -8,7 +8,15 @@
     "favorites": "Favoriler",
     "cart": "Sepet",
     "login": "Giriş Yap",
-    "notifications": "Bildirimler"
+    "notifications": "Bildirimler",
+    "view_cart": "Sepetimi Görüntüle",
+    "offers": "Fırsatlar",
+    "fast_delivery": "Hızlı Teslimat",
+    "all_categories": "Tüm Kategoriler",
+    "searching": "Aranıyor...",
+    "in_stock": "Stokta",
+    "out_of_stock": "Tükendi",
+    "view_all_results": "\"{{query}}\" için tüm sonuçları gör"
   },
   "hero": {
     "title_1": "Kaliteli Gıda Ürünleri",
@@ -287,6 +295,18 @@
     "not_found": "Ürün bulunamadı",
     "not_found_desc": "Aradığınız kriterlere uygun ürün bulunmamaktadır.",
     "clear_filters": "Filtreleri Temizle"
+  },
+  "search": {
+    "results_for": "\"{{query}}\" için arama sonuçları",
+    "products_found": "{{count}} ürün bulundu",
+    "no_results": "Sonuç bulunamadı",
+    "no_results_desc": "\"{{query}}\" için hiç ürün bulunamadı. Farklı bir arama terimi deneyin.",
+    "browse_all": "Tüm Ürünlere Gözat",
+    "recommended": "Önerilen Ürünler",
+    "recommended_desc": "Sizin için seçtiklerimiz",
+    "related": "Alakalı Ürünler",
+    "related_desc": "Bunlar da ilginizi çekebilir",
+    "no_products": "Henüz gösterilecek ürün bulunmuyor."
   },
   "categories": {
     "all": "Tümü",
