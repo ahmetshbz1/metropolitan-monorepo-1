@@ -56,52 +56,57 @@ export function AddressStep() {
   return (
     <>
       <div className="flex flex-col h-full min-h-0">
-        {/* Address List */}
-        <div className="overflow-y-auto flex-1 min-h-0 px-6 py-4 space-y-4">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold">Teslimat Adresi Seçin</h3>
-            <Button variant="outline" size="sm" onClick={() => setIsAddressDialogOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Yeni Adres
-            </Button>
-          </div>
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b">
+          <h3 className="font-semibold text-base">Teslimat Adresi Seçin</h3>
+          <Button variant="outline" size="sm" onClick={() => setIsAddressDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-1.5" />
+            Yeni Adres
+          </Button>
+        </div>
 
-        {addresses.map((address) => (
-          <div
-            key={address.id}
-            className={`
-              p-4 rounded-lg border-2 cursor-pointer transition-colors
-              ${
-                state.deliveryAddress?.id === address.id
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:border-primary/50"
-              }
-            `}
-            onClick={() => setDeliveryAddress(address)}
-          >
-            <div className="flex items-start gap-3">
-              <MapPin className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <h4 className="font-semibold">{address.addressTitle}</h4>
-                  {address.isDefaultDelivery && (
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                      Varsayılan
-                    </span>
-                  )}
+        {/* Address Grid */}
+        <div className="overflow-y-auto flex-1 min-h-0 px-4 py-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {addresses.map((address) => (
+              <div
+                key={address.id}
+                className={`
+                  group relative p-3 rounded-lg border-2 cursor-pointer transition-all
+                  ${
+                    state.deliveryAddress?.id === address.id
+                      ? "border-primary bg-primary/5 shadow-sm"
+                      : "border-border hover:border-primary/50 hover:shadow-md hover:scale-[1.02]"
+                  }
+                `}
+                onClick={() => setDeliveryAddress(address)}
+              >
+                <div className="flex gap-2.5">
+                  <MapPin className={`h-4 w-4 flex-shrink-0 mt-0.5 ${
+                    state.deliveryAddress?.id === address.id ? "text-primary" : "text-muted-foreground"
+                  }`} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <h4 className="font-semibold text-sm truncate">{address.addressTitle}</h4>
+                      {address.isDefaultDelivery && (
+                        <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-full whitespace-nowrap">
+                          Varsayılan
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground line-clamp-2">
+                      {address.street}, {address.postalCode} {address.city}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{address.country}</p>
+                  </div>
                 </div>
-                <p className="text-sm">
-                  {address.street}, {address.postalCode} {address.city}
-                </p>
-                <p className="text-sm text-muted-foreground">{address.country}</p>
               </div>
-            </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
 
         {/* Footer */}
-        <div className="border-t px-6 py-4 flex-shrink-0 bg-background">
+        <div className="border-t px-4 py-3 flex-shrink-0 bg-background">
           <Button onClick={nextStep} size="lg" className="w-full" disabled={!canProceedToNext()}>
             Devam Et
           </Button>

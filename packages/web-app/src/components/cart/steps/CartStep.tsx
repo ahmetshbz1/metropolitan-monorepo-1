@@ -97,99 +97,108 @@ export function CartStep({ onNext, canProceed, onClose }: CartStepProps) {
 
   return (
     <div className="flex flex-col h-full min-h-0">
-      {/* Cart Items */}
-      <div className="overflow-y-auto flex-1 min-h-0 space-y-4 px-6 py-4">
-        {enrichedItems.map((item) => {
-          const minQuantity = getMinQuantity(item.product);
-          console.log('🛒 Cart item:', {
-            productId: item.product.id,
-            name: item.product.name,
-            userType: user?.userType,
-            minQuantityCorporate: item.product.minQuantityCorporate,
-            minQuantityIndividual: item.product.minQuantityIndividual,
-            calculatedMinQuantity: minQuantity
-          });
+      {/* Cart Items - Grid Layout */}
+      <div className="overflow-y-auto flex-1 min-h-0 px-4 py-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {enrichedItems.map((item) => {
+            const minQuantity = getMinQuantity(item.product);
+            console.log('🛒 Cart item:', {
+              productId: item.product.id,
+              name: item.product.name,
+              userType: user?.userType,
+              minQuantityCorporate: item.product.minQuantityCorporate,
+              minQuantityIndividual: item.product.minQuantityIndividual,
+              calculatedMinQuantity: minQuantity
+            });
 
-          return (
-            <div key={item.id} className="flex gap-4 p-4 bg-card rounded-lg border border-border">
-              {/* Product Image */}
-              <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-card flex-shrink-0">
-                {item.product.image ? (
-                  <img
-                    src={item.product.image}
-                    alt={item.product.name}
-                    className="w-full h-full object-contain p-2"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <div className="w-8 h-8 bg-muted-foreground/20 rounded-lg" />
+            return (
+              <div
+                key={item.id}
+                className="group relative bg-card rounded-lg border border-border p-3 transition-all hover:shadow-md hover:border-primary/30"
+              >
+                {/* Delete Button - Top Right */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive z-10"
+                  onClick={() => handleRemoveItem(item.id)}
+                  disabled={removeItemMutation.isPending}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+
+                <div className="flex gap-3">
+                  {/* Product Image */}
+                  <div className="relative w-16 h-16 rounded-md overflow-hidden bg-muted/50 flex-shrink-0">
+                    {item.product.image ? (
+                      <img
+                        src={item.product.image}
+                        alt={item.product.name}
+                        className="w-full h-full object-contain p-1.5"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <div className="w-6 h-6 bg-muted-foreground/20 rounded" />
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
 
-              {/* Product Info */}
-              <div className="flex-1 min-w-0">
-                <h4 className="font-medium text-sm line-clamp-2 mb-1">{item.product.name}</h4>
-                {item.product.size && (
-                  <p className="text-xs text-muted-foreground mb-2">{item.product.size}</p>
-                )}
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-primary">
-                    {formatPrice(item.product.price * item.quantity, item.product.currency)}
-                  </span>
+                  {/* Product Info */}
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-medium text-sm line-clamp-2 mb-0.5 pr-6">{item.product.name}</h4>
+                    {item.product.size && (
+                      <p className="text-xs text-muted-foreground mb-2">{item.product.size}</p>
+                    )}
 
-                  {/* Quantity Controls */}
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="h-7 w-7"
-                      onClick={() => handleUpdateQuantity(item.id, item.product.id, item.quantity - minQuantity, minQuantity)}
-                      disabled={item.quantity <= minQuantity || updateItemMutation.isPending}
-                    >
-                      <Minus className="h-3 w-3" />
-                    </Button>
-                    <span className="w-8 text-center font-medium text-sm">{item.quantity}</span>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="h-7 w-7"
-                      onClick={() => handleUpdateQuantity(item.id, item.product.id, item.quantity + minQuantity, minQuantity)}
-                      disabled={
-                        item.quantity + minQuantity > item.product.stock || updateItemMutation.isPending
-                      }
-                    >
-                      <Plus className="h-3 w-3" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7 text-destructive hover:text-destructive"
-                      onClick={() => handleRemoveItem(item.id)}
-                      disabled={removeItemMutation.isPending}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
+                    {/* Price */}
+                    <div className="font-semibold text-sm text-primary mb-2">
+                      {formatPrice(item.product.price * item.quantity, item.product.currency)}
+                    </div>
+
+                    {/* Quantity Controls */}
+                    <div className="flex items-center gap-1.5">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 rounded-md"
+                        onClick={() => handleUpdateQuantity(item.id, item.product.id, item.quantity - minQuantity, minQuantity)}
+                        disabled={item.quantity <= minQuantity || updateItemMutation.isPending}
+                      >
+                        <Minus className="h-3.5 w-3.5" />
+                      </Button>
+                      <span className="w-10 text-center font-medium text-sm">{item.quantity}</span>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-8 w-8 rounded-md"
+                        onClick={() => handleUpdateQuantity(item.id, item.product.id, item.quantity + minQuantity, minQuantity)}
+                        disabled={
+                          item.quantity + minQuantity > item.product.stock || updateItemMutation.isPending
+                        }
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       {/* Footer with Summary */}
       {summary && (
-        <div className="border-t px-6 py-4 space-y-4 flex-shrink-0 bg-background">
+        <div className="border-t px-4 py-3 space-y-3 flex-shrink-0 bg-background">
           {/* Summary */}
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Toplam Ürün:</span>
               <span className="font-medium">{summary.totalItems} Adet</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="font-semibold">Ara Toplam:</span>
-              <span className="text-xl font-bold text-primary">
+              <span className="text-lg font-bold text-primary">
                 {formatPrice(
                   typeof summary.totalAmount === "string"
                     ? parseFloat(summary.totalAmount)

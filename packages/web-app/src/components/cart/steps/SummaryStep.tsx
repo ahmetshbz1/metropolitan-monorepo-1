@@ -123,94 +123,136 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
 
   return (
     <div className="flex flex-col h-full min-h-0">
-      {/* Summary Content */}
-      <div className="overflow-y-auto flex-1 min-h-0 px-6 py-4 space-y-6">
-        {/* Delivery Address */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-sm font-semibold mb-2">
-            <MapPin className="h-4 w-4 text-primary" />
-            <span>Teslimat Adresi</span>
-          </div>
-          {state.deliveryAddress ? (
-            <div className="bg-muted/50 rounded-lg p-3 text-sm">
-              <p className="font-medium">{state.deliveryAddress.addressTitle}</p>
-              <p className="text-muted-foreground mt-1">
-                {state.deliveryAddress.street}
-                <br />
-                {state.deliveryAddress.postalCode} {state.deliveryAddress.city}
-                <br />
-                {state.deliveryAddress.country}
-              </p>
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">Adres seçilmedi</p>
-          )}
-        </div>
-
-        {/* Payment Method */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-sm font-semibold mb-2">
-            <CreditCard className="h-4 w-4 text-primary" />
-            <span>Ödeme Yöntemi</span>
-          </div>
-          {state.selectedPaymentMethod ? (
-            <div className="bg-muted/50 rounded-lg p-3 text-sm">
-              <p className="font-medium">{state.selectedPaymentMethod.title}</p>
-              {state.selectedPaymentMethod.subtitle && (
-                <p className="text-muted-foreground mt-1">
-                  {state.selectedPaymentMethod.subtitle}
-                </p>
+      {/* Summary Content - Two Column Layout on Desktop */}
+      <div className="overflow-y-auto flex-1 min-h-0 px-4 py-3">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Left Column - Address, Payment, Notes */}
+          <div className="space-y-3">
+            {/* Delivery Address */}
+            <div className="bg-card rounded-lg border p-3">
+              <div className="flex items-center gap-2 text-sm font-semibold mb-2">
+                <MapPin className="h-3.5 w-3.5 text-primary" />
+                <span>Teslimat Adresi</span>
+              </div>
+              {state.deliveryAddress ? (
+                <div className="bg-muted/50 rounded-md p-2.5 text-sm">
+                  <p className="font-medium">{state.deliveryAddress.addressTitle}</p>
+                  <p className="text-muted-foreground text-xs mt-1 leading-relaxed">
+                    {state.deliveryAddress.street}
+                    <br />
+                    {state.deliveryAddress.postalCode} {state.deliveryAddress.city}
+                    <br />
+                    {state.deliveryAddress.country}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">Adres seçilmedi</p>
               )}
             </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">Ödeme yöntemi seçilmedi</p>
-          )}
-        </div>
 
-        {/* Order Items */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-sm font-semibold mb-2">
-            <Package className="h-4 w-4 text-primary" />
-            <span>Sipariş Ürünleri</span>
-          </div>
-          <div className="space-y-2">
-            {items.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center justify-between text-sm bg-muted/50 rounded-lg p-3"
-              >
-                <div className="flex-1">
-                  <p className="font-medium">{item.product.name}</p>
-                  <p className="text-muted-foreground text-xs">Adet: {item.quantity}</p>
-                </div>
-                <p className="font-semibold">
-                  {formatPrice(item.product.price * item.quantity, item.product.currency)}
-                </p>
+            {/* Payment Method */}
+            <div className="bg-card rounded-lg border p-3">
+              <div className="flex items-center gap-2 text-sm font-semibold mb-2">
+                <CreditCard className="h-3.5 w-3.5 text-primary" />
+                <span>Ödeme Yöntemi</span>
               </div>
-            ))}
+              {state.selectedPaymentMethod ? (
+                <div className="bg-muted/50 rounded-md p-2.5 text-sm">
+                  <p className="font-medium">{state.selectedPaymentMethod.title}</p>
+                  {state.selectedPaymentMethod.subtitle && (
+                    <p className="text-muted-foreground text-xs mt-1">
+                      {state.selectedPaymentMethod.subtitle}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">Ödeme yöntemi seçilmedi</p>
+              )}
+            </div>
+
+            {/* Order Notes */}
+            <div className="bg-card rounded-lg border p-3">
+              <label className="text-sm font-semibold mb-2 block">Sipariş Notu (İsteğe Bağlı)</label>
+              <Textarea
+                placeholder="Sipariş ile ilgili özel bir notunuz var mı?"
+                value={state.notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={3}
+                className="resize-none text-sm"
+              />
+            </div>
+          </div>
+
+          {/* Right Column - Order Items & Total */}
+          <div className="space-y-3">
+            {/* Order Items */}
+            <div className="bg-card rounded-lg border p-3">
+              <div className="flex items-center gap-2 text-sm font-semibold mb-2">
+                <Package className="h-3.5 w-3.5 text-primary" />
+                <span>Sipariş Ürünleri</span>
+              </div>
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {items.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-start justify-between text-sm bg-muted/50 rounded-md p-2.5"
+                  >
+                    <div className="flex-1 min-w-0 pr-2">
+                      <p className="font-medium text-sm line-clamp-2">{item.product.name}</p>
+                      <p className="text-muted-foreground text-xs mt-0.5">Adet: {item.quantity}</p>
+                    </div>
+                    <p className="font-semibold text-sm whitespace-nowrap">
+                      {formatPrice(item.product.price * item.quantity, item.product.currency)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Summary Totals */}
+            {summary && (
+              <div className="bg-card rounded-lg border p-3">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Ara Toplam:</span>
+                    <span className="font-medium">
+                      {formatPrice(
+                        typeof summary.totalAmount === "string"
+                          ? parseFloat(summary.totalAmount)
+                          : summary.totalAmount,
+                        summary.currency ?? "PLN"
+                      )}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Kargo:</span>
+                    <span className="font-medium text-green-600">Ücretsiz</span>
+                  </div>
+                  <div className="flex items-center justify-between pt-2 border-t">
+                    <span className="font-semibold">Toplam:</span>
+                    <span className="text-lg font-bold text-primary">
+                      {formatPrice(
+                        typeof summary.totalAmount === "string"
+                          ? parseFloat(summary.totalAmount)
+                          : summary.totalAmount,
+                        summary.currency ?? "PLN"
+                      )}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Order Notes */}
-        <div className="space-y-2">
-          <label className="text-sm font-semibold">Sipariş Notu (İsteğe Bağlı)</label>
-          <Textarea
-            placeholder="Sipariş ile ilgili özel bir notunuz var mı?"
-            value={state.notes}
-            onChange={(e) => setNotes(e.target.value)}
-            rows={3}
-            className="resize-none"
-          />
-        </div>
-
-        {/* Terms Agreement */}
-        <div className="flex items-start gap-3 p-4 bg-muted/50 rounded-lg">
+        {/* Terms Agreement - Full Width */}
+        <div className="mt-3 flex items-start gap-3 p-3 bg-muted/50 rounded-lg border">
           <Checkbox
             id="terms"
             checked={state.agreedToTerms}
             onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
           />
-          <label htmlFor="terms" className="text-sm cursor-pointer">
+          <label htmlFor="terms" className="text-sm cursor-pointer leading-relaxed">
             <a href="/legal?type=terms-of-service" target="_blank" className="text-primary hover:underline">
               Kullanım Şartları
             </a>
@@ -223,41 +265,8 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
         </div>
       </div>
 
-      {/* Footer with Total */}
-      <div className="border-t px-6 py-4 space-y-4 flex-shrink-0 bg-background">
-        {/* Total */}
-        {summary && (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Ara Toplam:</span>
-              <span className="font-medium">
-                {formatPrice(
-                  typeof summary.totalAmount === "string"
-                    ? parseFloat(summary.totalAmount)
-                    : summary.totalAmount,
-                  summary.currency ?? "PLN"
-                )}
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Kargo:</span>
-              <span className="font-medium">Ücretsiz</span>
-            </div>
-            <div className="flex items-center justify-between pt-2 border-t">
-              <span className="font-semibold">Toplam:</span>
-              <span className="text-xl font-bold text-primary">
-                {formatPrice(
-                  typeof summary.totalAmount === "string"
-                    ? parseFloat(summary.totalAmount)
-                    : summary.totalAmount,
-                  summary.currency ?? "PLN"
-                )}
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Complete Order Button */}
+      {/* Footer - Only Complete Button */}
+      <div className="border-t px-4 py-3 flex-shrink-0 bg-background">
         <Button
           onClick={handleCompleteOrder}
           size="lg"
