@@ -155,6 +155,31 @@
       "add_min_quantity": "Add {{count}} Pieces"
     }
   },
+  "dropdown": {
+    "orders": "My Orders",
+    "favorites": "My Favorites",
+    "addresses": "My Addresses",
+    "notifications": "Notifications",
+    "account_settings": "Account Settings",
+    "app_settings": "App Settings",
+    "help_center": "Help Center",
+    "legal": "Legal Information",
+    "logout": "Logout",
+    "login": "Login",
+    "theme": "Theme",
+    "language": "Language",
+    "light_theme": "Light Theme",
+    "dark_theme": "Dark Theme",
+    "system_theme": "System",
+    "turkish": "Türkçe",
+    "english": "English",
+    "polish": "Polski",
+    "guest": "Guest",
+    "guest_account": "Guest account",
+    "profile_menu": "Profile menu",
+    "individual": "Individual",
+    "corporate": "Corporate"
+  },
   "common": {
     "ok": "OK",
     "cancel": "Cancel",
@@ -165,6 +190,7 @@
     "confirm": "Confirm",
     "close": "Close"
   },
+  "errors": {
     "RATE_LIMIT_OTP_VERIFY": "Too many verification attempts. Please wait 5 minutes.",
     "RATE_LIMIT_REFRESH_TOKEN": "Too many token refresh attempts. Please try again later.",
     "RATE_LIMIT_ORDER_CREATION": "Too many order requests. Please slow down.",

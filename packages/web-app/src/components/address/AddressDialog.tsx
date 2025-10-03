@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -11,15 +12,14 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useCreateAddress, useUpdateAddress } from "@/hooks/api/use-addresses";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 interface AddressDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  address?: any;
+  address?: Address;
   onSuccess?: () => void;
 }
 
@@ -92,7 +92,9 @@ export function AddressDialog({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>
-            {address ? t("addresses.edit_address") : t("addresses.add_new_address")}
+            {address
+              ? t("addresses.edit_address")
+              : t("addresses.add_new_address")}
           </DialogTitle>
           <DialogDescription>
             {address

@@ -95,18 +95,23 @@ interface UserDropdownProps {
 }
 
 export const UserDropdown = ({
-  user = {
-    name: "Misafir",
+  user,
+  onAction,
+  onLogin,
+}: UserDropdownProps) => {
+  const { t, i18n } = useTranslation();
+
+  // Set default user with translated guest name
+  const defaultUser = {
+    name: t("dropdown.guest"),
     username: "",
     email: "",
     avatar: "",
     initials: "M",
     isGuest: true,
-  },
-  onAction,
-  onLogin,
-}: UserDropdownProps) => {
-  const { t, i18n } = useTranslation();
+  };
+
+  const currentUser = user || defaultUser;
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const isMobile = useIsMobile();
@@ -201,9 +206,12 @@ export const UserDropdown = ({
         <TooltipTrigger asChild>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 hover:bg-primary/20 transition-colors">
-              {user.avatar ? (
+              {currentUser.avatar ? (
                 <Avatar className="size-8">
-                  <AvatarImage src={user.avatar} alt={user.name} />
+                  <AvatarImage
+                    src={currentUser.avatar}
+                    alt={currentUser.name}
+                  />
                   <AvatarFallback className="bg-transparent">
                     <Icon
                       icon="solar:user-bold-duotone"
@@ -221,7 +229,11 @@ export const UserDropdown = ({
           </DropdownMenuTrigger>
         </TooltipTrigger>
         <TooltipContent className="hidden md:block">
-          <p>{user.isGuest ? "Misafir hesabi" : "Profil menusu"}</p>
+          <p>
+            {currentUser.isGuest
+              ? t("dropdown.guest_account")
+              : t("dropdown.profile_menu")}
+          </p>
         </TooltipContent>
       </Tooltip>
 
@@ -236,9 +248,9 @@ export const UserDropdown = ({
         {/* User Header */}
         <div className="flex items-center p-3 mb-2">
           <div className="flex-1 flex items-center gap-3">
-            {user.avatar ? (
+            {currentUser.avatar ? (
               <Avatar className="size-10">
-                <AvatarImage src={user.avatar} alt={user.name} />
+                <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
                 <AvatarFallback className="bg-primary/20">
                   <Icon
                     icon="solar:user-bold-duotone"
@@ -257,32 +269,31 @@ export const UserDropdown = ({
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-100">
-                  {user.name}
+                  {currentUser.name}
                 </h3>
-                {!user.isGuest && user.userType && (
-                  <Badge
-                    variant="default"
-                    className="text-xs px-2 py-0 h-5"
-                  >
-                    {user.userType === "corporate" ? "Kurumsal" : "Bireysel"}
+                {!currentUser.isGuest && currentUser.userType && (
+                  <Badge variant="default" className="text-xs px-2 py-0 h-5">
+                    {currentUser.userType === "corporate"
+                      ? t("dropdown.corporate")
+                      : t("dropdown.individual")}
                   </Badge>
                 )}
               </div>
-              {user.username && (
+              {currentUser.username && (
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {user.username}
+                  {currentUser.username}
                 </p>
               )}
-              {user.email && (
+              {currentUser.email && (
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {user.email}
+                  {currentUser.email}
                 </p>
               )}
             </div>
           </div>
         </div>
 
-        {user.isGuest ? (
+        {currentUser.isGuest ? (
           /* Guest User - Favorites + Login Button */
           <>
             <DropdownMenuSeparator />
