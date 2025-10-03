@@ -1,6 +1,5 @@
 // Device Fingerprinting for Web App
 // Browser-based device identification
-// Based on mobile-app's device fingerprinting but adapted for web
 
 import { DEVICE_ID_KEY, isServerGeneratedDeviceId } from "./device-id";
 
@@ -83,31 +82,23 @@ export async function getDeviceHeaders(): Promise<Record<string, string>> {
       // WebGL not available or blocked
     }
 
-    // Session ID from JWT token (backend-generated)
-    // CRITICAL: Must match Redis session ID for validation
-    // Using sessionStorage (per-tab, cleared when tab closes)
+    // Session ID from sessionStorage
     try {
       const sessionId = sessionStorage.getItem("metropolitan_session_id");
       if (sessionId) {
         headers["X-Session-ID"] = sessionId;
-        console.log("📋 Session ID sent:", sessionId);
-      } else {
-        console.warn("⚠️ No session ID found - will be set after login");
       }
     } catch {
       // Session storage might be blocked
     }
 
-    // Device ID from storage (set after successful auth)
-    // Backend expects this to match the deviceId in JWT token
+    // Device ID from localStorage
     try {
       const deviceId = localStorage.getItem(DEVICE_ID_KEY);
       if (deviceId && isServerGeneratedDeviceId(deviceId)) {
         headers["X-Device-ID"] = deviceId;
-        console.log("📱 Device ID sent:", deviceId);
       } else if (deviceId) {
         // Remove invalid/legacy device IDs
-        console.warn("⚠️ Removing invalid device ID:", deviceId);
         localStorage.removeItem(DEVICE_ID_KEY);
       }
     } catch {
@@ -122,24 +113,21 @@ export async function getDeviceHeaders(): Promise<Record<string, string>> {
 
 /**
  * Extract session ID from JWT token
- * Backend generates session ID, we must use it for Redis validation
  */
 export function extractSessionIdFromToken(token: string | null | undefined): string | null {
   if (!token) return null;
 
   try {
-    // JWT format: header.payload.signature
     const parts = token.split('.');
     if (parts.length < 2) return null;
 
-    // Decode payload (base64url)
     const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
     const padLength = (4 - (base64.length % 4)) % 4;
     const padded = base64 + '='.repeat(padLength);
-    
+
     const payload = window.atob(padded);
     const data = JSON.parse(payload);
-    
+
     const sessionId = data?.sessionId;
     return typeof sessionId === 'string' ? sessionId : null;
   } catch (error) {
@@ -149,12 +137,11 @@ export function extractSessionIdFromToken(token: string | null | undefined): str
 }
 
 /**
- * Save session ID to sessionStorage (per-tab, auto-cleared on tab close)
+ * Save session ID to sessionStorage
  */
 export function saveSessionId(sessionId: string): void {
   try {
     sessionStorage.setItem('metropolitan_session_id', sessionId);
-    console.log('💾 Session ID saved to sessionStorage:', sessionId);
   } catch (error) {
     console.error('Failed to save session ID:', error);
   }
@@ -166,7 +153,6 @@ export function saveSessionId(sessionId: string): void {
 export function clearSessionId(): void {
   try {
     sessionStorage.removeItem('metropolitan_session_id');
-    console.log('🧹 Session ID cleared from sessionStorage');
   } catch (error) {
     console.error('Failed to clear session ID:', error);
   }

@@ -8,10 +8,11 @@ export const orderKeys = {
   detail: (id: string) => [...orderKeys.details(), id] as const,
 };
 
-export function useOrders() {
+export function useOrders(enabled: boolean = true) {
   return useQuery({
     queryKey: orderKeys.lists(),
     queryFn: ordersApi.getOrders,
+    enabled: enabled,
     staleTime: 1 * 60 * 1000, // 1 minute
   });
 }

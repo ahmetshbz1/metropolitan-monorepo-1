@@ -3,8 +3,8 @@
 // Based on mobile-app's interceptors but adapted for web
 
 import { AxiosInstance } from 'axios';
-import { tokenStorage } from './token-storage';
 import { getDeviceHeaders } from './device-fingerprint';
+import { useAuthStore } from '@/stores/auth-store';
 
 let isRefreshing = false;
 let refreshSubscribers: ((token: string) => void)[] = [];
@@ -45,17 +45,10 @@ function onRefreshFailed() {
  * Clear all auth data and redirect to login
  */
 async function clearAuthAndRedirect() {
-  console.warn('[API] Clearing auth and redirecting to login');
-
-  // Clear token storage
-  await tokenStorage.remove();
-
-  // Clear Zustand store (using dynamic import to avoid circular dependencies)
+  // Clear Zustand store (this also clears localStorage)
   if (typeof window !== 'undefined') {
     try {
-      // Clear localStorage manually
-      localStorage.removeItem('metropolitan-auth-storage');
-      sessionStorage.removeItem('metropolitan_session_id');
+      useAuthStore.getState().clearAuth();
 
       // Redirect to login page
       window.location.href = '/auth/phone-login';
@@ -70,14 +63,11 @@ async function clearAuthAndRedirect() {
  */
 async function refreshAccessToken(api: AxiosInstance): Promise<string | null> {
   try {
-    const refreshToken = await tokenStorage.getRefreshToken();
+    const refreshToken = useAuthStore.getState().refreshToken;
     if (!refreshToken) {
-      console.warn('[API] No refresh token available');
       await clearAuthAndRedirect();
       return null;
     }
-
-    console.log('[API] Attempting to refresh token...');
 
     // Get device headers for fingerprinting
     const deviceHeaders = await getDeviceHeaders();
@@ -97,18 +87,16 @@ async function refreshAccessToken(api: AxiosInstance): Promise<string | null> {
     if (response.data.success && response.data.accessToken) {
       const newAccessToken = response.data.accessToken;
 
-      // Save new access token
-      await tokenStorage.saveAccessToken(newAccessToken);
+      // Save new access token to Zustand (this also saves to localStorage)
+      useAuthStore.getState().setTokens(newAccessToken, refreshToken);
 
-      console.log('[API] ✅ Token refreshed successfully');
       return newAccessToken;
     }
 
-    console.warn('[API] Token refresh failed - invalid response');
     await clearAuthAndRedirect();
     return null;
   } catch (error: any) {
-    console.error('[API] ❌ Token refresh failed:', error.response?.data || error.message);
+    console.error('[API] Token refresh failed:', error.response?.data || error.message);
 
     // Clear auth and redirect on any refresh error
     await clearAuthAndRedirect();
@@ -133,8 +121,8 @@ export function setupRequestInterceptor(api: AxiosInstance) {
         return config;
       }
 
-      // Get access token
-      const token = await tokenStorage.getAccessToken();
+      // Get access token from Zustand
+      const token = useAuthStore.getState().accessToken;
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -186,8 +174,6 @@ export function setupResponseInterceptor(api: AxiosInstance) {
         // Mark this request as handled to prevent infinite loops
         originalRequest._sessionExpiredHandled = true;
 
-        console.warn('[API] 🔒 Session expired - User not found');
-        
         // Clear auth and redirect to login
         await clearAuthAndRedirect();
 
@@ -197,9 +183,8 @@ export function setupResponseInterceptor(api: AxiosInstance) {
       // If the error is 401 and we haven't already tried to refresh
       if (error.response?.status === 401 && !originalRequest._retry) {
         // Check if we have a refresh token before attempting refresh
-        const hasRefreshToken = await tokenStorage.getRefreshToken();
+        const hasRefreshToken = useAuthStore.getState().refreshToken;
         if (!hasRefreshToken) {
-          console.warn('[API] No refresh token available - skipping refresh attempt');
           return Promise.reject(error);
         }
         if (isRefreshing) {

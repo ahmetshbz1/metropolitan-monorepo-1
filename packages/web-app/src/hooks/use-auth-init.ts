@@ -14,16 +14,6 @@ export function useAuthInit() {
   useEffect(() => {
     // Only run on client side
     if (typeof window === "undefined") return;
-
-    if (_hasHydrated) {
-      console.log("✅ Zustand auth hydration complete");
-      console.log("📦 Auth state:", {
-        hasUser: !!user,
-        hasAccessToken: !!accessToken,
-        userPhone: user?.phone,
-      });
-    } else {
-      console.log("⏳ Waiting for Zustand hydration...");
-    }
+    // Hydration complete - no logging needed
   }, [_hasHydrated, user, accessToken]);
 }

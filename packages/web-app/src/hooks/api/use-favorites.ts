@@ -28,26 +28,17 @@ export function useFavorites() {
   const accessToken = useAuthStore((state) => state.accessToken);
   const _hasHydrated = useAuthStore((state) => state._hasHydrated);
   const isAuthenticated = Boolean(user && accessToken);
-  const { isGuest, guestId, loginAsGuest } = useGuestAuth();
+  const { isGuest, guestId } = useGuestAuth();
 
   const hasValidSession = Boolean(isAuthenticated || (isGuest && guestId));
 
-  // Eğer ne user ne de guest session varsa, otomatik guest session oluştur
-  // CRITICAL: Wait for Zustand hydration before creating guest session
-  useEffect(() => {
-    if (!_hasHydrated) {
-      return;
-    }
-
-    if (!isAuthenticated && !isGuest && !guestId) {
-      loginAsGuest();
-    }
-  }, [_hasHydrated, isAuthenticated, isGuest, guestId, loginAsGuest]);
+  // Don't create guest session here - let useCart handle it
+  // This prevents multiple guest sessions being created
 
   return useQuery({
     queryKey: favoriteKeys.items(user?.id, guestId || undefined),
     queryFn: () => favoritesApi.getFavorites(isAuthenticated, guestId || undefined, 'pl'),
-    enabled: hasValidSession,
+    enabled: hasValidSession && _hasHydrated,
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
 }
@@ -59,6 +50,7 @@ export function useFavoriteIds() {
   const setFavorites = useFavoritesStore((state) => state.setFavorites);
   const user = useAuthStore((state) => state.user);
   const accessToken = useAuthStore((state) => state.accessToken);
+  const _hasHydrated = useAuthStore((state) => state._hasHydrated);
   const isAuthenticated = Boolean(user && accessToken);
   const { isGuest, guestId } = useGuestAuth();
 
@@ -75,7 +67,7 @@ export function useFavoriteIds() {
       setFavorites(ids);
       return ids;
     },
-    enabled: hasValidSession,
+    enabled: hasValidSession && _hasHydrated,
     staleTime: 2 * 60 * 1000,
   });
 }

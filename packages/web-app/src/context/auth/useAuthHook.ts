@@ -4,14 +4,6 @@ import api from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  guestStorage,
-  registrationStorage,
-  socialAuthStorage,
-  userStorage,
-} from "./storage";
-import { tokenStorage } from "@/lib/token-storage";
-import { syncDeviceIdFromToken } from "@/lib/device-id";
 import { SocialAuthData, WebUser } from "./types";
 import { useAuthStore } from "@/stores/auth-store";
 
@@ -57,8 +49,6 @@ export const useAuthHook = () => {
   // Initialize auth state from storage - Zustand persist already handles this
   // We just need to wait for hydration and set loading to false
   useEffect(() => {
-    console.log("🔄 Waiting for Zustand hydration...");
-
     let attempts = 0;
     const maxAttempts = 30; // 3 seconds max wait
 
@@ -67,22 +57,12 @@ export const useAuthHook = () => {
       attempts++;
 
       if (_hasHydrated) {
-        console.log("✅ Zustand hydrated, auth state ready");
-        console.log("📦 Auth state:", {
-          hasUser: !!user,
-          hasAccessToken: !!accessToken,
-          hasRefreshToken: !!refreshToken,
-          isGuest,
-          guestId,
-        });
         setLoading(false);
       } else if (attempts >= maxAttempts) {
-        console.warn("⚠️ Hydration timeout - forcing hydration complete");
         // Force hydration to complete to unblock the app
         useAuthStore.getState().setHasHydrated(true);
         setLoading(false);
       } else {
-        console.log(`⏳ Waiting for hydration... (${attempts}/${maxAttempts})`);
         // Check again in 100ms
         setTimeout(checkHydration, 100);
       }
@@ -148,9 +128,8 @@ export const useAuthHook = () => {
         setTokens(response.data.accessToken, response.data.refreshToken);
         setToken(response.data.accessToken); // Backward compatibility
 
-        // Clear guest session in both store and storage
+        // Clear guest session
         setGuest(false, null);
-        await guestStorage.clearGuestId();
 
         // 3. Profile fetch et (manual token header)
         try {
@@ -161,7 +140,6 @@ export const useAuthHook = () => {
           });
           if (profileResponse.data.success && profileResponse.data.data) {
             setUser(profileResponse.data.data);
-            await userStorage.save(profileResponse.data.data);
           }
         } catch (profileError) {
           console.error("Profile fetch error:", profileError);
@@ -177,7 +155,6 @@ export const useAuthHook = () => {
       // Registration token varsa kaydet
       if (response.data.registrationToken) {
         setRegistrationToken(response.data.registrationToken);
-        await registrationStorage.saveToken(response.data.registrationToken);
 
         return {
           success: true,
@@ -236,11 +213,7 @@ export const useAuthHook = () => {
 
         setRegistrationToken(null);
         setGuest(false, null);
-
-        // Clear storage
-        await registrationStorage.clearToken();
-        await guestStorage.clearGuestId();
-        await socialAuthStorage.clear();
+        setSocialAuthData(null);
 
         // Fetch user profile after successful registration (manual header)
         try {
@@ -251,7 +224,6 @@ export const useAuthHook = () => {
           });
           if (profileResponse.data.success && profileResponse.data.data) {
             setUser(profileResponse.data.data);
-            await userStorage.save(profileResponse.data.data);
           }
         } catch (profileError) {
           console.error("Error fetching user profile:", profileError);
@@ -278,7 +250,6 @@ export const useAuthHook = () => {
 
       if (response.data.success && response.data.data) {
         setUser(response.data.data);
-        await userStorage.save(response.data.data);
 
         return { success: true, message: response.data.message };
       } else {
@@ -316,7 +287,6 @@ export const useAuthHook = () => {
           profilePhotoUrl: response.data.data.photoUrl,
         };
         setUser(updatedUser);
-        await userStorage.save(updatedUser);
 
         return { success: true, message: response.data.message };
       } else {
@@ -338,7 +308,6 @@ export const useAuthHook = () => {
       const response = await api.get("/users/me");
       if (response.data.success && response.data.data) {
         setUser(response.data.data);
-        await userStorage.save(response.data.data);
       }
     } catch (error) {
       console.error("Profile refresh error:", error);
@@ -351,7 +320,6 @@ export const useAuthHook = () => {
       const response = await api.post("/auth/guest-login");
       if (response.data.success) {
         setGuest(true, response.data.guestId);
-        await guestStorage.saveGuestId(response.data.guestId);
       }
     } catch (error) {
       console.error("Guest login error:", error);
@@ -377,12 +345,6 @@ export const useAuthHook = () => {
     // Clear Zustand store (this clears everything including localStorage)
     clearAuth();
 
-    // Also clear legacy storage
-    await userStorage.clear();
-    await socialAuthStorage.clear();
-    await guestStorage.clearGuestId();
-    await registrationStorage.clearToken();
-
     // Ana sayfaya yönlendir
     router.push("/");
   };
@@ -405,7 +367,6 @@ export const useAuthHook = () => {
           provider: "google",
         };
         setSocialAuthData(authData);
-        await socialAuthStorage.save(authData);
 
         // Check if user exists in backend
         try {
@@ -431,9 +392,6 @@ export const useAuthHook = () => {
               setUser(response.data.user);
               setTokens(response.data.accessToken, response.data.refreshToken);
               setToken(response.data.accessToken); // Backward compatibility
-
-              // Save user to storage
-              await userStorage.save(response.data.user);
 
               router.push("/");
               return { success: true };

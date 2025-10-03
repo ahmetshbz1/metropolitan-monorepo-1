@@ -59,9 +59,13 @@ export function Navbar() {
   // Get cart summary for display (directly access summary for reactivity)
   const cartSummary = useCartStore((state) => state.summary);
 
-  // Fetch favorites and orders data
+  // Fetch favorites and orders data - only for authenticated users
   const { data: favoritesData } = useFavorites();
-  const { data: ordersData } = useOrders();
+  const { data: ordersData } = useOrders(isAuthenticated && _hasHydrated);
+
+  // Calculate counts
+  const favoritesCount = favoritesData?.length || 0;
+  const ordersCount = ordersData?.length || 0;
 
   // Check if user came from cart after authentication
   useEffect(() => {
@@ -159,8 +163,8 @@ export function Navbar() {
                           }
                         : undefined
                     }
-                    favoritesCount={favoritesData?.length || 0}
-                    ordersCount={ordersData?.length || 0}
+                    favoritesCount={favoritesCount}
+                    ordersCount={ordersCount}
                     onAction={handleUserAction}
                     onLogin={handleLogin}
                   />

@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { OTPInput } from "@/components/ui/otp-input";
 import { api } from "@/lib/api";
-import { tokenStorage } from "@/lib/token-storage";
 import { useAuthStore } from "@/stores";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
@@ -120,8 +119,7 @@ export default function DeleteAccountPage() {
       if (response.data.success) {
         toast.success(t("toast.account_deleted"));
 
-        // Clear auth tokens and state
-        await tokenStorage.remove();
+        // Clear auth state (this also clears localStorage)
         clearAuth();
 
         // Redirect to login page after 2 seconds

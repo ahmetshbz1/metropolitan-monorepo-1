@@ -38,17 +38,11 @@ export function useCart() {
   // CRITICAL: Wait for Zustand hydration before creating guest session
   useEffect(() => {
     if (!_hasHydrated) {
-      console.log('⏳ Waiting for auth hydration before checking session...');
       return;
     }
 
     if (!isAuthenticated && !isGuest && !guestId) {
-      console.log('🔄 No session found, creating guest session...');
       loginAsGuest();
-    } else if (isAuthenticated) {
-      console.log('✅ User authenticated, skipping guest session');
-    } else if (isGuest && guestId) {
-      console.log('✅ Guest session exists');
     }
   }, [_hasHydrated, isAuthenticated, isGuest, guestId, loginAsGuest]);
 
