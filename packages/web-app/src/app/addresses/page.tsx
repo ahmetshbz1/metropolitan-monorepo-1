@@ -29,12 +29,12 @@ export default function AddressesPage() {
           <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
             <MapPin className="h-12 w-12 text-muted-foreground" />
           </div>
-          <h2 className="text-2xl font-bold mb-2">Adreslerinizi görmek için giriş yapın</h2>
+          <h2 className="text-2xl font-bold mb-2">{t("addresses.login_required")}</h2>
           <p className="text-muted-foreground mb-6">
-            Teslimat adreslerinizi kaydedin ve hızlı sipariş verin.
+            {t("addresses.login_message")}
           </p>
           <Button onClick={() => window.location.href = '/auth/phone-login'}>
-            Giriş Yap
+            {t("addresses.login_button")}
           </Button>
         </div>
       </div>

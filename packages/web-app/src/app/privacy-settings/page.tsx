@@ -12,8 +12,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export default function PrivacySettingsPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { user, accessToken, _hasHydrated } = useAuthStore();
   const { data: currentUser } = useCurrentUser();
@@ -54,12 +56,12 @@ export default function PrivacySettingsPage() {
             icon="solar:eye-line-duotone"
             className="size-16 text-muted-foreground mx-auto mb-4"
           />
-          <h2 className="text-2xl font-bold mb-2">Giriş Yapın</h2>
+          <h2 className="text-2xl font-bold mb-2">{t("privacy_settings.login_required_title")}</h2>
           <p className="text-muted-foreground mb-6">
-            Gizlilik ayarlarınızı görmek için giriş yapmalısınız.
+            {t("privacy_settings.login_required_desc")}
           </p>
           <Button asChild>
-            <Link href="/auth/phone-login">Giriş Yap</Link>
+            <Link href="/auth/phone-login">{t("privacy_settings.login_button")}</Link>
           </Button>
         </div>
       </div>
@@ -97,9 +99,9 @@ export default function PrivacySettingsPage() {
             <Icon icon="solar:arrow-left-line-duotone" className="size-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold">Gizlilik Ayarları</h1>
+            <h1 className="text-2xl font-bold">{t("privacy_settings.title")}</h1>
             <p className="text-sm text-muted-foreground">
-              Verilerinizin nasıl kullanıldığını kontrol edin
+              {t("privacy_settings.subtitle")}
             </p>
           </div>
         </div>
@@ -109,9 +111,9 @@ export default function PrivacySettingsPage() {
           <div className="bg-card rounded-xl border border-border">
             <div className="p-4">
               <div className="mb-4">
-                <h2 className="text-base font-semibold">Veri Paylaşımı</h2>
+                <h2 className="text-base font-semibold">{t("privacy_settings.data_sharing.title")}</h2>
                 <p className="text-xs text-muted-foreground">
-                  Verilerinizin üçüncü taraflarla paylaşım tercihleri
+                  {t("privacy_settings.data_sharing.subtitle")}
                 </p>
               </div>
 
@@ -119,11 +121,10 @@ export default function PrivacySettingsPage() {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <Label htmlFor="shareData" className="font-medium">
-                      Partnerlerle Veri Paylaşımı
+                      {t("privacy_settings.data_sharing.share_with_partners")}
                     </Label>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Güvenilir iş ortaklarımızla kişiselleştirilmiş hizmetler
-                      için verilerinizi paylaşın
+                      {t("privacy_settings.data_sharing.share_with_partners_desc")}
                     </p>
                   </div>
                   <Switch
@@ -141,11 +142,10 @@ export default function PrivacySettingsPage() {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <Label htmlFor="analytics" className="font-medium">
-                      Analitik Verileri
+                      {t("privacy_settings.data_sharing.analytics_data")}
                     </Label>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Hizmetlerimizi geliştirmek için anonim kullanım
-                      verilerini toplamamıza izin verin
+                      {t("privacy_settings.data_sharing.analytics_data_desc")}
                     </p>
                   </div>
                   <Switch
@@ -163,9 +163,9 @@ export default function PrivacySettingsPage() {
           <div className="bg-card rounded-xl border border-border">
             <div className="p-4">
               <div className="mb-4">
-                <h2 className="text-base font-semibold">Pazarlama Tercihleri</h2>
+                <h2 className="text-base font-semibold">{t("privacy_settings.marketing_preferences.title")}</h2>
                 <p className="text-xs text-muted-foreground">
-                  Kampanya ve duyurular için iletişim tercihleri
+                  {t("privacy_settings.marketing_preferences.subtitle")}
                 </p>
               </div>
 
@@ -173,11 +173,10 @@ export default function PrivacySettingsPage() {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <Label htmlFor="marketing" className="font-medium">
-                      Pazarlama E-postaları
+                      {t("privacy_settings.marketing_preferences.marketing_emails")}
                     </Label>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Özel teklifler, kampanyalar ve yeni ürünler hakkında
-                      bildirim alın
+                      {t("privacy_settings.marketing_preferences.marketing_emails_desc")}
                     </p>
                   </div>
                   <Switch
@@ -195,9 +194,9 @@ export default function PrivacySettingsPage() {
           <div className="bg-card rounded-xl border border-border">
             <div className="p-4">
               <div className="mb-4">
-                <h2 className="text-base font-semibold">Veri Haklarınız</h2>
+                <h2 className="text-base font-semibold">{t("privacy_settings.data_rights.title")}</h2>
                 <p className="text-xs text-muted-foreground">
-                  GDPR kapsamında haklarınız
+                  {t("privacy_settings.data_rights.subtitle")}
                 </p>
               </div>
 
@@ -213,9 +212,9 @@ export default function PrivacySettingsPage() {
                     />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-medium text-sm">Verilerimi İndir</h3>
+                    <h3 className="font-medium text-sm">{t("privacy_settings.data_rights.export_data")}</h3>
                     <p className="text-xs text-muted-foreground">
-                      Tüm kişisel verilerinizi indirin
+                      {t("privacy_settings.data_rights.export_data_desc")}
                     </p>
                   </div>
                   <Icon
@@ -238,10 +237,10 @@ export default function PrivacySettingsPage() {
                   </div>
                   <div className="flex-1">
                     <h3 className="font-medium text-sm text-red-600 dark:text-red-400">
-                      Hesabı Sil
+                      {t("privacy_settings.data_rights.delete_account")}
                     </h3>
                     <p className="text-xs text-muted-foreground">
-                      Hesabınızı ve tüm verilerinizi kalıcı olarak silin
+                      {t("privacy_settings.data_rights.delete_account_desc")}
                     </p>
                   </div>
                   <Icon

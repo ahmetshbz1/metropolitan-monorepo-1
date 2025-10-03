@@ -167,7 +167,7 @@
     "continue": "Continue"
   },
   "auth": {
-    "phoneLogin": {
+    "phone_login": {
       "b2bNote": "Corporate customers can only join with phone number.",
       "title": "Phone Sign In",
       "subtitle": "We will send you a verification code",
@@ -405,7 +405,8 @@
     "default_delivery": "Default Delivery",
     "default_billing": "Default Billing",
     "login_required": "Sign in to view your addresses",
-    "login_desc": "Save your delivery addresses and place orders quickly."
+    "login_message": "Save your delivery addresses and place orders quickly.",
+    "login_button": "Sign In"
   },
   "notifications": {
     "title": "Notifications",
@@ -710,7 +711,27 @@
     "google_sign_in_failed": "Google sign in failed"
   },
   "delete_account": {
-    "login_required": "You must sign in to delete your account."
+    "login_required": "Sign In",
+    "login_message": "You must sign in to delete your account.",
+    "login_button": "Sign In",
+    "account_settings": "Account Settings",
+    "delete_account": "Delete Account",
+    "warning_irreversible": "This action cannot be undone",
+    "warning_title": "Warning!",
+    "warning_message": "If you delete your account, all your data will be deleted. If you sign in again within 20 days, your account will be reactivated.",
+    "phone_verification": "Phone Verification",
+    "phone_verification_message": "Verify your phone number to delete your account",
+    "phone_number": "Phone Number",
+    "phone_placeholder": "Enter your registered phone number",
+    "sending": "Sending...",
+    "send_code": "Send Verification Code",
+    "verification_code": "Verification Code",
+    "code_sent": "Enter the code sent to {{phoneNumber}}",
+    "verifying": "Verifying...",
+    "delete_button": "Delete Account",
+    "resend_timer": "Resend in ({{resendTimer}}s)",
+    "resend_code": "Resend Code",
+    "cancel": "Cancel"
   },
   "address": {
     "update_description": "Update your address information",
@@ -721,6 +742,76 @@
     "preview_load_error": "Invoice preview could not be loaded",
     "downloading": "Downloading invoice",
     "download_error": "Invoice could not be downloaded"
+  },
+  "privacy_settings": {
+    "title": "Privacy Settings",
+    "subtitle": "Control how your data is used",
+    "login_required_title": "Sign In",
+    "login_required_desc": "You must sign in to view your privacy settings.",
+    "login_button": "Sign In",
+    "data_sharing": {
+      "title": "Data Sharing",
+      "subtitle": "Your data sharing preferences with third parties",
+      "share_with_partners": "Share Data with Partners",
+      "share_with_partners_desc": "Share your data with our trusted partners for personalized services",
+      "analytics_data": "Analytics Data",
+      "analytics_data_desc": "Allow us to collect anonymous usage data to improve our services"
+    },
+    "marketing_preferences": {
+      "title": "Marketing Preferences",
+      "subtitle": "Communication preferences for campaigns and announcements",
+      "marketing_emails": "Marketing Emails",
+      "marketing_emails_desc": "Receive notifications about special offers, campaigns, and new products"
+    },
+    "data_rights": {
+      "title": "Your Data Rights",
+      "subtitle": "Your rights under GDPR",
+      "export_data": "Export My Data",
+      "export_data_desc": "Download all your personal data",
+      "delete_account": "Delete Account",
+      "delete_account_desc": "Permanently delete your account and all your data"
+    }
+  },
+  "export_data": {
+    "title": "Export My Data",
+    "subtitle": "Download all your personal data",
+    "login_required_title": "Sign In",
+    "login_required_desc": "You must sign in to download your data.",
+    "login_button": "Sign In",
+    "back_to_settings": "Account Settings",
+    "info": {
+      "title": "What's Included?",
+      "profile": "Your profile information",
+      "orders": "Your order history",
+      "addresses": "Your saved addresses",
+      "privacy": "Your privacy preferences"
+    },
+    "export_method": {
+      "title": "Export Method",
+      "subtitle": "How would you like to receive your data?",
+      "email": "Send via Email",
+      "email_desc": "Your data will be sent to {{email}}",
+      "download": "Direct Download",
+      "download_desc": "Will be downloaded as an encrypted ZIP file"
+    },
+    "password_display": {
+      "title": "File Password",
+      "subtitle": "You will need this password to open the ZIP file",
+      "download_file": "Download File"
+    },
+    "actions": {
+      "export": "Export",
+      "preparing": "Preparing..."
+    },
+    "toast": {
+      "select_method": "Please select a method",
+      "email_sent": "Your data has been sent to your email address",
+      "file_ready": "Your file is ready!",
+      "export_failed": "Data could not be exported",
+      "download_failed": "File could not be downloaded",
+      "download_success": "File downloaded",
+      "password_copied": "Password copied"
+    }
   },
   "security_settings": {
     "title": "Security Settings",

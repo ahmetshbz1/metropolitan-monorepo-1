@@ -12,8 +12,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export default function DeleteAccountPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { user, accessToken, _hasHydrated, clearAuth } = useAuthStore();
   const [step, setStep] = useState<"phone" | "otp">("phone");
@@ -40,12 +42,12 @@ export default function DeleteAccountPage() {
             icon="solar:user-cross-line-duotone"
             className="size-16 text-muted-foreground mx-auto mb-4"
           />
-          <h2 className="text-2xl font-bold mb-2">Giriş Yapın</h2>
+          <h2 className="text-2xl font-bold mb-2">{t("delete_account.login_required")}</h2>
           <p className="text-muted-foreground mb-6">
-            Hesabınızı silmek için giriş yapmalısınız.
+            {t("delete_account.login_message")}
           </p>
           <Button asChild>
-            <Link href="/auth/phone-login">Giriş Yap</Link>
+            <Link href="/auth/phone-login">{t("delete_account.login_button")}</Link>
           </Button>
         </div>
       </div>
@@ -177,11 +179,11 @@ export default function DeleteAccountPage() {
             className="mb-2 -ml-2"
           >
             <Icon icon="solar:arrow-left-line-duotone" className="size-4 mr-2" />
-            Hesap Ayarları
+            {t("delete_account.account_settings")}
           </Button>
-          <h1 className="text-2xl font-bold text-red-600 dark:text-red-400">Hesabı Sil</h1>
+          <h1 className="text-2xl font-bold text-red-600 dark:text-red-400">{t("delete_account.delete_account")}</h1>
           <p className="text-sm text-muted-foreground">
-            Bu işlem geri alınamaz
+            {t("delete_account.warning_irreversible")}
           </p>
         </div>
 
@@ -195,10 +197,10 @@ export default function DeleteAccountPage() {
               />
               <div>
                 <h3 className="font-semibold text-sm text-red-900 dark:text-red-100 mb-2">
-                  Dikkat!
+                  {t("delete_account.warning_title")}
                 </h3>
                 <p className="text-xs text-red-800 dark:text-red-200 leading-relaxed">
-                  Hesabınızı silerseniz tüm verileriniz silinecektir. 20 gün içinde tekrar giriş yaparsanız hesabınız yeniden aktif olur.
+                  {t("delete_account.warning_message")}
                 </p>
               </div>
             </div>
@@ -209,15 +211,15 @@ export default function DeleteAccountPage() {
             <div className="bg-card rounded-xl border border-border">
               <div className="p-4">
                 <div className="mb-4">
-                  <h2 className="text-base font-semibold">Telefon Doğrulaması</h2>
+                  <h2 className="text-base font-semibold">{t("delete_account.phone_verification")}</h2>
                   <p className="text-xs text-muted-foreground">
-                    Hesabınızı silmek için telefon numaranızı doğrulayın
+                    {t("delete_account.phone_verification_message")}
                   </p>
                 </div>
 
                 <div className="space-y-3">
                   <div>
-                    <Label htmlFor="phone">Telefon Numarası</Label>
+                    <Label htmlFor="phone">{t("delete_account.phone_number")}</Label>
                     <Input
                       id="phone"
                       type="tel"
@@ -228,7 +230,7 @@ export default function DeleteAccountPage() {
                       disabled={loading}
                     />
                     <p className="text-xs text-muted-foreground mt-1.5">
-                      Kayıtlı telefon numaranızı girin
+                      {t("delete_account.phone_placeholder")}
                     </p>
                   </div>
 
@@ -241,12 +243,12 @@ export default function DeleteAccountPage() {
                     {loading ? (
                       <>
                         <Icon icon="svg-spinners:ring-resize" className="size-4 mr-2" />
-                        Gönderiliyor...
+                        {t("delete_account.sending")}
                       </>
                     ) : (
                       <>
                         <Icon icon="solar:letter-bold-duotone" className="size-4 mr-2" />
-                        Doğrulama Kodu Gönder
+                        {t("delete_account.send_code")}
                       </>
                     )}
                   </Button>
@@ -260,9 +262,9 @@ export default function DeleteAccountPage() {
             <div className="bg-card rounded-xl border border-border">
               <div className="p-4">
                 <div className="mb-6">
-                  <h2 className="text-base font-semibold text-center">Doğrulama Kodu</h2>
+                  <h2 className="text-base font-semibold text-center">{t("delete_account.verification_code")}</h2>
                   <p className="text-xs text-muted-foreground text-center mt-1">
-                    {phoneNumber} numarasına gönderilen kodu girin
+                    {t("delete_account.code_sent", { phoneNumber })}
                   </p>
                 </div>
 
@@ -286,12 +288,12 @@ export default function DeleteAccountPage() {
                     {loading ? (
                       <>
                         <Icon icon="svg-spinners:ring-resize" className="size-4 mr-2" />
-                        Doğrulanıyor...
+                        {t("delete_account.verifying")}
                       </>
                     ) : (
                       <>
                         <Icon icon="solar:trash-bin-trash-bold-duotone" className="size-4 mr-2" />
-                        Hesabı Sil
+                        {t("delete_account.delete_button")}
                       </>
                     )}
                   </Button>
@@ -304,11 +306,11 @@ export default function DeleteAccountPage() {
                     size="sm"
                   >
                     {resendTimer > 0 ? (
-                      `Yeniden gönder (${resendTimer}s)`
+                      t("delete_account.resend_timer", { resendTimer })
                     ) : (
                       <>
                         <Icon icon="solar:refresh-bold-duotone" className="size-4 mr-2" />
-                        Kodu Yeniden Gönder
+                        {t("delete_account.resend_code")}
                       </>
                     )}
                   </Button>
@@ -324,7 +326,7 @@ export default function DeleteAccountPage() {
             className="w-full"
           >
             <Icon icon="solar:close-circle-line-duotone" className="size-4 mr-2" />
-            İptal
+            {t("delete_account.cancel")}
           </Button>
         </div>
       </div>

@@ -167,7 +167,7 @@
     "continue": "Kontynuuj"
   },
   "auth": {
-    "phoneLogin": {
+    "phone_login": {
       "b2bNote": "Klienci firmowi mogą dołączyć tylko za pomocą numeru telefonu.",
       "title": "Logowanie przez Telefon",
       "subtitle": "Wyślemy Ci kod weryfikacyjny",
@@ -393,7 +393,8 @@
     "default_delivery": "Domyślny Adres Dostawy",
     "default_billing": "Domyślny Adres Rozliczeniowy",
     "login_required": "Zaloguj się, aby zobaczyć swoje adresy",
-    "login_desc": "Zapisz swoje adresy dostawy i składaj zamówienia szybciej."
+    "login_message": "Zapisz swoje adresy dostawy i składaj zamówienia szybciej.",
+    "login_button": "Zaloguj się"
   },
   "notifications": {
     "title": "Powiadomienia",
@@ -698,7 +699,27 @@
     "google_sign_in_failed": "Logowanie przez Google nie powiodło się"
   },
   "delete_account": {
-    "login_required": "Musisz zalogować się, aby usunąć swoje konto."
+    "login_required": "Zaloguj się",
+    "login_message": "Musisz zalogować się, aby usunąć swoje konto.",
+    "login_button": "Zaloguj się",
+    "account_settings": "Ustawienia Konta",
+    "delete_account": "Usuń Konto",
+    "warning_irreversible": "Ta operacja jest nieodwracalna",
+    "warning_title": "Uwaga!",
+    "warning_message": "Jeśli usuniesz swoje konto, wszystkie Twoje dane zostaną usunięte. Jeśli zalogujesz się ponownie w ciągu 20 dni, Twoje konto zostanie reaktywowane.",
+    "phone_verification": "Weryfikacja Telefonu",
+    "phone_verification_message": "Zweryfikuj numer telefonu, aby usunąć konto",
+    "phone_number": "Numer Telefonu",
+    "phone_placeholder": "Wprowadź zarejestrowany numer telefonu",
+    "sending": "Wysyłanie...",
+    "send_code": "Wyślij Kod Weryfikacyjny",
+    "verification_code": "Kod Weryfikacyjny",
+    "code_sent": "Wprowadź kod wysłany na {{phoneNumber}}",
+    "verifying": "Weryfikacja...",
+    "delete_button": "Usuń Konto",
+    "resend_timer": "Wyślij ponownie za ({{resendTimer}}s)",
+    "resend_code": "Wyślij Kod Ponownie",
+    "cancel": "Anuluj"
   },
   "address": {
     "update_description": "Zaktualizuj dane adresowe",
@@ -709,6 +730,76 @@
     "preview_load_error": "Nie udało się załadować podglądu faktury",
     "downloading": "Pobieranie faktury",
     "download_error": "Nie udało się pobrać faktury"
+  },
+  "privacy_settings": {
+    "title": "Ustawienia Prywatności",
+    "subtitle": "Kontroluj sposób wykorzystania Twoich danych",
+    "login_required_title": "Zaloguj się",
+    "login_required_desc": "Musisz zalogować się, aby zobaczyć ustawienia prywatności.",
+    "login_button": "Zaloguj się",
+    "data_sharing": {
+      "title": "Udostępnianie Danych",
+      "subtitle": "Preferencje udostępniania danych stronom trzecim",
+      "share_with_partners": "Udostępniaj Dane Partnerom",
+      "share_with_partners_desc": "Udostępnij swoje dane zaufanym partnerom w celu świadczenia spersonalizowanych usług",
+      "analytics_data": "Dane Analityczne",
+      "analytics_data_desc": "Pozwól nam zbierać anonimowe dane o użytkowaniu w celu ulepszania naszych usług"
+    },
+    "marketing_preferences": {
+      "title": "Preferencje Marketingowe",
+      "subtitle": "Preferencje komunikacji dotyczące kampanii i ogłoszeń",
+      "marketing_emails": "E-maile Marketingowe",
+      "marketing_emails_desc": "Otrzymuj powiadomienia o ofertach specjalnych, kampaniach i nowych produktach"
+    },
+    "data_rights": {
+      "title": "Twoje Prawa Dotyczące Danych",
+      "subtitle": "Twoje prawa wynikające z RODO",
+      "export_data": "Eksportuj Moje Dane",
+      "export_data_desc": "Pobierz wszystkie swoje dane osobowe",
+      "delete_account": "Usuń Konto",
+      "delete_account_desc": "Trwale usuń swoje konto i wszystkie dane"
+    }
+  },
+  "export_data": {
+    "title": "Eksportuj Moje Dane",
+    "subtitle": "Pobierz wszystkie swoje dane osobowe",
+    "login_required_title": "Zaloguj się",
+    "login_required_desc": "Musisz zalogować się, aby pobrać swoje dane.",
+    "login_button": "Zaloguj się",
+    "back_to_settings": "Ustawienia Konta",
+    "info": {
+      "title": "Co Jest Uwzględnione?",
+      "profile": "Twoje informacje profilowe",
+      "orders": "Twoja historia zamówień",
+      "addresses": "Twoje zapisane adresy",
+      "privacy": "Twoje preferencje prywatności"
+    },
+    "export_method": {
+      "title": "Metoda Eksportu",
+      "subtitle": "Jak chciałbyś otrzymać swoje dane?",
+      "email": "Wyślij przez E-mail",
+      "email_desc": "Twoje dane zostaną wysłane na {{email}}",
+      "download": "Bezpośrednie Pobieranie",
+      "download_desc": "Zostanie pobrane jako zaszyfrowany plik ZIP"
+    },
+    "password_display": {
+      "title": "Hasło do Pliku",
+      "subtitle": "Będziesz potrzebować tego hasła, aby otworzyć plik ZIP",
+      "download_file": "Pobierz Plik"
+    },
+    "actions": {
+      "export": "Eksportuj",
+      "preparing": "Przygotowywanie..."
+    },
+    "toast": {
+      "select_method": "Proszę wybrać metodę",
+      "email_sent": "Twoje dane zostały wysłane na Twój adres e-mail",
+      "file_ready": "Twój plik jest gotowy!",
+      "export_failed": "Nie udało się wyeksportować danych",
+      "download_failed": "Nie udało się pobrać pliku",
+      "download_success": "Plik pobrany",
+      "password_copied": "Hasło skopiowane"
+    }
   },
   "security_settings": {
     "title": "Ustawienia Bezpieczeństwa",

@@ -11,8 +11,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export default function ExportDataPage() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { user, accessToken, _hasHydrated } = useAuthStore();
   const [selectedMethod, setSelectedMethod] = useState<"email" | "download" | "">("");
@@ -37,12 +39,12 @@ export default function ExportDataPage() {
             icon="solar:download-square-line-duotone"
             className="size-16 text-muted-foreground mx-auto mb-4"
           />
-          <h2 className="text-2xl font-bold mb-2">Giriş Yapın</h2>
+          <h2 className="text-2xl font-bold mb-2">{t("export_data.login_required_title")}</h2>
           <p className="text-muted-foreground mb-6">
-            Verilerinizi indirmek için giriş yapmalısınız.
+            {t("export_data.login_required_desc")}
           </p>
           <Button asChild>
-            <Link href="/auth/phone-login">Giriş Yap</Link>
+            <Link href="/auth/phone-login">{t("export_data.login_button")}</Link>
           </Button>
         </div>
       </div>
@@ -51,7 +53,7 @@ export default function ExportDataPage() {
 
   const handleExport = async () => {
     if (!selectedMethod) {
-      toast.error("Lütfen bir yöntem seçin");
+      toast.error(t("export_data.toast.select_method"));
       return;
     }
 
@@ -63,19 +65,19 @@ export default function ExportDataPage() {
 
       if (response.data.success) {
         if (selectedMethod === "email") {
-          toast.success("Verileriniz e-posta adresinize gönderildi");
+          toast.success(t("export_data.toast.email_sent"));
           setSelectedMethod("");
         } else if (selectedMethod === "download") {
           setFilePassword(response.data.password);
           setDownloadUrl(response.data.downloadUrl);
-          toast.success("Dosyanız hazır!");
+          toast.success(t("export_data.toast.file_ready"));
         }
       } else {
-        toast.error(response.data.message || "Veri dışa aktarılamadı");
+        toast.error(response.data.message || t("export_data.toast.export_failed"));
       }
     } catch (error: any) {
       console.error("Export error:", error);
-      toast.error(error.response?.data?.message || "Veri dışa aktarılamadı");
+      toast.error(error.response?.data?.message || t("export_data.toast.export_failed"));
     } finally {
       setLoading(false);
     }
@@ -100,17 +102,17 @@ export default function ExportDataPage() {
       link.remove();
       window.URL.revokeObjectURL(url);
 
-      toast.success("Dosya indirildi");
+      toast.success(t("export_data.toast.download_success"));
     } catch (error) {
       console.error("Download error:", error);
-      toast.error("Dosya indirilemedi");
+      toast.error(t("export_data.toast.download_failed"));
     }
   };
 
   const copyPassword = () => {
     if (filePassword) {
       navigator.clipboard.writeText(filePassword);
-      toast.success("Şifre kopyalandı");
+      toast.success(t("export_data.toast.password_copied"));
     }
   };
 
@@ -126,11 +128,11 @@ export default function ExportDataPage() {
             className="mb-2 -ml-2"
           >
             <Icon icon="solar:arrow-left-line-duotone" className="size-4 mr-2" />
-            Hesap Ayarları
+            {t("export_data.back_to_settings")}
           </Button>
-          <h1 className="text-2xl font-bold">Verilerimi İndir</h1>
+          <h1 className="text-2xl font-bold">{t("export_data.title")}</h1>
           <p className="text-sm text-muted-foreground">
-            Tüm kişisel verilerinizi indirin
+            {t("export_data.subtitle")}
           </p>
         </div>
 
@@ -144,13 +146,13 @@ export default function ExportDataPage() {
               />
               <div>
                 <h3 className="font-semibold text-sm text-blue-900 dark:text-blue-100 mb-1">
-                  Neler İçerilir?
+                  {t("export_data.info.title")}
                 </h3>
                 <ul className="text-xs text-blue-800 dark:text-blue-200 space-y-1">
-                  <li>• Profil bilgileriniz</li>
-                  <li>• Sipariş geçmişiniz</li>
-                  <li>• Kayıtlı adresleriniz</li>
-                  <li>• Gizlilik tercihleriniz</li>
+                  <li>• {t("export_data.info.profile")}</li>
+                  <li>• {t("export_data.info.orders")}</li>
+                  <li>• {t("export_data.info.addresses")}</li>
+                  <li>• {t("export_data.info.privacy")}</li>
                 </ul>
               </div>
             </div>
@@ -160,9 +162,9 @@ export default function ExportDataPage() {
           <div className="bg-card rounded-xl border border-border">
             <div className="p-4">
               <div className="mb-4">
-                <h2 className="text-base font-semibold">Dışa Aktarma Yöntemi</h2>
+                <h2 className="text-base font-semibold">{t("export_data.export_method.title")}</h2>
                 <p className="text-xs text-muted-foreground">
-                  Verilerinizi nasıl almak istersiniz?
+                  {t("export_data.export_method.subtitle")}
                 </p>
               </div>
 
@@ -173,10 +175,10 @@ export default function ExportDataPage() {
                     <Label htmlFor="email" className="flex-1 cursor-pointer">
                       <div className="flex items-center gap-2 mb-1">
                         <Icon icon="solar:letter-bold-duotone" className="size-4 text-primary" />
-                        <span className="font-medium text-sm">E-posta ile Gönder</span>
+                        <span className="font-medium text-sm">{t("export_data.export_method.email")}</span>
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Verileriniz {user.email} adresinize gönderilecek
+                        {t("export_data.export_method.email_desc", { email: user.email })}
                       </p>
                     </Label>
                   </div>
@@ -186,10 +188,10 @@ export default function ExportDataPage() {
                     <Label htmlFor="download" className="flex-1 cursor-pointer">
                       <div className="flex items-center gap-2 mb-1">
                         <Icon icon="solar:download-minimalistic-bold-duotone" className="size-4 text-green-600" />
-                        <span className="font-medium text-sm">Doğrudan İndir</span>
+                        <span className="font-medium text-sm">{t("export_data.export_method.download")}</span>
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        ZIP dosyası olarak şifrelenmiş şekilde indirilecek
+                        {t("export_data.export_method.download_desc")}
                       </p>
                     </Label>
                   </div>
@@ -204,10 +206,10 @@ export default function ExportDataPage() {
               <div className="p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <Icon icon="solar:lock-password-bold-duotone" className="size-5 text-yellow-600" />
-                  <h3 className="font-semibold text-sm">Dosya Şifresi</h3>
+                  <h3 className="font-semibold text-sm">{t("export_data.password_display.title")}</h3>
                 </div>
                 <p className="text-xs text-muted-foreground mb-3">
-                  ZIP dosyasını açmak için bu şifreye ihtiyacınız olacak
+                  {t("export_data.password_display.subtitle")}
                 </p>
                 <div className="flex items-center gap-2 p-3 rounded-lg bg-muted border border-border">
                   <code className="flex-1 text-sm font-mono">{filePassword}</code>
@@ -218,7 +220,7 @@ export default function ExportDataPage() {
                 <Separator className="my-3" />
                 <Button onClick={handleDownload} className="w-full" size="sm">
                   <Icon icon="solar:download-bold-duotone" className="size-4 mr-2" />
-                  Dosyayı İndir
+                  {t("export_data.password_display.download_file")}
                 </Button>
               </div>
             </div>
@@ -235,12 +237,12 @@ export default function ExportDataPage() {
               {loading ? (
                 <>
                   <Icon icon="svg-spinners:ring-resize" className="size-4 mr-2" />
-                  Hazırlanıyor...
+                  {t("export_data.actions.preparing")}
                 </>
               ) : (
                 <>
                   <Icon icon="solar:export-bold-duotone" className="size-4 mr-2" />
-                  Dışa Aktar
+                  {t("export_data.actions.export")}
                 </>
               )}
             </Button>

@@ -167,7 +167,7 @@
     "continue": "Devam Et"
   },
   "auth": {
-    "phoneLogin": {
+    "phone_login": {
       "b2bNote": "Kurumsal müşteriler sadece telefon numarası ile katılabilir.",
       "title": "Telefon ile Giriş",
       "subtitle": "Size bir doğrulama kodu göndereceğiz",
@@ -405,7 +405,8 @@
     "default_delivery": "Varsayılan Teslimat",
     "default_billing": "Varsayılan Fatura",
     "login_required": "Adreslerinizi görmek için giriş yapın",
-    "login_desc": "Teslimat adreslerinizi kaydedin ve hızlı sipariş verin."
+    "login_message": "Teslimat adreslerinizi kaydedin ve hızlı sipariş verin.",
+    "login_button": "Giriş Yap"
   },
   "notifications": {
     "title": "Bildirimler",
@@ -710,7 +711,27 @@
     "google_sign_in_failed": "Google giriş başarısız"
   },
   "delete_account": {
-    "login_required": "Hesabınızı silmek için giriş yapmalısınız."
+    "login_required": "Giriş Yapın",
+    "login_message": "Hesabınızı silmek için giriş yapmalısınız.",
+    "login_button": "Giriş Yap",
+    "account_settings": "Hesap Ayarları",
+    "delete_account": "Hesabı Sil",
+    "warning_irreversible": "Bu işlem geri alınamaz",
+    "warning_title": "Dikkat!",
+    "warning_message": "Hesabınızı silerseniz tüm verileriniz silinecektir. 20 gün içinde tekrar giriş yaparsanız hesabınız yeniden aktif olur.",
+    "phone_verification": "Telefon Doğrulaması",
+    "phone_verification_message": "Hesabınızı silmek için telefon numaranızı doğrulayın",
+    "phone_number": "Telefon Numarası",
+    "phone_placeholder": "Kayıtlı telefon numaranızı girin",
+    "sending": "Gönderiliyor...",
+    "send_code": "Doğrulama Kodu Gönder",
+    "verification_code": "Doğrulama Kodu",
+    "code_sent": "{{phoneNumber}} numarasına gönderilen kodu girin",
+    "verifying": "Doğrulanıyor...",
+    "delete_button": "Hesabı Sil",
+    "resend_timer": "Yeniden gönder ({{resendTimer}}s)",
+    "resend_code": "Kodu Yeniden Gönder",
+    "cancel": "İptal"
   },
   "address": {
     "update_description": "Adres bilgilerinizi güncelleyin",
@@ -721,6 +742,76 @@
     "preview_load_error": "Fatura önizleme yüklenemedi",
     "downloading": "Fatura indiriliyor",
     "download_error": "Fatura indirilemedi"
+  },
+  "privacy_settings": {
+    "title": "Gizlilik Ayarları",
+    "subtitle": "Verilerinizin nasıl kullanıldığını kontrol edin",
+    "login_required_title": "Giriş Yapın",
+    "login_required_desc": "Gizlilik ayarlarınızı görmek için giriş yapmalısınız.",
+    "login_button": "Giriş Yap",
+    "data_sharing": {
+      "title": "Veri Paylaşımı",
+      "subtitle": "Verilerinizin üçüncü taraflarla paylaşım tercihleri",
+      "share_with_partners": "Partnerlerle Veri Paylaşımı",
+      "share_with_partners_desc": "Güvenilir iş ortaklarımızla kişiselleştirilmiş hizmetler için verilerinizi paylaşın",
+      "analytics_data": "Analitik Verileri",
+      "analytics_data_desc": "Hizmetlerimizi geliştirmek için anonim kullanım verilerini toplamamıza izin verin"
+    },
+    "marketing_preferences": {
+      "title": "Pazarlama Tercihleri",
+      "subtitle": "Kampanya ve duyurular için iletişim tercihleri",
+      "marketing_emails": "Pazarlama E-postaları",
+      "marketing_emails_desc": "Özel teklifler, kampanyalar ve yeni ürünler hakkında bildirim alın"
+    },
+    "data_rights": {
+      "title": "Veri Haklarınız",
+      "subtitle": "GDPR kapsamında haklarınız",
+      "export_data": "Verilerimi İndir",
+      "export_data_desc": "Tüm kişisel verilerinizi indirin",
+      "delete_account": "Hesabı Sil",
+      "delete_account_desc": "Hesabınızı ve tüm verilerinizi kalıcı olarak silin"
+    }
+  },
+  "export_data": {
+    "title": "Verilerimi İndir",
+    "subtitle": "Tüm kişisel verilerinizi indirin",
+    "login_required_title": "Giriş Yapın",
+    "login_required_desc": "Verilerinizi indirmek için giriş yapmalısınız.",
+    "login_button": "Giriş Yap",
+    "back_to_settings": "Hesap Ayarları",
+    "info": {
+      "title": "Neler İçerilir?",
+      "profile": "Profil bilgileriniz",
+      "orders": "Sipariş geçmişiniz",
+      "addresses": "Kayıtlı adresleriniz",
+      "privacy": "Gizlilik tercihleriniz"
+    },
+    "export_method": {
+      "title": "Dışa Aktarma Yöntemi",
+      "subtitle": "Verilerinizi nasıl almak istersiniz?",
+      "email": "E-posta ile Gönder",
+      "email_desc": "Verileriniz {{email}} adresinize gönderilecek",
+      "download": "Doğrudan İndir",
+      "download_desc": "ZIP dosyası olarak şifrelenmiş şekilde indirilecek"
+    },
+    "password_display": {
+      "title": "Dosya Şifresi",
+      "subtitle": "ZIP dosyasını açmak için bu şifreye ihtiyacınız olacak",
+      "download_file": "Dosyayı İndir"
+    },
+    "actions": {
+      "export": "Dışa Aktar",
+      "preparing": "Hazırlanıyor..."
+    },
+    "toast": {
+      "select_method": "Lütfen bir yöntem seçin",
+      "email_sent": "Verileriniz e-posta adresinize gönderildi",
+      "file_ready": "Dosyanız hazır!",
+      "export_failed": "Veri dışa aktarılamadı",
+      "download_failed": "Dosya indirilemedi",
+      "download_success": "Dosya indirildi",
+      "password_copied": "Şifre kopyalandı"
+    }
   },
   "security_settings": {
     "title": "Güvenlik Ayarları",
