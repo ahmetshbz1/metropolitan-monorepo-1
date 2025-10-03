@@ -5,6 +5,7 @@
 import { CartItem as CartItemType, useCart } from "@/context/CartContext";
 import { useProducts } from "@/context/ProductContext";
 import { useTheme } from "@/hooks/useTheme";
+import { useAuth } from "@/context/AuthContext";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 
@@ -12,6 +13,7 @@ export const useCartItem = (item: CartItemType) => {
   const { colors, colorScheme } = useTheme();
   const { products } = useProducts();
   const { summary } = useCart();
+  const { user } = useAuth();
   const router = useRouter();
 
   // Find the full product details from the ProductContext
@@ -21,7 +23,20 @@ export const useCartItem = (item: CartItemType) => {
     return null;
   }
 
-  const totalItemPrice = product.price * item.quantity;
+  // Kullanıcı tipine göre minimum alım miktarını ve fiyatı belirle
+  const userType = user?.userType || "individual";
+
+  // Kullanıcı tipine göre doğru fiyatı hesapla
+  const unitPrice = userType === "corporate" && product.corporatePrice !== undefined
+    ? product.corporatePrice
+    : userType === "individual" && product.individualPrice !== undefined
+    ? product.individualPrice
+    : product.price;
+
+  const totalItemPrice = unitPrice * item.quantity;
+  const minQuantity = userType === "corporate"
+    ? (product.minQuantityCorporate ?? 1)
+    : (product.minQuantityIndividual ?? 1);
 
   // Actions
   const handleProductPress = () => {
@@ -29,12 +44,12 @@ export const useCartItem = (item: CartItemType) => {
   };
 
   const handleIncrement = (onUpdateQuantity: (quantity: number) => void) => {
-    onUpdateQuantity(item.quantity + 1);
+    onUpdateQuantity(item.quantity + minQuantity);
   };
 
   const handleDecrement = (onUpdateQuantity: (quantity: number) => void) => {
-    if (item.quantity > 1) {
-      onUpdateQuantity(item.quantity - 1);
+    if (item.quantity > minQuantity) {
+      onUpdateQuantity(item.quantity - minQuantity);
     }
   };
 
@@ -55,6 +70,7 @@ export const useCartItem = (item: CartItemType) => {
     colors,
     colorScheme,
     summary,
+    minQuantity,
 
     // Actions
     handleProductPress,

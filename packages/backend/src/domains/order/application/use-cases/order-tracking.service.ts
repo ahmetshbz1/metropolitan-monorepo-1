@@ -130,7 +130,7 @@ export class OrderTrackingService {
   /**
    * Sipariş öğelerini getirir
    */
-  static async getOrderItems(orderId: string, language: string = "tr") {
+  static async getOrderItems(orderId: string, language: string) {
     return await db
       .select({
         id: orderItems.id,

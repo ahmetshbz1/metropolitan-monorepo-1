@@ -192,11 +192,17 @@ export const useCartActions = ({
       setCartItems(updatedItems);
 
       // Summary'yi de local olarak hesapla
+      // NOT: Backend'den gelen totalPrice varsa onu kullan, yoksa fallback olarak product fiyatını kullan
       const totalItems = updatedItems.reduce((sum, item) => sum + item.quantity, 0);
-      const totalAmount = updatedItems.reduce(
-        (sum, item) => sum + item.product.price * item.quantity,
-        0
-      );
+      const totalAmount = updatedItems.reduce((sum, item) => {
+        // Backend'den gelen totalPrice varsa onu kullan
+        if (item.totalPrice !== undefined && item.totalPrice !== null) {
+          return sum + (typeof item.totalPrice === 'string' ? parseFloat(item.totalPrice) : item.totalPrice);
+        }
+        // Fallback: product fiyatını kullan (individualPrice > corporatePrice > price)
+        const price = item.product.individualPrice ?? item.product.corporatePrice ?? item.product.price;
+        return sum + price * item.quantity;
+      }, 0);
 
       setSummary({
         totalItems,

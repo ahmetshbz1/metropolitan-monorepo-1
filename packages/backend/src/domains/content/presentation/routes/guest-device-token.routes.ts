@@ -57,7 +57,7 @@ export const guestDeviceTokenRoutes = createApp()
               platform,
               deviceName: deviceName || "Unknown Device",
               deviceId,
-              language: language || "tr",
+              language: language || "en",
               isValid: "true",
               failureCount: "0",
             });

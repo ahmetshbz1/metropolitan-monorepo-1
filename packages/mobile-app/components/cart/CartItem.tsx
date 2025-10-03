@@ -33,6 +33,7 @@ export function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
     colors,
     colorScheme,
     summary,
+    minQuantity,
     handleProductPress,
     handleIncrement,
     handleDecrement,
@@ -54,6 +55,7 @@ export function CartItem({ item, onUpdateQuantity, onRemove }: CartItemProps) {
         colors={colors}
         colorScheme={colorScheme}
         summary={summary}
+        minQuantity={minQuantity}
         onProductPress={handleProductPress}
         onIncrement={() => handleIncrement(onUpdateQuantity)}
         onDecrement={() => handleDecrement(onUpdateQuantity)}

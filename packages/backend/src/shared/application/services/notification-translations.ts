@@ -26,7 +26,7 @@ export function getNotificationTranslation(
   language?: string
 ): NotificationTranslation {
   const lang = (
-    language && ["tr", "en", "pl"].includes(language) ? language : "tr"
+    language && ["tr", "en", "pl"].includes(language) ? language : "en"
   ) as Language;
 
   return translations[lang][type];
@@ -37,7 +37,7 @@ export function getCustomNotificationTranslation(
   language?: string
 ): NotificationTranslation {
   const lang = (
-    language && ["tr", "en", "pl"].includes(language) ? language : "tr"
+    language && ["tr", "en", "pl"].includes(language) ? language : "en"
   ) as Language;
 
   return customTranslations[lang];
@@ -49,7 +49,7 @@ export function getPaymentNotificationWithNumber(
   language?: string
 ): NotificationTranslation {
   const lang = (
-    language && ["tr", "en", "pl"].includes(language) ? language : "tr"
+    language && ["tr", "en", "pl"].includes(language) ? language : "en"
   ) as Language;
 
   const base = translations[lang][type] as any;
@@ -75,7 +75,7 @@ export function getOrderStatusNotificationWithNumber(
   language?: string
 ): NotificationTranslation {
   const lang = (
-    language && ["tr", "en", "pl"].includes(language) ? language : "tr"
+    language && ["tr", "en", "pl"].includes(language) ? language : "en"
   ) as Language;
 
   const statusTypeMap = {

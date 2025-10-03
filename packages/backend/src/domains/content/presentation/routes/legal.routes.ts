@@ -18,7 +18,7 @@ export const legalRoutes = createApp().group("/legal", (app) =>
     "/:type",
     async ({ params, query, error }) => {
       const { type } = params;
-      const lang = (query.lang || "tr") as Language;
+      const lang = (query.lang || "en") as Language;
 
       // Validate type
       if (!LEGAL_TYPES.includes(type as LegalType)) {

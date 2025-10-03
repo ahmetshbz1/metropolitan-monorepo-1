@@ -102,7 +102,7 @@ export class NotificationService {
         setTimeout(() => reject(new Error('Timeout')), 5000)
       );
 
-      const currentLanguage = i18n.language || 'tr';
+      const currentLanguage = i18n.language || 'en';
 
       const endpoint = guestId ? '/guest/device-token' : '/users/device-token';
       const payload = guestId

@@ -92,6 +92,10 @@ export default function ProductDetailScreen() {
     if (!product) return;
     const currentQuantity = parseInt(quantity, 10) || 0;
     const newQuantity = currentQuantity + amount;
+
+    // Minimum alım miktarı kadar artırıp azaltıyoruz
+    // Azaltırken: newQuantity >= minQuantity olmalı (en az minQuantity kalmalı)
+    // Artırırken: newQuantity <= stock olmalı
     if (newQuantity >= minQuantity && newQuantity <= product.stock) {
       setQuantity(String(newQuantity));
     }

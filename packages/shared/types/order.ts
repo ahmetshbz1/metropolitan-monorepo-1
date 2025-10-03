@@ -143,4 +143,5 @@ export interface StockError {
   productName: string;
   requestedQuantity: number;
   availableStock: number;
+  minQuantity?: number; // Minimum alım miktarı (opsiyonel - sadece minimum adet hatalarında dolu)
 }

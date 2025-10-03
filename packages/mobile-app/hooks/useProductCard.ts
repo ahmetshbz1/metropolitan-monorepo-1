@@ -30,6 +30,7 @@ export const useProductCard = (product: Product) => {
   const [showMinQuantityDialog, setShowMinQuantityDialog] = useState(false);
   const [minQuantityError, setMinQuantityError] = useState<number | null>(null);
   const [isAddingMinQuantity, setIsAddingMinQuantity] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   // Computed values
   const userType = user?.userType || "individual";
@@ -55,10 +56,14 @@ export const useProductCard = (product: Product) => {
 
   // Actions
   const handleAddToCart = async (e: GestureResponderEvent) => {
+    // Race condition koruması: Eğer zaten ekleme işlemi devam ediyorsa, yeni request gönderme
+    if (isAddingToCart) return;
+
     e.preventDefault();
     e.stopPropagation();
 
     triggerHaptic();
+    setIsAddingToCart(true);
 
     try {
       await addToCart(product.id, 1);
@@ -75,6 +80,8 @@ export const useProductCard = (product: Product) => {
       } else {
         showToast(errorMessage || t("errors.CART_ADD_ERROR"), "error");
       }
+    } finally {
+      setIsAddingToCart(false);
     }
   };
 
@@ -125,6 +132,7 @@ export const useProductCard = (product: Product) => {
     showMinQuantityDialog,
     minQuantityError,
     isAddingMinQuantity,
+    isAddingToCart,
 
     // Actions
     handleAddToCart,

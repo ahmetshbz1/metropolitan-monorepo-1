@@ -64,7 +64,7 @@ export const productRoutes = createApp()
     .get(
       "/search",
       async ({ db, query, request, profile }) => {
-        const lang = query.lang || "tr";
+        const lang = query.lang || "en";
         const searchQuery = query.q || "";
 
         if (searchQuery.length < 2) {
@@ -151,7 +151,7 @@ export const productRoutes = createApp()
     .get(
       "/categories",
       async ({ db, query }) => {
-        const lang = query.lang || "tr";
+        const lang = query.lang || "en";
 
         const allCategories = await db
           .select({
@@ -179,7 +179,7 @@ export const productRoutes = createApp()
     .get(
       "/",
       async ({ db, query, request, profile }) => {
-        const lang = query.lang || "tr";
+        const lang = query.lang || "en";
         const categorySlug = query.category;
         const userType = profile?.userType || "individual";
 
@@ -303,7 +303,7 @@ export const productRoutes = createApp()
     .get(
       "/:id",
       async ({ db, params, query, request, profile }) => {
-        const lang = query.lang || "tr";
+        const lang = query.lang || "en";
         const productId = params.id;
         const userType = profile?.userType || "individual";
 

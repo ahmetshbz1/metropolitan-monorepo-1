@@ -22,7 +22,7 @@ export const favoritesRoutes = createApp()
         "/",
         async ({ db, profile, query, request }) => {
           const userId = profile?.sub || profile?.userId;
-          const lang = query.lang || "tr";
+          const lang = query.lang || "en";
           const userFavorites = await db
             .select({
               id: products.id,

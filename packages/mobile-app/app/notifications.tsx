@@ -2,11 +2,14 @@
 //  metropolitan app
 //  Created by Ahmet on 01.07.2025.
 
-import { Stack } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { Stack, useRouter } from "expo-router";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, RefreshControl } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+
+import { HapticIconButton } from "@/components/HapticButton";
 
 import { ThemedView } from "@/components/ThemedView";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
@@ -22,6 +25,7 @@ import { useTheme } from "@/hooks/useTheme";
 export default function NotificationsScreen() {
   const { t } = useTranslation();
   const { colors } = useTheme();
+  const router = useRouter();
 
   // Custom hook kullanarak tüm bildirim işlemlerini yönet
   const {
@@ -57,6 +61,7 @@ export default function NotificationsScreen() {
         <Stack.Screen
           options={{
             title: t("notifications.title"),
+            presentation: "modal",
             headerStyle: {
               backgroundColor: colors.background,
             },
@@ -64,6 +69,14 @@ export default function NotificationsScreen() {
             headerTitleStyle: {
               fontWeight: "600",
             },
+            headerLeft: () => (
+              <HapticIconButton
+                onPress={() => router.back()}
+                style={{ padding: 8, marginLeft: 4 }}
+              >
+                <Ionicons name="close" size={24} color={colors.text} />
+              </HapticIconButton>
+            ),
           }}
         />
 

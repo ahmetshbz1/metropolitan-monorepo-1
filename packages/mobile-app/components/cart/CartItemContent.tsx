@@ -24,6 +24,7 @@ interface CartItemContentProps {
   colors: any;
   colorScheme: any;
   summary: any;
+  minQuantity: number;
   onProductPress: () => void;
   onIncrement: () => void;
   onDecrement: () => void;
@@ -36,6 +37,7 @@ export const CartItemContent: React.FC<CartItemContentProps> = ({
   colors,
   colorScheme,
   summary,
+  minQuantity,
   onProductPress,
   onIncrement,
   onDecrement,
@@ -85,12 +87,12 @@ export const CartItemContent: React.FC<CartItemContentProps> = ({
               <HapticIconButton
                 className="w-9 h-9 items-center justify-center"
                 onPress={onDecrement}
-                disabled={item.quantity === 1}
+                disabled={item.quantity <= minQuantity}
               >
                 <Ionicons
                   name="remove"
                   size={22}
-                  color={item.quantity === 1 ? colors.mediumGray : colors.text}
+                  color={item.quantity <= minQuantity ? colors.mediumGray : colors.text}
                 />
               </HapticIconButton>
               <View style={quantityButtonStyle}>
@@ -101,8 +103,13 @@ export const CartItemContent: React.FC<CartItemContentProps> = ({
               <HapticIconButton
                 className="w-9 h-9 items-center justify-center"
                 onPress={onIncrement}
+                disabled={item.quantity + minQuantity > product.stock}
               >
-                <Ionicons name="add" size={22} color={colors.text} />
+                <Ionicons
+                  name="add"
+                  size={22}
+                  color={item.quantity + minQuantity > product.stock ? colors.mediumGray : colors.text}
+                />
               </HapticIconButton>
             </View>
           </View>

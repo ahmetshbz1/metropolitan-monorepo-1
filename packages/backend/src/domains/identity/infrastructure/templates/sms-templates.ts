@@ -40,19 +40,19 @@ export const SMS_TEMPLATES: SmsTemplates = {
 
 /**
  * Get SMS template for specific language and action
- * Falls back to Polish if language is not supported
+ * Falls back to English if language is not supported
  */
 export function getSmsTemplate(
   language: string | undefined,
   action: SmsAction
 ): string {
   // Normalize language to lowercase
-  const normalizedLang = (language?.toLowerCase() || 'pl') as string;
+  const normalizedLang = (language?.toLowerCase() || 'en') as string;
 
-  // Check if language is supported, fallback to Polish
+  // Check if language is supported, fallback to English
   const lang: SmsLanguage = ['tr', 'en', 'pl'].includes(normalizedLang)
     ? normalizedLang as SmsLanguage
-    : 'pl';
+    : 'en';
 
   return SMS_TEMPLATES[lang][action];
 }
@@ -74,7 +74,7 @@ export function formatSmsMessage(
  * Extracts the primary language code from headers like "en-US,en;q=0.9"
  */
 export function getLanguageFromHeader(acceptLanguageHeader?: string): string {
-  if (!acceptLanguageHeader) return 'pl';
+  if (!acceptLanguageHeader) return 'en';
 
   // Extract the primary language code
   const primaryLang = acceptLanguageHeader.split(',')[0]?.split('-')[0]?.toLowerCase();
@@ -89,5 +89,5 @@ export function getLanguageFromHeader(acceptLanguageHeader?: string): string {
     'eng': 'en', // Alternative English code
   };
 
-  return languageMap[primaryLang] || 'pl';
+  return languageMap[primaryLang] || 'en';
 }

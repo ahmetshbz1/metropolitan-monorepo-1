@@ -11,6 +11,6 @@ const translations = {
 };
 
 export function getRateLimitMessage(waitTime: number, language?: string): string {
-  const lang = (language && ["tr", "en", "pl"].includes(language) ? language : "tr") as Language;
+  const lang = (language && ["tr", "en", "pl"].includes(language) ? language : "en") as Language;
   return translations[lang].rate_limit.replace("{waitTime}", waitTime.toString());
 }

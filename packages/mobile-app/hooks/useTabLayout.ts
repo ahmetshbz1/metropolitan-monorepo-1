@@ -3,8 +3,8 @@
 //  Created by Ahmet on 03.07.2025.
 
 import { CartContext } from "@/context/CartContext";
-import { useNavigationProtection } from "@/hooks/useNavigationProtection";
 import { useConfirmationDialog } from "@/hooks/useConfirmationDialog";
+import { useNavigationProtection } from "@/hooks/useNavigationProtection";
 import { useContext, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Platform } from "react-native";
@@ -16,7 +16,8 @@ export const useTabLayout = () => {
   const { clearCart } = useContext(CartContext);
   const scrollHandlers = useRef<Record<string, () => void>>({});
   const { push: safePush } = useNavigationProtection({ debounceTime: 700 });
-  const { dialogState, showDialog, hideDialog, handleConfirm } = useConfirmationDialog();
+  const { dialogState, showDialog, hideDialog, handleConfirm } =
+    useConfirmationDialog();
 
   const scrollToTop = (routeName: string) => {
     const handler = scrollHandlers.current[routeName];
@@ -46,7 +47,7 @@ export const useTabLayout = () => {
   };
 
   const handleNotification = () => {
-    safePush("/notifications");
+    safePush("/notifications", { presentation: "modal" });
   };
 
   const getTabBarHeight = () => {

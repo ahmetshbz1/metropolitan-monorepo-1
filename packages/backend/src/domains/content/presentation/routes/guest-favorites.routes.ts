@@ -18,7 +18,7 @@ export const guestFavoritesRoutes = createApp()
     "/favorites/:guestId",
     async ({ params, db, query, request }) => {
       const { guestId } = params;
-      const lang = query.lang || "tr";
+      const lang = query.lang || "en";
 
       const favorites = await db
         .select({

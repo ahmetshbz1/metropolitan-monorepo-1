@@ -192,7 +192,7 @@ const protectedProfileRoutes = createApp()
             platform: body.platform,
             deviceName: body.deviceName || "Unknown Device",
             deviceId: body.deviceId,
-            language: body.language || "tr",
+            language: body.language || "en",
             isValid: "true",
             failureCount: "0",
           });
@@ -204,7 +204,7 @@ const protectedProfileRoutes = createApp()
         try {
           const welcomeNotification = getNotificationTranslation(
             'welcome',
-            body.language || 'tr'
+            body.language || 'en'
           );
 
           const response = await fetch('https://exp.host/--/api/v2/push/send', {

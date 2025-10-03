@@ -52,8 +52,8 @@ export const orderQueryRoutes = new Elysia()
 
       // Get language from Accept-Language header
       const acceptLanguage = headers["accept-language"];
-      const language = acceptLanguage?.split(",")[0]?.split("-")[0]?.toLowerCase() || "tr";
-      const validLanguage = ["tr", "en", "pl"].includes(language) ? language : "tr";
+      const language = acceptLanguage?.split(",")[0]?.split("-")[0]?.toLowerCase() || "en";
+      const validLanguage = ["tr", "en", "pl"].includes(language) ? language : "en";
 
       try {
         console.log(

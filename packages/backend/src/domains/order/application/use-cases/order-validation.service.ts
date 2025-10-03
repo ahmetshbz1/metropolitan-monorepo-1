@@ -23,13 +23,14 @@ export class OrderValidationService {
     userId: string;
     addressId: string;
     items: CartItemData[];
-    language?: string;
+    userType?: "individual" | "corporate";
+    language: string;
   }): Promise<{
     isValid: boolean;
     stockErrors?: StockError[];
     error?: string;
   }> {
-    const { userId, addressId, items, language = "tr" } = data;
+    const { userId, addressId, items, userType = "individual", language } = data;
 
     // 1. Ürün listesinin boş olup olmadığını kontrol et
     if (items.length === 0) {
@@ -69,6 +70,23 @@ export class OrderValidationService {
         continue;
       }
 
+      // Minimum alım miktarı kontrolü
+      const minQuantity = userType === "corporate"
+        ? (product.minQuantityCorporate ?? 1)
+        : (product.minQuantityIndividual ?? 1);
+
+      if (item.quantity < minQuantity) {
+        stockErrors.push({
+          productId: product.id,
+          productName: product.translations[0]?.name ?? "İsimsiz Ürün",
+          requestedQuantity: item.quantity,
+          availableStock: product.stock ?? 0,
+          minQuantity: minQuantity,
+        });
+        continue;
+      }
+
+      // Stok kontrolü
       if ((product.stock ?? 0) < item.quantity) {
         stockErrors.push({
           productId: product.id,
@@ -89,7 +107,11 @@ export class OrderValidationService {
   /**
    * Sepet öğelerini doğrular ve cart item data'sını döner
    */
-  static async validateCartItems(userId: string, language: string = "tr"): Promise<{
+  static async validateCartItems(
+    userId: string,
+    userType: "individual" | "corporate",
+    language: string
+  ): Promise<{
     items: CartItemData[];
     validation: {
       isValid: boolean;
@@ -145,9 +167,29 @@ export class OrderValidationService {
       createdAt: item.createdAt.toISOString(),
     }));
 
-    // Stok kontrolü yap
+    // Stok ve minimum alım kontrolü yap
     const stockErrors: StockError[] = [];
     for (const item of cartItemsData) {
+      // Önce minimum alım miktarını kontrol et
+      const dbProduct = dbCartItems.find(ci => ci.product.id === item.product.id)?.product;
+      if (dbProduct) {
+        const minQuantity = userType === "corporate"
+          ? (dbProduct.minQuantityCorporate ?? 1)
+          : (dbProduct.minQuantityIndividual ?? 1);
+
+        if (item.quantity < minQuantity) {
+          stockErrors.push({
+            productId: item.product.id,
+            productName: item.product.name,
+            requestedQuantity: item.quantity,
+            availableStock: item.product.stock,
+            minQuantity: minQuantity,
+          });
+          continue; // Minimum adet hatası varsa stok kontrolüne geçme
+        }
+      }
+
+      // Stok kontrolü
       if (item.product.stock < item.quantity) {
         stockErrors.push({
           productId: item.product.id,

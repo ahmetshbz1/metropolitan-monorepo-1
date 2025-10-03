@@ -1,20 +1,20 @@
-import { Elysia, t } from "elysia";
 import { eq } from "drizzle-orm";
+import { Elysia, t } from "elysia";
 
+import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
 import { db } from "../../../../shared/infrastructure/database/connection";
 import {
   paymentTermsSettings,
   userPaymentTerms,
   users,
 } from "../../../../shared/infrastructure/database/schema";
-import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
 
 export const paymentTermsRoutes = new Elysia({ prefix: "/payment-terms" })
   .get(
     "/available",
     async ({ query, headers }) => {
       const { userId } = query;
-      const acceptLanguage = headers['accept-language'] || 'tr';
+      const acceptLanguage = headers["accept-language"] || "en";
 
       let terms: number[] = [7, 14, 21];
 
@@ -34,9 +34,10 @@ export const paymentTermsRoutes = new Elysia({ prefix: "/payment-terms" })
               .map((t: string) => parseInt(t.trim()))
               .filter((t: number) => !isNaN(t));
           } else {
-            const globalSettings = await db.query.paymentTermsSettings.findFirst({
-              where: eq(paymentTermsSettings.isGlobalDefault, true),
-            });
+            const globalSettings =
+              await db.query.paymentTermsSettings.findFirst({
+                where: eq(paymentTermsSettings.isGlobalDefault, true),
+              });
 
             if (globalSettings?.availableTerms) {
               terms = globalSettings.availableTerms
@@ -55,13 +56,13 @@ export const paymentTermsRoutes = new Elysia({ prefix: "/payment-terms" })
 
       const getDayLabel = (days: number, lang: string): string => {
         const labels: Record<string, string> = {
-          'tr': `${days} gün`,
-          'en': `${days} days`,
-          'pl': `${days} dni`,
+          tr: `${days} gün`,
+          en: `${days} days`,
+          pl: `${days} dni`,
         };
 
-        const langCode = lang.split('-')[0].toLowerCase();
-        return labels[langCode] || labels['tr'];
+        const langCode = lang.split("-")[0].toLowerCase();
+        return labels[langCode] || labels["en"];
       };
 
       const termOptions = terms.map((days) => ({

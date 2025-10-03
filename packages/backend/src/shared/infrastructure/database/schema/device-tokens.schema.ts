@@ -28,7 +28,7 @@ export const deviceTokens = pgTable(
     // Cihazın benzersiz kimliği (opsiyonel)
     deviceId: text("device_id"),
     // Uygulama dili: tr, en, pl
-    language: text("language").notNull().default("tr"),
+    language: text("language").notNull().default("en"),
     // Son kullanım zamanı - aktif olmayan tokenları temizlemek için
     lastUsedAt: timestamp("last_used_at").notNull().defaultNow(),
     // Token'ın geçersiz olup olmadığı (push hatası aldığımızda)

@@ -209,13 +209,13 @@ export const ProductInfo = memo<ProductInfoProps>(function ProductInfo({
             >
               <HapticIconButton
                 className="w-9 h-9 items-center justify-center"
-                onPress={() => onUpdateQuantity(-1)}
-                disabled={numericQuantity <= minQuantity}
+                onPress={() => onUpdateQuantity(-minQuantity)}
+                disabled={numericQuantity - minQuantity < minQuantity}
               >
                 <Ionicons
                   name="remove"
                   size={16}
-                  color={numericQuantity <= minQuantity ? colors.mediumGray : colors.text}
+                  color={numericQuantity - minQuantity < minQuantity ? colors.mediumGray : colors.text}
                 />
               </HapticIconButton>
               <TextInput
@@ -243,14 +243,14 @@ export const ProductInfo = memo<ProductInfoProps>(function ProductInfo({
               />
               <HapticIconButton
                 className="w-9 h-9 items-center justify-center"
-                onPress={() => onUpdateQuantity(1)}
-                disabled={numericQuantity >= product.stock}
+                onPress={() => onUpdateQuantity(minQuantity)}
+                disabled={numericQuantity + minQuantity > product.stock}
               >
                 <Ionicons
                   name="add"
                   size={16}
                   color={
-                    numericQuantity >= product.stock
+                    numericQuantity + minQuantity > product.stock
                       ? colors.mediumGray
                       : colors.text
                   }

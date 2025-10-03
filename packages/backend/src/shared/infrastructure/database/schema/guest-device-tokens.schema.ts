@@ -19,7 +19,7 @@ export const guestDeviceTokens = pgTable(
     platform: text("platform").notNull(),
     deviceName: text("device_name"),
     deviceId: text("device_id"),
-    language: text("language").notNull().default("tr"),
+    language: text("language").notNull().default("en"),
     lastUsedAt: timestamp("last_used_at").notNull().defaultNow(),
     isValid: text("is_valid").notNull().default("true"),
     failureCount: text("failure_count").notNull().default("0"),

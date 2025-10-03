@@ -18,7 +18,7 @@ export const guestCartRoutes = createApp()
     "/cart/:guestId",
     async ({ params, db, query, request }) => {
       const { guestId } = params;
-      const lang = query.lang || "tr";
+      const lang = query.lang || "en";
 
       const cartItems = await db
         .select({
@@ -171,7 +171,7 @@ export const guestCartRoutes = createApp()
     "/cart/batch",
     async ({ body, db, error, query }) => {
       const { guestId, updates } = body;
-      const lang = query.lang || "tr";
+      const lang = query.lang || "en";
 
       if (!updates.length) {
         return { success: true, message: "No updates provided", updatedCount: 0 };
