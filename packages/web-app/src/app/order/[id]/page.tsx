@@ -12,7 +12,7 @@ import api, { API_BASE_URL } from "@/lib/api";
 import type { OrderDetail } from "@metropolitan/shared";
 import { toast } from "sonner";
 import { ordersApi } from "@/services/api/orders-api";
-import { useAddToCart } from "@/hooks/api/use-cart";
+import { useAddToCart, useClearCart } from "@/hooks/api/use-cart";
 import { InvoicePreviewDialog } from "@/components/invoice/InvoicePreviewDialog";
 
 type Order = OrderDetail & {
@@ -37,6 +37,7 @@ export default function OrderDetailPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { accessToken } = useAuthStore();
+  const clearCartMutation = useClearCart();
   const addToCart = useAddToCart();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
@@ -52,13 +53,25 @@ export default function OrderDetailPage() {
     // Ödeme durumu kontrolü
     const paymentStatus = searchParams.get("payment");
     if (paymentStatus === "success") {
+      // Sepeti temizle (backend + local)
+      console.log("🧹 Clearing cart after successful payment...");
+      clearCartMutation.mutate();
+      
       toast.success("Ödeme Başarılı!", {
         description: "Siparişiniz başarıyla oluşturuldu. Kısa sürede hazırlanacak.",
       });
+      
+      // URL'den payment parametresini kaldır
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, "", newUrl);
     } else if (paymentStatus === "cancelled") {
       toast.error("Ödeme İptal Edildi", {
         description: "Ödeme işlemi iptal edildi. Tekrar deneyebilirsiniz.",
       });
+      
+      // URL'den payment parametresini kaldır
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, "", newUrl);
     }
 
     fetchOrderDetail();
