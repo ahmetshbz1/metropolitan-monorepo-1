@@ -35,9 +35,20 @@ export function CartStep({ onNext, canProceed, onClose }: CartStepProps) {
   const enrichedItems = useMemo(() => {
     return items.map((item) => {
       const frontendProduct = products.find((p) => p.id === item.product.id);
+      console.log('🔍 Product merge:', {
+        itemProductId: item.product.id,
+        foundFrontendProduct: !!frontendProduct,
+        frontendMinCorporate: frontendProduct?.minQuantityCorporate,
+        frontendMinIndividual: frontendProduct?.minQuantityIndividual,
+        backendMinCorporate: item.product.minQuantityCorporate,
+        backendMinIndividual: item.product.minQuantityIndividual
+      });
       return {
         ...item,
-        product: frontendProduct || item.product,
+        product: frontendProduct ? {
+          ...item.product,
+          ...frontendProduct,
+        } : item.product,
       };
     });
   }, [items, products]);
@@ -50,8 +61,17 @@ export function CartStep({ onNext, canProceed, onClose }: CartStepProps) {
     }).format(price);
   };
 
-  const handleUpdateQuantity = async (itemId: string, productId: string, newQuantity: number) => {
-    if (newQuantity < 1) return;
+  // Get minimum quantity for a product based on user type
+  const getMinQuantity = (product: any) => {
+    const userType = user?.userType || 'individual';
+    const calculatedMin = userType === 'corporate'
+      ? (product.minQuantityCorporate ?? 1)
+      : (product.minQuantityIndividual ?? 1);
+    return calculatedMin;
+  };
+
+  const handleUpdateQuantity = async (itemId: string, productId: string, newQuantity: number, minQuantity: number) => {
+    if (newQuantity < minQuantity) return;
     await updateItemMutation.mutateAsync({
       itemId,
       quantity: newQuantity,
@@ -79,71 +99,83 @@ export function CartStep({ onNext, canProceed, onClose }: CartStepProps) {
     <div className="flex flex-col h-full min-h-0">
       {/* Cart Items */}
       <div className="overflow-y-auto flex-1 min-h-0 space-y-4 px-6 py-4">
-        {enrichedItems.map((item) => (
-          <div key={item.id} className="flex gap-4 p-4 bg-card rounded-lg border border-border">
-            {/* Product Image */}
-            <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-card flex-shrink-0">
-              {item.product.image ? (
-                <img
-                  src={item.product.image}
-                  alt={item.product.name}
-                  className="w-full h-full object-contain p-2"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <div className="w-8 h-8 bg-muted-foreground/20 rounded-lg" />
-                </div>
-              )}
-            </div>
+        {enrichedItems.map((item) => {
+          const minQuantity = getMinQuantity(item.product);
+          console.log('🛒 Cart item:', {
+            productId: item.product.id,
+            name: item.product.name,
+            userType: user?.userType,
+            minQuantityCorporate: item.product.minQuantityCorporate,
+            minQuantityIndividual: item.product.minQuantityIndividual,
+            calculatedMinQuantity: minQuantity
+          });
 
-            {/* Product Info */}
-            <div className="flex-1 min-w-0">
-              <h4 className="font-medium text-sm line-clamp-2 mb-1">{item.product.name}</h4>
-              {item.product.size && (
-                <p className="text-xs text-muted-foreground mb-2">{item.product.size}</p>
-              )}
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-primary">
-                  {formatPrice(item.product.price * item.quantity, item.product.currency)}
-                </span>
+          return (
+            <div key={item.id} className="flex gap-4 p-4 bg-card rounded-lg border border-border">
+              {/* Product Image */}
+              <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-card flex-shrink-0">
+                {item.product.image ? (
+                  <img
+                    src={item.product.image}
+                    alt={item.product.name}
+                    className="w-full h-full object-contain p-2"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <div className="w-8 h-8 bg-muted-foreground/20 rounded-lg" />
+                  </div>
+                )}
+              </div>
 
-                {/* Quantity Controls */}
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={() => handleUpdateQuantity(item.id, item.product.id, item.quantity - 1)}
-                    disabled={item.quantity <= 1 || updateItemMutation.isPending}
-                  >
-                    <Minus className="h-3 w-3" />
-                  </Button>
-                  <span className="w-8 text-center font-medium text-sm">{item.quantity}</span>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={() => handleUpdateQuantity(item.id, item.product.id, item.quantity + 1)}
-                    disabled={
-                      item.quantity >= item.product.stock || updateItemMutation.isPending
-                    }
-                  >
-                    <Plus className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-destructive hover:text-destructive"
-                    onClick={() => handleRemoveItem(item.id)}
-                    disabled={removeItemMutation.isPending}
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
+              {/* Product Info */}
+              <div className="flex-1 min-w-0">
+                <h4 className="font-medium text-sm line-clamp-2 mb-1">{item.product.name}</h4>
+                {item.product.size && (
+                  <p className="text-xs text-muted-foreground mb-2">{item.product.size}</p>
+                )}
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-primary">
+                    {formatPrice(item.product.price * item.quantity, item.product.currency)}
+                  </span>
+
+                  {/* Quantity Controls */}
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={() => handleUpdateQuantity(item.id, item.product.id, item.quantity - minQuantity, minQuantity)}
+                      disabled={item.quantity <= minQuantity || updateItemMutation.isPending}
+                    >
+                      <Minus className="h-3 w-3" />
+                    </Button>
+                    <span className="w-8 text-center font-medium text-sm">{item.quantity}</span>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={() => handleUpdateQuantity(item.id, item.product.id, item.quantity + minQuantity, minQuantity)}
+                      disabled={
+                        item.quantity + minQuantity > item.product.stock || updateItemMutation.isPending
+                      }
+                    >
+                      <Plus className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-destructive hover:text-destructive"
+                      onClick={() => handleRemoveItem(item.id)}
+                      disabled={removeItemMutation.isPending}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Footer with Summary */}
