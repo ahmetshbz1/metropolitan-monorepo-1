@@ -309,7 +309,7 @@ export default function ProductDetailPage() {
             <div className="w-full max-w-sm mx-auto">
               <AspectRatio
                 ratio={1}
-                className="bg-muted rounded-xl overflow-hidden"
+                className="bg-background rounded-xl overflow-hidden"
               >
                 {product.image ? (
                   <Lens zoomFactor={2} lensSize={160}>

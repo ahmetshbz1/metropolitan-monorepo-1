@@ -270,9 +270,9 @@ export default function OrderDetailPage() {
               <Link
                 href={`/product/${item.productId || item.id}`}
                 key={item.id}
-                className="flex gap-4 pb-4 border-b border-border last:border-b-0 last:pb-0 hover:bg-muted/50 transition-colors rounded-lg p-2 -m-2"
+                className="flex gap-4 pb-4 border-b border-border last:border-b-0 last:pb-0 transition-colors rounded-lg p-2 -m-2"
               >
-                <div className="w-20 h-20 bg-muted rounded-lg flex-shrink-0 overflow-hidden">
+                <div className="w-20 h-20 bg-card rounded-lg flex-shrink-0 overflow-hidden">
                   {item.image ? (
                     <img
                       src={item.image}

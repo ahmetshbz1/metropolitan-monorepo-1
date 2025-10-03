@@ -120,7 +120,7 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
           <div className="w-32 h-56 flex-shrink-0 bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-border flex flex-col cursor-pointer">
             <div className="relative">
               {/* Product Image */}
-              <div className="relative h-28 bg-muted">
+              <div className="relative h-28 bg-card">
                 {product.image ? (
                   <img
                     src={product.image}
@@ -128,7 +128,7 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
                     className="w-full h-full object-contain p-2"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-muted">
+                  <div className="w-full h-full flex items-center justify-center bg-card">
                     <div className="w-12 h-12 bg-muted-foreground/20 rounded-xl flex items-center justify-center">
                       <div className="w-6 h-6 bg-muted-foreground/30 rounded-lg"></div>
                     </div>
@@ -233,7 +233,7 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
       <Link href={`/product/${product.id}`} className="block">
         <div className="w-32 h-56 bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 border border-border flex flex-col cursor-pointer">
           {/* Product Image */}
-          <div className="relative h-28 bg-muted">
+          <div className="relative h-28 bg-card">
             {product.image ? (
               <img
                 src={product.image}

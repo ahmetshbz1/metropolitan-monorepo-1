@@ -82,7 +82,7 @@ export function CartStep({ onNext, canProceed, onClose }: CartStepProps) {
         {enrichedItems.map((item) => (
           <div key={item.id} className="flex gap-4 p-4 bg-card rounded-lg border border-border">
             {/* Product Image */}
-            <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+            <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-card flex-shrink-0">
               {item.product.image ? (
                 <img
                   src={item.product.image}
