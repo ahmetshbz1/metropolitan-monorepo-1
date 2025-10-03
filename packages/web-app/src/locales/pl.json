@@ -105,6 +105,61 @@
     "MIN_QUANTITY_NOT_MET": "Minimalna ilość zamówienia dla tego produktu to {{minQuantity}} sztuk.",
     "PRODUCT_NOT_FOUND": "Produkt nie znaleziony.",
     "CART_ITEM_NOT_FOUND": "Element koszyka nie znaleziony.",
+    "CART_ADD_ERROR": "Wystąpił nieoczekiwany błąd podczas dodawania do koszyka. Spróbuj ponownie.",
+    "CART_UPDATE_ERROR": "Wystąpił nieoczekiwany błąd podczas aktualizacji. Spróbuj ponownie.",
+    "UNEXPECTED_ERROR": "Wystąpił nieoczekiwany błąd",
+    "RATE_LIMIT_DEFAULT": "Zbyt wiele żądań, proszę spróbować później.",
+    "RATE_LIMIT_AUTH": "Zbyt wiele prób uwierzytelniania. Proszę spróbować później.",
+    "RATE_LIMIT_OTP_SEND": "Zbyt wiele żądań OTP. Proszę poczekać 1 minutę i spróbować ponownie.",
+    "RATE_LIMIT_OTP_VERIFY": "Zbyt wiele prób weryfikacji. Proszę poczekać 5 minut."
+  },
+  "product": {
+    "add_to_cart": "Dodaj do koszyka",
+    "adding": "Dodawanie...",
+    "out_of_stock": "Brak w magazynie",
+    "low_stock": "Ostatnie {{count}} sztuk",
+    "in_stock": "Dostępny w magazynie"
+  },
+  "product_card": {
+    "add_to_cart": "Dodaj do koszyka",
+    "add_to_favorites": "Dodaj do ulubionych",
+    "remove_from_favorites": "Usuń z ulubionych",
+    "share": "Udostępnij",
+    "view_details": "Zobacz szczegóły",
+    "minimum_quantity_dialog": {
+      "title": "Minimalna ilość zamówienia"
+    }
+  },
+  "product_detail": {
+    "purchase": {
+      "add_to_cart": "Dodaj do koszyka",
+      "adding_to_cart": "Dodawanie",
+      "added_to_cart": "Dodano do koszyka",
+      "update_cart": "Aktualizuj",
+      "go_to_cart": "Przejdź do koszyka",
+      "out_of_stock": "Brak w magazynie",
+      "notify_me": "Powiadom mnie",
+      "notify_success": "Powiadomienie dodane",
+      "notify_success_message": "Powiadomimy Cię, gdy {{productName}} będzie ponownie dostępny.",
+      "stock_error_title": "Przekroczono Limit Stanu Magazynowego",
+      "stock_error_message": "Możesz dodać maksymalnie {{count}} sztuk tego produktu.",
+      "generic_error_title": "Błąd",
+      "generic_error_message": "Wystąpił błąd podczas dodawania do koszyka. Proszę spróbować ponownie.",
+      "add_min_quantity": "Dodaj {{count}} sztuk"
+    }
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Anuluj",
+    "save": "Zapisz",
+    "loading": "Ładowanie...",
+    "error": "Błąd",
+    "success": "Sukces",
+    "confirm": "Potwierdź",
+    "close": "Zamknij"
+  },
+    "PRODUCT_NOT_FOUND": "Produkt nie znaleziony.",
+    "CART_ITEM_NOT_FOUND": "Element koszyka nie znaleziony.",
     "CART_ADD_ERROR": "Podczas dodawania produktu do koszyka wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
     "CART_UPDATE_ERROR": "Podczas aktualizacji produktu wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
     "ERROR_BOUNDARY_TITLE": "Wystąpił Błąd",

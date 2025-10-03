@@ -118,6 +118,53 @@
     "RATE_LIMIT_DEFAULT": "Too many requests, please try again later.",
     "RATE_LIMIT_AUTH": "Too many authentication attempts. Please try again later.",
     "RATE_LIMIT_OTP_SEND": "Too many OTP requests. Please wait 1 minute before trying again.",
+    "RATE_LIMIT_OTP_VERIFY": "Too many verification attempts. Please wait 5 minutes."
+  },
+  "product": {
+    "add_to_cart": "Add to Cart",
+    "adding": "Adding...",
+    "out_of_stock": "Out of Stock",
+    "low_stock": "Last {{count}} units",
+    "in_stock": "In Stock"
+  },
+  "product_card": {
+    "add_to_cart": "Add to Cart",
+    "add_to_favorites": "Add to Favorites",
+    "remove_from_favorites": "Remove from Favorites",
+    "share": "Share",
+    "view_details": "View Details",
+    "minimum_quantity_dialog": {
+      "title": "Minimum Order Quantity"
+    }
+  },
+  "product_detail": {
+    "purchase": {
+      "add_to_cart": "Add to Cart",
+      "adding_to_cart": "Adding",
+      "added_to_cart": "Added to Cart",
+      "update_cart": "Update",
+      "go_to_cart": "Go to Cart",
+      "out_of_stock": "Out of Stock",
+      "notify_me": "Notify Me",
+      "notify_success": "Notification Added",
+      "notify_success_message": "We'll notify you when {{productName}} is back in stock.",
+      "stock_error_title": "Stock Limit Exceeded",
+      "stock_error_message": "You can add a maximum of {{count}} units of this product.",
+      "generic_error_title": "Error",
+      "generic_error_message": "An error occurred while adding to cart. Please try again.",
+      "add_min_quantity": "Add {{count}} Pieces"
+    }
+  },
+  "common": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "save": "Save",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "confirm": "Confirm",
+    "close": "Close"
+  },
     "RATE_LIMIT_OTP_VERIFY": "Too many verification attempts. Please wait 5 minutes.",
     "RATE_LIMIT_REFRESH_TOKEN": "Too many token refresh attempts. Please try again later.",
     "RATE_LIMIT_ORDER_CREATION": "Too many order requests. Please slow down.",
