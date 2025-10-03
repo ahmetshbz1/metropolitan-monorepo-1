@@ -7,6 +7,7 @@ import { ordersApi } from "@/services/api/orders-api";
 import { Download, Loader2, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface InvoicePreviewDialogProps {
   open: boolean;
@@ -21,6 +22,7 @@ export function InvoicePreviewDialog({
   orderId,
   orderNumber,
 }: InvoicePreviewDialogProps) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
@@ -82,14 +84,14 @@ export function InvoicePreviewDialog({
       >
         {/* Accessibility Title */}
         <VisuallyHidden>
-          <DialogTitle>Fatura Önizleme</DialogTitle>
+          <DialogTitle>{t("invoice_dialog.title")}</DialogTitle>
         </VisuallyHidden>
 
         {/* Custom Header */}
         <div className="px-6 pt-6 pb-4 border-b">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold">
-              Fatura Önizleme {orderNumber && `- Sipariş #${orderNumber}`}
+              {t("invoice_dialog.title")}
             </h2>
             <div className="flex items-center gap-2">
               <Button
@@ -103,7 +105,7 @@ export function InvoicePreviewDialog({
                 ) : (
                   <Download className="mr-2 h-4 w-4" />
                 )}
-                İndir
+                {t("invoice_dialog.download")}
               </Button>
               <button
                 onClick={() => onOpenChange(false)}
@@ -121,19 +123,19 @@ export function InvoicePreviewDialog({
             <div className="h-full flex items-center justify-center">
               <div className="text-center">
                 <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-primary" />
-                <p className="text-muted-foreground">Fatura yükleniyor...</p>
+                <p className="text-muted-foreground">{t("invoice_dialog.loading")}</p>
               </div>
             </div>
           ) : pdfUrl ? (
             <iframe
               src={pdfUrl}
               className="w-full h-full border-0"
-              title="Fatura Önizleme"
+              title={t("invoice_dialog.title")}
             />
           ) : (
             <div className="h-full flex items-center justify-center">
               <p className="text-muted-foreground">
-                Fatura yüklenemedi. Lütfen tekrar deneyin.
+                {t("invoice_dialog.load_error")}
               </p>
             </div>
           )}
