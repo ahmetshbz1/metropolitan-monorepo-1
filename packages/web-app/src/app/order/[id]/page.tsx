@@ -251,7 +251,8 @@ export default function OrderDetailPage() {
           <h2 className="text-xl font-semibold mb-4">
             {t("order_detail.products.section_title")}
           </h2>
-          <div className="space-y-4">
+          {/* Scrollable container for items - max 5 items visible */}
+          <div className="max-h-[440px] overflow-y-auto space-y-4 pr-2">
             {order.items.map((item) => (
               <Link
                 href={`/product/${item.productId || item.id}`}
