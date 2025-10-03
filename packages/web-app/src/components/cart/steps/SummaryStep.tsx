@@ -211,11 +211,11 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
             onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
           />
           <label htmlFor="terms" className="text-sm cursor-pointer">
-            <a href="/legal/terms" target="_blank" className="text-primary hover:underline">
+            <a href="/legal?type=terms-of-service" target="_blank" className="text-primary hover:underline">
               Kullanım Şartları
             </a>
             {" ve "}
-            <a href="/legal/privacy" target="_blank" className="text-primary hover:underline">
+            <a href="/legal?type=privacy-policy" target="_blank" className="text-primary hover:underline">
               Gizlilik Politikası
             </a>
             'nı okudum ve kabul ediyorum.
