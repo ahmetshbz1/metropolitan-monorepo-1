@@ -42,8 +42,12 @@ export class StripePaymentProcessor {
   ): Promise<StripePaymentResult> {
     const amountInCents = PaymentCalculatorService.calculateAmountFromCart(cartItems);
 
-    // Web için Checkout Session oluştur
-    if (request.paymentMethodId === "card") {
+    // Web için Checkout Session oluştur (Card ve BLIK)
+    if (request.paymentMethodId === "card" || request.paymentMethodId === "blik") {
+      const paymentMethodTypes = request.paymentMethodId === "blik" ? ["blik"] : ["card"];
+      
+      console.log(`🌐 Creating Checkout Session for web with: ${paymentMethodTypes.join(", ")}`);
+      
       const checkoutSession = await StripeService.createCheckoutSession({
         amount: amountInCents,
         currency: "pln",
@@ -51,6 +55,7 @@ export class StripePaymentProcessor {
         userId,
         successUrl: `${process.env.WEB_APP_URL || 'http://localhost:3001'}/order/${order.id}?payment=success`,
         cancelUrl: `${process.env.WEB_APP_URL || 'http://localhost:3001'}/order/${order.id}?payment=cancelled`,
+        paymentMethodTypes,
       });
 
       return {
@@ -60,7 +65,9 @@ export class StripePaymentProcessor {
       };
     }
 
-    // Mobile için Payment Intent oluştur (Apple Pay, Google Pay, BLIK)
+    // Mobile için Payment Intent oluştur (Apple Pay, Google Pay)
+    console.log(`📱 Creating Payment Intent for mobile: ${request.paymentMethodId}`);
+    
     const paymentIntentParams = this.buildPaymentIntentParams(
       amountInCents,
       order.id,

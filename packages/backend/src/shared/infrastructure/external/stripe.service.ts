@@ -56,6 +56,7 @@ class StripeService {
     userId,
     successUrl,
     cancelUrl,
+    paymentMethodTypes = ["card"],
   }: {
     amount: number;
     currency?: string;
@@ -63,10 +64,11 @@ class StripeService {
     userId: string;
     successUrl: string;
     cancelUrl: string;
+    paymentMethodTypes?: string[];
   }): Promise<Stripe.Checkout.Session> {
     try {
       const session = await this.stripe.checkout.sessions.create({
-        payment_method_types: ["card"],
+        payment_method_types: paymentMethodTypes,
         line_items: [
           {
             price_data: {
@@ -90,7 +92,7 @@ class StripeService {
         },
       });
 
-      console.log("✅ Stripe Checkout Session created:", session.id);
+      console.log(`✅ Stripe Checkout Session created: ${session.id} (${paymentMethodTypes.join(", ")})`);
       return session;
     } catch (error) {
       console.error("Stripe Checkout Session creation error:", error);

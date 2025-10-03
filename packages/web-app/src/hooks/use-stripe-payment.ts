@@ -57,8 +57,10 @@ export const useStripePayment = () => {
         };
       }
 
-      // Card payments
-      if (paymentMethodType === "card") {
+      // Card and BLIK payments (Web için Payment Intent confirmation)
+      if (paymentMethodType === "card" || paymentMethodType === "blik") {
+        console.log(`💳 Confirming ${paymentMethodType} payment...`);
+        
         const { error } = await stripe.confirmPayment({
           clientSecret,
           confirmParams: {
@@ -68,16 +70,42 @@ export const useStripePayment = () => {
         });
 
         if (error) {
+          console.error(`❌ ${paymentMethodType} payment failed:`, error);
           return {
             success: false,
             error: error.message || t("payment.payment_failed"),
           };
         }
 
+        console.log(`✅ ${paymentMethodType} payment confirmed`);
         return { success: true };
       }
 
-      // Other payment methods (Apple Pay, Google Pay, etc.)
+      // Apple Pay, Google Pay için
+      if (paymentMethodType === "apple_pay" || paymentMethodType === "google_pay") {
+        console.log(`📱 Confirming ${paymentMethodType} payment...`);
+        
+        const { error } = await stripe.confirmPayment({
+          clientSecret,
+          confirmParams: {
+            return_url: `${window.location.origin}/order/success`,
+          },
+        });
+
+        if (error) {
+          console.error(`❌ ${paymentMethodType} payment failed:`, error);
+          return {
+            success: false,
+            error: error.message || t("payment.payment_failed"),
+          };
+        }
+
+        console.log(`✅ ${paymentMethodType} payment confirmed`);
+        return { success: true };
+      }
+
+      // Unsupported payment methods
+      console.warn(`⚠️ Unsupported payment method: ${paymentMethodType}`);
       return {
         success: false,
         error: t("payment.unsupported_payment_method"),

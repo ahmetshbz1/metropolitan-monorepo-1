@@ -64,7 +64,7 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
 
       const { order } = orderResponse;
 
-      // Stripe Checkout URL kontrolü (Web için)
+      // Stripe Checkout URL kontrolü (Web için - Card ve BLIK)
       if (order.stripeCheckoutUrl) {
         console.log("🌐 Redirecting to Stripe Checkout:", order.stripeCheckoutUrl);
 
@@ -74,7 +74,7 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
       }
 
       // Stripe ödeme kontrolü (Mobile için - Payment Intent)
-      const isStripePayment = ["apple_pay", "google_pay", "blik"].includes(
+      const isStripePayment = ["apple_pay", "google_pay"].includes(
         state.selectedPaymentMethod.id
       );
 

@@ -2,16 +2,18 @@
 
 import { Button } from "@/components/ui/button";
 import { useAuthStore, useCartStore } from "@/stores";
-import { CreditCard, Building2, Check } from "lucide-react";
+import { CreditCard, Building2, Check, Smartphone } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
+import { useCheckout } from "@/context/CheckoutContext";
 
 export default function CheckoutPaymentPage() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { accessToken } = useAuthStore();
+  const { accessToken, user } = useAuthStore();
   const { items } = useCartStore();
+  const { state, setPaymentMethod } = useCheckout();
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("");
   const [loading, setLoading] = useState(true);
 
@@ -29,25 +31,41 @@ export default function CheckoutPaymentPage() {
     setLoading(false);
   }, [accessToken, items, router]);
 
+  // Available payment methods based on user type
   const paymentMethods = [
     {
       id: "card",
       icon: CreditCard,
       title: t("checkout.payment_methods.card.title"),
       subtitle: t("checkout.payment_methods.card.subtitle"),
+      isAvailable: true,
+    },
+    {
+      id: "blik",
+      icon: Smartphone,
+      title: "BLIK",
+      subtitle: "Hızlı mobil ödeme",
+      isAvailable: true,
     },
     {
       id: "bank_transfer",
       icon: Building2,
       title: t("checkout.payment_methods.bank_transfer.title"),
       subtitle: t("checkout.payment_methods.bank_transfer.subtitle"),
+      isAvailable: user?.userType === "corporate",
     },
-  ];
+  ].filter(method => method.isAvailable);
 
   const handleContinue = () => {
     if (!selectedPaymentMethod) {
       alert(t("checkout.no_payment_method_selected"));
       return;
+    }
+
+    // Set payment method in checkout context
+    const selectedMethod = state.paymentMethods.find(m => m.id === selectedPaymentMethod);
+    if (selectedMethod) {
+      setPaymentMethod(selectedMethod);
     }
 
     router.push("/checkout/summary");
@@ -140,7 +158,7 @@ export default function CheckoutPaymentPage() {
         {/* Info */}
         <div className="bg-muted/50 rounded-xl p-4 mb-8">
           <p className="text-sm text-muted-foreground text-center">
-            {t("checkout.more_payment_methods_soon")}
+            {paymentMethods.length} ödeme yöntemi mevcut
           </p>
         </div>
 
