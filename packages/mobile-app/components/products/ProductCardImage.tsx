@@ -40,7 +40,8 @@ const getValidImageUrl = (imageUrl: string): string => {
   const path = imageUrl.startsWith("/") ? imageUrl : `/${imageUrl}`;
 
   // Fallback URL production için uygun olmalı
-  const baseUrl = process.env.EXPO_PUBLIC_API_BASE_URL || "https://api.metropolitanfg.pl";
+  const baseUrl =
+    process.env.EXPO_PUBLIC_API_BASE_URL || "https://api.metropolitanfg.pl";
   return `${baseUrl}${path}`;
 };
 
@@ -55,6 +56,7 @@ const ProductCardImageComponent: React.FC<ProductCardImageProps> = ({
 }) => {
   const { t } = useTranslation();
   const [imageError, setImageError] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
   const [retryCount, setRetryCount] = useState(0);
   const retryTimeoutRef = useRef<NodeJS.Timeout>();
 
@@ -93,6 +95,7 @@ const ProductCardImageComponent: React.FC<ProductCardImageProps> = ({
   const handleImageLoad = useCallback(() => {
     // Image loaded successfully, reset error states
     setImageError(false);
+    setImageLoading(false);
   }, []);
 
   // Generate unique cache key
@@ -109,30 +112,52 @@ const ProductCardImageComponent: React.FC<ProductCardImageProps> = ({
       }}
     >
       {!imageError && imageUrl ? (
-        <Image
-          source={{
-            uri:
-              retryCount > 0
-                ? `${imageUrl}?retry=${retryCount}&t=${Date.now()}`
-                : imageUrl,
-          }}
-          style={{
-            width: "85%",
-            height: "85%",
-            backgroundColor: "transparent",
-          }}
-          contentFit="contain"
-          transition={150}
-          cachePolicy="memory-disk"
-          priority="high"
-          recyclingKey={cacheKey}
-          placeholder="L6PZfSi_.AyE_3t7t7R**0o#DgR4"
-          placeholderContentFit="contain"
-          allowDownscaling={false}
-          contentPosition="center"
-          onLoad={handleImageLoad}
-          onError={handleImageError}
-        />
+        <>
+          <Image
+            source={{
+              uri:
+                retryCount > 0
+                  ? `${imageUrl}?retry=${retryCount}&t=${Date.now()}`
+                  : imageUrl,
+            }}
+            style={{
+              width: "85%",
+              height: "85%",
+              backgroundColor: "transparent",
+              opacity: imageLoading ? 0.5 : 1,
+            }}
+            contentFit="contain"
+            transition={0}
+            cachePolicy="memory-disk"
+            priority="high"
+            recyclingKey={cacheKey}
+            placeholder="L6PZfSi_.AyE_3t7t7R**0o#DgR4"
+            placeholderContentFit="contain"
+            allowDownscaling={false}
+            contentPosition="center"
+            onLoad={handleImageLoad}
+            onError={handleImageError}
+          />
+          {imageLoading && (
+            <View
+              className="absolute inset-0 items-center justify-center"
+              style={{ backgroundColor: "transparent" }}
+            >
+              <View
+                className="w-10 h-10 rounded-full items-center justify-center"
+                style={{
+                  backgroundColor: colorScheme === "dark" ? "#333" : "#f0f0f0",
+                }}
+              >
+                <Ionicons
+                  name="image-outline"
+                  size={24}
+                  color={colorScheme === "dark" ? "#666" : "#ccc"}
+                />
+              </View>
+            </View>
+          )}
+        </>
       ) : (
         <View
           className="items-center justify-center"

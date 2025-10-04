@@ -21,10 +21,9 @@ import { ProductSection } from "@/components/home/ProductSection";
 import { ProductSectionSkeleton } from "@/components/home/ProductSectionSkeleton";
 import { ErrorState } from "@/components/ui/ErrorState";
 import Colors from "@/constants/Colors";
-import { useProducts } from "@/context/ProductContext";
 import { useNotifications } from "@/context/NotificationContext";
+import { useProducts } from "@/context/ProductContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { useImagePreload } from "@/hooks/useImagePreload";
 import { useTabBarHeight } from "@/hooks/useTabBarHeight";
 import { useScrollToTop } from "./_layout";
 
@@ -101,19 +100,6 @@ export default function HomeScreen() {
   const scrollViewRef = useRef<ScrollView>(null);
   const colorScheme = useColorScheme() ?? "light";
   const colors = Colors[colorScheme];
-
-  const imageUrls = useMemo(
-    () => products.slice(0, 24).map((p) => p.image).filter(Boolean),
-    [products]
-  );
-
-  // Preload images with optimized settings
-  useImagePreload(imageUrls, {
-    enabled: !loadingProducts && products.length > 0,
-    highPriorityCount: 6,
-    batchSize: 4,
-    delayBetweenBatches: 150,
-  });
 
   useEffect(() => {
     const scrollToTop = () => {
