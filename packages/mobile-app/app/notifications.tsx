@@ -1,136 +1,157 @@
 //  "notifications.tsx"
 //  metropolitan app
 //  Created by Ahmet on 01.07.2025.
+//  Rebuilt from scratch for stability
 
 import { useNavigation } from "expo-router";
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FlatList, RefreshControl } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-
-import { ThemedView } from "@/components/ThemedView";
-import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import {
-  EmptyNotifications,
-  NotificationActionButtons,
-  NotificationItem,
-} from "@/components/notifications";
-import { NotificationSkeletonList } from "@/components/notifications/NotificationSkeleton";
-import { useNotifications } from "@/hooks/useNotifications";
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  View,
+} from "react-native";
+
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { NotificationItem } from "@/components/notifications/NotificationItem";
+import { useAuth } from "@/context/AuthContext";
+import api from "@/core/api";
 import { useTheme } from "@/hooks/useTheme";
+import type { Notification } from "@/types/notifications.types";
 
 export default function NotificationsScreen() {
   const { t } = useTranslation();
   const { colors } = useTheme();
+  const { isGuest, guestId } = useAuth();
   const navigation = useNavigation();
 
-  // Set screen title once on mount
-  useEffect(() => {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Başlığı ayarla
+  useLayoutEffect(() => {
     navigation.setOptions({
-      title: t("notifications.title"),
-      headerStyle: {
-        backgroundColor: colors.background,
-      },
-      headerTintColor: colors.text,
-      headerTitleStyle: {
-        fontWeight: "600",
-      },
+      headerTitle: t("notifications.title"),
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run only once on mount
+  }, [navigation, t]);
 
-  // Custom hook kullanarak tüm bildirim işlemlerini yönet
-  const {
-    notifications,
-    isLoading,
-    refreshing,
-    unreadCount,
-    handleNotificationPress,
-    deleteNotification,
-    markAllAsRead,
-    deleteAllNotifications,
-    onRefresh,
-    deleteDialogState,
-    hideDeleteDialog,
-    handleDeleteConfirm,
-    deleteAllDialogState,
-    hideDeleteAllDialog,
-    handleDeleteAllConfirm,
-  } = useNotifications();
+  // Bildirimleri getir - sadece mount'ta bir kez
+  const loadNotifications = async () => {
+    try {
+      // Guest kullanıcılar için farklı endpoint
+      const endpoint =
+        isGuest && guestId
+          ? `/guest/notifications/${guestId}`
+          : "/users/notifications";
 
-  // Bildirim öğesi render fonksiyonu
-  const renderNotificationItem = ({ item }: { item: any }) => (
+      const response = await api.get(endpoint);
+      if (response.data.success) {
+        setNotifications(response.data.notifications || []);
+      }
+    } catch (error) {
+      console.error("Bildirimler yüklenemedi:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Component mount olduğunda çalış
+  useEffect(() => {
+    loadNotifications();
+  }, []);
+
+  // Pull-to-refresh
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    await loadNotifications();
+    setIsRefreshing(false);
+  }, []);
+
+  // Bildirimi okundu işaretle
+  const markAsRead = async (notificationId: string) => {
+    // Guest kullanıcılar bildirim okuyamaz (sadece görüntüler)
+    if (isGuest) return;
+
+    try {
+      await api.put(`/users/notifications/${notificationId}/read`);
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notificationId ? { ...n, isRead: true } : n))
+      );
+    } catch (error) {
+      console.error("Bildirim okundu işaretlenemedi:", error);
+    }
+  };
+
+  // Bildirimi sil
+  const deleteNotification = async (notificationId: string) => {
+    // Guest kullanıcılar bildirim silemez
+    if (isGuest) return;
+
+    try {
+      await api.delete(`/users/notifications/${notificationId}`);
+      setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
+    } catch (error) {
+      console.error("Bildirim silinemedi:", error);
+    }
+  };
+
+  // Bildirim öğesi render
+  const renderItem = ({ item }: { item: Notification }) => (
     <NotificationItem
       item={item}
-      onPress={handleNotificationPress}
-      onDelete={deleteNotification}
+      onPress={() => markAsRead(item.id)}
+      onDelete={() => deleteNotification(item.id)}
     />
   );
 
-  return (
-    <GestureHandlerRootView className="flex-1">
+  // Loading state
+  if (isLoading) {
+    return (
       <ThemedView className="flex-1">
-        {/* Bildirim listesi */}
-        {isLoading ? (
-          <NotificationSkeletonList />
-        ) : (
-          <FlatList
-            data={notifications}
-            renderItem={renderNotificationItem}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={{
-              paddingHorizontal: 16,
-              paddingTop: 16,
-              paddingBottom: 16,
-              flexGrow: 1,
-            }}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                tintColor={colors.tint}
-              />
-            }
-            showsVerticalScrollIndicator={false}
-            ListEmptyComponent={() => <EmptyNotifications colors={colors} />}
-            ListFooterComponent={() => (
-              <NotificationActionButtons
-                notifications={notifications}
-                unreadCount={unreadCount}
-                onMarkAllAsRead={markAllAsRead}
-                onDeleteAll={deleteAllNotifications}
-                colors={colors}
-              />
-            )}
-          />
-        )}
-
-        <ConfirmationDialog
-          visible={deleteDialogState.visible}
-          title={deleteDialogState.title}
-          message={deleteDialogState.message}
-          icon={deleteDialogState.icon}
-          confirmText={deleteDialogState.confirmText}
-          cancelText={deleteDialogState.cancelText}
-          destructive={deleteDialogState.destructive}
-          loading={deleteDialogState.loading}
-          onConfirm={handleDeleteConfirm}
-          onCancel={hideDeleteDialog}
-        />
-
-        <ConfirmationDialog
-          visible={deleteAllDialogState.visible}
-          title={deleteAllDialogState.title}
-          message={deleteAllDialogState.message}
-          icon={deleteAllDialogState.icon}
-          confirmText={deleteAllDialogState.confirmText}
-          cancelText={deleteAllDialogState.cancelText}
-          destructive={deleteAllDialogState.destructive}
-          loading={deleteAllDialogState.loading}
-          onConfirm={handleDeleteAllConfirm}
-          onCancel={hideDeleteAllDialog}
-        />
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color={colors.tint} />
+        </View>
       </ThemedView>
-    </GestureHandlerRootView>
+    );
+  }
+
+  // Empty state
+  const renderEmpty = () => (
+    <View className="flex-1 items-center justify-center px-8">
+      <ThemedText className="text-lg font-semibold mb-2 text-center">
+        {t("notifications.empty_title")}
+      </ThemedText>
+      <ThemedText className="text-center opacity-60">
+        {t("notifications.empty_message")}
+      </ThemedText>
+    </View>
+  );
+
+  return (
+    <ThemedView className="flex-1">
+      <FlatList
+        data={notifications}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingHorizontal: 16,
+          paddingTop: 8,
+          paddingBottom: 16,
+        }}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={handleRefresh}
+            tintColor={colors.tint}
+          />
+        }
+        ListEmptyComponent={renderEmpty}
+        showsVerticalScrollIndicator={false}
+      />
+    </ThemedView>
   );
 }

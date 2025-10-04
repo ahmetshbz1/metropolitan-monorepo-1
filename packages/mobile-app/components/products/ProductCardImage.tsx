@@ -103,7 +103,7 @@ const ProductCardImageComponent: React.FC<ProductCardImageProps> = ({
       className="relative items-center justify-center overflow-hidden"
       style={{
         aspectRatio: 1,
-        backgroundColor: colorScheme === "dark" ? "#1a1a1a" : "#ffffff",
+        backgroundColor: "transparent",
         borderTopLeftRadius: 12,
         borderTopRightRadius: 12,
       }}
@@ -119,6 +119,7 @@ const ProductCardImageComponent: React.FC<ProductCardImageProps> = ({
           style={{
             width: "85%",
             height: "85%",
+            backgroundColor: "transparent",
           }}
           contentFit="contain"
           transition={150}
