@@ -198,6 +198,44 @@ const ProductCardImageComponent: React.FC<ProductCardImageProps> = ({
         </HapticIconButton>
       )}
 
+      {/* Favorite Button - Top Left */}
+      <HapticIconButton
+        onPress={handleToggleFavorite}
+        className="absolute top-1.5 left-1.5 rounded-full justify-center items-center z-20"
+        style={{
+          backgroundColor: isProductFavorite
+            ? colors.danger
+            : colorScheme === "dark"
+              ? "rgba(0, 0, 0, 0.4)"
+              : "rgba(255, 255, 255, 0.95)",
+          width: 32,
+          height: 32,
+          borderWidth: 1,
+          borderColor: isProductFavorite
+            ? colors.danger
+            : colorScheme === "dark"
+              ? "rgba(255, 255, 255, 0.08)"
+              : "rgba(0, 0, 0, 0.05)",
+          shadowColor: isProductFavorite ? colors.danger : "#000",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: isProductFavorite ? 0.25 : 0.08,
+          shadowRadius: 3.84,
+          elevation: 4,
+        }}
+      >
+        <Ionicons
+          name={isProductFavorite ? "heart" : "heart-outline"}
+          size={18}
+          color={
+            isProductFavorite
+              ? "#fff"
+              : colorScheme === "dark"
+                ? "rgba(255, 255, 255, 0.85)"
+                : colors.darkGray
+          }
+        />
+      </HapticIconButton>
+
       {/* Out of Stock Overlay */}
       {isOutOfStock && (
         <View
