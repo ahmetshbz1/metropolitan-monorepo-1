@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { cartApi } from '@/services/api/cart-api';
+import { cartApi, type CartResponse } from '@/services/api/cart-api';
 import { useCartStore } from '@/stores/cart-store';
 import { useAuthStore } from '@/stores';
 import { useGuestAuth } from '../use-guest-auth';
@@ -49,7 +49,7 @@ export function useCart() {
     }
   }, [_hasHydrated, isAuthenticated, isGuest, guestId, loginAsGuest]);
 
-  return useQuery({
+  return useQuery<CartResponse>({
     queryKey: cartKeys.items(user?.id, guestId || undefined, lang),
     queryFn: async () => {
       if (!hasValidSession) {
@@ -75,7 +75,6 @@ export function useCart() {
     },
     enabled: hasValidSession,
     staleTime: 30 * 1000, // 30 seconds
-    onSettled: () => setLoading(false),
   });
 }
 
@@ -115,14 +114,15 @@ export function useAddToCart() {
 
       return result;
     },
-    onSuccess: (response: any) => {
+    onSuccess: (response: unknown) => {
       // Response CartResponse veya { success, message } olabilir
-      if ('items' in response) {
+      if (response && typeof response === 'object' && 'items' in response) {
         queryClient.setQueryData(
           cartKeys.items(user?.id, guestId || undefined, lang),
           response
         );
-        setCart(response.items, response.summary);
+        const cartResponse = response as CartResponse;
+        setCart(cartResponse.items, cartResponse.summary);
       } else {
         // Guest add response, cart'ı yeniden fetch et
         queryClient.invalidateQueries({
@@ -130,18 +130,19 @@ export function useAddToCart() {
         });
       }
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       // Backend'den gelen structured error'ı handle et
-      const errorPayload = error.response?.data;
+      const err = error as { response?: { data?: { key?: string; params?: Record<string, unknown>; message?: string } } };
+      const errorPayload = err.response?.data;
       const key = errorPayload?.key;
 
       if (key && i18n.exists(`errors.${key}`)) {
-        const params = errorPayload.params || {};
+        const params = errorPayload?.params || {};
         const translatedMessage = t(`errors.${key}`, params);
         toast.error(translatedMessage);
       } else {
         // Fallback mesaj
-        const defaultMessage = error.response?.data?.message || t('errors.CART_ADD_ERROR');
+        const defaultMessage = errorPayload?.message || t('errors.CART_ADD_ERROR');
         toast.error(defaultMessage);
       }
     },
@@ -187,13 +188,14 @@ export function useUpdateCartItem() {
 
       return result;
     },
-    onSuccess: (response: any) => {
-      if ('items' in response) {
+    onSuccess: (response: unknown) => {
+      if (response && typeof response === 'object' && 'items' in response) {
         queryClient.setQueryData(
           cartKeys.items(user?.id, guestId || undefined, lang),
           response
         );
-        setCart(response.items, response.summary);
+        const cartResponse = response as CartResponse;
+        setCart(cartResponse.items, cartResponse.summary);
       } else {
         queryClient.invalidateQueries({
           queryKey: cartKeys.items(user?.id, guestId || undefined, lang),
@@ -232,13 +234,14 @@ export function useRemoveFromCart() {
 
       return result;
     },
-    onSuccess: (response: any) => {
-      if ('items' in response) {
+    onSuccess: (response: unknown) => {
+      if (response && typeof response === 'object' && 'items' in response) {
         queryClient.setQueryData(
           cartKeys.items(user?.id, guestId || undefined, lang),
           response
         );
-        setCart(response.items, response.summary);
+        const cartResponse = response as CartResponse;
+        setCart(cartResponse.items, cartResponse.summary);
       } else {
         queryClient.invalidateQueries({
           queryKey: cartKeys.items(user?.id, guestId || undefined, lang),

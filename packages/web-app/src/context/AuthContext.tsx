@@ -14,6 +14,7 @@ const AuthContext = createContext<AuthContextType>({
   isGuest: false,
   guestId: null,
   phoneNumber: null,
+  socialAuthData: null,
   isAuthenticated: false,
   sendOTP: async () => ({ success: false, message: "Not implemented" }),
   verifyOTP: async () => ({

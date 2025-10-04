@@ -60,12 +60,12 @@ export function ProductCard({ product, variant = "grid" }: ProductCardProps) {
         productId: product.id,
         quantity: 1,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Minimum quantity hatası gelirse dialog göster
-      const errorPayload = error.response?.data;
+      const errorPayload = (error as { response?: { data?: { key?: string; params?: { minQuantity?: number } } } })?.response?.data;
       const key = errorPayload?.key;
 
-      if (key === "MIN_QUANTITY_NOT_MET" && errorPayload.params?.minQuantity) {
+      if (key === "MIN_QUANTITY_NOT_MET" && errorPayload?.params?.minQuantity) {
         const minQty = errorPayload.params.minQuantity;
         setMinQuantityError(minQty);
         setShowMinQuantityDialog(true);

@@ -23,7 +23,7 @@ export default function FavoritesPage() {
   // Get suggested products (exclude favorites, random 8 products)
   const suggestedProducts = useMemo(() => {
     if (!favorites) return [];
-    const favoriteIds = favorites.map((f: any) => f.id);
+    const favoriteIds = favorites.map((f) => f.id);
     const filtered = products.filter((p) => !favoriteIds.includes(p.id));
     return filtered.sort(() => Math.random() - 0.5).slice(0, 8);
   }, [products, favorites]);
@@ -89,7 +89,7 @@ export default function FavoritesPage() {
 
         {/* Favorites Grid */}
         <div className="flex flex-wrap gap-3 mb-12">
-          {favorites && favorites.map((product: any) => (
+          {favorites && favorites.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
@@ -99,7 +99,7 @@ export default function FavoritesPage() {
           <div className="mt-12 pt-8 border-t border-border">
             <h2 className="text-2xl font-bold mb-6">{t("favorites.suggested_products")}</h2>
             <div className="flex flex-wrap gap-3">
-              {suggestedProducts.map((product: any) => (
+              {suggestedProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>

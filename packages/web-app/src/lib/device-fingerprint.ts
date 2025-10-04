@@ -18,7 +18,7 @@ export async function getDeviceHeaders(): Promise<Record<string, string>> {
     headers["X-Platform"] = "web";
     headers["X-User-Agent"] = navigator.userAgent;
     const platform =
-      (navigator as any).userAgentData?.platform || navigator.platform;
+      (navigator as { userAgentData?: { platform?: string } }).userAgentData?.platform || navigator.platform;
     if (platform) {
       headers["X-Device-Model"] = platform;
     }
@@ -51,12 +51,15 @@ export async function getDeviceHeaders(): Promise<Record<string, string>> {
     }
 
     if ("deviceMemory" in navigator) {
-      headers["X-Device-Memory"] = (navigator as any).deviceMemory?.toString();
+      const deviceMemory = (navigator as { deviceMemory?: number }).deviceMemory;
+      if (deviceMemory !== undefined) {
+        headers["X-Device-Memory"] = deviceMemory.toString();
+      }
     }
 
     // Connection information (if available)
     if ("connection" in navigator) {
-      const connection = (navigator as any).connection;
+      const connection = (navigator as { connection?: { effectiveType?: string; downlink?: number } }).connection;
       if (connection) {
         if (connection.effectiveType) {
           headers["X-Connection-Type"] = connection.effectiveType;
@@ -70,8 +73,7 @@ export async function getDeviceHeaders(): Promise<Record<string, string>> {
     // WebGL fingerprinting (basic)
     try {
       const canvas = document.createElement("canvas");
-      const gl =
-        canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+      const gl = (canvas.getContext("webgl") || canvas.getContext("experimental-webgl")) as WebGLRenderingContext | null;
       if (gl) {
         const renderer = gl.getParameter(gl.RENDERER);
         const vendor = gl.getParameter(gl.VENDOR);

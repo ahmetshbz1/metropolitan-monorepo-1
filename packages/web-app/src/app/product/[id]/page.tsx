@@ -46,7 +46,8 @@ export default function ProductDetailPage() {
   // Cart
   const addToCartMutation = useAddToCart();
   const updateCartMutation = useUpdateCartItem();
-  const { data: cartData } = useCart();
+  const cartQuery = useCart();
+  const cartData = cartQuery.data as { items: Array<{ id: string; product: { id: string }; quantity: number }>; summary: unknown } | undefined;
 
   // Get product by ID
   const product = useMemo(() =>
@@ -150,11 +151,12 @@ export default function ProductDetailPage() {
     }
   };
 
-  const formatPrice = (price: number, currency: string) => {
-    const locale = currency === "PLN" ? "pl-PL" : "tr-TR";
+  const formatPrice = (price: number, currency?: string) => {
+    const curr = currency || "PLN";
+    const locale = curr === "PLN" ? "pl-PL" : "tr-TR";
     return new Intl.NumberFormat(locale, {
       style: "currency",
-      currency,
+      currency: curr,
     }).format(price);
   };
 

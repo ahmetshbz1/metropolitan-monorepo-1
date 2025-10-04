@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { useCreateAddress, useUpdateAddress } from "@/hooks/api/use-addresses";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import type { Address } from "@metropolitan/shared";
 
 interface AddressDialogProps {
   open: boolean;

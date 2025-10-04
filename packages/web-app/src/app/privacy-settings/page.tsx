@@ -36,9 +36,9 @@ export default function PrivacySettingsPage() {
   React.useEffect(() => {
     if (currentUser) {
       setPrivacySettings({
-        shareDataWithPartners: currentUser.shareDataWithPartners || false,
-        analyticsData: currentUser.analyticsData || false,
-        marketingEmails: currentUser.marketingConsent || false,
+        shareDataWithPartners: false, // Backend'de desteklenmiyor
+        analyticsData: false, // Backend'de desteklenmiyor
+        marketingEmails: false, // TODO: Backend'den marketingConsent al
       });
     }
   }, [currentUser]);
@@ -80,9 +80,10 @@ export default function PrivacySettingsPage() {
     try {
       await api.put("/users/privacy-settings", newSettings);
       toast.success(t("toast.privacy_settings_updated"));
-    } catch (error: any) {
+    } catch (error: unknown) {
       setPrivacySettings(privacySettings); // Revert on error
-      toast.error(error.response?.data?.message || t("toast.privacy_settings_update_failed"));
+      const errorMessage = error instanceof Error && 'response' in error && typeof error.response === 'object' && error.response && 'data' in error.response && typeof error.response.data === 'object' && error.response.data && 'message' in error.response.data ? String(error.response.data.message) : t("toast.privacy_settings_update_failed");
+      toast.error(errorMessage);
     } finally {
       setIsSaving(false);
     }

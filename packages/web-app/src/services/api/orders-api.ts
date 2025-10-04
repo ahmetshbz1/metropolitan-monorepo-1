@@ -11,6 +11,7 @@ interface CreateOrderRequest {
 interface CreateOrderResponse {
   order: Order & {
     stripeClientSecret?: string;
+    stripeCheckoutUrl?: string;
   };
 }
 

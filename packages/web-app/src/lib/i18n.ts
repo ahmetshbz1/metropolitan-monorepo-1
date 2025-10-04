@@ -13,12 +13,16 @@ const resources = {
   pl: { translation: pl },
 };
 
+// Check if we're on the server side
+const isServer = typeof window === 'undefined';
+
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources,
     fallbackLng: 'tr',
+    lng: isServer ? 'tr' : undefined, // Use fixed language on server
     debug: process.env.NODE_ENV === 'development',
     
     interpolation: {

@@ -139,7 +139,7 @@ export default function NotificationsPage() {
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground mb-2">
-                    {notification.message}
+                    {notification.body}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {new Date(notification.createdAt).toLocaleString("tr-TR")}

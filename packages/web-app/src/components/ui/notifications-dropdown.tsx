@@ -28,7 +28,6 @@ import { useTranslation } from "react-i18next";
 
 const NOTIFICATION_ICONS = {
   order: "solar:box-line-duotone",
-  payment: "solar:wallet-line-duotone",
   system: "solar:info-circle-line-duotone",
   promotion: "solar:tag-line-duotone",
   delivery: "solar:box-line-duotone",
@@ -154,8 +153,6 @@ export function NotificationsDropdown() {
                         "w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0",
                         notification.type === "order" &&
                           "bg-blue-100 dark:bg-blue-900/30",
-                        notification.type === "payment" &&
-                          "bg-green-100 dark:bg-green-900/30",
                         notification.type === "system" &&
                           "bg-gray-100 dark:bg-gray-800",
                         notification.type === "promotion" &&
@@ -170,8 +167,6 @@ export function NotificationsDropdown() {
                           "size-5",
                           notification.type === "order" &&
                             "text-blue-600 dark:text-blue-400",
-                          notification.type === "payment" &&
-                            "text-green-600 dark:text-green-400",
                           notification.type === "system" &&
                             "text-gray-600 dark:text-gray-400",
                           notification.type === "promotion" &&

@@ -131,7 +131,7 @@ export default function CheckoutAddressPage() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold">{address.title}</h3>
+                      <h3 className="font-semibold">{address.addressTitle}</h3>
                       {address.isDefaultDelivery && (
                         <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
                           Varsayılan
@@ -139,7 +139,7 @@ export default function CheckoutAddressPage() {
                       )}
                     </div>
                     <p className="text-sm text-muted-foreground">
-                      {address.fullAddress}
+                      {address.street}
                       <br />
                       {address.postalCode} {address.city}, {address.country}
                     </p>
@@ -194,9 +194,9 @@ export default function CheckoutAddressPage() {
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <h3 className="font-semibold mb-1">{address.title}</h3>
+                      <h3 className="font-semibold mb-1">{address.addressTitle}</h3>
                       <p className="text-sm text-muted-foreground">
-                        {address.fullAddress}
+                        {address.street}
                         <br />
                         {address.postalCode} {address.city}, {address.country}
                       </p>

@@ -22,7 +22,8 @@ interface CompleteProfileRequest {
   nip?: string;
   termsAccepted: boolean;
   privacyAccepted: boolean;
-  marketingConsent: boolean;
+  marketingAccepted: boolean;
+  marketingConsent?: boolean;
   firebaseUid?: string;
   authProvider?: string;
 }

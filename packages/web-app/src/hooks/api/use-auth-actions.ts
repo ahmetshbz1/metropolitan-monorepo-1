@@ -23,7 +23,7 @@ export function useVerifyOTP() {
   const { setTokens, setRegistrationToken, setGuest, setUser, phoneNumber: storedPhone } = useAuthStore();
   const isGuest = useAuthStore((state) => state.isGuest);
   const guestId = useAuthStore((state) => state.guestId);
-  const socialAuthData = useAuthStore((state) => (state as any).socialAuthData);
+  const socialAuthData = useAuthStore((state) => state.socialAuthData);
   const { migrateGuest } = useGuestAuth();
 
   return useMutation({
@@ -101,7 +101,19 @@ export function useCompleteProfile() {
   const { migrateGuest } = useGuestAuth();
 
   return useMutation({
-    mutationFn: (userData: any) => {
+    mutationFn: (userData: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      userType: "individual" | "corporate";
+      nip?: string;
+      termsAccepted: boolean;
+      privacyAccepted: boolean;
+      marketingAccepted: boolean;
+      marketingConsent?: boolean;
+      firebaseUid?: string;
+      authProvider?: string;
+    }) => {
       if (!registrationToken) {
         throw new Error("Registration token not found");
       }

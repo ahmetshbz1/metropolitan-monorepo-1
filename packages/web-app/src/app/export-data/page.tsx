@@ -75,9 +75,10 @@ export default function ExportDataPage() {
       } else {
         toast.error(response.data.message || t("export_data.toast.export_failed"));
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Export error:", error);
-      toast.error(error.response?.data?.message || t("export_data.toast.export_failed"));
+      const errorMessage = error instanceof Error && 'response' in error && typeof error.response === 'object' && error.response && 'data' in error.response && typeof error.response.data === 'object' && error.response.data && 'message' in error.response.data ? String(error.response.data.message) : t("export_data.toast.export_failed");
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

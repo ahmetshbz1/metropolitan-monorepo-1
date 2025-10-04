@@ -257,9 +257,9 @@ export const validateIBAN = (iban: string): boolean => {
   );
 
   // Mod 97 check
-  let remainder = numericIban.slice(0, 9) % 97;
+  let remainder = parseInt(numericIban.slice(0, 9)) % 97;
   for (let i = 9; i < numericIban.length; i += 7) {
-    remainder = (remainder + numericIban.slice(i, i + 7)) % 97;
+    remainder = parseInt(remainder.toString() + numericIban.slice(i, i + 7)) % 97;
   }
 
   return remainder === 1;
@@ -296,7 +296,7 @@ export const validateLength = (
 // Profanity Filter (Basic)
 export const containsProfanity = (text: string): boolean => {
   // Add actual profanity words based on your requirements
-  const profanityList = [
+  const profanityList: string[] = [
     // Add words here
   ];
 

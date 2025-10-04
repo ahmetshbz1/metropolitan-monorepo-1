@@ -10,12 +10,12 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const { user, accessToken, loading } = useAuthStore();
+  const { user, accessToken, _hasHydrated } = useAuthStore();
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    // Wait for auth store to load
-    if (loading) return;
+    // Wait for auth store to hydrate
+    if (!_hasHydrated) return;
 
     // If user is already authenticated, redirect to home
     if (user && accessToken) {
@@ -25,10 +25,10 @@ export default function AuthLayout({
 
     // Auth check complete, allow rendering
     setChecking(false);
-  }, [user, accessToken, loading, router]);
+  }, [user, accessToken, _hasHydrated, router]);
 
-  // Show nothing while checking auth or redirecting
-  if (loading || checking || (user && accessToken)) {
+  // Show nothing while hydrating, checking auth or redirecting
+  if (!_hasHydrated || checking || (user && accessToken)) {
     return null;
   }
 

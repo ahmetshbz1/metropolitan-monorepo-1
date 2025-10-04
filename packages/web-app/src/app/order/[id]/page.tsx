@@ -87,7 +87,14 @@ export default function OrderDetailPage() {
       const { order: orderData, items: rawItems } = response.data;
       
       // Transform items to match expected structure
-      const transformedItems = rawItems?.map((item: any) => ({
+      const transformedItems = rawItems?.map((item: {
+        id: string;
+        product?: { id?: string; name?: string; fullName?: string; imageUrl?: string | null };
+        productId?: string;
+        quantity: number;
+        unitPrice: string;
+        totalPrice: string;
+      }) => ({
         id: item.id,
         productId: item.product?.id || item.productId,
         quantity: item.quantity,
@@ -99,15 +106,15 @@ export default function OrderDetailPage() {
         currency: orderData.currency || 'PLN',
       })) || [];
 
-      console.log("🖼️ Transformed items:", transformedItems.map(i => ({ 
-        name: i.name, 
+      console.log("🖼️ Transformed items:", transformedItems.map((i: typeof transformedItems[0]) => ({
+        name: i.name,
         image: i.image,
         price: i.price,
         productId: i.productId
       })));
 
       // Calculate subtotal from items
-      const subtotal = transformedItems.reduce((sum, item) => {
+      const subtotal = transformedItems.reduce((sum: number, item: typeof transformedItems[0]) => {
         return sum + (item.price * item.quantity);
       }, 0);
 
@@ -142,10 +149,12 @@ export default function OrderDetailPage() {
 
       // Add all items to cart sequentially
       for (const item of order.items) {
-        await addToCart.mutateAsync({
-          productId: item.product.id,
-          quantity: item.quantity,
-        });
+        if (item.productId) {
+          await addToCart.mutateAsync({
+            productId: item.productId,
+            quantity: item.quantity,
+          });
+        }
       }
 
       toast.success(t("toast.items_added_to_cart"), {
@@ -273,7 +282,7 @@ export default function OrderDetailPage() {
               </h2>
               {/* Grid Layout for Products - 2 columns on larger screens */}
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
-                {order.items.map((item) => (
+                {order.items?.map((item) => (
                   <Link
                     href={`/product/${item.productId || item.id}`}
                     key={item.id}
@@ -344,7 +353,7 @@ export default function OrderDetailPage() {
                     {t("order_detail.summary.subtotal")}
                   </span>
                   <span className="font-medium">
-                    {formatPrice(order.subtotal, order.currency)}
+                    {formatPrice(order.subtotal || 0, order.currency)}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
@@ -352,9 +361,9 @@ export default function OrderDetailPage() {
                     {t("order_detail.summary.shipping")}
                   </span>
                   <span className="font-medium text-green-600">
-                    {order.shippingCost === 0
+                    {(order.shippingCost || 0) === 0
                       ? t("order_detail.summary.free_shipping")
-                      : formatPrice(order.shippingCost, order.currency)}
+                      : formatPrice(order.shippingCost || 0, order.currency)}
                   </span>
                 </div>
                 <div className="border-t pt-2 mt-2">

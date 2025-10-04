@@ -1,13 +1,5 @@
 import { api } from "@/lib/api";
-
-export interface Notification {
-  id: string;
-  type: "order" | "promotion" | "delivery" | "system";
-  title: string;
-  body: string;
-  createdAt: string;
-  isRead: boolean;
-}
+import type { Notification } from "@metropolitan/shared";
 
 export const notificationsApi = {
   getNotifications: async (): Promise<Notification[]> => {

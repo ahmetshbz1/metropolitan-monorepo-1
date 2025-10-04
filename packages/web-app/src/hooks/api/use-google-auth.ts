@@ -33,11 +33,15 @@ export function useGoogleAuth() {
       };
       
       // Check if user exists in backend
-      const requestData: any = {
+      const requestData: {
+        firebaseUid: string;
+        provider: string;
+        email?: string;
+      } = {
         firebaseUid: result.user.uid,
         provider: 'google',
       };
-      
+
       if (result.user.email) {
         requestData.email = result.user.email;
       }
@@ -62,14 +66,14 @@ export function useGoogleAuth() {
         } else {
           // New user or incomplete profile
           // Store auth data in store for later use
-          useAuthStore.setState({ socialAuthData: authData } as any);
+          useAuthStore.setState({ socialAuthData: authData });
           router.push('/auth/phone-login');
         }
       } else if (response.error === 'PROVIDER_CONFLICT') {
         throw new Error(response.message);
       }
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error('Google Sign-In error:', error);
       // Navigate to phone login on error
       router.push('/auth/phone-login');

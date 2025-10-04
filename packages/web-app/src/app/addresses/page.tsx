@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/context/AuthContext";
 import { useAddresses, useDeleteAddress } from "@/hooks/api/use-addresses";
+import { Address } from "@/services/api/addresses-api";
 import { MapPin, Plus, Trash2, Edit } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AddressDialog } from "@/components/address/AddressDialog";
@@ -11,12 +12,12 @@ import { useState } from "react";
 
 export default function AddressesPage() {
   const { t } = useTranslation();
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const { data: addresses = [], isLoading: addressesLoading } = useAddresses();
   const deleteAddress = useDeleteAddress();
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingAddress, setEditingAddress] = useState<any>(null);
+  const [editingAddress, setEditingAddress] = useState<Address | null>(null);
 
   // If addresses are loaded and we have data, show it (ignore auth loading state issue)
   const hasLoadedAddresses = !addressesLoading && addresses !== undefined;
@@ -80,7 +81,7 @@ export default function AddressesPage() {
         <AddressDialog
           open={dialogOpen}
           onOpenChange={setDialogOpen}
-          address={editingAddress}
+          address={editingAddress || undefined}
           onSuccess={() => {
             setDialogOpen(false);
             setEditingAddress(null);
@@ -169,7 +170,7 @@ export default function AddressesPage() {
         <AddressDialog
           open={dialogOpen}
           onOpenChange={setDialogOpen}
-          address={editingAddress}
+          address={editingAddress || undefined}
           onSuccess={() => {
             setDialogOpen(false);
             setEditingAddress(null);

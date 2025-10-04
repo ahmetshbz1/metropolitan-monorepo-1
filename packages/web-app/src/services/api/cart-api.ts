@@ -10,7 +10,7 @@ interface UpdateCartItemRequest {
   quantity: number;
 }
 
-interface CartResponse {
+export interface CartResponse {
   items: CartItem[];
   summary: CartSummary;
 }

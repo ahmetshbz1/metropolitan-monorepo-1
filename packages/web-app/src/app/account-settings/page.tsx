@@ -96,8 +96,9 @@ export default function AccountSettingsPage() {
         email: formData.email,
       });
       toast.success(t("toast.profile_updated"));
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || t("toast.profile_update_failed"));
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error && typeof error.response === 'object' && error.response && 'data' in error.response && typeof error.response.data === 'object' && error.response.data && 'message' in error.response.data ? String(error.response.data.message) : t("toast.profile_update_failed");
+      toast.error(errorMessage);
     }
   };
 
@@ -120,10 +121,9 @@ export default function AccountSettingsPage() {
     try {
       await uploadPhoto.mutateAsync(file);
       toast.success(t("toast.profile_photo_updated"));
-    } catch (error: any) {
-      toast.error(
-        error.response?.data?.message || t("toast.photo_upload_failed")
-      );
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error && typeof error.response === 'object' && error.response && 'data' in error.response && typeof error.response.data === 'object' && error.response.data && 'message' in error.response.data ? String(error.response.data.message) : t("toast.photo_upload_failed");
+      toast.error(errorMessage);
     }
   };
 

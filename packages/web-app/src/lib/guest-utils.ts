@@ -47,7 +47,7 @@ export const createGuestSession = async (
       };
     }
     return { success: false };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('❌ Guest session creation failed:', error);
     return { success: false };
   }
@@ -59,7 +59,7 @@ export const createGuestSession = async (
 export const migrateGuestData = async (
   phoneNumber: string,
   guestId: string
-): Promise<{ success: boolean; message?: string; migratedData?: any }> => {
+): Promise<{ success: boolean; message?: string; migratedData?: unknown }> => {
   try {
     const response = await api.post('/auth/migrate-guest-data', {
       phoneNumber,
@@ -71,11 +71,12 @@ export const migrateGuestData = async (
       message: response.data.message,
       migratedData: response.data.migratedData,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: { message?: string } }; message?: string };
     console.error('❌ Guest data migration failed:', error);
     return {
       success: false,
-      message: error.response?.data?.message || error.message,
+      message: err.response?.data?.message || err.message,
     };
   }
 };

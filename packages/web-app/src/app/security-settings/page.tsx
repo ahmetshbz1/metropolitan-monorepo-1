@@ -39,7 +39,7 @@ export default function SecuritySettingsPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { user, accessToken, _hasHydrated, setUser } = useAuthStore();
-  const { data: currentUser, refetch: refetchUser } = useCurrentUser();
+  const { data: currentUser } = useCurrentUser();
 
   const [settings, setSettings] = useState<SecuritySettings>({
     twoFactorEnabled: false,
@@ -93,9 +93,10 @@ export default function SecuritySettingsPage() {
     try {
       await api.put("/users/user/security-settings", newSettings);
       toast.success(t("toast.security_settings_updated"));
-    } catch (error: any) {
+    } catch (error: unknown) {
       setSettings(settings); // Revert on error
-      toast.error(error.response?.data?.message || t("toast.security_settings_update_failed"));
+      const errorMessage = error instanceof Error && 'response' in error && typeof error.response === 'object' && error.response && 'data' in error.response && typeof error.response.data === 'object' && error.response.data && 'message' in error.response.data ? String(error.response.data.message) : t("toast.security_settings_update_failed");
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -143,13 +144,18 @@ export default function SecuritySettingsPage() {
       }
 
       toast.success(t("security_settings.linked_accounts.google_connected"));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Link provider error:', error);
 
-      if (error?.response?.data?.error === 'PROVIDER_CONFLICT') {
-        toast.error(error.response.data.message);
-      } else if (error?.response?.data?.error === 'ALREADY_LINKED') {
-        toast.error(error.response.data.message);
+      if (error && typeof error === 'object' && 'response' in error && typeof error.response === 'object' && error.response && 'data' in error.response && typeof error.response.data === 'object' && error.response.data) {
+        const responseData = error.response.data;
+        if ('error' in responseData && responseData.error === 'PROVIDER_CONFLICT' && 'message' in responseData) {
+          toast.error(String(responseData.message));
+        } else if ('error' in responseData && responseData.error === 'ALREADY_LINKED' && 'message' in responseData) {
+          toast.error(String(responseData.message));
+        } else {
+          toast.error(t("security_settings.linked_accounts.google_connect_failed"));
+        }
       } else {
         toast.error(t("security_settings.linked_accounts.google_connect_failed"));
       }
@@ -187,8 +193,9 @@ export default function SecuritySettingsPage() {
       }
 
       toast.success(t("security_settings.linked_accounts.disconnected", { provider: providerToUnlink === 'apple' ? 'Apple' : 'Google' }));
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || t("toast.disconnect_failed"));
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error && 'response' in error && typeof error.response === 'object' && error.response && 'data' in error.response && typeof error.response.data === 'object' && error.response.data && 'message' in error.response.data ? String(error.response.data.message) : t("toast.disconnect_failed");
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
       setUnlinkDialogOpen(false);

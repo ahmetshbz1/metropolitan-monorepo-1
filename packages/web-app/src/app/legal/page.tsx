@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Shield, ChevronRight, ChevronDown, Globe, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -61,7 +61,7 @@ export default function LegalPage() {
 
   const formatContent = (text: string) => {
     const lines = text.split("\n");
-    const elements: JSX.Element[] = [];
+    const elements: React.ReactElement[] = [];
     let currentSection: string[] = [];
     let inList = false;
     let listItems: string[] = [];
@@ -137,7 +137,7 @@ export default function LegalPage() {
         processSection();
         processList();
         const parts = line.split("**");
-        const formatted: JSX.Element[] = [];
+        const formatted: React.ReactElement[] = [];
         parts.forEach((part, idx) => {
           if (idx % 2 === 1) {
             formatted.push(<strong key={idx} className="font-semibold">{part}</strong>);

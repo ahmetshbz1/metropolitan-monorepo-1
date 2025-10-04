@@ -90,11 +90,12 @@ export const useAuthHook = () => {
       } else {
         return { success: false, message: response.data.message };
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
       return {
         success: false,
         message:
-          error.response?.data?.message || "OTP gönderilirken bir hata oluştu",
+          err.response?.data?.message || "OTP gönderilirken bir hata oluştu",
       };
     }
   };
@@ -175,18 +176,31 @@ export const useAuthHook = () => {
         message: "Beklenmeyen yanıt",
         isNewUser: false,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
       return {
         success: false,
         message:
-          error.response?.data?.message || "OTP doğrulanırken bir hata oluştu",
+          err.response?.data?.message || "OTP doğrulanırken bir hata oluştu",
         isNewUser: false,
       };
     }
   };
 
   // Complete Profile
-  const completeProfile = async (userData: any) => {
+  const completeProfile = async (userData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    userType: "individual" | "corporate";
+    nip?: string;
+    termsAccepted: boolean;
+    privacyAccepted: boolean;
+    marketingAccepted: boolean;
+    marketingConsent?: boolean;
+    firebaseUid?: string;
+    authProvider?: string;
+  }) => {
     try {
       const response = await api.post(
         "/users/complete-profile",
@@ -246,11 +260,12 @@ export const useAuthHook = () => {
       } else {
         return { success: false, message: response.data.message };
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
       return {
         success: false,
         message:
-          error.response?.data?.message ||
+          err.response?.data?.message ||
           "Profil tamamlanırken bir hata oluştu",
       };
     }
@@ -268,11 +283,12 @@ export const useAuthHook = () => {
       } else {
         return { success: false, message: response.data.message };
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
       return {
         success: false,
         message:
-          error.response?.data?.message ||
+          err.response?.data?.message ||
           "Profil güncellenirken bir hata oluştu",
       };
     }
@@ -298,18 +314,19 @@ export const useAuthHook = () => {
         const updatedUser = {
           ...user,
           profilePhotoUrl: response.data.data.photoUrl,
-        };
+        } as WebUser;
         setUser(updatedUser);
 
         return { success: true, message: response.data.message };
       } else {
         return { success: false, message: response.data.message };
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
       return {
         success: false,
         message:
-          error.response?.data?.message ||
+          err.response?.data?.message ||
           "Fotoğraf yüklenirken bir hata oluştu",
       };
     }
@@ -383,7 +400,11 @@ export const useAuthHook = () => {
 
         // Check if user exists in backend
         try {
-          const requestData: any = {
+          const requestData: {
+            firebaseUid: string;
+            provider: string;
+            email?: string;
+          } = {
             firebaseUid: result.user.uid,
             provider: "google",
           };

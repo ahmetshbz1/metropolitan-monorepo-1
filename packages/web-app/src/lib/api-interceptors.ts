@@ -102,8 +102,9 @@ async function refreshAccessToken(api: AxiosInstance): Promise<string | null> {
 
     await clearAuthAndRedirect();
     return null;
-  } catch (error: any) {
-    console.error('[API] Token refresh failed:', error.response?.data || error.message);
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: unknown }; message?: string };
+    console.error('[API] Token refresh failed:', err.response?.data || err.message);
 
     // Clear auth and redirect on any refresh error
     await clearAuthAndRedirect();

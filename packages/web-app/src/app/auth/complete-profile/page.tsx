@@ -27,7 +27,7 @@ import { useTranslation } from "react-i18next";
 export default function CompleteProfilePage() {
   const { t } = useTranslation();
   const completeProfile = useCompleteProfile();
-  const socialAuthData = useAuthStore((state) => (state as any).socialAuthData);
+  const socialAuthData = useAuthStore((state) => state.socialAuthData);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -77,7 +77,8 @@ export default function CompleteProfilePage() {
         ...(formData.nip ? { nip: formData.nip } : {}),
         termsAccepted: formData.termsAccepted,
         privacyAccepted: formData.privacyAccepted,
-        marketingConsent: formData.marketingAccepted, // Backend expects 'marketingConsent' not 'marketingAccepted'
+        marketingAccepted: formData.marketingAccepted,
+        marketingConsent: formData.marketingAccepted,
         ...(socialAuthData?.uid ? { firebaseUid: socialAuthData.uid } : {}),
         ...(socialAuthData?.provider
           ? { authProvider: socialAuthData.provider }
@@ -95,8 +96,9 @@ export default function CompleteProfilePage() {
             setError(result.message);
           }
         },
-        onError: (error: any) => {
-          setError(error.message || t("form.profile_completion_error"));
+        onError: (error: unknown) => {
+          const errorMessage = error instanceof Error ? error.message : t("form.profile_completion_error");
+          setError(errorMessage);
         },
       }
     );

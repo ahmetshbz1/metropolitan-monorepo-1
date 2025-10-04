@@ -4,20 +4,21 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { useCheckout } from "@/context/CheckoutContext";
-import { useCartStore } from "@/stores/cart-store";
-import { MapPin, CreditCard, Package } from "lucide-react";
-import { useState } from "react";
 import { useOrders } from "@/hooks/use-orders";
 import { useStripePayment } from "@/hooks/use-stripe-payment";
-import { useTranslation } from "react-i18next";
+import { useCartStore } from "@/stores/cart-store";
+import { CreditCard, MapPin, Package } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface SummaryStepProps {
   onComplete: () => void;
 }
 
 export function SummaryStep({ onComplete }: SummaryStepProps) {
-  const { state, setAgreedToTerms, setNotes, canProceedToNext, resetCheckout } = useCheckout();
+  const { state, setAgreedToTerms, setNotes, canProceedToNext, resetCheckout } =
+    useCheckout();
   const items = useCartStore((state) => state.items);
   const summary = useCartStore((state) => state.summary);
   const clearCart = useCartStore((state) => state.clearCart);
@@ -27,16 +28,20 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
   const { processPayment, loading: paymentLoading } = useStripePayment();
   const router = useRouter();
 
-  const formatPrice = (price: number, currency: string) => {
+  const formatPrice = (price: number, currency?: string) => {
     return new Intl.NumberFormat("pl-PL", {
       style: "currency",
-      currency: currency,
+      currency: currency || "PLN",
       minimumFractionDigits: 2,
     }).format(price);
   };
 
   const handleCompleteOrder = async () => {
-    if (!canProceedToNext() || !state.deliveryAddress || !state.selectedPaymentMethod) {
+    if (
+      !canProceedToNext() ||
+      !state.deliveryAddress ||
+      !state.selectedPaymentMethod
+    ) {
       return;
     }
 
@@ -66,7 +71,10 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
 
       // Stripe Checkout URL kontrolü (Web için - Card ve BLIK)
       if (order.stripeCheckoutUrl) {
-        console.log("🌐 Redirecting to Stripe Checkout:", order.stripeCheckoutUrl);
+        console.log(
+          "🌐 Redirecting to Stripe Checkout:",
+          order.stripeCheckoutUrl
+        );
 
         // Stripe Checkout'a yönlendir
         window.location.href = order.stripeCheckoutUrl;
@@ -78,7 +86,12 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
         state.selectedPaymentMethod.id
       );
 
-      console.log("💳 Payment method:", state.selectedPaymentMethod.id, "Is Stripe:", isStripePayment);
+      console.log(
+        "💳 Payment method:",
+        state.selectedPaymentMethod.id,
+        "Is Stripe:",
+        isStripePayment
+      );
 
       if (isStripePayment && order.stripeClientSecret) {
         console.log("🔐 Processing Stripe payment with clientSecret");
@@ -114,9 +127,13 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
         // Sipariş detay sayfasına yönlendir
         router.push(`/order/${order.id}`);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("❌ Order creation failed:", error);
-      alert(error?.message || t("checkout.order_creation_failed"));
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : t("checkout.order_creation_failed");
+      alert(errorMessage);
       setIsProcessing(false);
     }
   };
@@ -136,17 +153,22 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
               </div>
               {state.deliveryAddress ? (
                 <div className="bg-muted/50 rounded-md p-2.5 text-sm">
-                  <p className="font-medium">{state.deliveryAddress.addressTitle}</p>
+                  <p className="font-medium">
+                    {state.deliveryAddress.addressTitle}
+                  </p>
                   <p className="text-muted-foreground text-xs mt-1 leading-relaxed">
                     {state.deliveryAddress.street}
                     <br />
-                    {state.deliveryAddress.postalCode} {state.deliveryAddress.city}
+                    {state.deliveryAddress.postalCode}{" "}
+                    {state.deliveryAddress.city}
                     <br />
                     {state.deliveryAddress.country}
                   </p>
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground">{t("summary.no_address")}</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("summary.no_address")}
+                </p>
               )}
             </div>
 
@@ -158,7 +180,9 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
               </div>
               {state.selectedPaymentMethod ? (
                 <div className="bg-muted/50 rounded-md p-2.5 text-sm">
-                  <p className="font-medium">{state.selectedPaymentMethod.title}</p>
+                  <p className="font-medium">
+                    {state.selectedPaymentMethod.title}
+                  </p>
                   {state.selectedPaymentMethod.subtitle && (
                     <p className="text-muted-foreground text-xs mt-1">
                       {state.selectedPaymentMethod.subtitle}
@@ -166,13 +190,17 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
                   )}
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground">{t("summary.no_payment_method")}</p>
+                <p className="text-sm text-muted-foreground">
+                  {t("summary.no_payment_method")}
+                </p>
               )}
             </div>
 
             {/* Order Notes */}
             <div className="bg-card rounded-lg border p-3">
-              <label className="text-sm font-semibold mb-2 block">{t("summary.order_notes")}</label>
+              <label className="text-sm font-semibold mb-2 block">
+                {t("summary.order_notes")}
+              </label>
               <Textarea
                 placeholder={t("summary.notes_placeholder")}
                 value={state.notes}
@@ -198,11 +226,18 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
                     className="flex items-start justify-between text-sm bg-muted/50 rounded-md p-2.5"
                   >
                     <div className="flex-1 min-w-0 pr-2">
-                      <p className="font-medium text-sm line-clamp-2">{item.product.name}</p>
-                      <p className="text-muted-foreground text-xs mt-0.5">{t("summary.quantity")}: {item.quantity}</p>
+                      <p className="font-medium text-sm line-clamp-2">
+                        {item.product.name}
+                      </p>
+                      <p className="text-muted-foreground text-xs mt-0.5">
+                        {t("summary.quantity")}: {item.quantity}
+                      </p>
                     </div>
                     <p className="font-semibold text-sm whitespace-nowrap">
-                      {formatPrice(item.product.price * item.quantity, item.product.currency)}
+                      {formatPrice(
+                        item.product.price * item.quantity,
+                        item.product.currency
+                      )}
                     </p>
                   </div>
                 ))}
@@ -214,7 +249,9 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
               <div className="bg-card rounded-lg border p-3">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">{t("summary.subtotal")}:</span>
+                    <span className="text-muted-foreground">
+                      {t("summary.subtotal")}:
+                    </span>
                     <span className="font-medium">
                       {formatPrice(
                         typeof summary.totalAmount === "string"
@@ -225,8 +262,12 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">{t("summary.shipping")}:</span>
-                    <span className="font-medium text-green-600">{t("summary.free")}</span>
+                    <span className="text-muted-foreground">
+                      {t("summary.shipping")}:
+                    </span>
+                    <span className="font-medium text-green-600">
+                      {t("summary.free")}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between pt-2 border-t">
                     <span className="font-semibold">{t("summary.total")}:</span>
@@ -252,7 +293,10 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
             checked={state.agreedToTerms}
             onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
           />
-          <label htmlFor="terms" className="text-sm cursor-pointer leading-relaxed">
+          <label
+            htmlFor="terms"
+            className="text-sm cursor-pointer leading-relaxed"
+          >
             {t("summary.terms_agreement")}
           </label>
         </div>
@@ -264,9 +308,16 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
           onClick={handleCompleteOrder}
           size="lg"
           className="w-full"
-          disabled={!canProceedToNext() || isProcessing || orderLoading || paymentLoading}
+          disabled={
+            !canProceedToNext() ||
+            isProcessing ||
+            orderLoading ||
+            paymentLoading
+          }
         >
-          {isProcessing || orderLoading || paymentLoading ? t("summary.processing") : t("summary.complete_order")}
+          {isProcessing || orderLoading || paymentLoading
+            ? t("summary.processing")
+            : t("summary.complete_order")}
         </Button>
       </div>
     </div>

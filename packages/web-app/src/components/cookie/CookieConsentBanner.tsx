@@ -8,7 +8,7 @@ import { useCookieConsentStore } from "@/stores/cookie-consent-store";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { X, Settings } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CookieSettingsDialog } from "./CookieSettingsDialog";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -17,6 +17,17 @@ export function CookieConsentBanner() {
   const { hasConsented, showBanner, acceptAll, rejectAll, closeBanner } =
     useCookieConsentStore();
   const [showSettings, setShowSettings] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // Ensure this component only renders on client-side
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Don't render on server-side to prevent hydration mismatch
+  if (!isClient) {
+    return null;
+  }
 
   // Don't show banner if user has already consented
   if (hasConsented || !showBanner) {

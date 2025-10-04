@@ -113,6 +113,7 @@ export const UserDropdown = ({
     avatar: "",
     initials: "M",
     isGuest: true,
+    userType: undefined as "individual" | "corporate" | undefined,
   };
 
   const currentUser = user || defaultUser;
@@ -178,7 +179,16 @@ export const UserDropdown = ({
       },
     ],
   };
-  const renderMenuItem = (item, index) => {
+  type MenuItem = {
+    icon: string;
+    labelKey: string;
+    action: string;
+    route?: string;
+    danger?: boolean;
+    label?: string;
+  };
+
+  const renderMenuItem = (item: MenuItem, index: number) => {
     const getBadgeCount = () => {
       if (item.action === "favorites") return favoritesCount;
       if (item.action === "orders") return ordersCount;
@@ -467,15 +477,7 @@ export const UserDropdown = ({
                 </span>
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
-                <DropdownMenuSubContent
-                  className="w-52"
-                  side="left"
-                  align="start"
-                  sideOffset={8}
-                  alignOffset={-4}
-                  avoidCollisions={true}
-                  collisionPadding={16}
-                >
+                <DropdownMenuSubContent className="w-52">
                   <DropdownMenuRadioGroup
                     value={theme}
                     onValueChange={setTheme}
@@ -580,15 +582,7 @@ export const UserDropdown = ({
                 </span>
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
-                <DropdownMenuSubContent
-                  className="w-52"
-                  side="left"
-                  align="start"
-                  sideOffset={8}
-                  alignOffset={-4}
-                  avoidCollisions={true}
-                  collisionPadding={16}
-                >
+                <DropdownMenuSubContent className="w-52">
                   <DropdownMenuRadioGroup
                     value={i18n.language}
                     onValueChange={(lang) => i18n.changeLanguage(lang)}

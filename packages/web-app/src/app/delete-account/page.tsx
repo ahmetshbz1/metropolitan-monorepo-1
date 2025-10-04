@@ -24,6 +24,21 @@ export default function DeleteAccountPage() {
   const [resendTimer, setResendTimer] = useState(0);
   const [otpError, setOtpError] = useState(false);
 
+  // Auto-fill user's phone number
+  useEffect(() => {
+    if (user?.phone) {
+      setPhoneNumber(user.phone);
+    }
+  }, [user?.phone]);
+
+  // Resend timer countdown
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendTimer]);
+
   // Show loading state while hydrating
   if (!_hasHydrated) {
     return (
@@ -53,21 +68,6 @@ export default function DeleteAccountPage() {
     );
   }
 
-  // Auto-fill user's phone number
-  useEffect(() => {
-    if (user?.phone) {
-      setPhoneNumber(user.phone);
-    }
-  }, [user?.phone]);
-
-  // Resend timer countdown
-  useEffect(() => {
-    if (resendTimer > 0) {
-      const timer = setTimeout(() => setResendTimer(resendTimer - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [resendTimer]);
-
   const handleSendOTP = async () => {
     if (!phoneNumber.trim()) {
       toast.error(t("toast.phone_required"));
@@ -93,9 +93,10 @@ export default function DeleteAccountPage() {
       } else {
         toast.error(response.data.message || t("toast.code_send_failed"));
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Send OTP error:", error);
-      toast.error(error.response?.data?.message || t("toast.code_send_failed"));
+      const errorMessage = error instanceof Error && 'response' in error && typeof error.response === 'object' && error.response && 'data' in error.response && typeof error.response.data === 'object' && error.response.data && 'message' in error.response.data ? String(error.response.data.message) : t("toast.code_send_failed");
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -134,10 +135,11 @@ export default function DeleteAccountPage() {
         toast.error(response.data.message || t("toast.verification_failed"));
         setLoading(false);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Verify OTP error:", error);
       setOtpError(true);
-      toast.error(error.response?.data?.message || t("toast.verification_failed"));
+      const errorMessage = error instanceof Error && 'response' in error && typeof error.response === 'object' && error.response && 'data' in error.response && typeof error.response.data === 'object' && error.response.data && 'message' in error.response.data ? String(error.response.data.message) : t("toast.verification_failed");
+      toast.error(errorMessage);
       setLoading(false);
     }
   };
@@ -157,9 +159,10 @@ export default function DeleteAccountPage() {
       } else {
         toast.error(response.data.message || t("toast.code_send_failed"));
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Resend OTP error:", error);
-      toast.error(error.response?.data?.message || t("toast.code_send_failed"));
+      const errorMessage = error instanceof Error && 'response' in error && typeof error.response === 'object' && error.response && 'data' in error.response && typeof error.response.data === 'object' && error.response.data && 'message' in error.response.data ? String(error.response.data.message) : t("toast.code_send_failed");
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

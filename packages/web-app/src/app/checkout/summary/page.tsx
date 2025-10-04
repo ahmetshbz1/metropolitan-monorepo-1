@@ -91,12 +91,12 @@ export default function CheckoutSummaryPage() {
               </div>
               <div className="space-y-4">
                 {items.map((item) => (
-                  <div key={item.productId} className="flex gap-4">
+                  <div key={item.product.id} className="flex gap-4">
                     <div className="w-16 h-16 bg-muted rounded-lg flex-shrink-0 overflow-hidden">
-                      {item.image ? (
+                      {item.product.image ? (
                         <Image
-                          src={item.image}
-                          alt={item.name}
+                          src={item.product.image}
+                          alt={item.product.name}
                           width={64}
                           height={64}
                           className="w-full h-full object-contain"
@@ -108,13 +108,13 @@ export default function CheckoutSummaryPage() {
                       )}
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-medium text-sm mb-1">{item.name}</h3>
+                      <h3 className="font-medium text-sm mb-1">{item.product.name}</h3>
                       <p className="text-xs text-muted-foreground">
-                        {item.quantity} x {formatPrice(item.price, item.currency)}
+                        {item.quantity} x {formatPrice(item.product.price, item.product.currency)}
                       </p>
                     </div>
                     <div className="font-semibold">
-                      {formatPrice(item.price * item.quantity, item.currency)}
+                      {formatPrice(item.product.price * item.quantity, item.product.currency)}
                     </div>
                   </div>
                 ))}

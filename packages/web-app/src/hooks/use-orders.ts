@@ -33,9 +33,9 @@ export const useOrders = () => {
       console.log("✅ Order created successfully:", response);
 
       return response;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("❌ Order creation failed:", err);
-      const errorMessage = err.response?.data?.message || err.message || "Order creation failed";
+      const errorMessage = err instanceof Error && 'response' in err && typeof err.response === 'object' && err.response && 'data' in err.response && typeof err.response.data === 'object' && err.response.data && 'message' in err.response.data ? String(err.response.data.message) : err instanceof Error ? err.message : "Order creation failed";
       setError(errorMessage);
       throw err;
     } finally {

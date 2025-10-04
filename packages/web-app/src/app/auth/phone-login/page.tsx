@@ -56,8 +56,9 @@ export default function PhoneLoginPage() {
             setError(data.message);
           }
         },
-        onError: (error: any) => {
-          setError(error.message || t("auth.otp_send_error"));
+        onError: (error: unknown) => {
+          const errorMessage = error instanceof Error ? error.message : t("auth.otp_send_error");
+          setError(errorMessage);
         },
       }
     );
@@ -66,8 +67,9 @@ export default function PhoneLoginPage() {
   const handleGoogleSignIn = async () => {
     setError("");
     googleAuth.mutate(undefined, {
-      onError: (error: any) => {
-        setError(error.message || t("auth_errors.google_sign_in_failed"));
+      onError: (error: unknown) => {
+        const errorMessage = error instanceof Error ? error.message : t("auth_errors.google_sign_in_failed");
+        setError(errorMessage);
       },
     });
   };

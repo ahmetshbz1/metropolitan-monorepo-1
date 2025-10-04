@@ -47,10 +47,18 @@ export type AuthContextType = {
     isNewUser: boolean;
   }>;
   completeProfile: (
-    userData: Omit<WebUser, "phone" | "profilePhotoUrl"> & {
+    userData: {
+      firstName: string;
+      lastName: string;
+      email: string;
       userType: "individual" | "corporate";
       nip?: string;
       termsAccepted: boolean;
+      privacyAccepted: boolean;
+      marketingAccepted: boolean;
+      marketingConsent?: boolean;
+      firebaseUid?: string;
+      authProvider?: string;
     }
   ) => Promise<{ success: boolean; message: string }>;
   updateUserProfile: (

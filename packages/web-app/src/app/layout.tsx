@@ -22,6 +22,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Force dynamic rendering to prevent SSG errors with contexts
+export const dynamic = 'force-dynamic';
+
 // Note: metadata is static in Next.js App Router and cannot use translations
 // The translations are defined in locales/tr.json under "metadata" key
 export const metadata: Metadata = {

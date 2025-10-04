@@ -33,12 +33,12 @@ const getCategoryIcon = (slug: string) => {
 export default function CategoriesPage() {
   const { t } = useTranslation();
   const { data: products = [], isLoading: loadingProducts } = useProducts();
-  const { data: categories = [], isLoading: loadingCategories } = useCategories();
+  const { data: categories = [] } = useCategories();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const categorizedProducts = useMemo(() => {
-    const grouped: Record<string, any[]> = {};
-    
+    const grouped: Record<string, typeof products> = {};
+
     products.forEach((product) => {
       const category = product.category || t("categories_default.other");
       if (!grouped[category]) {
@@ -48,7 +48,7 @@ export default function CategoriesPage() {
     });
 
     return grouped;
-  }, [products]);
+  }, [products, t]);
 
   const categoryKeys = Object.keys(categorizedProducts).sort();
 

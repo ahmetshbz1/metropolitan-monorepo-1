@@ -33,6 +33,7 @@ export interface Product {
   name: string;
   image: string;
   price: number;
+  originalPrice?: number;
   stock: number;
   category: string;
   brand: string;

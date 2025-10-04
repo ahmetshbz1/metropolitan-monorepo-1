@@ -110,10 +110,11 @@ export const useStripePayment = () => {
         success: false,
         error: t("payment.unsupported_payment_method"),
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { message?: string };
       return {
         success: false,
-        error: error?.message || t("payment.unknown_error"),
+        error: err?.message || t("payment.unknown_error"),
       };
     } finally {
       setLoading(false);

@@ -6,7 +6,7 @@ export type NotificationType = "order" | "promotion" | "system" | "delivery";
 export interface Notification {
   id: string;
   title: string;
-  message: string;
+  body: string;
   type: NotificationType;
   isRead: boolean;
   createdAt: Date | string;

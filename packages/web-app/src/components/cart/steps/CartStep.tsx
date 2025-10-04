@@ -20,7 +20,6 @@ export function CartStep({ onNext, canProceed, onClose }: CartStepProps) {
   const { t } = useTranslation();
   const items = useCartStore((state) => state.items);
   const summary = useCartStore((state) => state.summary);
-  const isGuest = useAuthStore((state) => state.isGuest);
   const user = useAuthStore((state) => state.user);
   const accessToken = useAuthStore((state) => state.accessToken);
   const router = useRouter();
@@ -55,16 +54,17 @@ export function CartStep({ onNext, canProceed, onClose }: CartStepProps) {
     });
   }, [items, products]);
 
-  const formatPrice = (price: number, currency: string) => {
+  const formatPrice = (price: number, currency?: string) => {
+    const curr = currency || "PLN";
     return new Intl.NumberFormat("pl-PL", {
       style: "currency",
-      currency: currency,
+      currency: curr,
       minimumFractionDigits: 2,
     }).format(price);
   };
 
   // Get minimum quantity for a product based on user type
-  const getMinQuantity = (product: any) => {
+  const getMinQuantity = (product: { minQuantityCorporate?: number; minQuantityIndividual?: number }) => {
     const userType = user?.userType || 'individual';
     const calculatedMin = userType === 'corporate'
       ? (product.minQuantityCorporate ?? 1)

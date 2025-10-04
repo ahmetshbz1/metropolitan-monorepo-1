@@ -55,7 +55,7 @@ export function useGuestAuth() {
     async (phoneNumber: string): Promise<{
       success: boolean;
       message?: string;
-      migratedData?: any;
+      migratedData?: unknown;
     }> => {
       if (!guestId) {
         return {
@@ -78,11 +78,12 @@ export function useGuestAuth() {
         }
 
         return result;
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const err = error as { message?: string };
         console.error('❌ Failed to migrate guest data:', error);
         return {
           success: false,
-          message: error.message || 'Migration failed',
+          message: err.message || 'Migration failed',
         };
       }
     },
