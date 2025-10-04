@@ -6,11 +6,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import React, { memo } from "react";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 
 import { HapticIconButton } from "@/components/HapticButton";
 import { SearchInput } from "@/components/appbar/SearchInput";
 import { useProductsSearch } from "@/context/ProductsSearchContext";
+import { useNotifications } from "@/context/NotificationContext";
 import { useTheme } from "@/hooks/useTheme";
 
 interface TabScreensProps {
@@ -31,6 +32,7 @@ export const TabScreens = memo(({
   const { t } = useTranslation();
   const { colors } = useTheme();
   const { searchQuery, setSearchQuery } = useProductsSearch();
+  const { unreadCount } = useNotifications();
 
   return (
     <Tabs
@@ -63,13 +65,20 @@ export const TabScreens = memo(({
             <View style={{ flexDirection: "row", marginRight: 4 }}>
               <HapticIconButton
                 onPress={handleNotification}
-                style={{ padding: 8 }}
+                style={{ padding: 8, position: "relative" }}
               >
                 <Ionicons
                   name="notifications-outline"
                   size={24}
                   color={colors.text}
                 />
+                {unreadCount > 0 && (
+                  <View style={styles.badge}>
+                    <Text style={styles.badgeText}>
+                      {unreadCount > 99 ? "99+" : unreadCount}
+                    </Text>
+                  </View>
+                )}
               </HapticIconButton>
             </View>
           ),
@@ -175,4 +184,24 @@ export const TabScreens = memo(({
       />
     </Tabs>
   );
+});
+
+const styles = StyleSheet.create({
+  badge: {
+    position: "absolute",
+    top: 4,
+    right: 4,
+    backgroundColor: "#FF3B30", // iOS kırmızısı
+    borderRadius: 10,
+    minWidth: 18,
+    height: 18,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 4,
+  },
+  badgeText: {
+    color: "#FFFFFF",
+    fontSize: 11,
+    fontWeight: "600",
+  },
 });

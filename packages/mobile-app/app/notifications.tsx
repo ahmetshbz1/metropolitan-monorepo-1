@@ -17,6 +17,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { NotificationItem } from "@/components/notifications/NotificationItem";
 import { useAuth } from "@/context/AuthContext";
+import { useNotifications } from "@/context/NotificationContext";
 import api from "@/core/api";
 import { useTheme } from "@/hooks/useTheme";
 import type { Notification } from "@/types/notifications.types";
@@ -26,6 +27,7 @@ export default function NotificationsScreen() {
   const { colors } = useTheme();
   const { isGuest, guestId } = useAuth();
   const navigation = useNavigation();
+  const { refreshUnreadCount } = useNotifications();
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -61,6 +63,9 @@ export default function NotificationsScreen() {
   // Component mount olduğunda çalış
   useEffect(() => {
     loadNotifications();
+    // Sayfa açıldığında badge'i güncelle
+    refreshUnreadCount();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Pull-to-refresh
@@ -68,6 +73,7 @@ export default function NotificationsScreen() {
     setIsRefreshing(true);
     await loadNotifications();
     setIsRefreshing(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Bildirimi okundu işaretle
@@ -80,6 +86,8 @@ export default function NotificationsScreen() {
       setNotifications((prev) =>
         prev.map((n) => (n.id === notificationId ? { ...n, isRead: true } : n))
       );
+      // Badge sayısını güncelle
+      refreshUnreadCount();
     } catch (error) {
       console.error("Bildirim okundu işaretlenemedi:", error);
     }
@@ -93,6 +101,8 @@ export default function NotificationsScreen() {
     try {
       await api.delete(`/users/notifications/${notificationId}`);
       setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
+      // Badge sayısını güncelle
+      refreshUnreadCount();
     } catch (error) {
       console.error("Bildirim silinemedi:", error);
     }

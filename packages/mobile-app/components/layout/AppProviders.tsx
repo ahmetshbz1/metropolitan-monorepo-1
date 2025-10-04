@@ -16,6 +16,7 @@ import { CheckoutProvider } from "@/context/CheckoutContext";
 import { ColorSchemeProvider } from "@/context/ColorSchemeContext";
 import { FavoritesProvider } from "@/context/FavoritesContext";
 import { NetworkProvider } from "@/context/NetworkContext";
+import { NotificationProvider } from "@/context/NotificationContext";
 import { OrderProvider } from "@/context/OrderContext";
 import { PaymentMethodProvider } from "@/context/PaymentMethodContext";
 import { ProductProvider } from "@/context/ProductContext";
@@ -36,28 +37,30 @@ export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
             <ToastProvider>
               <UserSettingsProvider>
                 <AuthProvider>
-                  <ProductProvider>
-                    <AddressProvider>
-                      <PaymentMethodProvider>
-                        <CartProvider>
-                          <FavoritesProvider>
-                            <OrderProvider>
-                              <CheckoutProvider>
-                                <StripeProviderWrapper>
-                                {/* Move ColorSchemeProvider below data providers to avoid re-rendering them on theme change */}
-                                <ColorSchemeProvider>
-                                  <BottomSheetModalProvider>
-                                    <SafeAreaProvider>{children}</SafeAreaProvider>
-                                  </BottomSheetModalProvider>
-                                </ColorSchemeProvider>
-                              </StripeProviderWrapper>
-                              </CheckoutProvider>
-                            </OrderProvider>
-                          </FavoritesProvider>
-                        </CartProvider>
-                      </PaymentMethodProvider>
-                    </AddressProvider>
-                  </ProductProvider>
+                  <NotificationProvider>
+                    <ProductProvider>
+                      <AddressProvider>
+                        <PaymentMethodProvider>
+                          <CartProvider>
+                            <FavoritesProvider>
+                              <OrderProvider>
+                                <CheckoutProvider>
+                                  <StripeProviderWrapper>
+                                  {/* Move ColorSchemeProvider below data providers to avoid re-rendering them on theme change */}
+                                  <ColorSchemeProvider>
+                                    <BottomSheetModalProvider>
+                                      <SafeAreaProvider>{children}</SafeAreaProvider>
+                                    </BottomSheetModalProvider>
+                                  </ColorSchemeProvider>
+                                </StripeProviderWrapper>
+                                </CheckoutProvider>
+                              </OrderProvider>
+                            </FavoritesProvider>
+                          </CartProvider>
+                        </PaymentMethodProvider>
+                      </AddressProvider>
+                    </ProductProvider>
+                  </NotificationProvider>
                 </AuthProvider>
               </UserSettingsProvider>
             </ToastProvider>
