@@ -321,11 +321,21 @@
     "empty": {
       "title": "Twój koszyk jest pusty",
       "subtitle": "Dodaj produkty, aby rozpocząć zakupy.",
-      "button": "Rozpocznij Zakupy"
+      "button": "Rozpocznij Zakupy",
+      "description": "Dodaj produkty, aby rozpocząć zakupy."
     },
     "checkout": "Złóż Zamówienie",
     "continue_shopping": "Kontynuuj zakupy",
-    "item_removed": "Produkt usunięty z koszyka"
+    "item_removed": "Produkt usunięty z koszyka",
+    "summary": {
+      "total_items": "Łącznie Produktów",
+      "pieces": "szt",
+      "subtotal": "Suma Częściowa"
+    },
+    "actions": {
+      "continue": "Kontynuuj",
+      "login": "Zaloguj się"
+    }
   },
   "orders": {
     "title": "Moje Zamówienia",
@@ -528,7 +538,8 @@
     "payment_failed": "Płatność nie powiodła się. Spróbuj ponownie.",
     "unsupported_payment_method": "Ta metoda płatności nie jest jeszcze obsługiwana.",
     "unknown_error": "Wystąpił nieznany błąd. Spróbuj ponownie.",
-    "client_secret_missing": "Brak informacji o płatności. Spróbuj ponownie."
+    "client_secret_missing": "Brak informacji o płatności. Spróbuj ponownie.",
+    "select_title": "Wybierz Metodę Płatności"
   },
   "order": {
     "creation_failed": "Nie udało się utworzyć zamówienia. Spróbuj ponownie."
@@ -760,7 +771,20 @@
   "address": {
     "update_description": "Zaktualizuj dane adresowe",
     "add_description": "Dodaj nowy adres dostawy",
-    "city_placeholder": "Warszawa"
+    "city_placeholder": "Warszawa",
+    "loading": "Ładowanie adresów...",
+    "select_title": "Wybierz Adres Dostawy",
+    "empty": {
+      "title": "Nie masz jeszcze żadnych adresów",
+      "description": "Dodaj swój pierwszy adres, aby szybko rozpocząć."
+    },
+    "actions": {
+      "add_address": "Dodaj Adres",
+      "new_address": "Nowy Adres"
+    },
+    "labels": {
+      "default": "Domyślny"
+    }
   },
   "invoice": {
     "preview_load_error": "Nie udało się załadować podglądu faktury",
@@ -1043,5 +1067,22 @@
     "download": "Pobierz",
     "loading": "Ładowanie faktury...",
     "load_error": "Nie udało się załadować faktury. Spróbuj ponownie."
+  },
+  "summary": {
+    "delivery_address": "Adres Dostawy",
+    "no_address": "Nie wybrano adresu",
+    "payment_method": "Metoda Płatności",
+    "no_payment_method": "Nie wybrano metody płatności",
+    "order_notes": "Notatki do Zamówienia",
+    "notes_placeholder": "Wszelkie uwagi dotyczące zamówienia...",
+    "order_items": "Produkty w Zamówieniu",
+    "quantity": "Ilość",
+    "subtotal": "Suma Częściowa",
+    "shipping": "Dostawa",
+    "free": "Darmowa",
+    "total": "Łącznie",
+    "terms_agreement": "Przeczytałem i akceptuję Warunki Korzystania z Usługi oraz Politykę Prywatności.",
+    "complete_order": "Złóż Zamówienie",
+    "processing": "Przetwarzanie..."
   }
 }

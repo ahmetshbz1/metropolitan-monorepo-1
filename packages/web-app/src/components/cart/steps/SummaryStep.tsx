@@ -253,14 +253,7 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
             onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
           />
           <label htmlFor="terms" className="text-sm cursor-pointer leading-relaxed">
-            <a href="/legal?type=terms-of-service" target="_blank" className="text-primary hover:underline">
-              Kullanım Şartları
-            </a>
-            {" ve "}
-            <a href="/legal?type=privacy-policy" target="_blank" className="text-primary hover:underline">
-              Gizlilik Politikası
-            </a>
-            'nı okudum ve kabul ediyorum.
+            {t("summary.terms_agreement")}
           </label>
         </div>
       </div>
@@ -273,7 +266,7 @@ export function SummaryStep({ onComplete }: SummaryStepProps) {
           className="w-full"
           disabled={!canProceedToNext() || isProcessing || orderLoading || paymentLoading}
         >
-          {isProcessing || orderLoading || paymentLoading ? "İşleniyor..." : "Siparişi Tamamla"}
+          {isProcessing || orderLoading || paymentLoading ? t("summary.processing") : t("summary.complete_order")}
         </Button>
       </div>
     </div>

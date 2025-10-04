@@ -333,11 +333,21 @@
     "empty": {
       "title": "Your cart is empty",
       "subtitle": "Add products to start shopping.",
-      "button": "Start Shopping"
+      "button": "Start Shopping",
+      "description": "Add products to start shopping."
     },
     "checkout": "Complete Order",
     "continue_shopping": "Continue shopping",
-    "item_removed": "Product removed from cart"
+    "item_removed": "Product removed from cart",
+    "summary": {
+      "total_items": "Total Items",
+      "pieces": "pcs",
+      "subtotal": "Subtotal"
+    },
+    "actions": {
+      "continue": "Continue",
+      "login": "Login"
+    }
   },
   "orders": {
     "title": "My Orders",
@@ -540,7 +550,8 @@
     "payment_failed": "Payment failed. Please try again.",
     "unsupported_payment_method": "This payment method is not yet supported.",
     "unknown_error": "An unknown error occurred. Please try again.",
-    "client_secret_missing": "Payment information is missing. Please try again."
+    "client_secret_missing": "Payment information is missing. Please try again.",
+    "select_title": "Select Payment Method"
   },
   "order": {
     "creation_failed": "Order could not be created. Please try again."
@@ -772,7 +783,20 @@
   "address": {
     "update_description": "Update your address information",
     "add_description": "Add new delivery address",
-    "city_placeholder": "Warsaw"
+    "city_placeholder": "Warsaw",
+    "loading": "Loading addresses...",
+    "select_title": "Select Delivery Address",
+    "empty": {
+      "title": "You don't have any addresses yet",
+      "description": "Add your first address to get started quickly."
+    },
+    "actions": {
+      "add_address": "Add Address",
+      "new_address": "New Address"
+    },
+    "labels": {
+      "default": "Default"
+    }
   },
   "invoice": {
     "preview_load_error": "Invoice preview could not be loaded",
@@ -1055,5 +1079,22 @@
     "download": "Download",
     "loading": "Loading invoice...",
     "load_error": "Failed to load invoice. Please try again."
+  },
+  "summary": {
+    "delivery_address": "Delivery Address",
+    "no_address": "No address selected",
+    "payment_method": "Payment Method",
+    "no_payment_method": "No payment method selected",
+    "order_notes": "Order Notes",
+    "notes_placeholder": "Any notes you'd like to add about your order...",
+    "order_items": "Order Items",
+    "quantity": "Quantity",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "free": "Free",
+    "total": "Total",
+    "terms_agreement": "I have read and accept the Terms of Service and Privacy Policy.",
+    "complete_order": "Complete Order",
+    "processing": "Processing..."
   }
 }

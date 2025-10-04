@@ -333,11 +333,21 @@
     "empty": {
       "title": "Sepetiniz boş",
       "subtitle": "Alışverişe başlamak için ürün ekleyin.",
-      "button": "Alışverişe Başla"
+      "button": "Alışverişe Başla",
+      "description": "Alışverişe başlamak için ürün ekleyin."
     },
     "checkout": "Siparişi Tamamla",
     "continue_shopping": "Alışverişe devam et",
-    "item_removed": "Ürün sepetten kaldırıldı"
+    "item_removed": "Ürün sepetten kaldırıldı",
+    "summary": {
+      "total_items": "Toplam Ürün",
+      "pieces": "adet",
+      "subtotal": "Ara Toplam"
+    },
+    "actions": {
+      "continue": "Devam Et",
+      "login": "Giriş Yap"
+    }
   },
   "orders": {
     "title": "Siparişlerim",
@@ -540,7 +550,8 @@
     "payment_failed": "Ödeme başarısız oldu. Lütfen tekrar deneyin.",
     "unsupported_payment_method": "Bu ödeme yöntemi henüz desteklenmiyor.",
     "unknown_error": "Bilinmeyen bir hata oluştu. Lütfen tekrar deneyin.",
-    "client_secret_missing": "Ödeme bilgileri eksik. Lütfen tekrar deneyin."
+    "client_secret_missing": "Ödeme bilgileri eksik. Lütfen tekrar deneyin.",
+    "select_title": "Ödeme Yöntemi Seçin"
   },
   "order": {
     "creation_failed": "Sipariş oluşturulamadı. Lütfen tekrar deneyin."
@@ -772,7 +783,20 @@
   "address": {
     "update_description": "Adres bilgilerinizi güncelleyin",
     "add_description": "Yeni teslimat adresi ekleyin",
-    "city_placeholder": "Warszawa"
+    "city_placeholder": "Warszawa",
+    "loading": "Adresler yükleniyor...",
+    "select_title": "Teslimat Adresi Seçin",
+    "empty": {
+      "title": "Henüz adresiniz yok",
+      "description": "İlk adresinizi ekleyerek alışverişe hızlıca başlayın."
+    },
+    "actions": {
+      "add_address": "Adres Ekle",
+      "new_address": "Yeni Adres"
+    },
+    "labels": {
+      "default": "Varsayılan"
+    }
   },
   "invoice": {
     "preview_load_error": "Fatura önizleme yüklenemedi",
@@ -1007,6 +1031,23 @@
     "download": "İndir",
     "loading": "Fatura yükleniyor...",
     "load_error": "Fatura yüklenemedi. Lütfen tekrar deneyin."
+  },
+  "summary": {
+    "delivery_address": "Teslimat Adresi",
+    "no_address": "Adres seçilmedi",
+    "payment_method": "Ödeme Yöntemi",
+    "no_payment_method": "Ödeme yöntemi seçilmedi",
+    "order_notes": "Sipariş Notları",
+    "notes_placeholder": "Sipariş ile ilgili eklemek istediğiniz notlar...",
+    "order_items": "Sipariş Ürünleri",
+    "quantity": "Miktar",
+    "subtotal": "Ara Toplam",
+    "shipping": "Kargo",
+    "free": "Ücretsiz",
+    "total": "Toplam",
+    "terms_agreement": "Kullanım Şartları'nı ve Gizlilik Politikası'nı okudum ve kabul ediyorum.",
+    "complete_order": "Siparişi Tamamla",
+    "processing": "İşleniyor..."
   },
   "cookie": {
     "banner": {
