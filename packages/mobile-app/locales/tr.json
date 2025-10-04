@@ -942,6 +942,8 @@
     "mark_as_read": "Okundu İşaretle",
     "delete_all": "Hepsini Sil",
     "delete": "Sil",
+    "delete_title": "Bildirimi Sil",
+    "delete_message": "Bu bildirimi silmek istediğinize emin misiniz?",
     "empty_title": "Henüz bildirim yok",
     "empty_message": "Siparişleriniz ve özel teklifler hakkında bildirimler burada görünecek.",
     "time": {

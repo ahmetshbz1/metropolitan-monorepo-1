@@ -949,6 +949,8 @@
     "mark_as_read": "Oznacz jako przeczytane",
     "delete_all": "Usuń wszystkie",
     "delete": "Usuń",
+    "delete_title": "Usuń powiadomienie",
+    "delete_message": "Czy na pewno chcesz usunąć to powiadomienie?",
     "empty_title": "Brak powiadomień",
     "empty_message": "Powiadomienia o Twoich zamówieniach i ofertach specjalnych pojawią się tutaj.",
     "time": {

@@ -942,6 +942,8 @@
     "mark_as_read": "Mark as Read",
     "delete_all": "Delete All",
     "delete": "Delete",
+    "delete_title": "Delete Notification",
+    "delete_message": "Are you sure you want to delete this notification?",
     "empty_title": "No notifications yet",
     "empty_message": "Notifications about your orders and special offers will appear here.",
     "time": {
