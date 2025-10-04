@@ -23,51 +23,53 @@ export class StripePaymentProcessor {
     "apple_pay",
     "google_pay",
   ];
-  
+
   /**
    * Check if payment method is Stripe-based
    */
   static isStripePayment(paymentMethodId: string): boolean {
     return this.SUPPORTED_PAYMENT_TYPES.includes(paymentMethodId);
   }
-  
+
   /**
    * Create Stripe payment intent
    */
   static async createPaymentIntent(
     order: any,
-    request: OrderCreationRequest,
+    request: OrderCreationRequest & { platform?: "web" | "mobile" },
     cartItems: CartItemData[],
     userId: string
   ): Promise<StripePaymentResult> {
-    const amountInCents = PaymentCalculatorService.calculateAmountFromCart(cartItems);
+    const amountInCents =
+      PaymentCalculatorService.calculateAmountFromCart(cartItems);
+    const platform = request.platform || "web"; // Default to web for backwards compatibility
 
     // Web için Checkout Session oluştur (Card ve BLIK)
-    if (request.paymentMethodId === "card" || request.paymentMethodId === "blik") {
-      const paymentMethodTypes = request.paymentMethodId === "blik" ? ["blik"] : ["card"];
-      
-      console.log(`🌐 Creating Checkout Session for web with: ${paymentMethodTypes.join(", ")}`);
-      
+    if (
+      platform === "web" &&
+      (request.paymentMethodId === "card" || request.paymentMethodId === "blik")
+    ) {
+      const paymentMethodTypes =
+        request.paymentMethodId === "blik" ? ["blik"] : ["card"];
+
       const checkoutSession = await StripeService.createCheckoutSession({
         amount: amountInCents,
         currency: "pln",
         orderId: order.id,
         userId,
-        successUrl: `${process.env.WEB_APP_URL || 'http://localhost:3001'}/order/${order.id}?payment=success`,
-        cancelUrl: `${process.env.WEB_APP_URL || 'http://localhost:3001'}/order/${order.id}?payment=cancelled`,
+        successUrl: `${process.env.WEB_APP_URL || "http://localhost:3001"}/order/${order.id}?payment=success`,
+        cancelUrl: `${process.env.WEB_APP_URL || "http://localhost:3001"}/order/${order.id}?payment=cancelled`,
         paymentMethodTypes,
       });
 
       return {
         paymentIntentId: checkoutSession.payment_intent as string,
-        clientSecret: '', // Checkout Session için client secret gerekmiyor
+        clientSecret: "", // Checkout Session için client secret gerekmiyor
         checkoutUrl: checkoutSession.url!,
       };
     }
 
-    // Mobile için Payment Intent oluştur (Apple Pay, Google Pay)
-    console.log(`📱 Creating Payment Intent for mobile: ${request.paymentMethodId}`);
-    
+    // Mobile için Payment Intent oluştur (Apple Pay, Google Pay, Card, BLIK)
     const paymentIntentParams = this.buildPaymentIntentParams(
       amountInCents,
       order.id,
@@ -75,14 +77,15 @@ export class StripePaymentProcessor {
       request.paymentMethodId
     );
 
-    const paymentIntent = await StripeService.createPaymentIntent(paymentIntentParams);
+    const paymentIntent =
+      await StripeService.createPaymentIntent(paymentIntentParams);
 
     return {
       paymentIntentId: paymentIntent.id,
       clientSecret: paymentIntent.client_secret,
     };
   }
-  
+
   /**
    * Build Stripe payment intent parameters
    */
@@ -97,10 +100,10 @@ export class StripePaymentProcessor {
       currency: "pln", // All sales in PLN
       metadata: this.createOrderMetadata(orderId, userId),
     };
-    
+
     // Configure payment method types based on selection
     console.log("🔧 Payment method ID:", paymentMethodId);
-    
+
     if (paymentMethodId === "card") {
       params.paymentMethodTypes = ["card"];
       console.log("💳 Using card payment methods only");
@@ -115,10 +118,10 @@ export class StripePaymentProcessor {
     } else {
       console.log("🔄 Using automatic payment methods");
     }
-    
+
     return params;
   }
-  
+
   /**
    * Create metadata for Stripe payment
    */

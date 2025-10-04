@@ -2,17 +2,19 @@
 //  metropolitan app
 //  Created by Ahmet on 16.01.2025.
 
+import { useStripeContext } from "@/context/StripeContext";
+import { useStripe } from "@stripe/stripe-react-native";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useStripe } from "@stripe/stripe-react-native";
-import { processApplePayPayment } from './processors/applePayProcessor';
-import { processGooglePayPayment } from './processors/googlePayProcessor';
-import { processCardPayment } from './processors/cardPayProcessor';
-import { StripePaymentResult } from './types';
+import { processApplePayPayment } from "./processors/applePayProcessor";
+import { processCardPayment } from "./processors/cardPayProcessor";
+import { processGooglePayPayment } from "./processors/googlePayProcessor";
+import { StripePaymentResult } from "./types";
 
 export const useStripePayment = () => {
   const { initPaymentSheet, presentPaymentSheet, confirmPlatformPayPayment } =
     useStripe();
+  const { isReady } = useStripeContext();
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
 
@@ -26,8 +28,15 @@ export const useStripePayment = () => {
     setLoading(true);
 
     try {
-      // Removed console statement
-      // Removed console statement
+      // Stripe hazır değilse hata döndür
+      if (!isReady) {
+        return {
+          success: false,
+          error:
+            t("payment.stripe_not_ready") ||
+            "Ödeme sistemi hazır değil. Lütfen bekleyin veya sayfayı yenileyin.",
+        };
+      }
 
       // Apple Pay işlemi
       if (paymentMethodType === "apple_pay") {
@@ -37,7 +46,7 @@ export const useStripePayment = () => {
           t,
           amount,
           currency,
-          orderId
+          orderId,
         });
       }
 
@@ -49,7 +58,7 @@ export const useStripePayment = () => {
           t,
           amount,
           currency,
-          orderId
+          orderId,
         });
       }
 
@@ -60,7 +69,7 @@ export const useStripePayment = () => {
         initPaymentSheet,
         presentPaymentSheet,
         t,
-        orderId
+        orderId,
       });
     } catch (error: any) {
       // Removed console statement
@@ -76,5 +85,6 @@ export const useStripePayment = () => {
   return {
     processPayment,
     loading,
+    isStripeReady: isReady,
   };
 };

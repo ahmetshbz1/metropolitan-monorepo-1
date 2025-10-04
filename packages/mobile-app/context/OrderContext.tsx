@@ -2,23 +2,30 @@
 //  metropolitan app
 //  Created by Ahmet on 21.06.2025.
 
+import type {
+  Order,
+  OrderCreationResult,
+  OrderDetail,
+} from "@metropolitan/shared";
 import React, { useMemo } from "react";
+import {
+  OrderActionsProvider,
+  useOrderActions,
+} from "./order/OrderActionsContext";
 import { OrderStateProvider, useOrderState } from "./order/OrderStateContext";
-import { OrderActionsProvider, useOrderActions } from "./order/OrderActionsContext";
-import type { Order, OrderDetail, OrderCreationResult } from "@metropolitan/shared";
 
 // =================================================================
 // Shared types (imported from @metropolitan/shared)
 // =================================================================
 export type {
   Address,
+  FullOrderPayload,
+  Order,
   OrderDetail,
   OrderItem,
   PaymentMethodType,
   TrackingEvent,
   User,
-  FullOrderPayload,
-  Order,
 } from "@metropolitan/shared";
 
 interface IOrderContext {
@@ -39,6 +46,7 @@ interface IOrderContext {
     paymentMethodId: string;
     notes?: string;
     paymentTermDays?: number;
+    platform?: "web" | "mobile";
   }) => Promise<OrderCreationResult>;
   cancelOrder: (orderId: string) => Promise<void>;
   rollbackStock: (orderId: string) => Promise<any>;

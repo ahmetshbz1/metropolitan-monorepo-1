@@ -44,24 +44,31 @@ export const orderCreationRoutes = new Elysia()
       user,
       body,
       headers,
-    }: AuthenticatedContext & { body: OrderCreationRequest; headers: Record<string, string | undefined> }) => {
+    }: AuthenticatedContext & {
+      body: OrderCreationRequest;
+      headers: Record<string, string | undefined>;
+    }) => {
       // Get language from Accept-Language header
       const acceptLanguage = headers["accept-language"];
-      const language = acceptLanguage?.split(",")[0]?.split("-")[0]?.toLowerCase() || "en";
-      const validLanguage = ["tr", "en", "pl"].includes(language) ? language : "en";
-
-      console.log(
-        "📦 Order creation request body:",
-        JSON.stringify(body, null, 2)
-      );
+      const language =
+        acceptLanguage?.split(",")[0]?.split("-")[0]?.toLowerCase() || "en";
+      const validLanguage = ["tr", "en", "pl"].includes(language)
+        ? language
+        : "en";
 
       // Validate cart items
       const { items: cartItems, validation } =
-        await OrderValidationService.validateCartItems(user.id, user.userType, validLanguage);
+        await OrderValidationService.validateCartItems(
+          user.id,
+          user.userType,
+          validLanguage
+        );
 
       if (!validation.isValid) {
         // Check if cart is empty specifically
-        const isEmptyCart = validation.errors?.some(err => err.productId === "EMPTY_CART");
+        const isEmptyCart = validation.errors?.some(
+          (err) => err.productId === "EMPTY_CART"
+        );
 
         if (isEmptyCart) {
           throw new Error(
@@ -69,7 +76,8 @@ export const orderCreationRoutes = new Elysia()
               code: "EMPTY_CART",
               message: "Sepetiniz boş. Lütfen ürün ekleyerek tekrar deneyin.",
               details: {
-                reason: "Cart is empty - this usually happens after payment cancellation",
+                reason:
+                  "Cart is empty - this usually happens after payment cancellation",
                 solution: "Please add products to your cart and try again",
                 cartItems: cartItems.length,
               },
@@ -91,7 +99,7 @@ export const orderCreationRoutes = new Elysia()
         body.shippingAddressId,
         user.id
       );
-      
+
       if (body.billingAddressId) {
         await OrderValidationService.validateAddress(
           body.billingAddressId,
@@ -127,6 +135,7 @@ export const orderCreationRoutes = new Elysia()
         paymentMethodId: t.String(),
         notes: t.Optional(t.String()),
         paymentTermDays: t.Optional(t.Number()),
+        platform: t.Optional(t.Union([t.Literal("web"), t.Literal("mobile")])),
       }),
     }
   );

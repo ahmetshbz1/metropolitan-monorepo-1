@@ -23,6 +23,7 @@ export const useOrderOperations = ({
       paymentMethodId: string;
       notes?: string;
       paymentTermDays?: number;
+      platform?: "web" | "mobile";
     }) => {
       setLoading(true);
       setError(null);
@@ -33,10 +34,12 @@ export const useOrderOperations = ({
           billingAddressId: data.billingAddressId || data.shippingAddressId,
           paymentMethodId: data.paymentMethodId,
           ...(data.notes && { notes: data.notes }),
-          ...(data.paymentTermDays !== undefined && { paymentTermDays: data.paymentTermDays }),
+          ...(data.paymentTermDays !== undefined && {
+            paymentTermDays: data.paymentTermDays,
+          }),
+          ...(data.platform && { platform: data.platform }),
         };
 
-        console.log("📤 Sending order payload:", payload);
         const response = await api.post("/orders", payload);
         await fetchOrders(); // Re-fetch orders list
         return response.data;
@@ -67,22 +70,22 @@ export const useOrderOperations = ({
     [fetchOrders, setLoading, setError]
   );
 
-  const rollbackStock = useCallback(
-    async (orderId: string) => {
-      // Removed console statement
+  const rollbackStock = useCallback(async (orderId: string) => {
+    // Removed console statement
 
-      try {
-        const response = await api.post(`/orders/${orderId}/rollback-stock`);
-        // Removed console statement
-        return response.data;
-      } catch (err: any) {
-        // Removed console statement
-        const errorMessage = err.response?.data?.message || err.message || 'Stok geri alımı başarısız oldu';
-        throw new Error(errorMessage);
-      }
-    },
-    []
-  );
+    try {
+      const response = await api.post(`/orders/${orderId}/rollback-stock`);
+      // Removed console statement
+      return response.data;
+    } catch (err: any) {
+      // Removed console statement
+      const errorMessage =
+        err.response?.data?.message ||
+        err.message ||
+        "Stok geri alımı başarısız oldu";
+      throw new Error(errorMessage);
+    }
+  }, []);
 
   return {
     createOrder,

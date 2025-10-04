@@ -54,6 +54,7 @@ export function useCheckoutSummary() {
             : state.billingAddress?.id,
           paymentMethodId: selectedPaymentMethod.id,
           notes: state.notes || undefined,
+          platform: "mobile" as const, // ✅ Mobile platform için Payment Intent kullan
         };
 
         // Backend'e sipariş oluştur ve Payment Intent al
@@ -115,7 +116,9 @@ export function useCheckoutSummary() {
             : state.billingAddress?.id,
           paymentMethodId: selectedPaymentMethod.id,
           notes: state.notes || undefined,
-          paymentTermDays: state.paymentTermDays !== null ? state.paymentTermDays : undefined,
+          paymentTermDays:
+            state.paymentTermDays !== null ? state.paymentTermDays : undefined,
+          platform: "mobile" as const, // ✅ Mobile platform
         });
 
         // Removed console statement

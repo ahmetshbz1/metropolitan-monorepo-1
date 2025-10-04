@@ -1,7 +1,7 @@
 import type { Address } from "./address";
 import type { Product } from "./product";
 
-export type ProductInItem = Product
+export type ProductInItem = Product;
 
 export interface OrderItem {
   id: string;
@@ -69,6 +69,7 @@ export interface OrderCreationRequest {
   paymentMethodId: string;
   notes?: string;
   paymentTermDays?: number;
+  platform?: "web" | "mobile"; // Platform bilgisi - web için Checkout Session, mobile için Payment Intent
 }
 
 export interface OrderCreationResult {

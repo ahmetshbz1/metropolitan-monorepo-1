@@ -2,11 +2,11 @@
 //  metropolitan app
 //  Created by Ahmet on 21.06.2025.
 
-import React, { createContext, useContext } from "react";
-import type { FullOrderPayload } from "@metropolitan/shared";
-import { useOrderState } from "./OrderStateContext";
 import { useOrderFetch } from "@/hooks/useOrderFetch";
 import { useOrderOperations } from "@/hooks/useOrderOperations";
+import type { FullOrderPayload } from "@metropolitan/shared";
+import React, { createContext, useContext } from "react";
+import { useOrderState } from "./OrderStateContext";
 
 interface IOrderActionsContext {
   fetchOrders: (forceRefresh?: boolean) => Promise<void>;
@@ -21,6 +21,7 @@ interface IOrderActionsContext {
     paymentMethodId: string;
     notes?: string;
     paymentTermDays?: number;
+    platform?: "web" | "mobile";
   }) => Promise<any>;
   cancelOrder: (orderId: string) => Promise<void>;
   rollbackStock: (orderId: string) => Promise<any>;
@@ -75,7 +76,9 @@ export const OrderActionsProvider = ({
 export const useOrderActions = () => {
   const context = useContext(OrderActionsContext);
   if (context === undefined) {
-    throw new Error("useOrderActions must be used within an OrderActionsProvider");
+    throw new Error(
+      "useOrderActions must be used within an OrderActionsProvider"
+    );
   }
   return context;
 };
