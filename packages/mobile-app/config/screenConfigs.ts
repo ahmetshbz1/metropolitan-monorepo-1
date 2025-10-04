@@ -15,7 +15,9 @@ interface RouteProps {
 
 export interface ScreenConfig {
   name: string;
-  options: NativeStackNavigationOptions | ((props: RouteProps) => NativeStackNavigationOptions);
+  options:
+    | NativeStackNavigationOptions
+    | ((props: RouteProps) => NativeStackNavigationOptions);
 }
 
 export const SCREEN_CONFIGS = {
@@ -49,7 +51,8 @@ export const DYNAMIC_SCREEN_CONFIGS: ScreenConfig[] = [
       headerBackTitleVisible: false,
       headerBackButtonDisplayMode: "minimal" as const,
       // Performance optimization
-      presentation: Platform.OS === "ios" ? "card" : "transparentModal" as const,
+      presentation:
+        Platform.OS === "ios" ? "card" : ("transparentModal" as const),
       animation: "slide_from_right" as const,
       // iOS-specific ek ayarlar
       ...Platform.select({
@@ -179,6 +182,20 @@ export const STATIC_SCREEN_CONFIGS: ScreenConfig[] = [
   },
   {
     name: "invoice-preview",
+    options: {
+      headerShown: true,
+      headerTitle: "", // i18n ile dinamik olarak ayarlanacak
+    },
+  },
+  {
+    name: "notifications",
+    options: {
+      headerShown: true,
+      headerTitle: "", // i18n ile dinamik olarak ayarlanacak - notifications.title
+    },
+  },
+  {
+    name: "account-settings",
     options: {
       headerShown: true,
       headerTitle: "", // i18n ile dinamik olarak ayarlanacak

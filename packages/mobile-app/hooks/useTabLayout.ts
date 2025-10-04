@@ -47,7 +47,7 @@ export const useTabLayout = () => {
   };
 
   const handleNotification = () => {
-    safePush("/notifications", { presentation: "modal" });
+    safePush("/notifications");
   };
 
   const getTabBarHeight = () => {

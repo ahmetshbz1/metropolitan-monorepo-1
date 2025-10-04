@@ -2,14 +2,11 @@
 //  metropolitan app
 //  Created by Ahmet on 01.07.2025.
 
-import { Ionicons } from "@expo/vector-icons";
-import { Stack, useRouter } from "expo-router";
-import React from "react";
+import { useNavigation } from "expo-router";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { FlatList, RefreshControl } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-
-import { HapticIconButton } from "@/components/HapticButton";
 
 import { ThemedView } from "@/components/ThemedView";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
@@ -25,7 +22,22 @@ import { useTheme } from "@/hooks/useTheme";
 export default function NotificationsScreen() {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const router = useRouter();
+  const navigation = useNavigation();
+
+  // Set screen title once on mount
+  useEffect(() => {
+    navigation.setOptions({
+      title: t("notifications.title"),
+      headerStyle: {
+        backgroundColor: colors.background,
+      },
+      headerTintColor: colors.text,
+      headerTitleStyle: {
+        fontWeight: "600",
+      },
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on mount
 
   // Custom hook kullanarak tüm bildirim işlemlerini yönet
   const {
@@ -58,28 +70,6 @@ export default function NotificationsScreen() {
   return (
     <GestureHandlerRootView className="flex-1">
       <ThemedView className="flex-1">
-        <Stack.Screen
-          options={{
-            title: t("notifications.title"),
-            presentation: "modal",
-            headerStyle: {
-              backgroundColor: colors.background,
-            },
-            headerTintColor: colors.text,
-            headerTitleStyle: {
-              fontWeight: "600",
-            },
-            headerLeft: () => (
-              <HapticIconButton
-                onPress={() => router.back()}
-                style={{ padding: 8, marginLeft: 4 }}
-              >
-                <Ionicons name="close" size={24} color={colors.text} />
-              </HapticIconButton>
-            ),
-          }}
-        />
-
         {/* Bildirim listesi */}
         {isLoading ? (
           <NotificationSkeletonList />

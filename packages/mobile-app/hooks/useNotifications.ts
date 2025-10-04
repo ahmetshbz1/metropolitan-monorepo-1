@@ -2,17 +2,17 @@
 //  metropolitan app
 //  Created by Ahmet on 19.06.2025.
 
-import { useHaptics } from "@/hooks/useHaptics";
+import api from "@/core/api";
 import { useConfirmationDialog } from "@/hooks/useConfirmationDialog";
+import { useHaptics } from "@/hooks/useHaptics";
 import {
   Notification,
   UseNotificationsReturn,
 } from "@/types/notifications.types";
 import { getUnreadCount } from "@/utils/notifications.utils";
 import { router } from "expo-router";
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import api from "@/core/api";
 
 export function useNotifications(): UseNotificationsReturn {
   const { t } = useTranslation();
@@ -21,13 +21,13 @@ export function useNotifications(): UseNotificationsReturn {
     dialogState: deleteDialogState,
     showDialog: showDeleteDialog,
     hideDialog: hideDeleteDialog,
-    handleConfirm: handleDeleteConfirm
+    handleConfirm: handleDeleteConfirm,
   } = useConfirmationDialog();
   const {
     dialogState: deleteAllDialogState,
     showDialog: showDeleteAllDialog,
     hideDialog: hideDeleteAllDialog,
-    handleConfirm: handleDeleteAllConfirm
+    handleConfirm: handleDeleteAllConfirm,
   } = useConfirmationDialog();
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -60,10 +60,11 @@ export function useNotifications(): UseNotificationsReturn {
     }
   }, []);
 
-  // Component mount olduğunda bildirimleri çek
+  // Component mount olduğunda bildirimleri çek (sadece bir kez)
   useEffect(() => {
     fetchNotifications();
-  }, [fetchNotifications]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Boş dependency array - sadece mount'ta çalışır
 
   // Bildirimi okundu olarak işaretle
   const markAsRead = async (notificationId: string) => {
@@ -145,10 +146,15 @@ export function useNotifications(): UseNotificationsReturn {
     }
 
     // Eğer data.screen varsa o sayfaya yönlendir
-    if (notification.data && typeof notification.data === 'object' && 'screen' in notification.data) {
+    if (
+      notification.data &&
+      typeof notification.data === "object" &&
+      "screen" in notification.data
+    ) {
       const screen = (notification.data as any).screen;
       if (screen) {
-        router.push(screen);
+        // Stack oluşmasını engellemek için replace kullan
+        router.replace(screen);
       }
     }
   };
