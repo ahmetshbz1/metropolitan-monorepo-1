@@ -21,7 +21,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.metropolitan.food",
-      "buildNumber": "38",
+      "buildNumber": "39",
       "deploymentTarget": "18.0",
       "config": {
         "googleSignIn": {
@@ -31,7 +31,11 @@
       "infoPlist": {
         "LSApplicationCategoryType": "public.app-category.food-and-drink",
         "CFBundleAllowMixedLocalizations": true,
-        "CFBundleLocalizations": ["tr", "en", "pl"],
+        "CFBundleLocalizations": [
+          "tr",
+          "en",
+          "pl"
+        ],
         "ITSAppUsesNonExemptEncryption": false
       },
       "appleTeamId": "64XKK46655",
@@ -39,11 +43,16 @@
         "com.apple.developer.in-app-payments": [
           "merchant.com.metropolitan.food"
         ],
-        "com.apple.developer.applesignin": ["Default"],
+        "com.apple.developer.applesignin": [
+          "Default"
+        ],
         "aps-environment": "production"
       },
       "usesAppleSignIn": true,
-      "googleServicesFile": "./GoogleService-Info.plist"
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "android": {
       "adaptiveIcon": {
