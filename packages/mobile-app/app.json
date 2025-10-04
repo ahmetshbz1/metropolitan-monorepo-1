@@ -55,7 +55,7 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.metropolitan.food",
-      "versionCode": 4,
+      "versionCode": 5,
       "permissions": [
         "android.permission.RECORD_AUDIO",
         "com.google.android.c2dm.permission.RECEIVE"
