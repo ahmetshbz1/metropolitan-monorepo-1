@@ -22,6 +22,7 @@ import { ProductSectionSkeleton } from "@/components/home/ProductSectionSkeleton
 import { ErrorState } from "@/components/ui/ErrorState";
 import Colors from "@/constants/Colors";
 import { useProducts } from "@/context/ProductContext";
+import { useNotifications } from "@/context/NotificationContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useImagePreload } from "@/hooks/useImagePreload";
 import { useTabBarHeight } from "@/hooks/useTabBarHeight";
@@ -94,6 +95,7 @@ export default function HomeScreen() {
     refreshAllProducts,
     fetchCategories,
   } = useProducts();
+  const { refreshUnreadCount } = useNotifications();
 
   const { registerScrollHandler, unregisterScrollHandler } = useScrollToTop();
   const scrollViewRef = useRef<ScrollView>(null);
@@ -128,7 +130,9 @@ export default function HomeScreen() {
   useFocusEffect(
     useCallback(() => {
       setIsRefreshing(false);
-    }, [])
+      // Ana sayfaya her focus olunduğunda bildirim sayısını güncelle
+      refreshUnreadCount();
+    }, [refreshUnreadCount])
   );
 
   const handleRefresh = useCallback(async () => {

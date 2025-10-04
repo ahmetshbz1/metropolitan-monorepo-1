@@ -34,6 +34,8 @@ export const TabScreens = memo(({
   const { searchQuery, setSearchQuery } = useProductsSearch();
   const { unreadCount } = useNotifications();
 
+  console.log("🔔 [TabScreens] Rendering with unreadCount:", unreadCount);
+
   return (
     <Tabs
       screenOptions={{

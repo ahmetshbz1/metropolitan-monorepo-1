@@ -10,6 +10,7 @@ import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 import NotificationService from "@/core/firebase/notifications/notificationService";
 import { useAuth } from "@/context/AuthContext";
+import { useNotifications } from "@/context/NotificationContext";
 import { router } from "expo-router";
 import * as Notifications from 'expo-notifications';
 import { EventEmitter, AppEvent } from "@/utils/eventEmitter";
@@ -24,6 +25,7 @@ export const InitialLayout: React.FC = () => {
   const colorScheme = useColorScheme();
   const { i18n, t } = useTranslation();
   const { isAuthenticated, isGuest, logout } = useAuth();
+  const { refreshUnreadCount } = useNotifications();
   const [sessionExpired, setSessionExpired] = useState(false);
 
   // Push notification navigasyon kontrolü için
@@ -46,13 +48,16 @@ export const InitialLayout: React.FC = () => {
       // Notification listener'ları kur (token zaten alınmış olabilir)
       NotificationService.setupNotificationListeners(
         (notification) => {
-          // Bildirim alındığında
-          // Removed console statement
+          // Bildirim alındığında - badge sayısını güncelle
+          console.log("🔔 [InitialLayout] Notification received, refreshing count");
+          refreshUnreadCount();
         },
         (response) => {
           // Bildirime tıklandığında
-          // Removed console statement
           const data = response.notification.request.content.data;
+
+          // Badge sayısını güncelle
+          refreshUnreadCount();
 
           // Eğer bildirimde yönlendirme bilgisi varsa
           if (data?.screen) {
@@ -63,7 +68,6 @@ export const InitialLayout: React.FC = () => {
             if (lastNavigationRef.current &&
                 lastNavigationRef.current.screen === targetScreen &&
                 (now - lastNavigationRef.current.time) < 2000) {
-              // Removed console statement kısa süre önce navigasyon yapıldı, ignore ediliyor`);
               return;
             }
 
@@ -86,7 +90,7 @@ export const InitialLayout: React.FC = () => {
     return () => {
       NotificationService.removeNotificationListeners();
     };
-  }, [loaded]);
+  }, [loaded, refreshUnreadCount]);
 
   // Session expired listener
   useEffect(() => {
