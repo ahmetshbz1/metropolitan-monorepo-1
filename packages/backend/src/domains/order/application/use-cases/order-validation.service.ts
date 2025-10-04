@@ -150,22 +150,32 @@ export class OrderValidationService {
     }
 
     // Cart item'ları CartItemData formatına çevir
-    const cartItemsData: CartItemData[] = dbCartItems.map((item) => ({
-      id: item.id,
-      product: {
-        id: item.product.id,
-        name: item.product.translations[0]?.name || "İsimsiz Ürün",
-        image: item.product.imageUrl || "",
-        price: parseFloat(item.product.price || "0"),
-        stock: item.product.stock || 0,
-        category: "", // Category name backend'de resolve edilecek
-        brand: item.product.brand || "",
-        size: item.product.size || undefined,
-        currency: item.product.currency,
-      },
-      quantity: item.quantity,
-      createdAt: item.createdAt.toISOString(),
-    }));
+    const cartItemsData: CartItemData[] = dbCartItems.map((item) => {
+      const basePrice = Number(item.product.price || 0);
+      const hasCorporatePrice = item.product.corporatePrice !== null && item.product.corporatePrice !== undefined;
+      const hasIndividualPrice = item.product.individualPrice !== null && item.product.individualPrice !== undefined;
+
+      const resolvedPrice = userType === "corporate"
+        ? (hasCorporatePrice ? Number(item.product.corporatePrice) : basePrice)
+        : (hasIndividualPrice ? Number(item.product.individualPrice) : basePrice);
+
+      return {
+        id: item.id,
+        product: {
+          id: item.product.id,
+          name: item.product.translations[0]?.name || "İsimsiz Ürün",
+          image: item.product.imageUrl || "",
+          price: resolvedPrice,
+          stock: item.product.stock || 0,
+          category: "", // Category name backend'de resolve edilecek
+          brand: item.product.brand || "",
+          size: item.product.size || undefined,
+          currency: item.product.currency,
+        },
+        quantity: item.quantity,
+        createdAt: item.createdAt.toISOString(),
+      };
+    });
 
     // Stok ve minimum alım kontrolü yap
     const stockErrors: StockError[] = [];
