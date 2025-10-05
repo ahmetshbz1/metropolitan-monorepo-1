@@ -17,8 +17,13 @@ RUN bun install && bun add uuid
 COPY packages/shared ./packages/shared
 COPY packages/backend ./packages/backend
 
-# Switch to backend directory
+# Install shared package dependencies
+WORKDIR /app/packages/shared
+RUN bun install
+
+# Switch to backend directory and install dependencies
 WORKDIR /app/packages/backend
+RUN bun install
 
 # Do not bake .env into the image; rely on runtime env from docker-compose
 # and /opt/metropolitan/.env copied by deploy script.
