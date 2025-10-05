@@ -265,9 +265,10 @@ var validateIBAN = (iban) => {
     return false;
   const rearranged = cleanIban.slice(4) + cleanIban.slice(0, 4);
   const numericIban = rearranged.replace(/[A-Z]/g, (char) => (char.charCodeAt(0) - 55).toString());
-  let remainder = numericIban.slice(0, 9) % 97;
+  let remainder = Number.parseInt(numericIban.slice(0, 9), 10) % 97;
   for (let i = 9;i < numericIban.length; i += 7) {
-    remainder = (remainder + numericIban.slice(i, i + 7)) % 97;
+    const block = `${remainder}${numericIban.slice(i, i + 7)}`;
+    remainder = Number.parseInt(block, 10) % 97;
   }
   return remainder === 1;
 };
