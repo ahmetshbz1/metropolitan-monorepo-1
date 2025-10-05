@@ -1,14 +1,9 @@
-'use client';
+"use client";
 
-import { useTranslation } from 'react-i18next';
-import { X } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
+import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface QRDialogProps {
   open: boolean;
@@ -20,7 +15,10 @@ export function QRDialog({ open, onOpenChange }: QRDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md p-0 overflow-hidden" showCloseButton={false}>
+      <DialogContent
+        className="sm:max-w-md p-0 overflow-hidden"
+        showCloseButton={false}
+      >
         {/* Accessibility Title */}
         <VisuallyHidden>
           <DialogTitle>Mobile Uygulama QR Kodu</DialogTitle>
@@ -29,9 +27,7 @@ export function QRDialog({ open, onOpenChange }: QRDialogProps) {
         {/* Header */}
         <div className="px-6 pt-6 pb-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-center flex-1">
-              Uygulama
-            </h2>
+            <h2 className="text-xl font-bold text-center flex-1">Uygulama</h2>
             <button
               onClick={() => onOpenChange(false)}
               className="rounded-full p-1 hover:bg-muted transition-colors"
@@ -51,11 +47,7 @@ export function QRDialog({ open, onOpenChange }: QRDialogProps) {
           {/* Large QR Code */}
           <div className="flex justify-center mb-6">
             <div className="w-80 h-80 bg-white border rounded-lg flex items-center justify-center p-4">
-              <img 
-                src="/qr.svg" 
-                alt="QR Code" 
-                className="w-full h-full" 
-              />
+              <img src="/qr.png" alt="QR Code" className="w-full h-full" />
             </div>
           </div>
 
@@ -65,20 +57,20 @@ export function QRDialog({ open, onOpenChange }: QRDialogProps) {
               href="#"
               className="hover:opacity-80 transition-opacity duration-200"
             >
-              <img 
-                src="/app-store-badge.svg" 
-                alt="App Store'dan İndir" 
-                className="h-14 w-auto" 
+              <img
+                src="/app-store-badge.svg"
+                alt="App Store'dan İndir"
+                className="h-14 w-auto"
               />
             </a>
             <a
               href="#"
               className="hover:opacity-80 transition-opacity duration-200"
             >
-              <img 
-                src="/google-play-badge.svg" 
-                alt="Google Play'den İndir" 
-                className="h-14 w-auto" 
+              <img
+                src="/google-play-badge.svg"
+                alt="Google Play'den İndir"
+                className="h-14 w-auto"
               />
             </a>
           </div>

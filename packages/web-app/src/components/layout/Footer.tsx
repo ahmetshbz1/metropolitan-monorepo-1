@@ -3,7 +3,6 @@
 import { QRDialog } from "@/components/ui/qr-dialog";
 import {
   Clock,
-  ExternalLink,
   Facebook,
   Instagram,
   Linkedin,
@@ -75,7 +74,10 @@ export function Footer() {
     {
       icon: Clock,
       label: t("footer.working_hours"),
-      value: t("support.working_hours_weekdays") + "\n" + t("support.working_hours_weekend"),
+      value:
+        t("support.working_hours_weekdays") +
+        "\n" +
+        t("support.working_hours_weekend"),
       link: null,
     },
   ];
@@ -102,10 +104,22 @@ export function Footer() {
   ];
 
   const socialLinks = [
-    { icon: Facebook, href: "https://www.facebook.com/profile.php?id=61581536105076", label: "Facebook" },
-    { icon: Instagram, href: "https://www.instagram.com/metropolitanfg_pl/", label: "Instagram" },
+    {
+      icon: Facebook,
+      href: "https://www.facebook.com/profile.php?id=61581536105076",
+      label: "Facebook",
+    },
+    {
+      icon: Instagram,
+      href: "https://www.instagram.com/metropolitanfg_pl/",
+      label: "Instagram",
+    },
     { icon: Twitter, href: "https://x.com/metropolitan_fg", label: "Twitter" },
-    { icon: Linkedin, href: "https://www.linkedin.com/in/metropolitan-food-group-57a003388/", label: "LinkedIn" },
+    {
+      icon: Linkedin,
+      href: "https://www.linkedin.com/in/metropolitan-food-group-57a003388/",
+      label: "LinkedIn",
+    },
   ];
 
   return (
@@ -150,20 +164,28 @@ export function Footer() {
               <ul className="space-y-3 text-sm">
                 <li>
                   <div className="flex items-start gap-2">
-                    <MapPin size={16} className="text-primary mt-0.5 flex-shrink-0" />
+                    <MapPin
+                      size={16}
+                      className="text-primary mt-0.5 flex-shrink-0"
+                    />
                     <a
                       href="https://www.google.com/maps/search/?api=1&query=Aleja+Krakowska+44,+05-090+Janki,+Warsaw,+Poland"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-muted-foreground hover:text-primary transition-colors"
                     >
-                      Aleja Krakowska 44,<br />05-090 Janki, Warsaw
+                      Aleja Krakowska 44,
+                      <br />
+                      05-090 Janki, Warsaw
                     </a>
                   </div>
                 </li>
                 <li>
                   <div className="flex items-start gap-2">
-                    <Phone size={16} className="text-primary mt-0.5 flex-shrink-0" />
+                    <Phone
+                      size={16}
+                      className="text-primary mt-0.5 flex-shrink-0"
+                    />
                     <a
                       href="tel:+48600790035"
                       className="text-muted-foreground hover:text-primary transition-colors"
@@ -175,7 +197,10 @@ export function Footer() {
                 <li>
                   <div className="flex flex-col gap-1">
                     <div className="flex items-start gap-2">
-                      <Mail size={16} className="text-primary mt-0.5 flex-shrink-0" />
+                      <Mail
+                        size={16}
+                        className="text-primary mt-0.5 flex-shrink-0"
+                      />
                       <div className="flex flex-col gap-1">
                         <a
                           href="mailto:info@metropolitanfg.pl"
@@ -244,7 +269,7 @@ export function Footer() {
                   onClick={() => setQrDialogOpen(true)}
                 >
                   <img
-                    src="/qr.svg"
+                    src="/qr.png"
                     alt="QR Code"
                     className="w-full h-full transition-opacity duration-300 group-hover:opacity-30"
                   />
