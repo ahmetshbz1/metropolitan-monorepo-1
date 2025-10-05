@@ -36,9 +36,12 @@ export function CookieSettingsDialog({
   open,
   onOpenChange,
 }: CookieSettingsDialogProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { preferences, updatePreferences, acceptAll, rejectAll } =
     useCookieConsentStore();
+
+  // i18n.language "tr-TR" formatında geliyor, sadece ilk 2 karakteri al
+  const language = ((i18n.language || "tr").split("-")[0]) as "tr" | "en" | "pl";
 
   // Local state for temporary changes before saving
   const [tempPreferences, setTempPreferences] = useState(preferences);
@@ -131,7 +134,7 @@ export function CookieSettingsDialog({
                   {t("cookie.settings.info_text")}
                 </p>
                 <a
-                  href="/legal?type=cookie-policy"
+                  href={`/cookie-policy?lang=${language}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
