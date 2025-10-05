@@ -120,6 +120,31 @@ services:
       retries: 3
       start_period: 40s
 
+  # Web Application
+  web-app:
+    build:
+      context: .
+      dockerfile: packages/web-app/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: https://api.metropolitanfg.pl
+    image: metropolitan/web-app:latest
+    container_name: metropolitan_web
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      NEXT_PUBLIC_API_URL: https://api.metropolitanfg.pl
+    ports:
+      - "127.0.0.1:${WEB_PORT:-3001}:3001"
+    networks:
+      - metropolitan_network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
   # Nginx Reverse Proxy (Optional - for production)
   nginx:
     image: nginx:alpine

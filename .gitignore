@@ -25,6 +25,7 @@ dist/
 build/
 out/
 .next/
+packages/web-app/shared/
 .expo/
 *.tsbuildinfo
 

@@ -257,9 +257,10 @@ export const validateIBAN = (iban: string): boolean => {
   );
 
   // Mod 97 check
-  let remainder = parseInt(numericIban.slice(0, 9)) % 97;
+  let remainder = Number.parseInt(numericIban.slice(0, 9), 10) % 97;
   for (let i = 9; i < numericIban.length; i += 7) {
-    remainder = parseInt(remainder.toString() + numericIban.slice(i, i + 7)) % 97;
+    const block = `${remainder}${numericIban.slice(i, i + 7)}`;
+    remainder = Number.parseInt(block, 10) % 97;
   }
 
   return remainder === 1;

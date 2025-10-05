@@ -2,15 +2,15 @@
 //  metropolitan app
 //  Created by Ahmet on 07.01.2025.
 
+import api from "@/core/api";
 import React, {
+  ReactNode,
   createContext,
   useContext,
-  useState,
   useEffect,
-  ReactNode,
+  useState,
 } from "react";
 import { useAuth } from "./AuthContext";
-import api from "@/core/api";
 
 interface NotificationContextType {
   unreadCount: number;
@@ -43,35 +43,25 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
           ? `/guest/notifications/${guestId}`
           : "/users/notifications";
 
-      console.log("🔔 [NotificationContext] Fetching from:", endpoint);
-      console.log("🔔 [NotificationContext] Auth state:", { isAuthenticated, isGuest, guestId });
-
       const response = await api.get(endpoint, {
         params: { limit: 1 }, // Sadece count için minimal veri
       });
-      
-      console.log("🔔 [NotificationContext] Response:", response.data);
-      
+
       if (response.data.success) {
         const count = response.data.unreadCount || 0;
-        console.log("🔔 [NotificationContext] Setting unreadCount to:", count);
         setUnreadCount(count);
       }
     } catch (error) {
       // Sessizce başarısız ol, kullanıcıya gösterme
-      console.log("🔔 [NotificationContext] Error:", error);
       setUnreadCount(0);
     }
   };
 
   // İlk yüklemede ve auth değiştiğinde sayıyı getir
   useEffect(() => {
-    console.log("🔔 [NotificationContext] useEffect triggered", { isAuthenticated, isGuest, guestId });
     if (isAuthenticated || isGuest) {
-      console.log("🔔 [NotificationContext] Calling refreshUnreadCount...");
       refreshUnreadCount();
     } else {
-      console.log("🔔 [NotificationContext] Not authenticated, setting count to 0");
       setUnreadCount(0);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

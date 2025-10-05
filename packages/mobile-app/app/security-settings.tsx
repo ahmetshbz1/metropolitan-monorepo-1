@@ -9,6 +9,8 @@ import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 import Colors from "@/constants/Colors";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/core/api";
+import { signInWithApple } from "@/core/firebase/auth/appleAuth";
+import { signInWithGoogle } from "@/core/firebase/auth/googleAuth";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useConfirmationDialog } from "@/hooks/useConfirmationDialog";
 import { useNavigationProtection } from "@/hooks/useNavigationProtection";
@@ -84,8 +86,6 @@ export default function SecuritySettingsScreen() {
       setLoading(true);
 
       if (provider === 'apple') {
-        // Import Apple auth dynamically
-        const { signInWithApple } = await import('@/core/firebase/auth/appleAuth');
         const result = await signInWithApple();
 
         if (result.success && result.user) {
@@ -101,8 +101,6 @@ export default function SecuritySettingsScreen() {
           await refreshUserProfile();
         }
       } else if (provider === 'google') {
-        // Import Google auth dynamically
-        const { signInWithGoogle } = await import('@/core/firebase/auth/googleAuth');
         const result = await signInWithGoogle();
 
         if (result.success && result.user) {

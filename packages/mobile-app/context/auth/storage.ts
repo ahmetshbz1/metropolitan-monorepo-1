@@ -117,7 +117,10 @@ export const guestStorage = {
 // Social auth data operations
 export const socialAuthStorage = {
   async save(data: any): Promise<void> {
-    await AsyncStorage.setItem(STORAGE_KEYS.SOCIAL_AUTH_DATA, JSON.stringify(data));
+    await AsyncStorage.setItem(
+      STORAGE_KEYS.SOCIAL_AUTH_DATA,
+      JSON.stringify(data)
+    );
   },
 
   async get(): Promise<any | null> {
@@ -131,7 +134,9 @@ export const socialAuthStorage = {
 };
 
 // Tüm auth verilerini temizle
-export const clearAllAuthData = async (keepGuest: boolean = false): Promise<void> => {
+export const clearAllAuthData = async (
+  keepGuest: boolean = false
+): Promise<void> => {
   try {
     const operations = [
       tokenStorage.remove(),
@@ -169,25 +174,15 @@ export const versionStorage = {
 // Auth durumunu yükle
 export const loadAuthState = async () => {
   try {
-    const [token, refreshToken, user, guestId, isGuestFlag, socialAuthData] = await Promise.all([
-      tokenStorage.get(),
-      tokenStorage.getRefreshToken(),
-      userStorage.get(),
-      guestStorage.getGuestId(),
-      guestStorage.isGuest(),
-      socialAuthStorage.get(),
-    ]);
-
-    console.log("🔧 [AUTH DEBUG] Loaded auth state:", {
-      hasToken: !!token,
-      hasRefreshToken: !!refreshToken,
-      hasUser: !!user,
-      userPhone: user?.phone,
-      userType: user?.userType,
-      isGuest: isGuestFlag,
-      guestId,
-      hasSocialAuth: !!socialAuthData,
-    });
+    const [token, refreshToken, user, guestId, isGuestFlag, socialAuthData] =
+      await Promise.all([
+        tokenStorage.get(),
+        tokenStorage.getRefreshToken(),
+        userStorage.get(),
+        guestStorage.getGuestId(),
+        guestStorage.isGuest(),
+        socialAuthStorage.get(),
+      ]);
 
     return {
       token,
@@ -198,7 +193,6 @@ export const loadAuthState = async () => {
       socialAuthData,
     };
   } catch (error) {
-    console.log("🔧 [AUTH DEBUG] Error loading auth state:", error);
     return {
       token: null,
       refreshToken: null,

@@ -46,7 +46,7 @@ docker-compose down || true
 
 # Build and start services
 echo '🔨 Building Docker images...'
-docker-compose build --no-cache backend
+docker-compose build --no-cache backend web-app
 
 echo '🚀 Starting services...'
 docker-compose up -d postgres redis
@@ -54,6 +54,9 @@ sleep 10
 
 echo '🚀 Starting backend...'
 docker-compose up -d backend
+
+echo '🌐 Starting web-app...'
+docker-compose up -d web-app
 
 echo '✅ Deployment complete!'
 docker-compose ps

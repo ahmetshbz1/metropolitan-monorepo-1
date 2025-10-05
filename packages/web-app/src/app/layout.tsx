@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 import { I18nProvider } from "@/components/providers/I18nProvider";

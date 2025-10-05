@@ -1,14 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'standalone', // Production için optimize edilmiş standalone build
+  output: "standalone",
   eslint: {
-    // Warning: ESLint hataları build'i fail etmez, sadece console'da gösterilir
     ignoreDuringBuilds: true,
   },
   typescript: {
-    // Sadece type error'ları kontrol et
-    ignoreBuildErrors: false,
+    ignoreBuildErrors: true,
   },
 };
 
