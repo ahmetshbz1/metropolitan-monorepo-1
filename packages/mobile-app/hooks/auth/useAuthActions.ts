@@ -16,8 +16,10 @@ import {
   tokenStorage,
   userStorage,
   socialAuthStorage,
+  guestStorage,
 } from "@/context/auth/storage";
 import { firebaseSignOut } from "@/core/firebase/auth/signOut";
+import NotificationService from "@/core/firebase/notifications/notificationService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 
@@ -124,7 +126,6 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
           setIsGuest(false);
           setGuestId(null);
           // Storage'dan da temizle
-          const { guestStorage } = await import('@/context/auth/storage');
           await guestStorage.clearGuest();
         } catch (error) {
           // Removed console statement
@@ -135,7 +136,6 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
         setGuestId(null);
         // Mevcut kullanıcı için guest session'ı temizle
         if (guestId && !result.isNewUser) {
-          const { guestStorage } = await import('@/context/auth/storage');
           await guestStorage.clearGuest();
         }
       }
@@ -153,23 +153,21 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
             // Kullanıcının push tercihi true ise ve izin yoksa iste
             if (updatedUser.pushNotifications) {
               try {
-                const NotificationService = await import('@/core/firebase/notifications/notificationService');
-
                 // Önce mevcut izni kontrol et
-                const hasPermission = await NotificationService.default.hasNotificationPermission();
+                const hasPermission = await NotificationService.hasNotificationPermission();
 
                 if (!hasPermission) {
                   // İzin yoksa iste
-                  const token = await NotificationService.default.registerForPushNotifications();
+                  const token = await NotificationService.registerForPushNotifications();
                   if (token) {
                     // Removed console statement
                   }
                 } else {
                   // İzin var ama token'ı backend'e gönderelim (telefon değişmiş olabilir)
-                  const token = await NotificationService.default.getExpoPushToken();
+                  const token = await NotificationService.getExpoPushToken();
                   if (!token) {
                     // Token yoksa tekrar register et
-                    await NotificationService.default.registerForPushNotifications();
+                    await NotificationService.registerForPushNotifications();
                   }
                 }
               } catch (error) {
@@ -225,7 +223,6 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
           setIsGuest(false);
           setGuestId(null);
           // Storage'dan da temizle
-          const { guestStorage } = await import('@/context/auth/storage');
           await guestStorage.clearGuest();
         } catch (error) {
           // Removed console statement

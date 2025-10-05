@@ -11,6 +11,7 @@ import { Keyboard } from "react-native";
 
 import { useAuth } from "@/context/AuthContext";
 import { api } from "@/core/api";
+import NotificationService from "@/core/firebase/notifications/notificationService";
 import type { NipResponse } from "@metropolitan/shared";
 import { isValidEmail } from "@/utils/validation";
 import { useToast } from "@/hooks/useToast";
@@ -193,8 +194,7 @@ export function useUserInfoForm(isB2B: boolean): UseUserInfoFormReturn {
       // Marketing consent true ise notification izni otomatik olarak istenir
       if (marketingAccepted) {
         try {
-          const NotificationService = await import('@/core/firebase/notifications/notificationService');
-          const token = await NotificationService.default.registerForPushNotifications();
+          const token = await NotificationService.registerForPushNotifications();
 
           if (token) {
             await AsyncStorage.setItem("notification_permission_asked", "true");
