@@ -30,6 +30,11 @@ export const metadata: Metadata = {
   title: "Metropolitan Food Group - Kaliteli Gıda Ürünleri",
   description:
     "Doğanın en taze ürünleri kapınızda. Hızlı teslimat ve güvenli alışveriş.",
+  icons: {
+    icon: "/icooon.png",
+    shortcut: "/icooon.png",
+    apple: "/icooon.png",
+  },
 };
 
 export default function RootLayout({
