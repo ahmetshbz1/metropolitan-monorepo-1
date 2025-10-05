@@ -216,17 +216,37 @@ ssh metropolitan-deploy "docker-compose exec -T postgres psql -U metropolitan me
 - SSL Issues: Check Certbot logs
 - Database Issues: Check PostgreSQL logs
 
+## 🌐 Web Application Deployment
+
+See `deployment/WEB_DEPLOYMENT_GUIDE.md` for detailed web-app deployment instructions.
+
+### Quick Web Deployment
+
+```bash
+# Deploy both backend and web-app
+ssh metropolitan-deploy "/opt/deploy.sh"
+
+# Deploy only web-app
+ssh metropolitan-deploy "cd /opt/metropolitan && docker-compose build --no-cache web-app && docker-compose up -d web-app"
+```
+
 ## 📌 Quick Commands
 
 ```bash
-# Deploy
+# Deploy all services
 ssh metropolitan-deploy "/opt/deploy.sh"
 
-# Logs
+# Backend logs
 ssh metropolitan-deploy "docker-compose logs -f backend"
 
-# Restart
+# Web-app logs
+ssh metropolitan-deploy "docker-compose logs -f web-app"
+
+# Restart backend
 ssh metropolitan-deploy "docker-compose restart backend"
+
+# Restart web-app
+ssh metropolitan-deploy "docker-compose restart web-app"
 
 # Status
 ssh metropolitan-deploy "docker-compose ps"
