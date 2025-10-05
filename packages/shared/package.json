@@ -3,13 +3,29 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "main": "index.ts",
+  "main": "./dist/index.js",
+  "types": "./index.ts",
+  "exports": {
+    ".": {
+      "types": "./index.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "constants",
+    "types",
+    "utils",
+    "index.ts"
+  ],
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
+    "build": "bun build ./index.ts --outdir ./dist --target node && printf 'export * from \"../index\";\n' > dist/index.d.ts",
+    "dev": "bun build ./index.ts --outdir ./dist --target node --watch",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "check": "bun run lint && bun run build"
+    "check": "bun run lint && bun run build",
+    "postinstall": "bun run build"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.38.0",

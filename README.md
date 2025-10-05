@@ -2,12 +2,14 @@
 
 Modern e-commerce platform built with React Native, Expo, and Elysia.js.
 
-## 🏗️ Monorepo Architecture
+## 🏗️ Repository Layout
 
-**Bun workspaces** monorepo with e-commerce domain focus:
-- **packages/backend**: Elysia.js + Bun API (Domain-Driven Design)
-- **packages/mobile-app**: React Native + Expo mobile application
-- **packages/shared**: TypeScript types, constants, utilities (@metropolitan/shared)
+Single repository with independent Bun projects under `packages/`:
+- `packages/backend`: Elysia.js + Bun API (Domain-Driven Design)
+- `packages/web-app`: Next.js storefront
+- `packages/mobile-app`: React Native + Expo mobile application
+- `packages/shared`: TypeScript types, constants, utilities (`@metropolitan/shared`)
+- `packages/admin-panel` (planned): management dashboard shell
 
 ## ⚡ Quick Start
 
@@ -18,7 +20,9 @@ bun run install:all
 
 # Or individually
 cd packages/backend && bun install
+cd packages/web-app && bun install
 cd packages/mobile-app && bun install
+cd packages/shared && bun install
 ```
 
 ### 2. Environment Setup

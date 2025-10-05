@@ -2,13 +2,15 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## 🏗️ Monorepo Architecture
+## 🏗️ Repository Layout
 
-**Bun workspaces** monorepo with e-commerce domain focus:
+Single repository with standalone Bun/Node projects per package:
 
-- **packages/backend**: Elysia.js + Bun API (Domain-Driven Design)
-- **packages/mobile-app**: React Native + Expo mobile application
-- **packages/shared**: TypeScript types, constants, utilities (@metropolitan/shared)
+- `packages/backend`: Elysia.js + Bun API (Domain-Driven Design)
+- `packages/web-app`: Next.js storefront
+- `packages/mobile-app`: React Native + Expo mobile application
+- `packages/shared`: TypeScript types, constants, utilities (`@metropolitan/shared`)
+- `packages/admin-panel` (planned): management dashboard shell
 
 ## 🚀 Production Deployment
 
@@ -49,7 +51,7 @@ ssh metropolitan-deploy "docker-compose -f /opt/metropolitan-backend/docker-comp
 
 ## ⚡ Development Commands
 
-### Workspace Operations
+### Repository Operations
 
 ```bash
 # Install all dependencies

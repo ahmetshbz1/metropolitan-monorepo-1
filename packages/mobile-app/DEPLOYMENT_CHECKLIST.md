@@ -12,7 +12,7 @@
 - [x] React Native 0.79.5 güncellemesi
 - [x] TypeScript konfigürasyonu
 - [x] Build scriptleri (package.json)
-- [x] Monorepo workspace yapısı
+- [x] Bağımsız paket yapısı
 
 ### Platform Konfigürasyonları
 - [x] iOS Bundle Identifier: `com.metropolitan.food`
