@@ -64,6 +64,7 @@
 # Documentation
 **/*.md
 !**/README.md
+!**/packages/backend/public/legal/*.md
 
 # Deployment
 **/deployment
