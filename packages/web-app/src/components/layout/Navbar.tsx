@@ -80,8 +80,9 @@ export function Navbar() {
     }
   }, [hydrated, _hasHydrated, hasSession, searchParams, router]);
 
-  // Legal sayfasında navbar'ı gösterme
-  if (pathname === "/legal") {
+  // Yasal sayfalarda navbar'ı gösterme
+  const legalPages = ["/legal", "/privacy-policy", "/terms-of-service", "/cookie-policy"];
+  if (legalPages.includes(pathname)) {
     return null;
   }
 

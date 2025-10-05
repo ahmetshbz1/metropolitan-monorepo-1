@@ -17,11 +17,14 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export function Footer() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
   const currentYear = new Date().getFullYear();
   const [qrDialogOpen, setQrDialogOpen] = useState(false);
+
+  // i18n.language "tr-TR" formatında geliyor, sadece ilk 2 karakteri al
+  const language = ((i18n.language || "tr").split("-")[0]) as "tr" | "en" | "pl";
 
   useEffect(() => {
     setMounted(true);
@@ -98,9 +101,9 @@ export function Footer() {
   ];
 
   const legalLinks = [
-    { label: t("footer.privacy_policy"), href: "/privacy" },
-    { label: t("footer.terms_of_service"), href: "/terms" },
-    { label: t("footer.cookie_policy"), href: "/cookies" },
+    { label: t("footer.privacy_policy"), href: `/privacy-policy?lang=${language}` },
+    { label: t("footer.terms_of_service"), href: `/terms-of-service?lang=${language}` },
+    { label: t("footer.cookie_policy"), href: `/cookie-policy?lang=${language}` },
   ];
 
   const socialLinks = [

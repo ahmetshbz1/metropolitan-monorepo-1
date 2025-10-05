@@ -20,11 +20,14 @@ import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 
 export default function ProfilePage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const router = useRouter();
   const { user, accessToken } = useAuthStore();
   const { isLoading: userLoading } = useCurrentUser();
   const logout = useLogout();
+
+  // i18n.language "tr-TR" formatında geliyor, sadece ilk 2 karakteri al
+  const language = ((i18n.language || "tr").split("-")[0]) as "tr" | "en" | "pl";
 
   // Loading skeleton
   if (userLoading) {
@@ -109,7 +112,7 @@ export default function ProfilePage() {
         {
           icon: FileText,
           label: t("profile.legal"),
-          href: "/legal",
+          href: `/privacy-policy?lang=${language}`,
         },
       ],
     },

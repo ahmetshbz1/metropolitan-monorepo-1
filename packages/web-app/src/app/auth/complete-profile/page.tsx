@@ -25,9 +25,12 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export default function CompleteProfilePage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const completeProfile = useCompleteProfile();
   const socialAuthData = useAuthStore((state) => (state as any).socialAuthData);
+
+  // i18n.language "tr-TR" formatında geliyor, sadece ilk 2 karakteri al
+  const language = ((i18n.language || "tr").split("-")[0]) as "tr" | "en" | "pl";
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -231,7 +234,7 @@ export default function CompleteProfilePage() {
                         {t("auth.complete_profile.accept_prefix")}{" "}
                       </span>
                       <Link
-                        href="/legal?type=terms-of-service"
+                        href={`/terms-of-service?lang=${language}`}
                         target="_blank"
                         className="text-primary font-medium hover:underline"
                       >
@@ -264,7 +267,7 @@ export default function CompleteProfilePage() {
                         {t("auth.complete_profile.accept_prefix")}{" "}
                       </span>
                       <Link
-                        href="/legal?type=privacy-policy"
+                        href={`/privacy-policy?lang=${language}`}
                         target="_blank"
                         className="text-primary font-medium hover:underline"
                       >
