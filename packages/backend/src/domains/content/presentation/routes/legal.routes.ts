@@ -16,24 +16,26 @@ type Language = (typeof LANGUAGES)[number];
 export const legalRoutes = createApp().group("/legal", (app) =>
   app.get(
     "/:type",
-    async ({ params, query, error }) => {
+    async ({ params, query, set }) => {
       const { type } = params;
       const lang = (query.lang || "en") as Language;
 
       // Validate type
       if (!LEGAL_TYPES.includes(type as LegalType)) {
-        return error(400, {
+        set.status = 400;
+        return {
           success: false,
           message: `Invalid legal document type. Must be one of: ${LEGAL_TYPES.join(", ")}`,
-        });
+        };
       }
 
       // Validate language
       if (!LANGUAGES.includes(lang)) {
-        return error(400, {
+        set.status = 400;
+        return {
           success: false,
           message: `Invalid language. Must be one of: ${LANGUAGES.join(", ")}`,
-        });
+        };
       }
 
       try {
@@ -56,17 +58,19 @@ export const legalRoutes = createApp().group("/legal", (app) =>
         };
       } catch (err: any) {
         if (err.code === "ENOENT") {
-          return error(404, {
+          set.status = 404;
+          return {
             success: false,
             message: `Legal document not found: ${type} (${lang})`,
-          });
+          };
         }
 
         console.error("Error reading legal document:", err);
-        return error(500, {
+        set.status = 500;
+        return {
           success: false,
           message: "Failed to load legal document",
-        });
+        };
       }
     },
     {
