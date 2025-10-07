@@ -11,6 +11,7 @@ import { categories } from "../../../../shared/infrastructure/database/schema";
 import { isAdminAuthenticated } from "../../application/guards/admin.guard";
 import { AdminCreateProductService } from "../../application/use-cases/products/create-product.service";
 import { AdminDeleteProductService } from "../../application/use-cases/products/delete-product.service";
+import { AdminGetProductsService } from "../../application/use-cases/products/get-products.service";
 import { AdminUpdateProductService } from "../../application/use-cases/products/update-product.service";
 import {
   SUPPORTED_LANGUAGES,
@@ -61,6 +62,45 @@ export const adminProductsRoutes = createApp()
   .use(isAdminAuthenticated)
   .group("/admin/products", (app) =>
     app
+      .get(
+        "/",
+        async ({ query, set }) => {
+          const limit = query.limit ? Number(query.limit) : undefined;
+          const offset = query.offset ? Number(query.offset) : undefined;
+
+          if (
+            (limit !== undefined && Number.isNaN(limit)) ||
+            (offset !== undefined && Number.isNaN(offset))
+          ) {
+            set.status = 400;
+            return {
+              success: false,
+              message: "Geçersiz limit veya offset değeri",
+            };
+          }
+
+          try {
+            const result = await AdminGetProductsService.execute({
+              limit,
+              offset,
+            });
+            return result;
+          } catch (error) {
+            set.status = 400;
+            return {
+              success: false,
+              message:
+                error instanceof Error ? error.message : "Ürünler getirilemedi",
+            };
+          }
+        },
+        {
+          query: t.Object({
+            limit: t.Optional(t.String()),
+            offset: t.Optional(t.String()),
+          }),
+        }
+      )
       .post(
         "/",
         async ({ body, set }) => {

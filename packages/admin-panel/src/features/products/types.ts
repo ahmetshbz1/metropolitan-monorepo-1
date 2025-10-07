@@ -31,3 +31,56 @@ export interface AdminProductPayload {
   quantityPerBox?: number;
   translations: AdminProductTranslation[];
 }
+
+export interface ProductTranslations {
+  tr: {
+    name: string;
+    fullName: string | null;
+    description: string | null;
+  };
+  en: {
+    name: string;
+    fullName: string | null;
+    description: string | null;
+  };
+  pl: {
+    name: string;
+    fullName: string | null;
+    description: string | null;
+  };
+}
+
+export interface AdminProduct {
+  productId: string;
+  productCode: string;
+  categoryId: string | null;
+  brand: string | null;
+  size: string | null;
+  imageUrl: string | null;
+  price: number | null;
+  currency: string;
+  stock: number;
+  individualPrice: number | null;
+  corporatePrice: number | null;
+  minQuantityIndividual: number;
+  minQuantityCorporate: number;
+  quantityPerBox: number | null;
+  netQuantity: string | null;
+  expiryDate: string | null;
+  storageConditions: string | null;
+  manufacturerInfo: Record<string, unknown> | null;
+  originCountry: string | null;
+  allergens: string[] | null;
+  badges: string[] | null;
+  translations: ProductTranslations;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProductsListResponse {
+  success: boolean;
+  total: number;
+  limit: number;
+  offset: number;
+  items: AdminProduct[];
+}

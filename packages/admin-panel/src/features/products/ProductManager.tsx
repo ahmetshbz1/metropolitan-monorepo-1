@@ -1,18 +1,21 @@
 import { useState } from "react";
-import { Button, Card, CardBody, CardHeader, Input, Spacer, Tab, Tabs } from "@heroui/react";
+import { Button, Drawer, DrawerBody, DrawerContent, DrawerHeader } from "@heroui/react";
+import { Plus } from "lucide-react";
 
 import { deleteProduct, createProduct, updateProduct } from "./api";
 import { ProductForm } from "./ProductForm";
-import type { AdminProductPayload } from "./types";
+import { ProductList } from "./ProductList";
+import type { AdminProduct, AdminProductPayload } from "./types";
 
 export const ProductManager = () => {
-  const [deleteProductId, setDeleteProductId] = useState<string>("");
-  const [deleteError, setDeleteError] = useState<string | null>(null);
-  const [deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<AdminProduct | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const handleCreate = async (payload: AdminProductPayload) => {
     await createProduct(payload);
+    setIsDrawerOpen(false);
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   const handleUpdate = async (
@@ -23,85 +26,79 @@ export const ProductManager = () => {
       throw new Error("Ürün ID zorunludur");
     }
     await updateProduct(productId, payload);
+    setIsDrawerOpen(false);
+    setEditingProduct(null);
+    setRefreshTrigger((prev) => prev + 1);
   };
 
-  const handleDelete = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setDeleteError(null);
-    setDeleteSuccess(null);
-
-    if (!deleteProductId.trim()) {
-      setDeleteError("Ürün ID zorunludur");
+  const handleDelete = async (productId: string) => {
+    if (!confirm("Bu ürünü silmek istediğinize emin misiniz?")) {
       return;
     }
 
     try {
-      setIsDeleting(true);
-      await deleteProduct(deleteProductId.trim());
-      setDeleteSuccess("Ürün silindi");
-      setDeleteProductId("");
+      await deleteProduct(productId);
+      setRefreshTrigger((prev) => prev + 1);
     } catch (error) {
-      setDeleteError(
-        error instanceof Error ? error.message : "Ürün silinemedi"
-      );
-    } finally {
-      setIsDeleting(false);
+      alert(error instanceof Error ? error.message : "Ürün silinemedi");
     }
   };
 
+  const handleEdit = (product: AdminProduct) => {
+    setEditingProduct(product);
+    setIsDrawerOpen(true);
+  };
+
+  const handleNewProduct = () => {
+    setEditingProduct(null);
+    setIsDrawerOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setIsDrawerOpen(false);
+    setEditingProduct(null);
+  };
+
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-      <Tabs aria-label="Admin ürün yönetimi" color="primary" variant="solid">
-        <Tab key="create" title="Ürün Ekle">
-          <ProductForm mode="create" onSubmit={handleCreate} />
-        </Tab>
-        <Tab key="update" title="Ürün Güncelle">
-          <ProductForm mode="update" onSubmit={handleUpdate} />
-        </Tab>
-        <Tab key="delete" title="Ürün Sil">
-          <Card className="w-full">
-            <CardHeader className="flex flex-col items-start gap-2 pb-0">
-              <h3 className="text-xl font-semibold text-slate-900">
-                Ürün Sil
-              </h3>
-              <p className="text-sm text-default-500">
-                Ürün ID değerini girerek ilgili kaydı kalıcı olarak silebilirsiniz.
-              </p>
-            </CardHeader>
-            <CardBody>
-              <form className="flex flex-col gap-4" onSubmit={handleDelete}>
-                <Input
-                  label="Ürün ID"
-                  placeholder="UUID değeri"
-                  value={deleteProductId}
-                  onValueChange={setDeleteProductId}
-                  variant="bordered"
-                  isRequired
-                />
-                {deleteError ? (
-                  <p className="text-sm text-red-500" role="alert">
-                    {deleteError}
-                  </p>
-                ) : null}
-                {deleteSuccess ? (
-                  <p className="text-sm text-green-600" role="status">
-                    {deleteSuccess}
-                  </p>
-                ) : null}
-                <Spacer y={1} />
-                <Button
-                  color="danger"
-                  type="submit"
-                  isLoading={isDeleting}
-                  className="self-start"
-                >
-                  Ürünü Sil
-                </Button>
-              </form>
-            </CardBody>
-          </Card>
-        </Tab>
-      </Tabs>
+    <div className="flex w-full flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-semibold text-slate-900">Ürün Yönetimi</h1>
+          <p className="text-sm text-slate-500">
+            Çok dilli ürün içeriklerini yönetin
+          </p>
+        </div>
+        <Button
+          color="primary"
+          startContent={<Plus className="h-4 w-4" />}
+          onPress={handleNewProduct}
+        >
+          Yeni Ürün Ekle
+        </Button>
+      </div>
+
+      <ProductList
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        refreshTrigger={refreshTrigger}
+      />
+
+      <Drawer isOpen={isDrawerOpen} onClose={handleDrawerClose} size="lg">
+        <DrawerContent>
+          <DrawerHeader>
+            <h2 className="text-lg font-semibold">
+              {editingProduct ? "Ürün Düzenle" : "Yeni Ürün Ekle"}
+            </h2>
+          </DrawerHeader>
+          <DrawerBody>
+            <ProductForm
+              mode={editingProduct ? "update" : "create"}
+              onSubmit={editingProduct ? handleUpdate : handleCreate}
+              initialProduct={editingProduct || undefined}
+            />
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 };

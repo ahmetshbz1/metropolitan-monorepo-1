@@ -1,5 +1,24 @@
 import { apiClient } from "../../api/client";
-import type { AdminProductPayload } from "./types";
+import type { AdminProductPayload, ProductsListResponse } from "./types";
+
+export const getProducts = async (params?: {
+  limit?: number;
+  offset?: number;
+}): Promise<ProductsListResponse> => {
+  const searchParams = new URLSearchParams();
+  if (params?.limit !== undefined) {
+    searchParams.append("limit", params.limit.toString());
+  }
+  if (params?.offset !== undefined) {
+    searchParams.append("offset", params.offset.toString());
+  }
+
+  const query = searchParams.toString();
+  const url = `/admin/products${query ? `?${query}` : ""}`;
+
+  const response = await apiClient.get<ProductsListResponse>(url);
+  return response.data;
+};
 
 export const createProduct = async (payload: AdminProductPayload) => {
   await apiClient.post("/admin/products", payload);

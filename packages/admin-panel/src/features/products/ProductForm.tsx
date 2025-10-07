@@ -113,11 +113,61 @@ const normalizeDate = (value: string): string | undefined => {
 interface ProductFormProps {
   mode: "create" | "update";
   onSubmit: (payload: AdminProductPayload, productId?: string) => Promise<void>;
+  initialProduct?: import("./types").AdminProduct;
 }
 
-export const ProductForm = ({ mode, onSubmit }: ProductFormProps) => {
-  const [form, setForm] = useState<ProductFormState>(() => createInitialState());
-  const [productId, setProductId] = useState<string>("");
+const loadProductToForm = (product: import("./types").AdminProduct): ProductFormState => {
+  return {
+    productCode: product.productCode,
+    categoryId: product.categoryId || "",
+    brand: product.brand || "",
+    size: product.size || "",
+    imageUrl: product.imageUrl || "",
+    price: product.price?.toString() || "",
+    currency: product.currency,
+    stock: product.stock.toString(),
+    allergens: product.allergens?.join(", ") || "",
+    nutritionalValues: "",
+    netQuantity: product.netQuantity || "",
+    expiryDate: product.expiryDate
+      ? new Date(product.expiryDate).toISOString().slice(0, 16)
+      : "",
+    storageConditions: product.storageConditions || "",
+    manufacturerInfo: product.manufacturerInfo
+      ? JSON.stringify(product.manufacturerInfo, null, 2)
+      : "",
+    originCountry: product.originCountry || "",
+    badges: product.badges?.join(", ") || "",
+    individualPrice: product.individualPrice?.toString() || "",
+    corporatePrice: product.corporatePrice?.toString() || "",
+    minQuantityIndividual: product.minQuantityIndividual.toString(),
+    minQuantityCorporate: product.minQuantityCorporate.toString(),
+    quantityPerBox: product.quantityPerBox?.toString() || "",
+    translations: {
+      tr: {
+        name: product.translations.tr.name,
+        fullName: product.translations.tr.fullName || "",
+        description: product.translations.tr.description || "",
+      },
+      en: {
+        name: product.translations.en.name,
+        fullName: product.translations.en.fullName || "",
+        description: product.translations.en.description || "",
+      },
+      pl: {
+        name: product.translations.pl.name,
+        fullName: product.translations.pl.fullName || "",
+        description: product.translations.pl.description || "",
+      },
+    },
+  };
+};
+
+export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps) => {
+  const [form, setForm] = useState<ProductFormState>(() =>
+    initialProduct ? loadProductToForm(initialProduct) : createInitialState()
+  );
+  const [productId, setProductId] = useState<string>(initialProduct?.productId || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
