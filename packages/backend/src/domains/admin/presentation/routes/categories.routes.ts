@@ -16,8 +16,8 @@ const translationSchema = t.Object({
 });
 
 const createCategorySchema = t.Object({
-  slug: t.String({ minLength: 2 }),
-  translations: t.Array(translationSchema, { minItems: SUPPORTED_LANGUAGES.length }),
+  slug: t.Optional(t.String()),
+  translations: t.Array(translationSchema, { minItems: 1 }),
 });
 
 export const adminCategoriesRoutes = createApp()

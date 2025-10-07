@@ -1,9 +1,9 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const GEMINI_API_KEY = "AIzaSyAF2ek7V2sc2nNqRoMWlnb0bhAhQhl59BA";
+const GEMINI_API_KEY = "AIzaSyBfC4-CKPrrgNrvmIiebBjZLhkuIFIsR0Q";
 
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 interface TranslationRequest {
   text: string;
@@ -30,9 +30,7 @@ export class GeminiTranslationService {
       return text;
     }
 
-    const contextInstruction = context
-      ? `Context: This is ${context}. `
-      : "";
+    const contextInstruction = context ? `Context: This is ${context}. ` : "";
 
     const prompt = `${contextInstruction}Translate the following text from ${fromLanguage} to ${toLanguage}. Return ONLY the translated text, no explanations or extra text.\n\nText to translate:\n${text}`;
 
@@ -43,7 +41,9 @@ export class GeminiTranslationService {
     } catch (error) {
       console.error("Gemini translation error:", error);
       throw new Error(
-        `Translation failed: ${error instanceof Error ? error.message : "Unknown error"}`
+        `Translation failed: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
       );
     }
   }
@@ -58,9 +58,7 @@ export class GeminiTranslationService {
       return texts;
     }
 
-    const contextInstruction = context
-      ? `Context: These are ${context}. `
-      : "";
+    const contextInstruction = context ? `Context: These are ${context}. ` : "";
 
     const numberedTexts = texts
       .map((text, index) => `${index + 1}. ${text}`)

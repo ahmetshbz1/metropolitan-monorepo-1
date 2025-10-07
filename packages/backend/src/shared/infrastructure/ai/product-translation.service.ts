@@ -16,6 +16,38 @@ interface ProductTranslationData {
 }
 
 export class ProductTranslationService {
+  static async generateCategoryTranslations(
+    turkishName: string
+  ): Promise<Record<SupportedLanguage, string>> {
+    const translations: Record<SupportedLanguage, string> = {
+      tr: turkishName,
+      en: "",
+      pl: "",
+    };
+
+    try {
+      translations.en = await GeminiTranslationService.translateText({
+        text: turkishName,
+        fromLanguage: "Turkish",
+        toLanguage: "English",
+        context: "category name",
+      });
+
+      translations.pl = await GeminiTranslationService.translateText({
+        text: turkishName,
+        fromLanguage: "Turkish",
+        toLanguage: "Polish",
+        context: "category name",
+      });
+    } catch (error) {
+      console.error("Category translation failed:", error);
+      translations.en = turkishName;
+      translations.pl = turkishName;
+    }
+
+    return translations;
+  }
+
   static async generateTranslations(
     turkishData: ProductTranslationData
   ): Promise<

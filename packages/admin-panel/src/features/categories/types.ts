@@ -6,7 +6,7 @@ export interface CategoryTranslation {
 }
 
 export interface AdminCategoryPayload {
-  slug: string;
+  slug?: string;
   translations: CategoryTranslation[];
 }
 

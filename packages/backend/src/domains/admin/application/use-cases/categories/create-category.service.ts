@@ -1,20 +1,71 @@
+import { ProductTranslationService } from "../../../../../shared/infrastructure/ai/product-translation.service";
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import {
   categories,
   categoryTranslations,
 } from "../../../../../shared/infrastructure/database/schema";
+
 import type { AdminCategoryPayload } from "./category.types";
+
+const generateSlug = (name: string): string => {
+  return name
+    .toLowerCase()
+    .replace(/ğ/g, "g")
+    .replace(/ü/g, "u")
+    .replace(/ş/g, "s")
+    .replace(/ı/g, "i")
+    .replace(/ö/g, "o")
+    .replace(/ç/g, "c")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+};
 
 export class AdminCreateCategoryService {
   static async execute(payload: AdminCategoryPayload) {
+    const turkishTranslation = payload.translations.find(t => t.languageCode === "tr");
+    if (!turkishTranslation) {
+      throw new Error("Türkçe çeviri zorunludur");
+    }
+
+    let finalTranslations;
+    let finalSlug = payload.slug;
+
+    if (!finalSlug || finalSlug.trim().length === 0) {
+      finalSlug = generateSlug(turkishTranslation.name);
+      console.log(`Generated slug from Turkish name: ${finalSlug}`);
+    }
+
+    if (payload.translations.length === 3) {
+      console.log("Using manual category translations (skipping Gemini)...");
+      finalTranslations = payload.translations;
+    } else {
+      console.log("Generating category translations with Gemini...");
+      const generatedTranslations = await ProductTranslationService.generateCategoryTranslations(
+        turkishTranslation.name
+      );
+
+      console.log("Generated translations:", generatedTranslations);
+
+      finalTranslations = [
+        { languageCode: "tr" as const, name: generatedTranslations.tr },
+        { languageCode: "en" as const, name: generatedTranslations.en },
+        { languageCode: "pl" as const, name: generatedTranslations.pl },
+      ];
+      console.log("Category translations generated successfully");
+    }
+
     const [newCategory] = await db
       .insert(categories)
       .values({
-        slug: payload.slug,
+        slug: finalSlug,
       })
       .returning();
 
-    const translationInserts = payload.translations.map((translation) => ({
+    if (!newCategory) {
+      throw new Error("Kategori oluşturulamadı");
+    }
+
+    const translationInserts = finalTranslations.map((translation) => ({
       categoryId: newCategory.id,
       languageCode: translation.languageCode,
       name: translation.name,
