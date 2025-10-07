@@ -5,6 +5,7 @@ import { AdminLayout } from "./components/AdminLayout";
 import { ProductManager } from "./features/products/ProductManager";
 import { CategoryManager } from "./features/categories/CategoryManager";
 import { OrderManager } from "./features/orders/OrderManager";
+import { UserManager } from "./features/users/UserManager";
 import { AISettings } from "./features/settings/AISettings";
 import { LoginPage } from "./pages/LoginPage";
 
@@ -86,11 +87,7 @@ export default function App() {
       case "orders":
         return <OrderManager />;
       case "users":
-        return (
-          <div className="rounded-lg border border-dashed border-slate-200 p-6 text-sm text-slate-500 dark:border-[#2a2a2a] dark:text-slate-400">
-            Kullanıcı yönetimi modülü yakında eklenecek.
-          </div>
-        );
+        return <UserManager />;
       case "settings":
         return <AISettings />;
       default:

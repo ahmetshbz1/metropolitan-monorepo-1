@@ -19,6 +19,7 @@ import { adminAuthRoutes } from "./src/domains/admin/presentation/routes/auth.ro
 import { adminCategoriesRoutes } from "./src/domains/admin/presentation/routes/categories.routes";
 import { adminOrdersRoutes } from "./src/domains/admin/presentation/routes/orders.routes";
 import { adminProductsRoutes } from "./src/domains/admin/presentation/routes/products.routes";
+import { adminUsersRoutes } from "./src/domains/admin/presentation/routes/users.routes";
 import { productRoutes } from "./src/domains/catalog/presentation/routes/products.routes";
 import { contentRoutes } from "./src/domains/content/presentation/routes/content.routes";
 import { guestRoutes } from "./src/domains/content/presentation/routes/guest.routes";
@@ -148,6 +149,7 @@ export const app = new Elysia()
       .use(adminCategoriesRoutes)
       .use(adminOrdersRoutes)
       .use(adminProductsRoutes)
+      .use(adminUsersRoutes)
 
       // Identity Domain
       .use(authRoutes)
