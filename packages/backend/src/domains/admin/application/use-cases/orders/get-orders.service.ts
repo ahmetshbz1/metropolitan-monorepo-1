@@ -20,6 +20,7 @@ export interface AdminOrder {
   status: string;
   paymentStatus: string;
   paymentMethodType: string | null;
+  paymentTermDays: number | null;
   totalAmount: string;
   currency: string;
   createdAt: Date;
@@ -70,6 +71,7 @@ export class GetAdminOrdersService {
           status: orders.status,
           paymentStatus: orders.paymentStatus,
           paymentMethodType: orders.paymentMethodType,
+          paymentTermDays: orders.paymentTermDays,
           invoicePdfPath: orders.invoicePdfPath,
           invoiceGeneratedAt: orders.invoicePdfGeneratedAt,
           totalAmount: orders.totalAmount,
@@ -170,6 +172,7 @@ export class GetAdminOrdersService {
         status: order.status,
         paymentStatus: order.paymentStatus,
         paymentMethodType: order.paymentMethodType,
+        paymentTermDays: order.paymentTermDays,
         totalAmount: order.totalAmount,
         currency: order.currency,
         createdAt: order.createdAt,

@@ -16,6 +16,7 @@ export interface Order {
   status: string;
   paymentStatus: string;
   paymentMethodType: string | null;
+  paymentTermDays: number | null;
   totalAmount: string;
   currency: string;
   createdAt: string;

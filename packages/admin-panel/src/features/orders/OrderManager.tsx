@@ -462,6 +462,14 @@ export const OrderManager = () => {
                       <span className="text-slate-500 dark:text-slate-400">Ödeme Yöntemi:</span>{" "}
                       <span className="font-medium">{formatPaymentMethod(selectedOrder.paymentMethodType)}</span>
                     </div>
+                    {selectedOrder.userType === "corporate" &&
+                     selectedOrder.paymentMethodType === "bank_transfer" &&
+                     selectedOrder.paymentTermDays !== null && (
+                      <div>
+                        <span className="text-slate-500 dark:text-slate-400">Ödeme Vadesi:</span>{" "}
+                        <span className="font-medium">{selectedOrder.paymentTermDays} gün</span>
+                      </div>
+                    )}
                     <div>
                       <span className="text-slate-500 dark:text-slate-400">Kullanıcı Tipi:</span>{" "}
                       <span className="font-medium">{formatUserType(selectedOrder.userType)}</span>
