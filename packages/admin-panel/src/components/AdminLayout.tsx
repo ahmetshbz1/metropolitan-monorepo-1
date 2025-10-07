@@ -27,6 +27,7 @@ import {
   Sun,
   LogOut,
   User,
+  Layers,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
@@ -35,6 +36,7 @@ interface AdminLayoutProps {
   children: React.ReactNode;
   activeKey?: string;
   onLogout: () => void;
+  onNavigate?: (key: string) => void;
 }
 
 const NAV_ITEMS: Array<{
@@ -48,6 +50,12 @@ const NAV_ITEMS: Array<{
     label: "Dashboard",
     description: "Özet ve izleme",
     icon: LayoutDashboard,
+  },
+  {
+    key: "categories",
+    label: "Kategoriler",
+    description: "Kategori yönetimi",
+    icon: Layers,
   },
   {
     key: "products",
@@ -82,7 +90,7 @@ const SidebarNav = ({
 }: {
   activeKey?: string;
   collapsed: boolean;
-  onItemClick: () => void;
+  onItemClick: (key: string) => void;
 }) => (
   <ScrollShadow className="mt-4 flex-1">
     <div className="flex flex-col gap-1">
@@ -93,7 +101,7 @@ const SidebarNav = ({
           <button
             key={item.key}
             type="button"
-            onClick={onItemClick}
+            onClick={() => onItemClick(item.key)}
             className={`group relative flex w-full items-center rounded-lg transition-all duration-200 ${
               collapsed ? "justify-center px-2 py-2" : "justify-start gap-2.5 px-2.5 py-2"
             } ${
@@ -120,6 +128,7 @@ export const AdminLayout = ({
   children,
   activeKey = "products",
   onLogout,
+  onNavigate,
 }: AdminLayoutProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -175,7 +184,10 @@ export const AdminLayout = ({
           <SidebarNav
             activeKey={activeKey}
             collapsed={isCollapsed}
-            onItemClick={() => setIsMobileOpen(false)}
+            onItemClick={(key) => {
+              setIsMobileOpen(false);
+              onNavigate?.(key);
+            }}
           />
           <div className="mt-auto border-t border-slate-200 pt-3 dark:border-[#2a2a2a]">
             <Dropdown placement="top-start">

@@ -15,6 +15,7 @@ import pretty from "pino-pretty";
 
 // Domain Routes
 import { adminAuthRoutes } from "./src/domains/admin/presentation/routes/auth.routes";
+import { adminCategoriesRoutes } from "./src/domains/admin/presentation/routes/categories.routes";
 import { adminProductsRoutes } from "./src/domains/admin/presentation/routes/products.routes";
 import { productRoutes } from "./src/domains/catalog/presentation/routes/products.routes";
 import { contentRoutes } from "./src/domains/content/presentation/routes/content.routes";
@@ -141,6 +142,7 @@ export const app = new Elysia()
     app
       // Admin Domain
       .use(adminAuthRoutes)
+      .use(adminCategoriesRoutes)
       .use(adminProductsRoutes)
 
       // Identity Domain

@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Button,
   Card,
@@ -9,6 +9,8 @@ import {
   Tab,
   Tabs,
   Image,
+  Select,
+  SelectItem,
 } from "@heroui/react";
 import { Save, Upload, X } from "lucide-react";
 
@@ -16,6 +18,8 @@ import { uploadProductImage } from "./api";
 import { SUPPORTED_LANGUAGES, type SupportedLanguage } from "./constants";
 import type { AdminProductPayload } from "./types";
 import { API_BASE_URL } from "../../config/env";
+import { getCategories } from "../categories/api";
+import type { AdminCategory } from "../categories/types";
 
 interface TranslationState {
   name: string;
@@ -182,7 +186,20 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [categories, setCategories] = useState<AdminCategory[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const response = await getCategories();
+        setCategories(response.items);
+      } catch (err) {
+        console.error("Kategoriler yüklenemedi", err);
+      }
+    };
+    loadCategories();
+  }, []);
 
   const currentTranslations = useMemo(
     () => SUPPORTED_LANGUAGES.map((item) => ({
@@ -352,13 +369,22 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
                 variant="bordered"
                 isRequired
               />
-              <Input
-                label="Kategori ID"
-                placeholder="Opsiyonel"
-                value={form.categoryId}
-                onValueChange={(value) => updateField("categoryId", value)}
+              <Select
+                label="Kategori"
+                placeholder="Kategori seçin"
+                selectedKeys={form.categoryId ? [form.categoryId] : []}
+                onSelectionChange={(keys) => {
+                  const selected = Array.from(keys)[0] as string;
+                  updateField("categoryId", selected || "");
+                }}
                 variant="bordered"
-              />
+              >
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.translations.tr?.name || category.slug}
+                  </SelectItem>
+                ))}
+              </Select>
               <Input
                 label="Marka"
                 value={form.brand}

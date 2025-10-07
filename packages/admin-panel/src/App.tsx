@@ -3,6 +3,7 @@ import type { AdminLoginResponse } from "./api/auth";
 import { ADMIN_TOKEN_STORAGE_KEY } from "./config/env";
 import { AdminLayout } from "./components/AdminLayout";
 import { ProductManager } from "./features/products/ProductManager";
+import { CategoryManager } from "./features/categories/CategoryManager";
 import { LoginPage } from "./pages/LoginPage";
 
 const storeToken = (token: string) => {
@@ -13,6 +14,7 @@ const retrieveToken = () => localStorage.getItem(ADMIN_TOKEN_STORAGE_KEY);
 
 export default function App() {
   const [token, setToken] = useState<string | null>(() => retrieveToken());
+  const [activePage, setActivePage] = useState<string>("products");
 
   useEffect(() => {
     if (token) {
@@ -33,9 +35,20 @@ export default function App() {
     return <LoginPage onSuccess={handleLoginSuccess} />;
   }
 
+  const renderPage = () => {
+    switch (activePage) {
+      case "categories":
+        return <CategoryManager />;
+      case "products":
+        return <ProductManager />;
+      default:
+        return <ProductManager />;
+    }
+  };
+
   return (
-    <AdminLayout activeKey="products" onLogout={handleLogout}>
-      <ProductManager />
+    <AdminLayout activeKey={activePage} onLogout={handleLogout} onNavigate={setActivePage}>
+      {renderPage()}
     </AdminLayout>
   );
 }
