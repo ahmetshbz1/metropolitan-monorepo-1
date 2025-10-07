@@ -19,10 +19,16 @@ import {
   DrawerBody,
   Input,
   Divider,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
 } from "@heroui/react";
 import { Package, Search, RefreshCw } from "lucide-react";
 import { getOrders, updateOrderStatus } from "../../api/orders";
 import type { Order, OrderFilters, UpdateOrderStatusInput } from "../../api/orders";
+import { API_BASE_URL } from "../../config/env";
 
 const ORDER_STATUSES = [
   { value: "pending", label: "Beklemede", color: "warning" },
@@ -40,6 +46,38 @@ const PAYMENT_STATUSES = [
   { value: "canceled", label: "İptal", color: "danger" },
 ];
 
+const formatPaymentMethod = (method: string | null): string => {
+  if (!method) {
+    return "Belirtilmedi";
+  }
+
+  switch (method.toLowerCase()) {
+    case "card":
+      return "Kredi Kartı";
+    case "apple_pay":
+      return "Apple Pay";
+    case "google_pay":
+      return "Google Pay";
+    case "bank_transfer":
+      return "Banka Havalesi";
+    case "cash":
+      return "Nakit";
+    default:
+      return method;
+  }
+};
+
+const formatUserType = (type: Order["userType"]): string => {
+  return type === "corporate" ? "Kurumsal" : "Bireysel";
+};
+
+const resolveResourceUrl = (resourcePath: string): string => {
+  if (resourcePath.startsWith("http")) {
+    return resourcePath;
+  }
+  return `${API_BASE_URL}${resourcePath}`;
+};
+
 export const OrderManager = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,10 +85,17 @@ export const OrderManager = () => {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [invoicePreviewOpen, setInvoicePreviewOpen] = useState(false);
 
   useEffect(() => {
     loadOrders();
   }, [filters]);
+
+  useEffect(() => {
+    setInvoicePreviewOpen(false);
+  }, [selectedOrder?.id]);
+
+  const invoiceUrl = selectedOrder?.invoicePdfPath ? resolveResourceUrl(selectedOrder.invoicePdfPath) : null;
 
   const loadOrders = async () => {
     try {
@@ -104,6 +149,43 @@ export const OrderManager = () => {
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  const handleInvoiceDownload = (invoiceUrl: string, orderNumber: string) => {
+    if (typeof document === "undefined") {
+      return;
+    }
+
+    const link = document.createElement("a");
+    link.href = invoiceUrl;
+    link.download = `${orderNumber}-fatura.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleInvoiceShare = async (invoiceUrl: string, orderNumber: string) => {
+    const nav = typeof window !== "undefined" ? window.navigator : undefined;
+
+    try {
+      if (nav && typeof nav.share === "function") {
+        await nav.share({
+          title: `Fatura ${orderNumber}`,
+          url: invoiceUrl,
+        });
+        return;
+      }
+
+      if (nav?.clipboard?.writeText) {
+        await nav.clipboard.writeText(invoiceUrl);
+        window.alert("Fatura bağlantısı panoya kopyalandı.");
+        return;
+      }
+    } catch (error) {
+      console.error("Fatura paylaşımı başarısız:", error);
+    }
+
+    window.open(invoiceUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -260,13 +342,98 @@ export const OrderManager = () => {
                 <Divider />
 
                 <div>
+                  <h4 className="mb-3 text-sm font-semibold">Sipariş Bilgileri</h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="text-slate-500 dark:text-slate-400">Sipariş Durumu:</span>
+                      {getStatusChip(selectedOrder.status)}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-slate-500 dark:text-slate-400">Ödeme Durumu:</span>
+                      {getPaymentStatusChip(selectedOrder.paymentStatus)}
+                    </div>
+                    <div>
+                      <span className="text-slate-500 dark:text-slate-400">Ödeme Yöntemi:</span>{" "}
+                      <span className="font-medium">{formatPaymentMethod(selectedOrder.paymentMethodType)}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 dark:text-slate-400">Kullanıcı Tipi:</span>{" "}
+                      <span className="font-medium">{formatUserType(selectedOrder.userType)}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 dark:text-slate-400">Sipariş Tarihi:</span>{" "}
+                      <span className="font-medium">{formatDate(selectedOrder.createdAt)}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 dark:text-slate-400">Toplam Tutar:</span>{" "}
+                      <span className="font-medium">{selectedOrder.totalAmount} {selectedOrder.currency}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <Divider />
+
+                <div>
+                  <h4 className="mb-3 text-sm font-semibold">Fatura</h4>
+                  {invoiceUrl ? (
+                    <div className="space-y-2 text-sm">
+                      {selectedOrder.invoiceGeneratedAt && (
+                        <div>
+                          <span className="text-slate-500 dark:text-slate-400">Oluşturulma:</span>{" "}
+                          <span className="font-medium">{formatDate(selectedOrder.invoiceGeneratedAt)}</span>
+                        </div>
+                      )}
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          size="sm"
+                          variant="flat"
+                          onPress={() => {
+                            if (invoiceUrl) {
+                              setInvoicePreviewOpen(true);
+                            }
+                          }}
+                        >
+                          Önizle
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="flat"
+                          onPress={() => {
+                            if (invoiceUrl && selectedOrder) {
+                              handleInvoiceDownload(invoiceUrl, selectedOrder.orderNumber);
+                            }
+                          }}
+                        >
+                          İndir
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="flat"
+                          onPress={() => {
+                            if (invoiceUrl && selectedOrder) {
+                              void handleInvoiceShare(invoiceUrl, selectedOrder.orderNumber);
+                            }
+                          }}
+                        >
+                          Paylaş
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <span className="text-sm text-slate-500 dark:text-slate-400">Fatura henüz oluşturulmamış.</span>
+                  )}
+                </div>
+
+                <Divider />
+
+                <div>
                   <h4 className="mb-3 text-sm font-semibold">Ürünler</h4>
                   <div className="space-y-3">
                     {selectedOrder.items.map((item) => (
                       <div key={item.id} className="flex items-center gap-3 rounded-lg border border-slate-200 p-3 dark:border-[#2a2a2a]">
                         {item.productImage && (
                           <img
-                            src={`${import.meta.env.VITE_API_BASE_URL}${item.productImage}`}
+                            src={resolveResourceUrl(item.productImage)}
                             alt={item.productName}
                             className="h-12 w-12 rounded object-cover"
                           />
@@ -314,6 +481,44 @@ export const OrderManager = () => {
           </DrawerBody>
         </DrawerContent>
       </Drawer>
+
+      <Modal isOpen={invoicePreviewOpen && !!invoiceUrl} onClose={() => setInvoicePreviewOpen(false)} size="4xl">
+        <ModalContent>
+          {(close) => (
+            <>
+              <ModalHeader>Fatura Önizleme</ModalHeader>
+              <ModalBody>
+                {invoiceUrl ? (
+                  <iframe
+                    src={`${invoiceUrl}#toolbar=0`}
+                    title="Fatura Önizleme"
+                    className="h-[70vh] w-full rounded border border-slate-200 dark:border-[#2a2a2a]"
+                  />
+                ) : (
+                  <span className="text-sm text-slate-500 dark:text-slate-400">Fatura bulunamadı.</span>
+                )}
+              </ModalBody>
+              <ModalFooter>
+                <Button variant="light" onPress={close}>
+                  Kapat
+                </Button>
+                {invoiceUrl && selectedOrder && (
+                  <Button
+                    variant="flat"
+                    onPress={() => {
+                      if (invoiceUrl && selectedOrder) {
+                        handleInvoiceDownload(invoiceUrl, selectedOrder.orderNumber);
+                      }
+                    }}
+                  >
+                    İndir
+                  </Button>
+                )}
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
 };

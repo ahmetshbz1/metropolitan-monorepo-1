@@ -15,6 +15,7 @@ export interface Order {
   orderNumber: string;
   status: string;
   paymentStatus: string;
+  paymentMethodType: string | null;
   totalAmount: string;
   currency: string;
   createdAt: string;
@@ -22,6 +23,9 @@ export interface Order {
   customerEmail: string;
   customerPhone: string | null;
   shippingCity: string;
+  userType: "individual" | "corporate";
+  invoicePdfPath: string | null;
+  invoiceGeneratedAt: string | null;
   itemCount: number;
   items: OrderItem[];
 }
