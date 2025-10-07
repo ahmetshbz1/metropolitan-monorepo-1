@@ -28,6 +28,10 @@ interface TranslationState {
   fullName: string;
   description: string;
   storageConditions: string;
+  allergens: string[];
+  badges: string[];
+  nutritionalValues: Record<string, unknown>;
+  manufacturerInfo: Record<string, unknown>;
 }
 
 interface ProductFormState {
@@ -39,18 +43,14 @@ interface ProductFormState {
   price: string;
   currency: string;
   stock: string;
-  nutritionalValues: Record<string, unknown>;
   netQuantity: string;
   expiryDate: string;
-  manufacturerInfo: Record<string, unknown>;
   originCountry: string;
   individualPrice: string;
   corporatePrice: string;
   minQuantityIndividual: string;
   minQuantityCorporate: string;
   quantityPerBox: string;
-  allergens: string[];
-  badges: string[];
   translations: Record<SupportedLanguage, TranslationState>;
 }
 
@@ -63,24 +63,24 @@ const createInitialState = (): ProductFormState => ({
   price: "",
   currency: "PLN",
   stock: "",
-  nutritionalValues: {},
   netQuantity: "",
   expiryDate: "",
-  manufacturerInfo: {},
   originCountry: "",
   individualPrice: "",
   corporatePrice: "",
   minQuantityIndividual: "",
   minQuantityCorporate: "",
   quantityPerBox: "",
-  allergens: [],
-  badges: [],
   translations: SUPPORTED_LANGUAGES.reduce((acc, item) => {
     acc[item.code] = {
       name: "",
       fullName: "",
       description: "",
       storageConditions: "",
+      allergens: [],
+      badges: [],
+      nutritionalValues: {},
+      manufacturerInfo: {},
     };
     return acc;
   }, {} as Record<SupportedLanguage, TranslationState>),
@@ -121,38 +121,46 @@ const loadProductToForm = (product: import("./types").AdminProduct): ProductForm
     price: product.price?.toString() || "",
     currency: product.currency,
     stock: product.stock.toString(),
-    nutritionalValues: (product.nutritionalValues as Record<string, unknown>) || {},
     netQuantity: product.netQuantity || "",
     expiryDate: product.expiryDate
       ? new Date(product.expiryDate).toISOString().slice(0, 16)
       : "",
-    manufacturerInfo: (product.manufacturerInfo as Record<string, unknown>) || {},
     originCountry: product.originCountry || "",
     individualPrice: product.individualPrice?.toString() || "",
     corporatePrice: product.corporatePrice?.toString() || "",
     minQuantityIndividual: product.minQuantityIndividual.toString(),
     minQuantityCorporate: product.minQuantityCorporate.toString(),
     quantityPerBox: product.quantityPerBox?.toString() || "",
-    allergens: product.allergens || [],
-    badges: product.badges || [],
     translations: {
       tr: {
         name: product.translations.tr.name,
         fullName: product.translations.tr.fullName || "",
         description: product.translations.tr.description || "",
         storageConditions: product.storageConditions || "",
+        allergens: product.allergens || [],
+        badges: product.badges || [],
+        nutritionalValues: (product.nutritionalValues as Record<string, unknown>) || {},
+        manufacturerInfo: (product.manufacturerInfo as Record<string, unknown>) || {},
       },
       en: {
         name: product.translations.en.name,
         fullName: product.translations.en.fullName || "",
         description: product.translations.en.description || "",
         storageConditions: "",
+        allergens: [],
+        badges: [],
+        nutritionalValues: {},
+        manufacturerInfo: {},
       },
       pl: {
         name: product.translations.pl.name,
         fullName: product.translations.pl.fullName || "",
         description: product.translations.pl.description || "",
         storageConditions: "",
+        allergens: [],
+        badges: [],
+        nutritionalValues: {},
+        manufacturerInfo: {},
       },
     },
   };
@@ -200,7 +208,7 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
   const updateTranslation = (
     languageCode: SupportedLanguage,
     field: keyof TranslationState,
-    value: string
+    value: string | string[] | Record<string, unknown>
   ) => {
     setForm((prev) => ({
       ...prev,
@@ -285,14 +293,14 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
         price: parseNumber(form.price),
         currency: form.currency || undefined,
         stock: parseNumber(form.stock),
-        allergens: form.allergens.length > 0 ? form.allergens : undefined,
-        nutritionalValues: Object.keys(form.nutritionalValues).length > 0 ? form.nutritionalValues : undefined,
+        allergens: form.translations.tr.allergens.length > 0 ? form.translations.tr.allergens : undefined,
+        nutritionalValues: Object.keys(form.translations.tr.nutritionalValues).length > 0 ? form.translations.tr.nutritionalValues : undefined,
         netQuantity: form.netQuantity || undefined,
         expiryDate: normalizeDate(form.expiryDate),
         storageConditions: form.translations.tr.storageConditions || undefined,
-        manufacturerInfo: Object.keys(form.manufacturerInfo).length > 0 ? form.manufacturerInfo : undefined,
+        manufacturerInfo: Object.keys(form.translations.tr.manufacturerInfo).length > 0 ? form.translations.tr.manufacturerInfo : undefined,
         originCountry: form.originCountry || undefined,
-        badges: form.badges.length > 0 ? form.badges : undefined,
+        badges: form.translations.tr.badges.length > 0 ? form.translations.tr.badges : undefined,
         individualPrice: parseNumber(form.individualPrice),
         corporatePrice: parseNumber(form.corporatePrice),
         minQuantityIndividual: parseNumber(form.minQuantityIndividual),
@@ -506,32 +514,6 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
                 variant="bordered"
               />
             </div>
-
-            <KeyValueInput
-              label="Besin Değerleri"
-              value={form.nutritionalValues}
-              onChange={(value) => setForm(prev => ({ ...prev, nutritionalValues: value }))}
-            />
-
-            <KeyValueInput
-              label="Üretici Bilgileri"
-              value={form.manufacturerInfo}
-              onChange={(value) => setForm(prev => ({ ...prev, manufacturerInfo: value }))}
-            />
-
-            <TagInput
-              label="Alerjenler"
-              value={form.allergens}
-              onChange={(value) => setForm(prev => ({ ...prev, allergens: value }))}
-              placeholder="Örn: Süt, Yumurta, Fıstık"
-            />
-
-            <TagInput
-              label="Rozetler"
-              value={form.badges}
-              onChange={(value) => setForm(prev => ({ ...prev, badges: value }))}
-              placeholder="Örn: Organik, Vegan, Glutensiz"
-            />
           </div>
         </Tab>
 
@@ -566,12 +548,15 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
                         }
                       />
                     </div>
-                    <div className="flex flex-col gap-2">
-                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    <div className="rounded-lg border border-slate-200 bg-slate-50/50 p-4 dark:border-[#2a2a2a] dark:bg-[#1a1a1a]">
+                      <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
                         Saklama Koşulları ({label})
                       </label>
+                      <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
+                        Bu dildeki saklama koşullarını girin. Her dil için ayrı metin yazabilirsiniz.
+                      </p>
                       <textarea
-                        className="min-h-[80px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0 dark:border-[#2a2a2a] dark:bg-[#1a1a1a] dark:text-slate-200"
+                        className="min-h-[80px] w-full rounded-medium border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0 dark:border-[#2a2a2a] dark:bg-[#0a0a0a] dark:text-slate-200"
                         value={value.storageConditions}
                         onChange={(event) =>
                           updateTranslation(code, "storageConditions", event.target.value)
@@ -579,6 +564,32 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
                         placeholder={`Saklama koşullarını ${label} dilinde girin...`}
                       />
                     </div>
+
+                    <KeyValueInput
+                      label="Besin Değerleri"
+                      value={value.nutritionalValues}
+                      onChange={(v) => updateTranslation(code, "nutritionalValues", v)}
+                    />
+
+                    <KeyValueInput
+                      label="Üretici Bilgileri"
+                      value={value.manufacturerInfo}
+                      onChange={(v) => updateTranslation(code, "manufacturerInfo", v)}
+                    />
+
+                    <TagInput
+                      label="Alerjenler"
+                      value={value.allergens}
+                      onChange={(v) => updateTranslation(code, "allergens", v)}
+                      placeholder="Örn: Süt, Yumurta, Fıstık"
+                    />
+
+                    <TagInput
+                      label="Rozetler"
+                      value={value.badges}
+                      onChange={(v) => updateTranslation(code, "badges", v)}
+                      placeholder="Örn: Organik, Vegan, Glutensiz"
+                    />
                   </div>
                 </Tab>
               ))}
