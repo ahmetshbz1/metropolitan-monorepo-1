@@ -35,7 +35,7 @@ export const ProductList = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
-  const [limit] = useState(20);
+  const [limit] = useState(1000);
   const [offset, setOffset] = useState(0);
 
   const loadProducts = useCallback(async () => {
