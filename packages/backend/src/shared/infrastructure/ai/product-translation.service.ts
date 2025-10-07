@@ -1,4 +1,4 @@
-import { GeminiTranslationService } from "./gemini.service";
+import { TranslationProviderFactory } from "./translation-provider.factory";
 import type {
   AdminProductTranslationInput,
   SupportedLanguage,
@@ -26,14 +26,16 @@ export class ProductTranslationService {
     };
 
     try {
-      translations.en = await GeminiTranslationService.translateText({
+      const provider = await TranslationProviderFactory.getProvider();
+
+      translations.en = await provider.translateText({
         text: turkishName,
         fromLanguage: "Turkish",
         toLanguage: "English",
         context: "category name",
       });
 
-      translations.pl = await GeminiTranslationService.translateText({
+      translations.pl = await provider.translateText({
         text: turkishName,
         fromLanguage: "Turkish",
         toLanguage: "Polish",
@@ -78,21 +80,16 @@ export class ProductTranslationService {
     };
 
     try {
-      const nameTranslations = await GeminiTranslationService.translateBatch({
-        texts: [turkishData.name, turkishData.name],
-        fromLanguage: "Turkish",
-        toLanguage: "English and Polish",
-        context: "product names",
-      });
+      const provider = await TranslationProviderFactory.getProvider();
 
-      translations.en.name = await GeminiTranslationService.translateText({
+      translations.en.name = await provider.translateText({
         text: turkishData.name,
         fromLanguage: "Turkish",
         toLanguage: "English",
         context: "product name",
       });
 
-      translations.pl.name = await GeminiTranslationService.translateText({
+      translations.pl.name = await provider.translateText({
         text: turkishData.name,
         fromLanguage: "Turkish",
         toLanguage: "Polish",
@@ -100,59 +97,51 @@ export class ProductTranslationService {
       });
 
       if (turkishData.fullName) {
-        translations.en.fullName = await GeminiTranslationService.translateText(
-          {
-            text: turkishData.fullName,
-            fromLanguage: "Turkish",
-            toLanguage: "English",
-            context: "product full name",
-          }
-        );
+        translations.en.fullName = await provider.translateText({
+          text: turkishData.fullName,
+          fromLanguage: "Turkish",
+          toLanguage: "English",
+          context: "product full name",
+        });
 
-        translations.pl.fullName = await GeminiTranslationService.translateText(
-          {
-            text: turkishData.fullName,
-            fromLanguage: "Turkish",
-            toLanguage: "Polish",
-            context: "product full name",
-          }
-        );
+        translations.pl.fullName = await provider.translateText({
+          text: turkishData.fullName,
+          fromLanguage: "Turkish",
+          toLanguage: "Polish",
+          context: "product full name",
+        });
       }
 
       if (turkishData.description) {
-        translations.en.description =
-          await GeminiTranslationService.translateText({
-            text: turkishData.description,
-            fromLanguage: "Turkish",
-            toLanguage: "English",
-            context: "product description",
-          });
+        translations.en.description = await provider.translateText({
+          text: turkishData.description,
+          fromLanguage: "Turkish",
+          toLanguage: "English",
+          context: "product description",
+        });
 
-        translations.pl.description =
-          await GeminiTranslationService.translateText({
-            text: turkishData.description,
-            fromLanguage: "Turkish",
-            toLanguage: "Polish",
-            context: "product description",
-          });
+        translations.pl.description = await provider.translateText({
+          text: turkishData.description,
+          fromLanguage: "Turkish",
+          toLanguage: "Polish",
+          context: "product description",
+        });
       }
 
       if (turkishData.storageConditions) {
-        translations.en.storageConditions =
-          await GeminiTranslationService.translateText({
-            text: turkishData.storageConditions,
-            fromLanguage: "Turkish",
-            toLanguage: "English",
-            context: "storage conditions",
-          });
+        translations.en.storageConditions = await provider.translateText({
+          text: turkishData.storageConditions,
+          fromLanguage: "Turkish",
+          toLanguage: "English",
+          context: "storage conditions",
+        });
 
-        translations.pl.storageConditions =
-          await GeminiTranslationService.translateText({
-            text: turkishData.storageConditions,
-            fromLanguage: "Turkish",
-            toLanguage: "Polish",
-            context: "storage conditions",
-          });
+        translations.pl.storageConditions = await provider.translateText({
+          text: turkishData.storageConditions,
+          fromLanguage: "Turkish",
+          toLanguage: "Polish",
+          context: "storage conditions",
+        });
       }
     } catch (error) {
       console.error("Translation generation failed:", error);
@@ -169,14 +158,16 @@ export class ProductTranslationService {
     }
 
     try {
-      const enTranslations = await GeminiTranslationService.translateBatch({
+      const provider = await TranslationProviderFactory.getProvider();
+
+      const enTranslations = await provider.translateBatch({
         texts: allergens,
         fromLanguage: "Turkish",
         toLanguage: "English",
         context: "food allergens",
       });
 
-      const plTranslations = await GeminiTranslationService.translateBatch({
+      const plTranslations = await provider.translateBatch({
         texts: allergens,
         fromLanguage: "Turkish",
         toLanguage: "Polish",
@@ -202,14 +193,16 @@ export class ProductTranslationService {
     }
 
     try {
-      const enTranslations = await GeminiTranslationService.translateBatch({
+      const provider = await TranslationProviderFactory.getProvider();
+
+      const enTranslations = await provider.translateBatch({
         texts: badges,
         fromLanguage: "Turkish",
         toLanguage: "English",
         context: "product badges (like Organic, Vegan, Halal)",
       });
 
-      const plTranslations = await GeminiTranslationService.translateBatch({
+      const plTranslations = await provider.translateBatch({
         texts: badges,
         fromLanguage: "Turkish",
         toLanguage: "Polish",
@@ -235,13 +228,15 @@ export class ProductTranslationService {
     }
 
     try {
-      const enTranslated = await GeminiTranslationService.translateObject(
+      const provider = await TranslationProviderFactory.getProvider();
+
+      const enTranslated = await provider.translateObject(
         nutritionalValues,
         "Turkish",
         "English"
       );
 
-      const plTranslated = await GeminiTranslationService.translateObject(
+      const plTranslated = await provider.translateObject(
         nutritionalValues,
         "Turkish",
         "Polish"
@@ -270,13 +265,15 @@ export class ProductTranslationService {
     }
 
     try {
-      const enTranslated = await GeminiTranslationService.translateObject(
+      const provider = await TranslationProviderFactory.getProvider();
+
+      const enTranslated = await provider.translateObject(
         manufacturerInfo,
         "Turkish",
         "English"
       );
 
-      const plTranslated = await GeminiTranslationService.translateObject(
+      const plTranslated = await provider.translateObject(
         manufacturerInfo,
         "Turkish",
         "Polish"

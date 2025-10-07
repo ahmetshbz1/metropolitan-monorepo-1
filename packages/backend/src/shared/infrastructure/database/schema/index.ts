@@ -4,6 +4,7 @@
 
 // Admin domain'i
 export * from "./admin-users.schema";
+export * from "./ai-settings.schema";
 
 // Kullanıcı domain'i
 export * from "./user.schema";

@@ -155,6 +155,13 @@
       "when": 1759831216510,
       "tag": "0021_flashy_wolverine",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1759848289060,
+      "tag": "0022_confused_kid_colt",
+      "breakpoints": true
     }
   ]
 }

@@ -4,6 +4,7 @@ import { ADMIN_TOKEN_STORAGE_KEY } from "./config/env";
 import { AdminLayout } from "./components/AdminLayout";
 import { ProductManager } from "./features/products/ProductManager";
 import { CategoryManager } from "./features/categories/CategoryManager";
+import { AISettings } from "./features/settings/AISettings";
 import { LoginPage } from "./pages/LoginPage";
 
 const storeToken = (token: string) => {
@@ -41,6 +42,8 @@ export default function App() {
         return <CategoryManager />;
       case "products":
         return <ProductManager />;
+      case "settings":
+        return <AISettings />;
       default:
         return <ProductManager />;
     }

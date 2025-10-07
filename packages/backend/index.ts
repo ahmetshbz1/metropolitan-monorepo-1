@@ -14,6 +14,7 @@ import pretty from "pino-pretty";
 // Shared Infrastructure
 
 // Domain Routes
+import { adminAISettingsRoutes } from "./src/domains/admin/presentation/routes/ai-settings.routes";
 import { adminAuthRoutes } from "./src/domains/admin/presentation/routes/auth.routes";
 import { adminCategoriesRoutes } from "./src/domains/admin/presentation/routes/categories.routes";
 import { adminProductsRoutes } from "./src/domains/admin/presentation/routes/products.routes";
@@ -142,6 +143,7 @@ export const app = new Elysia()
     app
       // Admin Domain
       .use(adminAuthRoutes)
+      .use(adminAISettingsRoutes)
       .use(adminCategoriesRoutes)
       .use(adminProductsRoutes)
 
