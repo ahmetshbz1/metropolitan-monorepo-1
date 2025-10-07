@@ -52,17 +52,16 @@ export default function App() {
   }, [activePage]);
 
   const handleLoginSuccess = useCallback((payload: AdminLoginResponse) => {
+    setActivePage("products");
     setToken(payload.accessToken);
   }, []);
 
   const handleLogout = useCallback(() => {
+    setActivePage("products");
     localStorage.removeItem(ADMIN_TOKEN_STORAGE_KEY);
+    localStorage.removeItem(ACTIVE_PAGE_STORAGE_KEY);
     setToken(null);
   }, []);
-
-  if (!token) {
-    return <LoginPage onSuccess={handleLoginSuccess} />;
-  }
 
   const handleNavigate = useCallback((key: string) => {
     if (isAdminPage(key)) {
@@ -94,6 +93,10 @@ export default function App() {
         return <ProductManager />;
     }
   }, [activePage]);
+
+  if (!token) {
+    return <LoginPage onSuccess={handleLoginSuccess} />;
+  }
 
   return (
     <AdminLayout activeKey={activePage} onLogout={handleLogout} onNavigate={handleNavigate}>
