@@ -6,17 +6,32 @@ import { users, companies } from "../../../../../shared/infrastructure/database/
 
 export interface AdminUser {
   id: string;
+  companyId: string | null;
   phoneNumber: string;
   phoneNumberVerified: boolean;
+  phoneNumberChangedAt: Date | null;
+  previousPhoneNumber: string | null;
   firstName: string | null;
   lastName: string | null;
   email: string | null;
+  firebaseUid: string | null;
+  appleUserId: string | null;
+  authProvider: string | null;
   userType: "individual" | "corporate";
+  profilePhotoUrl: string | null;
+  termsAcceptedAt: Date | null;
+  privacyAcceptedAt: Date | null;
+  marketingConsentAt: Date | null;
+  marketingConsent: boolean;
+  shareDataWithPartners: boolean;
+  analyticsData: boolean;
+  smsNotifications: boolean;
+  pushNotifications: boolean;
+  emailNotifications: boolean;
   companyName: string | null;
   companyNip: string | null;
-  authProvider: string | null;
-  marketingConsent: boolean;
   createdAt: Date;
+  updatedAt: Date;
   deletedAt: Date | null;
 }
 
@@ -59,16 +74,30 @@ export class GetAdminUsersService {
       let usersQuery = db
         .select({
           id: users.id,
+          companyId: users.companyId,
           phoneNumber: users.phoneNumber,
           phoneNumberVerified: users.phoneNumberVerified,
+          phoneNumberChangedAt: users.phoneNumberChangedAt,
+          previousPhoneNumber: users.previousPhoneNumber,
           firstName: users.firstName,
           lastName: users.lastName,
           email: users.email,
-          userType: users.userType,
-          companyId: users.companyId,
+          firebaseUid: users.firebaseUid,
+          appleUserId: users.appleUserId,
           authProvider: users.authProvider,
+          userType: users.userType,
+          profilePhotoUrl: users.profilePhotoUrl,
+          termsAcceptedAt: users.termsAcceptedAt,
+          privacyAcceptedAt: users.privacyAcceptedAt,
+          marketingConsentAt: users.marketingConsentAt,
           marketingConsent: users.marketingConsent,
+          shareDataWithPartners: users.shareDataWithPartners,
+          analyticsData: users.analyticsData,
+          smsNotifications: users.smsNotifications,
+          pushNotifications: users.pushNotifications,
+          emailNotifications: users.emailNotifications,
           createdAt: users.createdAt,
+          updatedAt: users.updatedAt,
           deletedAt: users.deletedAt,
           companyName: companies.name,
           companyNip: companies.nip,
@@ -87,17 +116,32 @@ export class GetAdminUsersService {
 
       const result: AdminUser[] = usersData.map((user) => ({
         id: user.id,
+        companyId: user.companyId,
         phoneNumber: user.phoneNumber,
         phoneNumberVerified: user.phoneNumberVerified,
+        phoneNumberChangedAt: user.phoneNumberChangedAt,
+        previousPhoneNumber: user.previousPhoneNumber,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
+        firebaseUid: user.firebaseUid,
+        appleUserId: user.appleUserId,
+        authProvider: user.authProvider,
         userType: user.userType === "corporate" ? "corporate" : "individual",
+        profilePhotoUrl: user.profilePhotoUrl,
+        termsAcceptedAt: user.termsAcceptedAt,
+        privacyAcceptedAt: user.privacyAcceptedAt,
+        marketingConsentAt: user.marketingConsentAt,
+        marketingConsent: user.marketingConsent,
+        shareDataWithPartners: user.shareDataWithPartners,
+        analyticsData: user.analyticsData,
+        smsNotifications: user.smsNotifications,
+        pushNotifications: user.pushNotifications,
+        emailNotifications: user.emailNotifications,
         companyName: user.companyName,
         companyNip: user.companyNip,
-        authProvider: user.authProvider,
-        marketingConsent: user.marketingConsent,
         createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
         deletedAt: user.deletedAt,
       }));
 
