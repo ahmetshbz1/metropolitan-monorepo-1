@@ -1,3 +1,6 @@
+import { db } from "../../../../../shared/infrastructure/database/connection";
+import { aiSettings } from "../../../../../shared/infrastructure/database/schema";
+
 export interface AIModel {
   id: string;
   name: string;
@@ -9,14 +12,29 @@ export interface AvailableModelsResponse {
   openai: AIModel[];
 }
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "AIzaSyBfC4-CKPrrgNrvmIiebBjZLhkuIFIsR0Q";
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
+const DEFAULT_GEMINI_KEY = process.env.GEMINI_API_KEY || "AIzaSyBfC4-CKPrrgNrvmIiebBjZLhkuIFIsR0Q";
+const DEFAULT_OPENAI_KEY = process.env.OPENAI_API_KEY || "";
 
 export class GetAvailableModelsService {
   static async execute(): Promise<AvailableModelsResponse> {
+    const settings = await db.select().from(aiSettings).limit(1);
+
+    let geminiKey = DEFAULT_GEMINI_KEY;
+    let openaiKey = DEFAULT_OPENAI_KEY;
+
+    if (settings.length > 0 && settings[0].apiKey) {
+      const currentSettings = settings[0];
+
+      if (currentSettings.provider === "gemini") {
+        geminiKey = currentSettings.apiKey;
+      } else if (currentSettings.provider === "openai") {
+        openaiKey = currentSettings.apiKey;
+      }
+    }
+
     const [geminiModels, openaiModels] = await Promise.all([
-      this.fetchGeminiModels(),
-      this.fetchOpenAIModels(),
+      this.fetchGeminiModels(geminiKey),
+      this.fetchOpenAIModels(openaiKey),
     ]);
 
     return {
@@ -25,10 +43,10 @@ export class GetAvailableModelsService {
     };
   }
 
-  private static async fetchGeminiModels(): Promise<AIModel[]> {
+  private static async fetchGeminiModels(apiKey: string): Promise<AIModel[]> {
     try {
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`
+        `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`
       );
 
       if (!response.ok) {
@@ -62,11 +80,11 @@ export class GetAvailableModelsService {
     }
   }
 
-  private static async fetchOpenAIModels(): Promise<AIModel[]> {
+  private static async fetchOpenAIModels(apiKey: string): Promise<AIModel[]> {
     try {
       const response = await fetch("https://api.openai.com/v1/models", {
         headers: {
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
+          Authorization: `Bearer ${apiKey}`,
         },
       });
 
