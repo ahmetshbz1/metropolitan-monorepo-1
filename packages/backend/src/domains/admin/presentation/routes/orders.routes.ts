@@ -5,6 +5,7 @@ import { isAdminAuthenticated } from "../../application/guards/admin.guard";
 import { GetAdminOrdersService } from "../../application/use-cases/orders/get-orders.service";
 import { UpdateOrderStatusService } from "../../application/use-cases/orders/update-order-status.service";
 import { UpdateOrderPaymentStatusService } from "../../application/use-cases/orders/update-payment-status.service";
+import { InvoiceService } from "../../../order/application/use-cases/invoice.service";
 
 const updateOrderStatusSchema = t.Object({
   status: t.String({ enum: ["pending", "confirmed", "preparing", "shipped", "delivered", "cancelled"] }),
@@ -63,6 +64,29 @@ export const adminOrdersRoutes = createApp()
         {
           params: t.Object({ id: t.String({ format: "uuid" }) }),
           body: updateOrderStatusSchema,
+        }
+      )
+      .get(
+        "/:id/invoice",
+        async ({ params, set }) => {
+          try {
+            const pdfBuffer = await InvoiceService.generateInvoicePDFForAdmin(params.id);
+
+            set.headers["Content-Type"] = "application/pdf";
+            set.headers["Content-Disposition"] = `inline; filename="invoice-${params.id}.pdf"`;
+            set.headers["Content-Length"] = pdfBuffer.length.toString();
+
+            return new Response(pdfBuffer);
+          } catch (error) {
+            set.status = 404;
+            return {
+              success: false,
+              message: error instanceof Error ? error.message : "Fatura bulunamadı",
+            };
+          }
+        },
+        {
+          params: t.Object({ id: t.String({ format: "uuid" }) }),
         }
       )
       .patch(

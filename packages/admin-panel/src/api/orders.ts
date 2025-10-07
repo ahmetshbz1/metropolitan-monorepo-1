@@ -79,3 +79,11 @@ export const updateOrderPaymentStatus = async (
   const response = await apiClient.patch(`/admin/orders/${orderId}/payment-status`, input);
   return response.data;
 };
+
+export const downloadOrderInvoice = async (orderId: string): Promise<Blob> => {
+  const response = await apiClient.get<Blob>(`/admin/orders/${orderId}/invoice`, {
+    responseType: "blob",
+  });
+
+  return response.data;
+};

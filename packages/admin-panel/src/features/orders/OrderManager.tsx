@@ -26,7 +26,12 @@ import {
   ModalHeader,
 } from "@heroui/react";
 import { Package, Search, RefreshCw } from "lucide-react";
-import { getOrders, updateOrderStatus, updateOrderPaymentStatus } from "../../api/orders";
+import {
+  downloadOrderInvoice,
+  getOrders,
+  updateOrderPaymentStatus,
+  updateOrderStatus,
+} from "../../api/orders";
 import type { Order, OrderFilters, UpdateOrderStatusInput } from "../../api/orders";
 import { API_BASE_URL } from "../../config/env";
 
@@ -92,7 +97,14 @@ const resolveResourceUrl = (resourcePath: string): string => {
   if (resourcePath.startsWith("http")) {
     return resourcePath;
   }
-  return `${API_BASE_URL}${resourcePath}`;
+
+  const sanitizedPath = resourcePath.startsWith("./")
+    ? resourcePath.replace(/^\.\//, "/")
+    : resourcePath.startsWith("/")
+      ? resourcePath
+      : `/${resourcePath}`;
+
+  return `${API_BASE_URL}${sanitizedPath}`;
 };
 
 export const OrderManager = () => {
@@ -103,6 +115,8 @@ export const OrderManager = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [invoicePreviewOpen, setInvoicePreviewOpen] = useState(false);
+  const [invoicePreviewUrl, setInvoicePreviewUrl] = useState<string | null>(null);
+  const [invoiceLoading, setInvoiceLoading] = useState(false);
 
   useEffect(() => {
     loadOrders();
@@ -110,9 +124,20 @@ export const OrderManager = () => {
 
   useEffect(() => {
     setInvoicePreviewOpen(false);
+    if (invoicePreviewUrl) {
+      URL.revokeObjectURL(invoicePreviewUrl);
+      setInvoicePreviewUrl(null);
+    }
   }, [selectedOrder?.id]);
 
-  const invoiceUrl = selectedOrder?.invoicePdfPath ? resolveResourceUrl(selectedOrder.invoicePdfPath) : null;
+  useEffect(() => {
+    if (!invoicePreviewOpen && invoicePreviewUrl) {
+      URL.revokeObjectURL(invoicePreviewUrl);
+      setInvoicePreviewUrl(null);
+    }
+  }, [invoicePreviewOpen, invoicePreviewUrl]);
+
+  const invoiceAvailable = Boolean(selectedOrder?.invoiceGeneratedAt || selectedOrder?.invoicePdfPath);
 
   const loadOrders = async () => {
     try {
@@ -186,33 +211,63 @@ export const OrderManager = () => {
     });
   };
 
-  const handleInvoiceDownload = (invoiceUrl: string, orderNumber: string) => {
+  const handleInvoiceDownload = async (order: Order) => {
     if (typeof document === "undefined") {
       return;
     }
 
-    const link = document.createElement("a");
-    link.href = invoiceUrl;
-    link.download = `${orderNumber}-fatura.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try {
+      setInvoiceLoading(true);
+      const blob = await downloadOrderInvoice(order.id);
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${order.orderNumber}-fatura.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Fatura indirilemedi:", error);
+    } finally {
+      setInvoiceLoading(false);
+    }
   };
 
-  const handleInvoiceShare = async (invoiceUrl: string, orderNumber: string) => {
+  const handleInvoicePreview = async (order: Order) => {
+    try {
+      setInvoiceLoading(true);
+      const blob = await downloadOrderInvoice(order.id);
+      const url = URL.createObjectURL(blob);
+      if (invoicePreviewUrl) {
+        URL.revokeObjectURL(invoicePreviewUrl);
+      }
+      setInvoicePreviewUrl(url);
+      setInvoicePreviewOpen(true);
+    } catch (error) {
+      console.error("Fatura önizlemesi açılamadı:", error);
+    } finally {
+      setInvoiceLoading(false);
+    }
+  };
+
+  const handleInvoiceShare = async (order: Order) => {
     const nav = typeof window !== "undefined" ? window.navigator : undefined;
+    const shareUrl = `${API_BASE_URL}/api/admin/orders/${order.id}/invoice`;
 
     try {
       if (nav && typeof nav.share === "function") {
         await nav.share({
-          title: `Fatura ${orderNumber}`,
-          url: invoiceUrl,
+          title: `Fatura ${order.orderNumber}`,
+          url: shareUrl,
         });
         return;
       }
 
       if (nav?.clipboard?.writeText) {
-        await nav.clipboard.writeText(invoiceUrl);
+        await nav.clipboard.writeText(shareUrl);
         window.alert("Fatura bağlantısı panoya kopyalandı.");
         return;
       }
@@ -220,7 +275,7 @@ export const OrderManager = () => {
       console.error("Fatura paylaşımı başarısız:", error);
     }
 
-    window.open(invoiceUrl, "_blank", "noopener,noreferrer");
+    window.open(shareUrl, "_blank", "noopener,noreferrer");
   };
 
   const canUpdatePaymentStatus =
@@ -413,53 +468,57 @@ export const OrderManager = () => {
 
                 <div>
                   <h4 className="mb-3 text-sm font-semibold">Fatura</h4>
-                  {invoiceUrl ? (
-                    <div className="space-y-2 text-sm">
-                      {selectedOrder.invoiceGeneratedAt && (
-                        <div>
-                          <span className="text-slate-500 dark:text-slate-400">Oluşturulma:</span>{" "}
-                          <span className="font-medium">{formatDate(selectedOrder.invoiceGeneratedAt)}</span>
-                        </div>
-                      )}
-                      <div className="flex flex-wrap gap-2">
-                        <Button
-                          size="sm"
-                          variant="flat"
-                          onPress={() => {
-                            if (invoiceUrl) {
-                              setInvoicePreviewOpen(true);
-                            }
-                          }}
-                        >
-                          Önizle
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="flat"
-                          onPress={() => {
-                            if (invoiceUrl && selectedOrder) {
-                              handleInvoiceDownload(invoiceUrl, selectedOrder.orderNumber);
-                            }
-                          }}
-                        >
-                          İndir
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="flat"
-                          onPress={() => {
-                            if (invoiceUrl && selectedOrder) {
-                              void handleInvoiceShare(invoiceUrl, selectedOrder.orderNumber);
-                            }
-                          }}
-                        >
-                          Paylaş
-                        </Button>
+                  <div className="space-y-2 text-sm">
+                    {selectedOrder.invoiceGeneratedAt && (
+                      <div>
+                        <span className="text-slate-500 dark:text-slate-400">Oluşturulma:</span>{" "}
+                        <span className="font-medium">{formatDate(selectedOrder.invoiceGeneratedAt)}</span>
                       </div>
+                    )}
+                    {!invoiceAvailable && (
+                      <span className="text-xs text-slate-500 dark:text-slate-400">
+                        Fatura henüz oluşturulmadı. Aşağıdaki aksiyonlar otomatik olarak Fakturownia üzerinden fatura oluşturur.
+                      </span>
+                    )}
+                    <div className="flex flex-wrap gap-2">
+                      <Button
+                        size="sm"
+                        variant="flat"
+                        onPress={() => {
+                          if (selectedOrder) {
+                            void handleInvoicePreview(selectedOrder);
+                          }
+                        }}
+                        isDisabled={invoiceLoading}
+                      >
+                        Önizle
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="flat"
+                        onPress={() => {
+                          if (selectedOrder) {
+                            void handleInvoiceDownload(selectedOrder);
+                          }
+                        }}
+                        isDisabled={invoiceLoading}
+                      >
+                        İndir
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="flat"
+                        onPress={() => {
+                          if (selectedOrder) {
+                            void handleInvoiceShare(selectedOrder);
+                          }
+                        }}
+                        isDisabled={invoiceLoading}
+                      >
+                        Paylaş
+                      </Button>
                     </div>
-                  ) : (
-                    <span className="text-sm text-slate-500 dark:text-slate-400">Fatura henüz oluşturulmamış.</span>
-                  )}
+                  </div>
                 </div>
 
                 <Divider />
@@ -541,15 +600,15 @@ export const OrderManager = () => {
         </DrawerContent>
       </Drawer>
 
-      <Modal isOpen={invoicePreviewOpen && !!invoiceUrl} onClose={() => setInvoicePreviewOpen(false)} size="4xl">
+      <Modal isOpen={invoicePreviewOpen && !!invoicePreviewUrl} onClose={() => setInvoicePreviewOpen(false)} size="4xl">
         <ModalContent>
           {(close) => (
             <>
               <ModalHeader>Fatura Önizleme</ModalHeader>
               <ModalBody>
-                {invoiceUrl ? (
+                {invoicePreviewUrl ? (
                   <iframe
-                    src={`${invoiceUrl}#toolbar=0`}
+                    src={`${invoicePreviewUrl}#toolbar=0`}
                     title="Fatura Önizleme"
                     className="h-[70vh] w-full rounded border border-slate-200 dark:border-[#2a2a2a]"
                   />
@@ -561,14 +620,15 @@ export const OrderManager = () => {
                 <Button variant="light" onPress={close}>
                   Kapat
                 </Button>
-                {invoiceUrl && selectedOrder && (
+                {selectedOrder && (
                   <Button
                     variant="flat"
                     onPress={() => {
-                      if (invoiceUrl && selectedOrder) {
-                        handleInvoiceDownload(invoiceUrl, selectedOrder.orderNumber);
+                      if (selectedOrder) {
+                        void handleInvoiceDownload(selectedOrder);
                       }
                     }}
+                    isDisabled={invoiceLoading}
                   >
                     İndir
                   </Button>

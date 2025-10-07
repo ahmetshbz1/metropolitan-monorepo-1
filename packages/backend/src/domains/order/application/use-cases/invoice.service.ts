@@ -59,6 +59,19 @@ export class InvoiceService {
   }
 
   /**
+   * Adminler için kullanıcı bilgisini otomatik bularak fatura üretir
+   */
+  static async generateInvoicePDFForAdmin(orderId: string): Promise<Buffer> {
+    const orderInfo = await InvoiceFileService.getOrderFileInfo(orderId);
+
+    if (!orderInfo) {
+      throw new Error("Sipariş bulunamadı veya fatura verisi eksik");
+    }
+
+    return this.generateInvoicePDF(orderId, orderInfo.userId);
+  }
+
+  /**
    * Invalidate invoice cache and delete files
    */
   static async invalidateInvoice(orderId: string): Promise<void> {
