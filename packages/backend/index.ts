@@ -18,6 +18,7 @@ import { adminAISettingsRoutes } from "./src/domains/admin/presentation/routes/a
 import { adminAuthRoutes } from "./src/domains/admin/presentation/routes/auth.routes";
 import { adminCategoriesRoutes } from "./src/domains/admin/presentation/routes/categories.routes";
 import { adminCompaniesRoutes } from "./src/domains/admin/presentation/routes/companies.routes";
+import { adminDashboardRoutes } from "./src/domains/admin/presentation/routes/dashboard.routes";
 import { adminOrdersRoutes } from "./src/domains/admin/presentation/routes/orders.routes";
 import { adminProductsRoutes } from "./src/domains/admin/presentation/routes/products.routes";
 import { adminUsersRoutes } from "./src/domains/admin/presentation/routes/users.routes";
@@ -149,6 +150,7 @@ export const app = new Elysia()
       .use(adminAISettingsRoutes)
       .use(adminCategoriesRoutes)
       .use(adminCompaniesRoutes)
+      .use(adminDashboardRoutes)
       .use(adminOrdersRoutes)
       .use(adminProductsRoutes)
       .use(adminUsersRoutes)

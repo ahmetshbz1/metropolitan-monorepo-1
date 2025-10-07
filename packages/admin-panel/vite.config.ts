@@ -13,5 +13,8 @@ export default defineConfig(({ mode }) => {
     preview: {
       port: Number.parseInt(env.VITE_PORT || "4173", 10),
     },
+    optimizeDeps: {
+      include: ["recharts"],
+    },
   };
 });

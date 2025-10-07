@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { AdminLoginResponse } from "./api/auth";
 import { ADMIN_TOKEN_STORAGE_KEY } from "./config/env";
 import { AdminLayout } from "./components/AdminLayout";
+import { Dashboard } from "./features/dashboard/Dashboard";
 import { ProductManager } from "./features/products/ProductManager";
 import { CategoryManager } from "./features/categories/CategoryManager";
 import { OrderManager } from "./features/orders/OrderManager";
@@ -74,11 +75,7 @@ export default function App() {
   const renderPage = useMemo(() => {
     switch (activePage) {
       case "dashboard":
-        return (
-          <div className="rounded-lg border border-dashed border-slate-200 p-6 text-sm text-slate-500 dark:border-[#2a2a2a] dark:text-slate-400">
-            Dashboard modülü yakında eklenecek.
-          </div>
-        );
+        return <Dashboard />;
       case "categories":
         return <CategoryManager />;
       case "products":

@@ -13,4 +13,13 @@ const normalizeUrl = (value: string): string => {
 };
 
 export const API_BASE_URL = normalizeUrl(rawApiUrl);
+export const API_URL = `${API_BASE_URL}/api`;
 export const ADMIN_TOKEN_STORAGE_KEY = "metropolitan_admin_access_token";
+
+export const getAuthHeaders = () => {
+  const token = localStorage.getItem(ADMIN_TOKEN_STORAGE_KEY);
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+};
