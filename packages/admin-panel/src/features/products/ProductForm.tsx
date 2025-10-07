@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   Button,
   Card,
@@ -8,10 +8,14 @@ import {
   Spacer,
   Tab,
   Tabs,
+  Image,
 } from "@heroui/react";
+import { Save, Upload, X } from "lucide-react";
 
+import { uploadProductImage } from "./api";
 import { SUPPORTED_LANGUAGES, type SupportedLanguage } from "./constants";
 import type { AdminProductPayload } from "./types";
+import { API_BASE_URL } from "../../config/env";
 
 interface TranslationState {
   name: string;
@@ -177,6 +181,8 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const currentTranslations = useMemo(
     () => SUPPORTED_LANGUAGES.map((item) => ({
@@ -215,6 +221,31 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
     if (mode === "update") {
       setProductId("");
     }
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsUploadingImage(true);
+      setError(null);
+      const imageUrl = await uploadProductImage(file);
+      updateField("imageUrl", imageUrl);
+    } catch (uploadError) {
+      setError(
+        uploadError instanceof Error ? uploadError.message : "Görsel yüklenemedi"
+      );
+    } finally {
+      setIsUploadingImage(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const handleRemoveImage = () => {
+    updateField("imageUrl", "");
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -335,13 +366,51 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
                 onValueChange={(value) => updateField("size", value)}
                 variant="bordered"
               />
-              <Input
-                label="Görsel URL"
-                value={form.imageUrl}
-                onValueChange={(value) => updateField("imageUrl", value)}
-                variant="bordered"
-                className="md:col-span-2"
-              />
+              <div className="flex flex-col gap-3 md:col-span-2">
+                <label className="text-sm font-medium text-slate-700">
+                  Ürün Görseli
+                </label>
+                {form.imageUrl ? (
+                  <div className="relative inline-flex w-fit">
+                    <Image
+                      src={`${API_BASE_URL}${form.imageUrl}`}
+                      alt="Ürün görseli"
+                      width={200}
+                      height={200}
+                      className="rounded-lg object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      variant="bordered"
+                      startContent={<Upload className="h-4 w-4" />}
+                      onPress={() => fileInputRef.current?.click()}
+                      isLoading={isUploadingImage}
+                    >
+                      Görsel Yükle
+                    </Button>
+                    <span className="text-xs text-slate-500">
+                      Max 5MB (JPEG, PNG, WebP)
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </Tab>
@@ -550,7 +619,7 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
           color="primary"
           type="submit"
           isLoading={isSubmitting}
-          size="lg"
+          startContent={<Save className="h-4 w-4" />}
         >
           {mode === "create" ? "Ürünü Oluştur" : "Ürünü Güncelle"}
         </Button>

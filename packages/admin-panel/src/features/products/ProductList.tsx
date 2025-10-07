@@ -13,10 +13,12 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
+  Image,
 } from "@heroui/react";
-import { MoreVertical } from "lucide-react";
+import { MoreVertical, ImageOff } from "lucide-react";
 import { getProducts } from "./api";
 import type { AdminProduct } from "./types";
+import { API_BASE_URL } from "../../config/env";
 
 interface ProductListProps {
   onEdit: (product: AdminProduct) => void;
@@ -131,6 +133,7 @@ export const ProductList = ({
 
       <Table aria-label="Ürün listesi">
         <TableHeader>
+          <TableColumn width={80}>GÖRSEL</TableColumn>
           <TableColumn>KOD</TableColumn>
           <TableColumn>ÜRÜN ADI</TableColumn>
           <TableColumn>MARKA</TableColumn>
@@ -147,6 +150,21 @@ export const ProductList = ({
         >
           {(product) => (
             <TableRow key={product.productId}>
+              <TableCell>
+                {product.imageUrl ? (
+                  <Image
+                    src={`${API_BASE_URL}${product.imageUrl}`}
+                    alt={product.translations.tr.name}
+                    width={48}
+                    height={48}
+                    className="rounded-lg object-cover"
+                  />
+                ) : (
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-100">
+                    <ImageOff className="h-5 w-5 text-slate-400" />
+                  </div>
+                )}
+              </TableCell>
               <TableCell>
                 <span className="font-mono text-xs">{product.productCode}</span>
               </TableCell>

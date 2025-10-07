@@ -13,6 +13,7 @@ import { AdminCreateProductService } from "../../application/use-cases/products/
 import { AdminDeleteProductService } from "../../application/use-cases/products/delete-product.service";
 import { AdminGetProductsService } from "../../application/use-cases/products/get-products.service";
 import { AdminUpdateProductService } from "../../application/use-cases/products/update-product.service";
+import { ProductImageService } from "../../application/use-cases/products/product-image.service";
 import {
   SUPPORTED_LANGUAGES,
   type AdminProductPayload,
@@ -200,6 +201,41 @@ export const adminProductsRoutes = createApp()
         },
         {
           params: t.Object({ id: t.String({ format: "uuid" }) }),
+        }
+      )
+      .post(
+        "/upload-image",
+        async ({ body, set }) => {
+          try {
+            if (!body.image) {
+              set.status = 400;
+              return {
+                success: false,
+                message: "Görsel dosyası gerekli",
+              };
+            }
+
+            const imageUrl = await ProductImageService.uploadProductImage(body.image);
+            return {
+              success: true,
+              imageUrl,
+            };
+          } catch (error) {
+            set.status = 400;
+            return {
+              success: false,
+              message:
+                error instanceof Error ? error.message : "Görsel yüklenemedi",
+            };
+          }
+        },
+        {
+          body: t.Object({
+            image: t.File({
+              type: ["image/jpeg", "image/jpg", "image/png", "image/webp"],
+              maxSize: 5 * 1024 * 1024,
+            }),
+          }),
         }
       )
   );

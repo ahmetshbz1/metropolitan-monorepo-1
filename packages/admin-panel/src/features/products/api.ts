@@ -1,6 +1,23 @@
 import { apiClient } from "../../api/client";
 import type { AdminProductPayload, ProductsListResponse } from "./types";
 
+export const uploadProductImage = async (file: File): Promise<string> => {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const response = await apiClient.post<{ success: boolean; imageUrl: string }>(
+    "/admin/products/upload-image",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  return response.data.imageUrl;
+};
+
 export const getProducts = async (params?: {
   limit?: number;
   offset?: number;
