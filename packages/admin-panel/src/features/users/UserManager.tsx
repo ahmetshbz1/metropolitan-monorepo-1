@@ -146,6 +146,7 @@ export const UserManager = () => {
         onFormChange={setEditForm}
         onSave={handleSave}
         onDelete={handleDelete}
+        onCompanyUpdate={loadUsers}
       />
     </div>
   );

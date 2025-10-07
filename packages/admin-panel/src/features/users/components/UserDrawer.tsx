@@ -23,6 +23,7 @@ interface UserDrawerProps {
   onFormChange: (form: UpdateUserInput) => void;
   onSave: () => void;
   onDelete: () => void;
+  onCompanyUpdate?: () => void;
 }
 
 export const UserDrawer = ({
@@ -37,6 +38,7 @@ export const UserDrawer = ({
   onFormChange,
   onSave,
   onDelete,
+  onCompanyUpdate,
 }: UserDrawerProps) => {
   return (
     <Drawer
@@ -59,7 +61,12 @@ export const UserDrawer = ({
         <DrawerBody>
           {user && (
             editMode ? (
-              <UserEditForm user={user} editForm={editForm} onFormChange={onFormChange} />
+              <UserEditForm
+                user={user}
+                editForm={editForm}
+                onFormChange={onFormChange}
+                onCompanyUpdate={onCompanyUpdate}
+              />
             ) : (
               <UserDetailView user={user} />
             )
