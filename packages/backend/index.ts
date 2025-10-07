@@ -14,6 +14,7 @@ import pretty from "pino-pretty";
 // Shared Infrastructure
 
 // Domain Routes
+import { adminAuthRoutes } from "./src/domains/admin/presentation/routes/auth.routes";
 import { productRoutes } from "./src/domains/catalog/presentation/routes/products.routes";
 import { contentRoutes } from "./src/domains/content/presentation/routes/content.routes";
 import { guestRoutes } from "./src/domains/content/presentation/routes/guest.routes";
@@ -98,6 +99,7 @@ export const app = new Elysia()
           },
         ],
         tags: [
+          { name: "Admin", description: "Admin paneli işlemleri" },
           { name: "Auth", description: "Kimlik doğrulama işlemleri" },
           { name: "Users", description: "Kullanıcı işlemleri" },
           { name: "Products", description: "Ürün işlemleri" },
@@ -136,6 +138,9 @@ export const app = new Elysia()
   })
   .group("/api", (app) =>
     app
+      // Admin Domain
+      .use(adminAuthRoutes)
+
       // Identity Domain
       .use(authRoutes)
       .use(changePhoneRoutes)

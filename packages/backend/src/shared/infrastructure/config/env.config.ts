@@ -37,6 +37,8 @@ interface EnvConfig {
   TWILIO_VERIFY_SERVICE_SID?: string;
   STRIPE_SECRET_KEY?: string;
   STRIPE_WEBHOOK_SECRET?: string;
+  ADMIN_BOOTSTRAP_EMAIL?: string;
+  ADMIN_BOOTSTRAP_PASSWORD?: string;
 }
 
 /**
@@ -90,6 +92,8 @@ export function validateEnvironment(): EnvConfig {
     TWILIO_VERIFY_SERVICE_SID: process.env.TWILIO_VERIFY_SERVICE_SID,
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+    ADMIN_BOOTSTRAP_EMAIL: process.env.ADMIN_BOOTSTRAP_EMAIL,
+    ADMIN_BOOTSTRAP_PASSWORD: process.env.ADMIN_BOOTSTRAP_PASSWORD,
   };
 }
 

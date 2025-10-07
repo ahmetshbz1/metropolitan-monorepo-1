@@ -2,6 +2,9 @@
 //  metropolitan backend
 //  Created by Ahmet on 07.07.2025.
 
+// Admin domain'i
+export * from "./admin-users.schema";
+
 // Kullanıcı domain'i
 export * from "./user.schema";
 
