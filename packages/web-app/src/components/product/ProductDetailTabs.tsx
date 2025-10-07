@@ -278,7 +278,7 @@ const ProductDetailTabs = ({ product }: ProductDetailTabsProps) => {
       id: "allergens",
       label: t("product.allergens"),
       icon: AlertTriangle,
-      hidden: !product.allergens,
+      hidden: !product.allergens || (Array.isArray(product.allergens) && product.allergens.length === 0),
       content: (
         <section className="rounded-2xl border border-amber-200/60 bg-amber-50 p-5 text-amber-800 shadow-sm dark:border-amber-400/40 dark:bg-amber-500/10 dark:text-amber-100">
           <div className="flex items-start gap-3">
@@ -288,7 +288,7 @@ const ProductDetailTabs = ({ product }: ProductDetailTabsProps) => {
                 {t("product.allergens")}
               </h3>
               <p className="mt-3 text-sm leading-relaxed">
-                {product.allergens}
+                {Array.isArray(product.allergens) ? product.allergens.join(", ") : product.allergens}
               </p>
             </div>
           </div>
