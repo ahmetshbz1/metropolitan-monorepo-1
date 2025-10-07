@@ -4,6 +4,7 @@ import { ADMIN_TOKEN_STORAGE_KEY } from "./config/env";
 import { AdminLayout } from "./components/AdminLayout";
 import { ProductManager } from "./features/products/ProductManager";
 import { CategoryManager } from "./features/categories/CategoryManager";
+import { OrderManager } from "./features/orders/OrderManager";
 import { AISettings } from "./features/settings/AISettings";
 import { LoginPage } from "./pages/LoginPage";
 
@@ -42,6 +43,8 @@ export default function App() {
         return <CategoryManager />;
       case "products":
         return <ProductManager />;
+      case "orders":
+        return <OrderManager />;
       case "settings":
         return <AISettings />;
       default:
