@@ -1,0 +1,40 @@
+{
+  "name": "@metropolitan/admin-panel",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --bun vite",
+    "build": "bun --bun vite build",
+    "preview": "bun --bun vite preview",
+    "lint": "bun --bun eslint ."
+  },
+  "dependencies": {
+    "@heroui/react": "^2.1.5",
+    "@heroui/system": "^2.1.5",
+    "@heroui/theme": "^2.1.5",
+    "@hookform/resolvers": "^3.4.1",
+    "axios": "^1.7.9",
+    "framer-motion": "^12.0.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.53.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.6",
+    "@vitejs/plugin-react": "^4.3.2",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.5",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.12.0",
+    "eslint-config-standard-with-typescript": "^43.0.1",
+    "eslint-plugin-import": "^2.30.0",
+    "eslint-plugin-n": "^17.10.3",
+    "eslint-plugin-promise": "^6.6.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^4.1.14",
+    "typescript": "^5.6.3",
+    "vite": "^5.2.13"
+  }
+}
