@@ -367,7 +367,7 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
                 variant="bordered"
               />
               <div className="flex flex-col gap-3 md:col-span-2">
-                <label className="text-sm font-medium text-slate-700">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Ürün Görseli
                 </label>
                 {form.imageUrl ? (
@@ -405,7 +405,7 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
                     >
                       Görsel Yükle
                     </Button>
-                    <span className="text-xs text-slate-500">
+                    <span className="text-xs text-slate-500 dark:text-slate-400">
                       Max 5MB (JPEG, PNG, WebP)
                     </span>
                   </div>
@@ -501,11 +501,11 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
             </div>
 
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-slate-700">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                 Besin Değerleri (JSON)
               </label>
               <textarea
-                className="min-h-[120px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0"
+                className="min-h-[120px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0 dark:border-[#2a2a2a] dark:bg-[#1a1a1a] dark:text-slate-200"
                 value={form.nutritionalValues}
                 onChange={(event) =>
                   updateField("nutritionalValues", event.target.value)
@@ -513,11 +513,11 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
               />
             </div>
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-slate-700">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                 Üretici Bilgileri (JSON)
               </label>
               <textarea
-                className="min-h-[120px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0"
+                className="min-h-[120px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0 dark:border-[#2a2a2a] dark:bg-[#1a1a1a] dark:text-slate-200"
                 value={form.manufacturerInfo}
                 onChange={(event) =>
                   updateField("manufacturerInfo", event.target.value)
@@ -547,11 +547,11 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
                       variant="bordered"
                     />
                     <div className="flex flex-col gap-2">
-                      <label className="text-sm font-medium text-slate-700">
+                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                         Açıklama
                       </label>
                       <textarea
-                        className="min-h-[100px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0"
+                        className="min-h-[100px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0 dark:border-[#2a2a2a] dark:bg-[#1a1a1a] dark:text-slate-200"
                         value={value.description}
                         onChange={(event) =>
                           updateTranslation(code, "description", event.target.value)
@@ -559,11 +559,11 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
                       />
                     </div>
                     <div className="flex flex-col gap-2">
-                      <label className="text-sm font-medium text-slate-700">
+                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                         Alerjenler (virgülle ayırınız)
                       </label>
                       <textarea
-                        className="min-h-[80px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0"
+                        className="min-h-[80px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0 dark:border-[#2a2a2a] dark:bg-[#1a1a1a] dark:text-slate-200"
                         value={value.allergens}
                         onChange={(event) =>
                           updateTranslation(code, "allergens", event.target.value)
@@ -571,11 +571,11 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
                       />
                     </div>
                     <div className="flex flex-col gap-2">
-                      <label className="text-sm font-medium text-slate-700">
+                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                         Rozetler (virgülle ayırınız)
                       </label>
                       <textarea
-                        className="min-h-[80px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0"
+                        className="min-h-[80px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0 dark:border-[#2a2a2a] dark:bg-[#1a1a1a] dark:text-slate-200"
                         value={value.badges}
                         onChange={(event) =>
                           updateTranslation(code, "badges", event.target.value)
@@ -583,11 +583,11 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
                       />
                     </div>
                     <div className="flex flex-col gap-2">
-                      <label className="text-sm font-medium text-slate-700">
+                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                         Saklama Koşulları
                       </label>
                       <textarea
-                        className="min-h-[80px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0"
+                        className="min-h-[80px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0 dark:border-[#2a2a2a] dark:bg-[#1a1a1a] dark:text-slate-200"
                         value={value.storageConditions}
                         onChange={(event) =>
                           updateTranslation(code, "storageConditions", event.target.value)
@@ -603,18 +603,18 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
       </Tabs>
 
       {error && (
-        <p className="text-sm text-red-500" role="alert">
+        <p className="text-sm text-red-500 dark:text-red-400" role="alert">
           {error}
         </p>
       )}
 
       {success && (
-        <p className="text-sm text-green-600" role="status">
+        <p className="text-sm text-green-600 dark:text-green-400" role="status">
           {success}
         </p>
       )}
 
-      <div className="flex items-center justify-end gap-2 border-t pt-4">
+      <div className="flex items-center justify-end gap-2 border-t pt-4 dark:border-[#2a2a2a]">
         <Button
           color="primary"
           type="submit"

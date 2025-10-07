@@ -88,8 +88,8 @@ export const ProductList = ({
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-red-200 bg-red-50 p-8">
-        <p className="text-sm text-red-600">{error}</p>
+      <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-red-200 bg-red-50 p-8 dark:border-red-900 dark:bg-red-950">
+        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
         <Button size="sm" color="danger" variant="flat" onPress={loadProducts}>
           Tekrar Dene
         </Button>
@@ -99,9 +99,9 @@ export const ProductList = ({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-slate-600">Toplam:</span>
+          <span className="text-sm text-slate-600 dark:text-slate-400">Toplam:</span>
           <Chip size="sm" variant="flat" color="primary">
             {total}
           </Chip>
@@ -116,7 +116,7 @@ export const ProductList = ({
             >
               Önceki
             </Button>
-            <span className="text-sm text-slate-600">
+            <span className="text-sm text-slate-600 dark:text-slate-400">
               Sayfa {currentPage} / {totalPages}
             </span>
             <Button
@@ -131,7 +131,8 @@ export const ProductList = ({
         )}
       </div>
 
-      <Table aria-label="Ürün listesi">
+      <div className="overflow-x-auto">
+        <Table aria-label="Ürün listesi">
         <TableHeader>
           <TableColumn width={80}>GÖRSEL</TableColumn>
           <TableColumn>KOD</TableColumn>
@@ -160,18 +161,18 @@ export const ProductList = ({
                     className="rounded-lg object-cover"
                   />
                 ) : (
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-100">
-                    <ImageOff className="h-5 w-5 text-slate-400" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#2a2a2a]">
+                    <ImageOff className="h-5 w-5 text-slate-400 dark:text-slate-500" />
                   </div>
                 )}
               </TableCell>
               <TableCell>
-                <span className="font-mono text-xs">{product.productCode}</span>
+                <span className="font-mono text-xs dark:text-slate-300">{product.productCode}</span>
               </TableCell>
               <TableCell>
-                <span className="font-medium">{product.translations.tr.name}</span>
+                <span className="font-medium dark:text-slate-200">{product.translations.tr.name}</span>
               </TableCell>
-              <TableCell>{product.brand || "-"}</TableCell>
+              <TableCell><span className="dark:text-slate-300">{product.brand || "-"}</span></TableCell>
               <TableCell>
                 <Chip
                   size="sm"
@@ -188,7 +189,7 @@ export const ProductList = ({
                 )}
               </TableCell>
               <TableCell>
-                <span className="text-xs text-slate-500">
+                <span className="text-xs text-slate-500 dark:text-slate-400">
                   {formatDate(product.updatedAt)}
                 </span>
               </TableCell>
@@ -218,6 +219,7 @@ export const ProductList = ({
           )}
         </TableBody>
       </Table>
+      </div>
     </div>
   );
 };

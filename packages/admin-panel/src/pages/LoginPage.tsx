@@ -54,13 +54,13 @@ export const LoginPage = ({ onSuccess }: LoginPageProps) => {
   );
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-indigo-50 to-slate-100 p-6">
-      <Card className="w-full max-w-md shadow-xl">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-indigo-50 to-slate-100 p-4 transition-colors dark:from-[#0a0a0a] dark:via-[#111111] dark:to-[#0a0a0a] sm:p-6">
+      <Card className="w-full max-w-md shadow-xl dark:bg-[#1a1a1a]">
         <CardHeader className="flex flex-col items-start gap-2 pb-0">
-          <h1 className="text-3xl font-semibold tracking-tight text-slate-900">
+          <h1 className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-white">
             Metropolitan Admin
           </h1>
-          <p className="text-sm text-default-500">
+          <p className="text-sm text-default-500 dark:text-slate-400">
             Lütfen yönetici hesabınızla giriş yapın.
           </p>
         </CardHeader>

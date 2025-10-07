@@ -18,8 +18,11 @@ import {
   ChevronRight,
   Menu,
   X,
+  Moon,
+  Sun,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { useTheme } from "../contexts/ThemeContext";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -88,12 +91,12 @@ const SidebarNav = ({
               collapsed ? "justify-center px-2 py-2" : "justify-start gap-2.5 px-2.5 py-2"
             } ${
               isActive
-                ? "bg-blue-50 text-blue-600"
-                : "text-slate-600 hover:bg-slate-50 active:bg-slate-100"
+                ? "bg-blue-50 text-blue-600 dark:bg-[#2a2a2a] dark:text-blue-400"
+                : "text-slate-600 hover:bg-slate-50 active:bg-slate-100 dark:text-slate-300 dark:hover:bg-[#222222] dark:active:bg-[#2a2a2a]"
             }`}
           >
             {isActive && (
-              <div className="absolute inset-y-0 left-0 w-0.5 rounded-r-full bg-blue-600" />
+              <div className="absolute inset-y-0 left-0 w-0.5 rounded-r-full bg-blue-600 dark:bg-blue-400" />
             )}
             <Icon className="h-4 w-4 flex-shrink-0" strokeWidth={2} />
             {!collapsed && (
@@ -113,26 +116,27 @@ export const AdminLayout = ({
 }: AdminLayoutProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   const sidebarWidthClass = isCollapsed ? "md:w-16" : "md:w-56";
   const sidebarHeader = useMemo(
     () =>
       isCollapsed ? null : (
         <div className="flex flex-col">
-          <h2 className="text-sm font-semibold text-slate-900">
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-white">
             Metropolitan
           </h2>
-          <p className="text-xs text-slate-500">Admin Panel</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Admin Panel</p>
         </div>
       ),
     [isCollapsed]
   );
 
   return (
-    <div className="min-h-screen bg-slate-100">
+    <div className="min-h-screen bg-slate-100 transition-colors dark:bg-[#0a0a0a]">
       <div className="relative flex min-h-screen">
         <aside
-          className={`fixed inset-y-0 left-0 z-30 flex h-screen flex-col border-r border-slate-200 bg-white px-3 py-4 shadow-xl transition-all duration-300 md:shadow-none ${sidebarWidthClass} ${
+          className={`fixed inset-y-0 left-0 z-30 flex h-screen flex-col border-r border-slate-200 bg-white px-3 py-4 shadow-xl transition-all duration-300 dark:border-[#2a2a2a] dark:bg-[#1a1a1a] md:shadow-none ${sidebarWidthClass} ${
             isMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
           }`}
         >
@@ -142,7 +146,7 @@ export const AdminLayout = ({
               <button
                 type="button"
                 onClick={() => setIsMobileOpen(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-100 active:bg-slate-200 md:hidden"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-100 active:bg-slate-200 dark:text-slate-300 dark:hover:bg-[#2a2a2a] dark:active:bg-[#333333] md:hidden"
                 aria-label="Menüyü kapat"
               >
                 <X className="h-4 w-4" />
@@ -150,7 +154,7 @@ export const AdminLayout = ({
               <button
                 type="button"
                 onClick={() => setIsCollapsed((prev) => !prev)}
-                className="hidden h-8 w-8 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-100 active:bg-slate-200 md:flex"
+                className="hidden h-8 w-8 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-100 active:bg-slate-200 dark:text-slate-300 dark:hover:bg-[#2a2a2a] dark:active:bg-[#333333] md:flex"
                 aria-label={isCollapsed ? "Menüyü genişlet" : "Menüyü daralt"}
               >
                 {isCollapsed ? (
@@ -169,13 +173,13 @@ export const AdminLayout = ({
         </aside>
 
         <div className={`flex flex-1 flex-col transition-all duration-300 ${isCollapsed ? "md:ml-16" : "md:ml-56"}`}>
-          <Navbar className="sticky top-0 z-20 bg-white/80 px-4 py-3 shadow-sm backdrop-blur" maxWidth="full">
+          <Navbar className="sticky top-0 z-20 bg-white/80 px-4 py-3 shadow-sm backdrop-blur transition-colors dark:bg-[#1a1a1a]/95 dark:border-b dark:border-[#2a2a2a]" maxWidth="full">
             <NavbarContent justify="start" className="gap-2">
               <NavbarItem className="md:hidden">
                 <button
                   type="button"
                   onClick={() => setIsMobileOpen(true)}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-100 active:bg-slate-200"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-100 active:bg-slate-200 dark:text-slate-300 dark:hover:bg-[#2a2a2a] dark:active:bg-[#333333]"
                   aria-label="Menüyü aç"
                 >
                   <Menu className="h-4 w-4" />
@@ -183,16 +187,30 @@ export const AdminLayout = ({
               </NavbarItem>
               <NavbarBrand className="gap-3">
                 <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-slate-900">
+                  <span className="text-sm font-semibold text-slate-900 dark:text-white">
                     Yönetim Paneli
                   </span>
-                  <span className="text-xs text-slate-500">
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
                     {NAV_ITEMS.find((item) => item.key === activeKey)?.label ?? ""}
                   </span>
                 </div>
               </NavbarBrand>
             </NavbarContent>
             <NavbarContent justify="end">
+              <NavbarItem>
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-100 active:bg-slate-200 dark:text-slate-300 dark:hover:bg-[#2a2a2a] dark:active:bg-[#333333]"
+                  aria-label={theme === "dark" ? "Açık temaya geç" : "Koyu temaya geç"}
+                >
+                  {theme === "dark" ? (
+                    <Sun className="h-5 w-5" />
+                  ) : (
+                    <Moon className="h-5 w-5" />
+                  )}
+                </button>
+              </NavbarItem>
               <NavbarItem>
                 <Button color="secondary" variant="bordered" onPress={onLogout}>
                   Çıkış Yap
@@ -202,7 +220,7 @@ export const AdminLayout = ({
           </Navbar>
 
           <main className="flex-1 px-4 pb-10 pt-6 md:px-10">
-            <div className="mx-auto max-w-6xl space-y-6">{children}</div>
+            <div className="mx-auto w-full max-w-7xl space-y-6">{children}</div>
           </main>
         </div>
       </div>

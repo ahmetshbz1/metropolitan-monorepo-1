@@ -61,10 +61,10 @@ export const ProductManager = () => {
 
   return (
     <div className="flex w-full flex-col gap-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">Ürün Yönetimi</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Ürün Yönetimi</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             Çok dilli ürün içeriklerini yönetin
           </p>
         </div>
@@ -72,6 +72,7 @@ export const ProductManager = () => {
           color="primary"
           startContent={<Plus className="h-4 w-4" />}
           onPress={handleNewProduct}
+          className="w-full sm:w-auto"
         >
           Yeni Ürün Ekle
         </Button>
@@ -83,10 +84,15 @@ export const ProductManager = () => {
         refreshTrigger={refreshTrigger}
       />
 
-      <Drawer isOpen={isDrawerOpen} onClose={handleDrawerClose} size="5xl">
-        <DrawerContent>
-          <DrawerHeader>
-            <h2 className="text-lg font-semibold">
+      <Drawer
+        isOpen={isDrawerOpen}
+        onClose={handleDrawerClose}
+        size="5xl"
+        className="max-sm:!w-full"
+      >
+        <DrawerContent className="dark:bg-[#1a1a1a]">
+          <DrawerHeader className="dark:border-b dark:border-[#2a2a2a]">
+            <h2 className="text-lg font-semibold dark:text-white">
               {editingProduct ? "Ürün Düzenle" : "Yeni Ürün Ekle"}
             </h2>
           </DrawerHeader>
