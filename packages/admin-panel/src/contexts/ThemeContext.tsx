@@ -11,12 +11,35 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 const THEME_STORAGE_KEY = "admin-panel-theme";
 
-const getInitialTheme = (): Theme => {
-  const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
-  if (storedTheme === "dark" || storedTheme === "light") {
-    return storedTheme;
+const isBrowser = () => typeof window !== "undefined" && typeof document !== "undefined";
+
+const applyThemeClass = (theme: Theme) => {
+  if (!isBrowser()) {
+    return;
   }
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+
+  const root = document.documentElement;
+  if (theme === "dark") {
+    root.classList.add("dark");
+  } else {
+    root.classList.remove("dark");
+  }
+};
+
+const getInitialTheme = (): Theme => {
+  if (!isBrowser()) {
+    return "light";
+  }
+
+  const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+  const resolvedTheme: Theme = storedTheme === "dark" || storedTheme === "light"
+    ? storedTheme
+    : window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light";
+
+  applyThemeClass(resolvedTheme);
+  return resolvedTheme;
 };
 
 interface ThemeProviderProps {
@@ -27,13 +50,10 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
 
   useEffect(() => {
-    const root = document.documentElement;
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
+    applyThemeClass(theme);
+    if (isBrowser()) {
+      window.localStorage.setItem(THEME_STORAGE_KEY, theme);
     }
-    localStorage.setItem(THEME_STORAGE_KEY, theme);
   }, [theme]);
 
   const toggleTheme = () => {
