@@ -24,6 +24,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  type Selection,
 } from "@heroui/react";
 import { Package, Search, RefreshCw } from "lucide-react";
 import {
@@ -304,32 +305,44 @@ export const OrderManager = () => {
             <Select
               label="Sipariş Durumu"
               placeholder="Tümü"
-              selectedKeys={filters.status ? [filters.status] : []}
-              onChange={(e) => setFilters({ ...filters, status: e.target.value || undefined })}
+              selectedKeys={filters.status ? new Set<Selection>([filters.status]) : new Set()}
+              onSelectionChange={(keys) => {
+                if (keys === "all" || keys.size === 0) {
+                  setFilters({ ...filters, status: undefined });
+                  return;
+                }
+
+                const [value] = keys;
+                setFilters({ ...filters, status: value as string });
+              }}
               classNames={{
                 trigger: "dark:bg-[#0a0a0a] dark:border-[#2a2a2a]",
               }}
             >
               {ORDER_STATUSES.map((status) => (
-                <SelectItem key={status.value} value={status.value}>
-                  {status.label}
-                </SelectItem>
+                <SelectItem key={status.value}>{status.label}</SelectItem>
               ))}
             </Select>
 
             <Select
               label="Ödeme Durumu"
               placeholder="Tümü"
-              selectedKeys={filters.paymentStatus ? [filters.paymentStatus] : []}
-              onChange={(e) => setFilters({ ...filters, paymentStatus: e.target.value || undefined })}
+              selectedKeys={filters.paymentStatus ? new Set<Selection>([filters.paymentStatus]) : new Set()}
+              onSelectionChange={(keys) => {
+                if (keys === "all" || keys.size === 0) {
+                  setFilters({ ...filters, paymentStatus: undefined });
+                  return;
+                }
+
+                const [value] = keys;
+                setFilters({ ...filters, paymentStatus: value as string });
+              }}
               classNames={{
                 trigger: "dark:bg-[#0a0a0a] dark:border-[#2a2a2a]",
               }}
             >
               {PAYMENT_STATUSES.map((status) => (
-                <SelectItem key={status.value} value={status.value}>
-                  {status.label}
-                </SelectItem>
+                <SelectItem key={status.value}>{status.label}</SelectItem>
               ))}
             </Select>
           </div>
@@ -557,11 +570,14 @@ export const OrderManager = () => {
                     <Select
                       aria-label="Sipariş Durumu"
                       label="Sipariş Durumu"
-                      defaultSelectedKeys={[selectedOrder.status]}
-                      onChange={(e) => {
-                        if (e.target.value) {
-                          handleStatusUpdate(selectedOrder.id, { status: e.target.value });
+                      selectedKeys={new Set<Selection>([selectedOrder.status])}
+                      onSelectionChange={(keys) => {
+                        if (keys === "all" || keys.size === 0) {
+                          return;
                         }
+
+                        const [value] = keys;
+                        handleStatusUpdate(selectedOrder.id, { status: value as string });
                       }}
                       isDisabled={updatingStatus}
                       classNames={{
@@ -569,20 +585,21 @@ export const OrderManager = () => {
                       }}
                     >
                       {ORDER_STATUSES.map((status) => (
-                        <SelectItem key={status.value} value={status.value}>
-                          {status.label}
-                        </SelectItem>
+                        <SelectItem key={status.value}>{status.label}</SelectItem>
                       ))}
                     </Select>
                     {canUpdatePaymentStatus && (
                       <Select
                         aria-label="Ödeme Durumu"
                         label="Ödeme Durumu"
-                        defaultSelectedKeys={[selectedOrder.paymentStatus]}
-                        onChange={(e) => {
-                          if (e.target.value) {
-                            void handlePaymentStatusUpdate(selectedOrder.id, e.target.value);
+                        selectedKeys={new Set<Selection>([selectedOrder.paymentStatus])}
+                        onSelectionChange={(keys) => {
+                          if (keys === "all" || keys.size === 0) {
+                            return;
                           }
+
+                          const [value] = keys;
+                          void handlePaymentStatusUpdate(selectedOrder.id, value as string);
                         }}
                         isDisabled={updatingStatus}
                         classNames={{
@@ -590,9 +607,7 @@ export const OrderManager = () => {
                         }}
                       >
                         {PAYMENT_STATUS_UPDATE_OPTIONS.map((status) => (
-                          <SelectItem key={status.value} value={status.value}>
-                            {status.label}
-                          </SelectItem>
+                          <SelectItem key={status.value}>{status.label}</SelectItem>
                         ))}
                       </Select>
                     )}

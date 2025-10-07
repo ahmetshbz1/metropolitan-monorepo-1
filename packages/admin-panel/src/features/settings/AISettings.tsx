@@ -8,6 +8,7 @@ import {
   SelectItem,
   Button,
   Spinner,
+  type Selection,
 } from "@heroui/react";
 import { Save, Brain } from "lucide-react";
 import { getAISettings, updateAISettings, getAvailableModels } from "../../api/ai-settings";
@@ -147,14 +148,20 @@ export const AISettings = () => {
           <Select
             label="AI Sağlayıcı"
             placeholder="Bir sağlayıcı seçin"
-            selectedKeys={[form.provider]}
-            onChange={(e) => handleProviderChange(e.target.value)}
+            selectedKeys={new Set<Selection>([form.provider])}
+            onSelectionChange={(keys) => {
+              if (keys === "all" || keys.size === 0) {
+                return;
+              }
+              const [value] = keys;
+              handleProviderChange(value as string);
+            }}
             classNames={{
               trigger: "dark:bg-[#0a0a0a] dark:border-[#2a2a2a]",
             }}
           >
             {AI_PROVIDERS.map((provider) => (
-              <SelectItem key={provider.value} value={provider.value}>
+              <SelectItem key={provider.value}>
                 {provider.label}
               </SelectItem>
             ))}
@@ -174,15 +181,22 @@ export const AISettings = () => {
           <Select
             label="Model"
             placeholder="Bir model seçin"
-            selectedKeys={form.model ? [form.model] : []}
-            onChange={(e) => setForm({ ...form, model: e.target.value })}
+            selectedKeys={form.model ? new Set<Selection>([form.model]) : new Set()}
+            onSelectionChange={(keys) => {
+              if (keys === "all" || keys.size === 0) {
+                setForm({ ...form, model: "" });
+                return;
+              }
+              const [value] = keys;
+              setForm({ ...form, model: value as string });
+            }}
             classNames={{
               trigger: "dark:bg-[#0a0a0a] dark:border-[#2a2a2a]",
             }}
           >
             {(form.provider === "gemini" ? availableModels.gemini : availableModels.openai).map(
               (model) => (
-                <SelectItem key={model.id} value={model.id} textValue={model.name}>
+                <SelectItem key={model.id} textValue={model.name}>
                   <div className="flex flex-col gap-1">
                     <span className="text-sm font-medium">{model.name}</span>
                     {model.description && (

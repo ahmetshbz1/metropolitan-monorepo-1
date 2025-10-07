@@ -11,6 +11,7 @@ import {
   Image,
   Select,
   SelectItem,
+  type Selection,
 } from "@heroui/react";
 import { Save, Upload, X } from "lucide-react";
 
