@@ -20,13 +20,13 @@ import type { AdminProductPayload } from "./types";
 import { API_BASE_URL } from "../../config/env";
 import { getCategories } from "../categories/api";
 import type { AdminCategory } from "../categories/types";
+import { KeyValueInput } from "./components/KeyValueInput";
+import { TagInput } from "./components/TagInput";
 
 interface TranslationState {
   name: string;
   fullName: string;
   description: string;
-  allergens: string;
-  badges: string;
   storageConditions: string;
 }
 
@@ -39,16 +39,18 @@ interface ProductFormState {
   price: string;
   currency: string;
   stock: string;
-  nutritionalValues: string;
+  nutritionalValues: Record<string, unknown>;
   netQuantity: string;
   expiryDate: string;
-  manufacturerInfo: string;
+  manufacturerInfo: Record<string, unknown>;
   originCountry: string;
   individualPrice: string;
   corporatePrice: string;
   minQuantityIndividual: string;
   minQuantityCorporate: string;
   quantityPerBox: string;
+  allergens: string[];
+  badges: string[];
   translations: Record<SupportedLanguage, TranslationState>;
 }
 
@@ -61,23 +63,23 @@ const createInitialState = (): ProductFormState => ({
   price: "",
   currency: "PLN",
   stock: "",
-  nutritionalValues: "",
+  nutritionalValues: {},
   netQuantity: "",
   expiryDate: "",
-  manufacturerInfo: "",
+  manufacturerInfo: {},
   originCountry: "",
   individualPrice: "",
   corporatePrice: "",
   minQuantityIndividual: "",
   minQuantityCorporate: "",
   quantityPerBox: "",
+  allergens: [],
+  badges: [],
   translations: SUPPORTED_LANGUAGES.reduce((acc, item) => {
     acc[item.code] = {
       name: "",
       fullName: "",
       description: "",
-      allergens: "",
-      badges: "",
       storageConditions: "",
     };
     return acc;
@@ -93,21 +95,6 @@ const parseNumber = (value: string): number | undefined => {
   return parsed;
 };
 
-const parseArray = (value: string): string[] | undefined =>
-  value ? value.split(",").map((item) => item.trim()).filter(Boolean) : undefined;
-
-const parseJson = (value: string): Record<string, unknown> | undefined => {
-  if (!value) return undefined;
-  try {
-    const parsed = JSON.parse(value);
-    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
-      throw new Error();
-    }
-    return parsed as Record<string, unknown>;
-  } catch {
-    throw new Error("JSON alanı için geçerli bir nesne giriniz");
-  }
-};
 
 const normalizeDate = (value: string): string | undefined => {
   if (!value) return undefined;
@@ -134,43 +121,37 @@ const loadProductToForm = (product: import("./types").AdminProduct): ProductForm
     price: product.price?.toString() || "",
     currency: product.currency,
     stock: product.stock.toString(),
-    nutritionalValues: "",
+    nutritionalValues: (product.nutritionalValues as Record<string, unknown>) || {},
     netQuantity: product.netQuantity || "",
     expiryDate: product.expiryDate
       ? new Date(product.expiryDate).toISOString().slice(0, 16)
       : "",
-    manufacturerInfo: product.manufacturerInfo
-      ? JSON.stringify(product.manufacturerInfo, null, 2)
-      : "",
+    manufacturerInfo: (product.manufacturerInfo as Record<string, unknown>) || {},
     originCountry: product.originCountry || "",
     individualPrice: product.individualPrice?.toString() || "",
     corporatePrice: product.corporatePrice?.toString() || "",
     minQuantityIndividual: product.minQuantityIndividual.toString(),
     minQuantityCorporate: product.minQuantityCorporate.toString(),
     quantityPerBox: product.quantityPerBox?.toString() || "",
+    allergens: product.allergens || [],
+    badges: product.badges || [],
     translations: {
       tr: {
         name: product.translations.tr.name,
         fullName: product.translations.tr.fullName || "",
         description: product.translations.tr.description || "",
-        allergens: product.allergens?.join(", ") || "",
-        badges: product.badges?.join(", ") || "",
         storageConditions: product.storageConditions || "",
       },
       en: {
         name: product.translations.en.name,
         fullName: product.translations.en.fullName || "",
         description: product.translations.en.description || "",
-        allergens: "",
-        badges: "",
         storageConditions: "",
       },
       pl: {
         name: product.translations.pl.name,
         fullName: product.translations.pl.fullName || "",
         description: product.translations.pl.description || "",
-        allergens: "",
-        badges: "",
         storageConditions: "",
       },
     },
@@ -295,11 +276,6 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
         };
       });
 
-      const trTranslation = form.translations.tr;
-      const allAllergens = parseArray(trTranslation.allergens);
-      const allBadges = parseArray(trTranslation.badges);
-      const allStorageConditions = trTranslation.storageConditions || undefined;
-
       const payload: AdminProductPayload = {
         productCode: form.productCode,
         categoryId: form.categoryId || undefined,
@@ -309,14 +285,14 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
         price: parseNumber(form.price),
         currency: form.currency || undefined,
         stock: parseNumber(form.stock),
-        allergens: allAllergens,
-        nutritionalValues: parseJson(form.nutritionalValues),
+        allergens: form.allergens.length > 0 ? form.allergens : undefined,
+        nutritionalValues: Object.keys(form.nutritionalValues).length > 0 ? form.nutritionalValues : undefined,
         netQuantity: form.netQuantity || undefined,
         expiryDate: normalizeDate(form.expiryDate),
-        storageConditions: allStorageConditions,
-        manufacturerInfo: parseJson(form.manufacturerInfo),
+        storageConditions: form.translations.tr.storageConditions || undefined,
+        manufacturerInfo: Object.keys(form.manufacturerInfo).length > 0 ? form.manufacturerInfo : undefined,
         originCountry: form.originCountry || undefined,
-        badges: allBadges,
+        badges: form.badges.length > 0 ? form.badges : undefined,
         individualPrice: parseNumber(form.individualPrice),
         corporatePrice: parseNumber(form.corporatePrice),
         minQuantityIndividual: parseNumber(form.minQuantityIndividual),
@@ -531,30 +507,31 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
               />
             </div>
 
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                Besin Değerleri (JSON)
-              </label>
-              <textarea
-                className="min-h-[120px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0 dark:border-[#2a2a2a] dark:bg-[#1a1a1a] dark:text-slate-200"
-                value={form.nutritionalValues}
-                onChange={(event) =>
-                  updateField("nutritionalValues", event.target.value)
-                }
-              />
-            </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                Üretici Bilgileri (JSON)
-              </label>
-              <textarea
-                className="min-h-[120px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0 dark:border-[#2a2a2a] dark:bg-[#1a1a1a] dark:text-slate-200"
-                value={form.manufacturerInfo}
-                onChange={(event) =>
-                  updateField("manufacturerInfo", event.target.value)
-                }
-              />
-            </div>
+            <KeyValueInput
+              label="Besin Değerleri"
+              value={form.nutritionalValues}
+              onChange={(value) => setForm(prev => ({ ...prev, nutritionalValues: value }))}
+            />
+
+            <KeyValueInput
+              label="Üretici Bilgileri"
+              value={form.manufacturerInfo}
+              onChange={(value) => setForm(prev => ({ ...prev, manufacturerInfo: value }))}
+            />
+
+            <TagInput
+              label="Alerjenler"
+              value={form.allergens}
+              onChange={(value) => setForm(prev => ({ ...prev, allergens: value }))}
+              placeholder="Örn: Süt, Yumurta, Fıstık"
+            />
+
+            <TagInput
+              label="Rozetler"
+              value={form.badges}
+              onChange={(value) => setForm(prev => ({ ...prev, badges: value }))}
+              placeholder="Örn: Organik, Vegan, Glutensiz"
+            />
           </div>
         </Tab>
 
@@ -591,31 +568,7 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
                     </div>
                     <div className="flex flex-col gap-2">
                       <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                        Alerjenler (virgülle ayırınız)
-                      </label>
-                      <textarea
-                        className="min-h-[80px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0 dark:border-[#2a2a2a] dark:bg-[#1a1a1a] dark:text-slate-200"
-                        value={value.allergens}
-                        onChange={(event) =>
-                          updateTranslation(code, "allergens", event.target.value)
-                        }
-                      />
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                        Rozetler (virgülle ayırınız)
-                      </label>
-                      <textarea
-                        className="min-h-[80px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0 dark:border-[#2a2a2a] dark:bg-[#1a1a1a] dark:text-slate-200"
-                        value={value.badges}
-                        onChange={(event) =>
-                          updateTranslation(code, "badges", event.target.value)
-                        }
-                      />
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                        Saklama Koşulları
+                        Saklama Koşulları ({label})
                       </label>
                       <textarea
                         className="min-h-[80px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0 dark:border-[#2a2a2a] dark:bg-[#1a1a1a] dark:text-slate-200"
@@ -623,6 +576,7 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
                         onChange={(event) =>
                           updateTranslation(code, "storageConditions", event.target.value)
                         }
+                        placeholder={`Saklama koşullarını ${label} dilinde girin...`}
                       />
                     </div>
                   </div>
