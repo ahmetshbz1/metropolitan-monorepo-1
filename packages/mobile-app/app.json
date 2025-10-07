@@ -3,6 +3,9 @@
     "name": "metropolitan",
     "slug": "metropolitan",
     "version": "1.0.8",
+    "hooks": {
+      "postInstall": "cd ../shared && (bun run build || npm run build || yarn build) || true"
+    },
     "orientation": "portrait",
     "icon": "./assets/images/icooon.png",
     "scheme": "metropolitan",

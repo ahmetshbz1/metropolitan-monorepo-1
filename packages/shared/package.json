@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./index.ts",
   "types": "./index.ts",
   "exports": {
     ".": {
       "types": "./index.ts",
+      "react-native": "./index.ts",
       "default": "./dist/index.js"
     },
     "./package.json": "./package.json"
@@ -24,8 +25,7 @@
     "dev": "bun build ./index.ts --outdir ./dist --target node --watch",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
-    "check": "bun run lint && bun run build",
-    "postinstall": "bun run build"
+    "check": "bun run lint && bun run build"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.38.0",
