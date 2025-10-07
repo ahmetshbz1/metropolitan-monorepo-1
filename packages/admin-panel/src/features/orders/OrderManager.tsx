@@ -547,52 +547,56 @@ export const OrderManager = () => {
                       </div>
                     ))}
                   </div>
-                </div>
+                  </div>
 
                 <Divider />
 
                 <div>
                   <h4 className="mb-3 text-sm font-semibold">Durumu Güncelle</h4>
-                  <Select
-                    label="Sipariş Durumu"
-                    defaultSelectedKeys={[selectedOrder.status]}
-                    onChange={(e) => {
-                      if (e.target.value) {
-                        handleStatusUpdate(selectedOrder.id, { status: e.target.value });
-                      }
-                    }}
-                    isDisabled={updatingStatus}
-                    classNames={{
-                      trigger: "dark:bg-[#0a0a0a] dark:border-[#2a2a2a]",
-                    }}
-                  >
-                    {ORDER_STATUSES.map((status) => (
-                      <SelectItem key={status.value} value={status.value}>
-                        {status.label}
-                      </SelectItem>
-                    ))}
-                  </Select>
-                  {canUpdatePaymentStatus && (
+                  <div className="flex flex-wrap items-end gap-4">
                     <Select
-                      label="Ödeme Durumu"
-                      defaultSelectedKeys={[selectedOrder.paymentStatus]}
+                      aria-label="Sipariş Durumu"
+                      label="Sipariş Durumu"
+                      defaultSelectedKeys={[selectedOrder.status]}
                       onChange={(e) => {
                         if (e.target.value) {
-                          void handlePaymentStatusUpdate(selectedOrder.id, e.target.value);
+                          handleStatusUpdate(selectedOrder.id, { status: e.target.value });
                         }
                       }}
                       isDisabled={updatingStatus}
                       classNames={{
-                        trigger: "dark:bg-[#0a0a0a] dark:border-[#2a2a2a]",
+                        trigger: "dark:bg-[#0a0a0a] dark:border-[#2a2a2a] min-w-[220px]",
                       }}
                     >
-                      {PAYMENT_STATUS_UPDATE_OPTIONS.map((status) => (
+                      {ORDER_STATUSES.map((status) => (
                         <SelectItem key={status.value} value={status.value}>
                           {status.label}
                         </SelectItem>
                       ))}
                     </Select>
-                  )}
+                    {canUpdatePaymentStatus && (
+                      <Select
+                        aria-label="Ödeme Durumu"
+                        label="Ödeme Durumu"
+                        defaultSelectedKeys={[selectedOrder.paymentStatus]}
+                        onChange={(e) => {
+                          if (e.target.value) {
+                            void handlePaymentStatusUpdate(selectedOrder.id, e.target.value);
+                          }
+                        }}
+                        isDisabled={updatingStatus}
+                        classNames={{
+                          trigger: "dark:bg-[#0a0a0a] dark:border-[#2a2a2a] min-w-[220px]",
+                        }}
+                      >
+                        {PAYMENT_STATUS_UPDATE_OPTIONS.map((status) => (
+                          <SelectItem key={status.value} value={status.value}>
+                            {status.label}
+                          </SelectItem>
+                        ))}
+                      </Select>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
