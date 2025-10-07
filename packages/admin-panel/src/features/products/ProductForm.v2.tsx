@@ -9,6 +9,7 @@ import {
   Select,
   SelectItem,
   Textarea,
+  Checkbox,
 } from "@heroui/react";
 import { Save, Upload, X, Loader2 } from "lucide-react";
 
@@ -39,9 +40,16 @@ interface ProductFormState {
   minQuantityIndividual: string;
   minQuantityCorporate: string;
   quantityPerBox: string;
+  manualTranslationMode: boolean;
   name: string;
   fullName: string;
   description: string;
+  nameEn: string;
+  fullNameEn: string;
+  descriptionEn: string;
+  namePl: string;
+  fullNamePl: string;
+  descriptionPl: string;
   storageConditions: string;
   allergens: string[];
   badges: {
@@ -81,9 +89,16 @@ const createInitialState = (): ProductFormState => ({
   minQuantityIndividual: "",
   minQuantityCorporate: "",
   quantityPerBox: "",
+  manualTranslationMode: false,
   name: "",
   fullName: "",
   description: "",
+  nameEn: "",
+  fullNameEn: "",
+  descriptionEn: "",
+  namePl: "",
+  fullNamePl: "",
+  descriptionPl: "",
   storageConditions: "",
   allergens: [],
   badges: {},
@@ -129,9 +144,16 @@ const loadProductToForm = (product: import("./types").AdminProduct): ProductForm
     minQuantityIndividual: product.minQuantityIndividual.toString(),
     minQuantityCorporate: product.minQuantityCorporate.toString(),
     quantityPerBox: product.quantityPerBox?.toString() || "",
+    manualTranslationMode: false,
     name: product.translations.tr.name,
     fullName: product.translations.tr.fullName || "",
     description: product.translations.tr.description || "",
+    nameEn: product.translations.en.name || "",
+    fullNameEn: product.translations.en.fullName || "",
+    descriptionEn: product.translations.en.description || "",
+    namePl: product.translations.pl.name || "",
+    fullNamePl: product.translations.pl.fullName || "",
+    descriptionPl: product.translations.pl.description || "",
     storageConditions: product.storageConditions || "",
     allergens: product.allergens || [],
     badges: (product.badges as ProductFormState["badges"]) || {},
@@ -228,8 +250,19 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
     }
 
     if (!form.name || form.name.trim().length === 0) {
-      setError("Ürün adı zorunludur");
+      setError("Ürün adı (Türkçe) zorunludur");
       return;
+    }
+
+    if (form.manualTranslationMode) {
+      if (!form.nameEn || form.nameEn.trim().length === 0) {
+        setError("Ürün adı (İngilizce) zorunludur");
+        return;
+      }
+      if (!form.namePl || form.namePl.trim().length === 0) {
+        setError("Ürün adı (Lehçe) zorunludur");
+        return;
+      }
     }
 
     try {
@@ -255,21 +288,46 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
         minQuantityIndividual: parseNumber(form.minQuantityIndividual),
         minQuantityCorporate: parseNumber(form.minQuantityCorporate),
         quantityPerBox: parseNumber(form.quantityPerBox),
-        translations: [
-          {
-            languageCode: "tr",
-            name: form.name,
-            fullName: form.fullName || undefined,
-            description: form.description || undefined,
-          },
-        ],
+        translations: form.manualTranslationMode
+          ? [
+              {
+                languageCode: "tr",
+                name: form.name,
+                fullName: form.fullName || undefined,
+                description: form.description || undefined,
+              },
+              {
+                languageCode: "en",
+                name: form.nameEn,
+                fullName: form.fullNameEn || undefined,
+                description: form.descriptionEn || undefined,
+              },
+              {
+                languageCode: "pl",
+                name: form.namePl,
+                fullName: form.fullNamePl || undefined,
+                description: form.descriptionPl || undefined,
+              },
+            ]
+          : [
+              {
+                languageCode: "tr",
+                name: form.name,
+                fullName: form.fullName || undefined,
+                description: form.description || undefined,
+              },
+            ],
       };
 
       setIsSubmitting(true);
       await onSubmit(payload, mode === "update" ? productId : undefined);
       setSuccess(
         mode === "create"
-          ? "Ürün başarıyla oluşturuldu ve çeviriler otomatik oluşturuldu"
+          ? form.manualTranslationMode
+            ? "Ürün başarıyla oluşturuldu"
+            : "Ürün başarıyla oluşturuldu ve çeviriler otomatik oluşturuldu"
+          : form.manualTranslationMode
+          ? "Ürün başarıyla güncellendi"
           : "Ürün başarıyla güncellendi ve çeviriler otomatik güncellendi"
       );
       resetForm();
@@ -397,13 +455,32 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
 
       <Card className="dark:bg-[#1a1a1a]">
         <CardBody className="gap-6">
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-            Ürün İçeriği (Türkçe)
-          </h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Sadece Türkçe girin. İngilizce ve Lehçe çeviriler otomatik oluşturulacak.
-          </p>
-          <Input
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                Ürün İçeriği
+              </h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                {form.manualTranslationMode
+                  ? "Tüm diller için manuel çeviri girin"
+                  : "Sadece Türkçe girin. İngilizce ve Lehçe çeviriler otomatik oluşturulacak."}
+              </p>
+            </div>
+            <Checkbox
+              isSelected={form.manualTranslationMode}
+              onValueChange={(checked) => updateField("manualTranslationMode", checked)}
+            >
+              <span className="text-sm text-slate-700 dark:text-slate-300">
+                Manuel Çeviri
+              </span>
+            </Checkbox>
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <h4 className="text-md font-semibold text-slate-800 dark:text-slate-200">
+              Türkçe
+            </h4>
+            <Input
             label="Ürün Adı"
             placeholder="Örn: Tam Yağlı Süt"
             value={form.name}
@@ -438,6 +515,77 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
             minRows={2}
             size="lg"
           />
+          </div>
+
+          {form.manualTranslationMode && (
+            <>
+              <Spacer y={4} />
+              <div className="flex flex-col gap-4">
+                <h4 className="text-md font-semibold text-slate-800 dark:text-slate-200">
+                  İngilizce (English)
+                </h4>
+                <Input
+                  label="Ürün Adı / Product Name"
+                  placeholder="e.g: Whole Milk"
+                  value={form.nameEn}
+                  onValueChange={(value) => updateField("nameEn", value)}
+                  variant="bordered"
+                  isRequired
+                  size="lg"
+                />
+                <Input
+                  label="Tam Ad (Opsiyonel) / Full Name"
+                  placeholder="e.g: Yayla Whole Milk 1L"
+                  value={form.fullNameEn}
+                  onValueChange={(value) => updateField("fullNameEn", value)}
+                  variant="bordered"
+                  size="lg"
+                />
+                <Textarea
+                  label="Açıklama / Description"
+                  placeholder="Product description..."
+                  value={form.descriptionEn}
+                  onValueChange={(value) => updateField("descriptionEn", value)}
+                  variant="bordered"
+                  minRows={3}
+                  size="lg"
+                />
+              </div>
+
+              <Spacer y={4} />
+              <div className="flex flex-col gap-4">
+                <h4 className="text-md font-semibold text-slate-800 dark:text-slate-200">
+                  Lehçe (Polski)
+                </h4>
+                <Input
+                  label="Ürün Adı / Nazwa produktu"
+                  placeholder="np: Mleko pełnotłuste"
+                  value={form.namePl}
+                  onValueChange={(value) => updateField("namePl", value)}
+                  variant="bordered"
+                  isRequired
+                  size="lg"
+                />
+                <Input
+                  label="Tam Ad (Opsiyonel) / Pełna nazwa"
+                  placeholder="np: Yayla Mleko pełnotłuste 1L"
+                  value={form.fullNamePl}
+                  onValueChange={(value) => updateField("fullNamePl", value)}
+                  variant="bordered"
+                  size="lg"
+                />
+                <Textarea
+                  label="Açıklama / Opis"
+                  placeholder="Opis produktu..."
+                  value={form.descriptionPl}
+                  onValueChange={(value) => updateField("descriptionPl", value)}
+                  variant="bordered"
+                  minRows={3}
+                  size="lg"
+                />
+              </div>
+            </>
+          )}
         </CardBody>
       </Card>
 

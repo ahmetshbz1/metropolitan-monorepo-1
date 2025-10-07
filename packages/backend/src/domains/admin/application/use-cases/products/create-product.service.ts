@@ -23,36 +23,47 @@ export class AdminCreateProductService {
         throw new Error("Türkçe çeviri zorunludur");
       }
 
-      console.log("Generating translations with Gemini...");
-      const generatedTranslations = await ProductTranslationService.generateTranslations({
-        name: turkishTranslation.name,
-        fullName: turkishTranslation.fullName,
-        description: turkishTranslation.description,
-        storageConditions: payload.storageConditions || undefined,
-      });
+      let finalTranslations;
 
-      const finalTranslations = [
-        {
-          languageCode: "tr" as const,
-          name: generatedTranslations.tr.name,
-          fullName: generatedTranslations.tr.fullName,
-          description: generatedTranslations.tr.description,
-        },
-        {
-          languageCode: "en" as const,
-          name: generatedTranslations.en.name,
-          fullName: generatedTranslations.en.fullName,
-          description: generatedTranslations.en.description,
-        },
-        {
-          languageCode: "pl" as const,
-          name: generatedTranslations.pl.name,
-          fullName: generatedTranslations.pl.fullName,
-          description: generatedTranslations.pl.description,
-        },
-      ];
+      if (payload.translations.length === 3) {
+        console.log("Using manual translations (skipping Gemini)...");
+        finalTranslations = payload.translations.map(t => ({
+          languageCode: t.languageCode as "tr" | "en" | "pl",
+          name: t.name,
+          fullName: t.fullName ?? null,
+          description: t.description ?? null,
+        }));
+      } else {
+        console.log("Generating translations with Gemini...");
+        const generatedTranslations = await ProductTranslationService.generateTranslations({
+          name: turkishTranslation.name,
+          fullName: turkishTranslation.fullName,
+          description: turkishTranslation.description,
+          storageConditions: payload.storageConditions || undefined,
+        });
 
-      console.log("Translations generated successfully");
+        finalTranslations = [
+          {
+            languageCode: "tr" as const,
+            name: generatedTranslations.tr.name,
+            fullName: generatedTranslations.tr.fullName,
+            description: generatedTranslations.tr.description,
+          },
+          {
+            languageCode: "en" as const,
+            name: generatedTranslations.en.name,
+            fullName: generatedTranslations.en.fullName,
+            description: generatedTranslations.en.description,
+          },
+          {
+            languageCode: "pl" as const,
+            name: generatedTranslations.pl.name,
+            fullName: generatedTranslations.pl.fullName,
+            description: generatedTranslations.pl.description,
+          },
+        ];
+        console.log("Translations generated successfully");
+      }
 
       const result = await db.transaction(async (tx) => {
         const [createdProduct] = await tx
