@@ -83,7 +83,7 @@ export const ProductManager = () => {
         refreshTrigger={refreshTrigger}
       />
 
-      <Drawer isOpen={isDrawerOpen} onClose={handleDrawerClose} size="lg">
+      <Drawer isOpen={isDrawerOpen} onClose={handleDrawerClose} size="5xl">
         <DrawerContent>
           <DrawerHeader>
             <h2 className="text-lg font-semibold">
