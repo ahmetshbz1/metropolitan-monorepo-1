@@ -37,9 +37,6 @@ const sortProductsByStock = (products: Product[]): Product[] => {
   });
 };
 
-const productCache = new Map<string, { products: Product[]; timestamp: number }>();
-const CACHE_DURATION = 5 * 60 * 1000;
-
 export const ProductProvider = ({ children }: { children: ReactNode }) => {
   const { i18n } = useTranslation();
   const lang = i18n.language;
@@ -52,14 +49,6 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchAllProducts = useCallback(async () => {
-    const cacheKey = "all";
-    const cached = productCache.get(cacheKey);
-
-    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-      setProducts(cached.products);
-      return;
-    }
-
     setError(null);
     setLoadingProducts(true);
 
@@ -71,10 +60,6 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
       if (data.success) {
         const sortedProducts = sortProductsByStock(data.data);
         setProducts(sortedProducts);
-        productCache.set(cacheKey, {
-          products: sortedProducts,
-          timestamp: Date.now(),
-        });
       } else {
         setError("Could not fetch products.");
       }
@@ -86,7 +71,6 @@ export const ProductProvider = ({ children }: { children: ReactNode }) => {
   }, [lang]);
 
   const refreshAllProducts = useCallback(async () => {
-    productCache.clear();
     await fetchAllProducts();
   }, [fetchAllProducts]);
 

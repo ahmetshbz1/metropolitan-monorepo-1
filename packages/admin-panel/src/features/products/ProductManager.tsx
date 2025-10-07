@@ -3,7 +3,7 @@ import { Button, Drawer, DrawerBody, DrawerContent, DrawerHeader } from "@heroui
 import { Plus } from "lucide-react";
 
 import { deleteProduct, createProduct, updateProduct } from "./api";
-import { ProductForm } from "./ProductForm";
+import { ProductFormV2 } from "./ProductForm.v2";
 import { ProductList } from "./ProductList";
 import type { AdminProduct, AdminProductPayload } from "./types";
 
@@ -65,7 +65,7 @@ export const ProductManager = () => {
         <div>
           <h1 className="text-xl font-semibold text-slate-900 dark:text-white">Ürün Yönetimi</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Çok dilli ürün içeriklerini yönetin
+            Türkçe girin, çeviriler otomatik oluşturulsun
           </p>
         </div>
         <Button
@@ -97,7 +97,7 @@ export const ProductManager = () => {
             </h2>
           </DrawerHeader>
           <DrawerBody>
-            <ProductForm
+            <ProductFormV2
               mode={editingProduct ? "update" : "create"}
               onSubmit={editingProduct ? handleUpdate : handleCreate}
               initialProduct={editingProduct || undefined}

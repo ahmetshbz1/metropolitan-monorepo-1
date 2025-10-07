@@ -8,21 +8,15 @@ import { api } from "@/core/api";
 import type { Product } from "@metropolitan/shared";
 
 const PAGE_SIZE = 20;
-const MINIMUM_LOADING_TIME = 200; // Azaltıldı - daha hızlı UI
+const MINIMUM_LOADING_TIME = 200;
 
-// Ürünleri stok durumuna göre sırala - stokta olanlar önce
 const sortProductsByStock = (products: Product[]): Product[] => {
   return [...products].sort((a, b) => {
-    // Stokta olanlar (stock > 0) önce gelsin
     if (a.stock > 0 && b.stock === 0) return -1;
     if (a.stock === 0 && b.stock > 0) return 1;
-    return 0; // Aynı stok durumundakiler kendi aralarındaki sırayı korusun
+    return 0;
   });
-};
-
-// Cache için Map - her kategori için ayrı cache
-const productCache = new Map<string, { products: Product[]; timestamp: number }>();
-const CACHE_DURATION = 5 * 60 * 1000; // 5 dakika
+}; // 5 dakika
 
 export function useProductState() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -35,18 +29,6 @@ export function useProductState() {
 
   const fetchProducts = useCallback(
     async (categorySlug: string | null = null) => {
-      const cacheKey = categorySlug || 'all';
-      const cached = productCache.get(cacheKey);
-
-      // Cache'de varsa ve süresi dolmamışsa cache'den dön
-      if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-        setProducts(cached.products);
-        setPage(1);
-        setHasMore(cached.products.length === PAGE_SIZE);
-        setLoading(false);
-        return;
-      }
-
       setError(null);
       setLoading(true);
       setProducts([]);
@@ -62,12 +44,6 @@ export function useProductState() {
           const sortedProducts = sortProductsByStock(data.data);
           setProducts(sortedProducts);
           setHasMore(data.data.length === PAGE_SIZE);
-
-          // Cache'e kaydet
-          productCache.set(cacheKey, {
-            products: sortedProducts,
-            timestamp: Date.now()
-          });
         } else {
           setHasMore(false);
           setError("Could not fetch products.");

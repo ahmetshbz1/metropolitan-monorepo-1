@@ -52,10 +52,16 @@ const parseJsonArray = (value: string | null): string[] | null => {
   if (!value) return null;
   try {
     const parsed = JSON.parse(value);
-    if (!Array.isArray(parsed)) {
-      return null;
+    if (Array.isArray(parsed)) {
+      return parsed.map((item) => String(item));
     }
-    return parsed.map((item) => String(item));
+    if (typeof parsed === "object" && parsed !== null) {
+      return Object.keys(parsed).filter(key => parsed[key] === true);
+    }
+    if (typeof parsed === "string") {
+      return [parsed];
+    }
+    return null;
   } catch {
     return null;
   }

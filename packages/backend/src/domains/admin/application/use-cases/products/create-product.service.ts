@@ -9,17 +9,51 @@ import {
 } from "../../../../../shared/infrastructure/database/schema";
 import type { AdminProductPayload } from "./product.types";
 import {
-  ensureLanguageCoverage,
   serializeNullableJson,
   toDateOrNull,
   toDecimalString,
 } from "./product.utils";
+import { ProductTranslationService } from "../../../../../shared/infrastructure/ai/product-translation.service";
 
 export class AdminCreateProductService {
   static async execute(payload: AdminProductPayload) {
-    ensureLanguageCoverage(payload.translations);
-
     try {
+      const turkishTranslation = payload.translations.find(t => t.languageCode === "tr");
+      if (!turkishTranslation) {
+        throw new Error("Türkçe çeviri zorunludur");
+      }
+
+      console.log("Generating translations with Gemini...");
+      const generatedTranslations = await ProductTranslationService.generateTranslations({
+        name: turkishTranslation.name,
+        fullName: turkishTranslation.fullName,
+        description: turkishTranslation.description,
+        storageConditions: payload.storageConditions || undefined,
+      });
+
+      const finalTranslations = [
+        {
+          languageCode: "tr" as const,
+          name: generatedTranslations.tr.name,
+          fullName: generatedTranslations.tr.fullName,
+          description: generatedTranslations.tr.description,
+        },
+        {
+          languageCode: "en" as const,
+          name: generatedTranslations.en.name,
+          fullName: generatedTranslations.en.fullName,
+          description: generatedTranslations.en.description,
+        },
+        {
+          languageCode: "pl" as const,
+          name: generatedTranslations.pl.name,
+          fullName: generatedTranslations.pl.fullName,
+          description: generatedTranslations.pl.description,
+        },
+      ];
+
+      console.log("Translations generated successfully");
+
       const result = await db.transaction(async (tx) => {
         const [createdProduct] = await tx
           .insert(products)
@@ -51,7 +85,7 @@ export class AdminCreateProductService {
           .returning({ id: products.id });
 
         await tx.insert(productTranslations).values(
-          payload.translations.map((translation) => ({
+          finalTranslations.map((translation) => ({
             productId: createdProduct.id,
             languageCode: translation.languageCode,
             name: translation.name,

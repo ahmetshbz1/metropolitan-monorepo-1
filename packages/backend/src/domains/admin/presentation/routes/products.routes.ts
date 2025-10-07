@@ -49,7 +49,7 @@ const baseProductSchema = {
   minQuantityIndividual: t.Optional(t.Number()),
   minQuantityCorporate: t.Optional(t.Number()),
   quantityPerBox: t.Optional(t.Number()),
-  translations: t.Array(translationSchema, { minItems: SUPPORTED_LANGUAGES.length }),
+  translations: t.Array(translationSchema, { minItems: 1 }),
 };
 
 const createProductSchema = t.Object(baseProductSchema);

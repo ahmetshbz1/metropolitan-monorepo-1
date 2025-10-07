@@ -112,6 +112,11 @@ interface ProductFormProps {
 }
 
 const loadProductToForm = (product: import("./types").AdminProduct): ProductFormState => {
+  const sharedAllergens = product.allergens || [];
+  const sharedBadges = product.badges || [];
+  const sharedNutritionalValues = (product.nutritionalValues as Record<string, unknown>) || {};
+  const sharedManufacturerInfo = (product.manufacturerInfo as Record<string, unknown>) || {};
+
   return {
     productCode: product.productCode,
     categoryId: product.categoryId || "",
@@ -137,30 +142,30 @@ const loadProductToForm = (product: import("./types").AdminProduct): ProductForm
         fullName: product.translations.tr.fullName || "",
         description: product.translations.tr.description || "",
         storageConditions: product.storageConditions || "",
-        allergens: product.allergens || [],
-        badges: product.badges || [],
-        nutritionalValues: (product.nutritionalValues as Record<string, unknown>) || {},
-        manufacturerInfo: (product.manufacturerInfo as Record<string, unknown>) || {},
+        allergens: [...sharedAllergens],
+        badges: [...sharedBadges],
+        nutritionalValues: { ...sharedNutritionalValues },
+        manufacturerInfo: { ...sharedManufacturerInfo },
       },
       en: {
         name: product.translations.en.name,
         fullName: product.translations.en.fullName || "",
         description: product.translations.en.description || "",
         storageConditions: "",
-        allergens: [],
-        badges: [],
-        nutritionalValues: {},
-        manufacturerInfo: {},
+        allergens: [...sharedAllergens],
+        badges: [...sharedBadges],
+        nutritionalValues: { ...sharedNutritionalValues },
+        manufacturerInfo: { ...sharedManufacturerInfo },
       },
       pl: {
         name: product.translations.pl.name,
         fullName: product.translations.pl.fullName || "",
         description: product.translations.pl.description || "",
         storageConditions: "",
-        allergens: [],
-        badges: [],
-        nutritionalValues: {},
-        manufacturerInfo: {},
+        allergens: [...sharedAllergens],
+        badges: [...sharedBadges],
+        nutritionalValues: { ...sharedNutritionalValues },
+        manufacturerInfo: { ...sharedManufacturerInfo },
       },
     },
   };
