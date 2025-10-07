@@ -17,13 +17,28 @@ export interface AdminProductPayload {
   currency?: string;
   stock?: number;
   allergens?: string[];
-  nutritionalValues?: Record<string, unknown>;
+  nutritionalValues?: {
+    energy?: string;
+    fat?: string;
+    saturatedFat?: string;
+    carbohydrates?: string;
+    sugar?: string;
+    protein?: string;
+    salt?: string;
+  };
   netQuantity?: string;
   expiryDate?: string;
   storageConditions?: string;
   manufacturerInfo?: Record<string, unknown>;
   originCountry?: string;
-  badges?: string[];
+  badges?: {
+    halal?: boolean;
+    vegetarian?: boolean;
+    vegan?: boolean;
+    glutenFree?: boolean;
+    organic?: boolean;
+    lactoseFree?: boolean;
+  };
   individualPrice?: number;
   corporatePrice?: number;
   minQuantityIndividual?: number;
@@ -71,7 +86,23 @@ export interface AdminProduct {
   manufacturerInfo: Record<string, unknown> | null;
   originCountry: string | null;
   allergens: string[] | null;
-  badges: string[] | null;
+  badges: {
+    halal?: boolean;
+    vegetarian?: boolean;
+    vegan?: boolean;
+    glutenFree?: boolean;
+    organic?: boolean;
+    lactoseFree?: boolean;
+  } | null;
+  nutritionalValues: {
+    energy?: string;
+    fat?: string;
+    saturatedFat?: string;
+    carbohydrates?: string;
+    sugar?: string;
+    protein?: string;
+    salt?: string;
+  } | null;
   translations: ProductTranslations;
   createdAt: string;
   updatedAt: string;

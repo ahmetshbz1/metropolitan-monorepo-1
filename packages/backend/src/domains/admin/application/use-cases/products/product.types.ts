@@ -23,13 +23,28 @@ export interface AdminProductPayload {
   currency?: string | null;
   stock?: number | null;
   allergens?: string[] | null;
-  nutritionalValues?: Record<string, unknown> | null;
+  nutritionalValues?: {
+    energy?: string;
+    fat?: string;
+    saturatedFat?: string;
+    carbohydrates?: string;
+    sugar?: string;
+    protein?: string;
+    salt?: string;
+  } | null;
   netQuantity?: string | null;
   expiryDate?: string | null;
   storageConditions?: string | null;
   manufacturerInfo?: Record<string, unknown> | null;
   originCountry?: string | null;
-  badges?: string[] | null;
+  badges?: {
+    halal?: boolean;
+    vegetarian?: boolean;
+    vegan?: boolean;
+    glutenFree?: boolean;
+    organic?: boolean;
+    lactoseFree?: boolean;
+  } | null;
   individualPrice?: number | null;
   corporatePrice?: number | null;
   minQuantityIndividual?: number | null;

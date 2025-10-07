@@ -40,7 +40,7 @@ export interface Product {
   currency?: string;
   description?: string;
   // Yeni eklenen detay alanları
-  allergens?: string; // Alerjen maddeler listesi
+  allergens?: string[]; // Alerjen maddeler listesi
   nutritionalValues?: NutritionalValues; // Besin değerleri
   netQuantity?: string; // Net miktar (örn: 500g, 1L)
   expiryDate?: Date | string; // Son kullanma tarihi

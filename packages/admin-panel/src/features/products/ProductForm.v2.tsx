@@ -19,6 +19,8 @@ import { getCategories } from "../categories/api";
 import type { AdminCategory } from "../categories/types";
 import { KeyValueInput } from "./components/KeyValueInput";
 import { TagInput } from "./components/TagInput";
+import { NutritionalValuesInput } from "./components/NutritionalValuesInput";
+import { BadgesInput } from "./components/BadgesInput";
 
 interface ProductFormState {
   productCode: string;
@@ -42,8 +44,23 @@ interface ProductFormState {
   description: string;
   storageConditions: string;
   allergens: string[];
-  badges: string[];
-  nutritionalValues: Record<string, unknown>;
+  badges: {
+    halal?: boolean;
+    vegetarian?: boolean;
+    vegan?: boolean;
+    glutenFree?: boolean;
+    organic?: boolean;
+    lactoseFree?: boolean;
+  };
+  nutritionalValues: {
+    energy?: string;
+    fat?: string;
+    saturatedFat?: string;
+    carbohydrates?: string;
+    sugar?: string;
+    protein?: string;
+    salt?: string;
+  };
   manufacturerInfo: Record<string, unknown>;
 }
 
@@ -69,7 +86,7 @@ const createInitialState = (): ProductFormState => ({
   description: "",
   storageConditions: "",
   allergens: [],
-  badges: [],
+  badges: {},
   nutritionalValues: {},
   manufacturerInfo: {},
 });
@@ -117,8 +134,8 @@ const loadProductToForm = (product: import("./types").AdminProduct): ProductForm
     description: product.translations.tr.description || "",
     storageConditions: product.storageConditions || "",
     allergens: product.allergens || [],
-    badges: product.badges || [],
-    nutritionalValues: (product.nutritionalValues as Record<string, unknown>) || {},
+    badges: (product.badges as ProductFormState["badges"]) || {},
+    nutritionalValues: (product.nutritionalValues as ProductFormState["nutritionalValues"]) || {},
     manufacturerInfo: (product.manufacturerInfo as Record<string, unknown>) || {},
   };
 };
@@ -232,7 +249,7 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
         storageConditions: form.storageConditions || undefined,
         manufacturerInfo: Object.keys(form.manufacturerInfo).length > 0 ? form.manufacturerInfo : undefined,
         originCountry: form.originCountry || undefined,
-        badges: form.badges.length > 0 ? form.badges : undefined,
+        badges: Object.keys(form.badges).length > 0 ? form.badges : undefined,
         individualPrice: parseNumber(form.individualPrice),
         corporatePrice: parseNumber(form.corporatePrice),
         minQuantityIndividual: parseNumber(form.minQuantityIndividual),
@@ -530,8 +547,7 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
 
           <Spacer y={2} />
 
-          <KeyValueInput
-            label="Besin Değerleri"
+          <NutritionalValuesInput
             value={form.nutritionalValues}
             onChange={(value) => updateField("nutritionalValues", value)}
           />
@@ -549,11 +565,9 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
             placeholder="Süt, Yumurta, Fıstık"
           />
 
-          <TagInput
-            label="Rozetler"
+          <BadgesInput
             value={form.badges}
             onChange={(value) => updateField("badges", value)}
-            placeholder="Organik, Vegan, Glutensiz"
           />
         </CardBody>
       </Card>

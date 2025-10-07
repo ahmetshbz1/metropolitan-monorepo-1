@@ -14,9 +14,24 @@ import {
   users,
 } from "../../../../shared/infrastructure/database/schema";
 import { isTokenBlacklisted } from "../../../../shared/infrastructure/database/redis";
-import { AllergenTranslationService } from "../../../../shared/infrastructure/database/services/allergen-translation.service";
 import { StorageConditionTranslationService } from "../../../../shared/infrastructure/database/services/storage-condition-translation.service";
 import { createApp } from "../../../../shared/infrastructure/web/app";
+
+const safeParseAllergens = (allergens: string | null): string[] | undefined => {
+  if (!allergens) return undefined;
+  try {
+    const parsed = JSON.parse(allergens);
+    if (Array.isArray(parsed)) {
+      return parsed;
+    }
+    if (typeof parsed === "string") {
+      return [parsed];
+    }
+    return undefined;
+  } catch {
+    return [allergens];
+  }
+};
 
 export const productRoutes = createApp()
   .use(jwt({ name: "jwt", secret: process.env.JWT_SECRET! }))
@@ -228,21 +243,11 @@ export const productRoutes = createApp()
         const baseUrl = xfProto && host
           ? `${xfProto}://${host}`
           : new URL(request.url).origin;
-        const allergenService = new AllergenTranslationService();
         const storageConditionService =
           new StorageConditionTranslationService();
 
         const formattedProducts = await Promise.all(
           allProducts.map(async (p) => {
-            let translatedAllergens = p.allergens;
-            if (p.allergens) {
-              const allergenTranslation = await allergenService.getTranslation(
-                p.allergens,
-                lang
-              );
-              translatedAllergens = allergenTranslation || p.allergens;
-            }
-
             let translatedStorageConditions = p.storageConditions;
             if (p.storageConditions) {
               const storageConditionTranslation =
@@ -274,7 +279,7 @@ export const productRoutes = createApp()
               category: p.categorySlug,
               brand: p.brand || "Yayla",
               size: p.size || undefined,
-              allergens: translatedAllergens || undefined,
+              allergens: safeParseAllergens(p.allergens),
               nutritionalValues: p.nutritionalValues
                 ? JSON.parse(p.nutritionalValues)
                 : undefined,
@@ -359,17 +364,7 @@ export const productRoutes = createApp()
           ? `${xfProto}://${host}`
           : new URL(request.url).origin;
 
-        const allergenService = new AllergenTranslationService();
         const storageConditionService = new StorageConditionTranslationService();
-
-        let translatedAllergens = p.allergens;
-        if (p.allergens) {
-          const allergenTranslation = await allergenService.getTranslation(
-            p.allergens,
-            lang
-          );
-          translatedAllergens = allergenTranslation || p.allergens;
-        }
 
         let translatedStorageConditions = p.storageConditions;
         if (p.storageConditions) {
@@ -403,7 +398,7 @@ export const productRoutes = createApp()
           brand: p.brand || "Yayla",
           size: p.size || undefined,
           rating: Math.random() * 2 + 3,
-          allergens: translatedAllergens || undefined,
+          allergens: safeParseAllergens(p.allergens),
           nutritionalValues: p.nutritionalValues
             ? JSON.parse(p.nutritionalValues)
             : undefined,

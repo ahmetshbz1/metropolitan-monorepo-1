@@ -521,7 +521,7 @@ export const ProductInfo = memo<ProductInfoProps>(function ProductInfo({
           </View>
 
           {/* Alerjen Bilgileri */}
-          {product.allergens && (
+          {product.allergens && Array.isArray(product.allergens) && product.allergens.length > 0 && (
             <View
               className="mb-5 rounded-xl overflow-hidden"
               style={{
@@ -544,7 +544,7 @@ export const ProductInfo = memo<ProductInfoProps>(function ProductInfo({
               </View>
               <View className="px-4 py-3">
                 <ThemedText className="text-sm" style={{ color: "#333333" }}>
-                  {product.allergens}
+                  {product.allergens.join(", ")}
                 </ThemedText>
               </View>
             </View>

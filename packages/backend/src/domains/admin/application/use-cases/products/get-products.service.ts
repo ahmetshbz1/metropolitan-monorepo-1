@@ -11,6 +11,7 @@ import {
 } from "../../../../../shared/infrastructure/database/schema";
 import type { SupportedLanguage } from "./product.types";
 import { SUPPORTED_LANGUAGES } from "./product.types";
+import type { ProductBadges, NutritionalValues } from "../../../../../shared/types/product";
 
 interface GetProductsParams {
   limit?: number;
@@ -38,7 +39,8 @@ interface AdminProductListItem {
   manufacturerInfo: Record<string, unknown> | null;
   originCountry: string | null;
   allergens: string[] | null;
-  badges: string[] | null;
+  badges: ProductBadges | null;
+  nutritionalValues: NutritionalValues | null;
   translations: Record<SupportedLanguage, {
     name: string;
     fullName: string | null;
@@ -73,6 +75,40 @@ const parseJsonObject = (value: string | null): Record<string, unknown> | null =
     const parsed = JSON.parse(value);
     return typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)
       ? (parsed as Record<string, unknown>)
+      : null;
+  } catch {
+    return null;
+  }
+};
+
+const parseBadges = (value: string | null): ProductBadges | null => {
+  if (!value) return null;
+  try {
+    const parsed = JSON.parse(value);
+
+    if (typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)) {
+      return parsed as ProductBadges;
+    }
+
+    if (Array.isArray(parsed)) {
+      return parsed.reduce((acc, item) => {
+        acc[String(item)] = true;
+        return acc;
+      }, {} as ProductBadges);
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+};
+
+const parseNutritionalValues = (value: string | null): NutritionalValues | null => {
+  if (!value) return null;
+  try {
+    const parsed = JSON.parse(value);
+    return typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)
+      ? (parsed as NutritionalValues)
       : null;
   } catch {
     return null;
@@ -119,6 +155,7 @@ export class AdminGetProductsService {
         expiryDate: products.expiryDate,
         storageConditions: products.storageConditions,
         manufacturerInfo: products.manufacturerInfo,
+        nutritionalValues: products.nutritionalValues,
         originCountry: products.originCountry,
         allergens: products.allergens,
         badges: products.badges,
@@ -158,9 +195,10 @@ export class AdminGetProductsService {
           expiryDate: row.expiryDate ? row.expiryDate.toISOString() : null,
           storageConditions: row.storageConditions,
           manufacturerInfo: parseJsonObject(row.manufacturerInfo),
+          nutritionalValues: parseNutritionalValues(row.nutritionalValues),
           originCountry: row.originCountry,
           allergens: parseJsonArray(row.allergens),
-          badges: parseJsonArray(row.badges),
+          badges: parseBadges(row.badges),
           translations: SUPPORTED_LANGUAGES.reduce((acc, lang) => {
             acc[lang] = {
               name: "",
