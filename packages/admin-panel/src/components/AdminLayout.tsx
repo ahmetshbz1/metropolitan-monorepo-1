@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
+import { Breadcrumbs } from "./Breadcrumbs";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -253,15 +254,16 @@ export const AdminLayout = ({
                   <Menu className="h-4 w-4" />
                 </button>
               </NavbarItem>
-              <NavbarBrand className="gap-3">
-                <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-slate-900 dark:text-white">
-                    Yönetim Paneli
-                  </span>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">
-                    {NAV_ITEMS.find((item) => item.key === activeKey)?.label ?? ""}
-                  </span>
-                </div>
+              <NavbarBrand>
+                <Breadcrumbs
+                  items={[
+                    {
+                      label: NAV_ITEMS.find((item) => item.key === activeKey)?.label ?? "Dashboard",
+                      key: activeKey,
+                    },
+                  ]}
+                  onNavigate={onNavigate}
+                />
               </NavbarBrand>
             </NavbarContent>
             <NavbarContent justify="end">
