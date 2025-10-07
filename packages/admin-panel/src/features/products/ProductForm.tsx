@@ -17,6 +17,9 @@ interface TranslationState {
   name: string;
   fullName: string;
   description: string;
+  allergens: string;
+  badges: string;
+  storageConditions: string;
 }
 
 interface ProductFormState {
@@ -28,14 +31,11 @@ interface ProductFormState {
   price: string;
   currency: string;
   stock: string;
-  allergens: string;
   nutritionalValues: string;
   netQuantity: string;
   expiryDate: string;
-  storageConditions: string;
   manufacturerInfo: string;
   originCountry: string;
-  badges: string;
   individualPrice: string;
   corporatePrice: string;
   minQuantityIndividual: string;
@@ -53,14 +53,11 @@ const createInitialState = (): ProductFormState => ({
   price: "",
   currency: "PLN",
   stock: "",
-  allergens: "",
   nutritionalValues: "",
   netQuantity: "",
   expiryDate: "",
-  storageConditions: "",
   manufacturerInfo: "",
   originCountry: "",
-  badges: "",
   individualPrice: "",
   corporatePrice: "",
   minQuantityIndividual: "",
@@ -71,6 +68,9 @@ const createInitialState = (): ProductFormState => ({
       name: "",
       fullName: "",
       description: "",
+      allergens: "",
+      badges: "",
+      storageConditions: "",
     };
     return acc;
   }, {} as Record<SupportedLanguage, TranslationState>),
@@ -126,18 +126,15 @@ const loadProductToForm = (product: import("./types").AdminProduct): ProductForm
     price: product.price?.toString() || "",
     currency: product.currency,
     stock: product.stock.toString(),
-    allergens: product.allergens?.join(", ") || "",
     nutritionalValues: "",
     netQuantity: product.netQuantity || "",
     expiryDate: product.expiryDate
       ? new Date(product.expiryDate).toISOString().slice(0, 16)
       : "",
-    storageConditions: product.storageConditions || "",
     manufacturerInfo: product.manufacturerInfo
       ? JSON.stringify(product.manufacturerInfo, null, 2)
       : "",
     originCountry: product.originCountry || "",
-    badges: product.badges?.join(", ") || "",
     individualPrice: product.individualPrice?.toString() || "",
     corporatePrice: product.corporatePrice?.toString() || "",
     minQuantityIndividual: product.minQuantityIndividual.toString(),
@@ -148,16 +145,25 @@ const loadProductToForm = (product: import("./types").AdminProduct): ProductForm
         name: product.translations.tr.name,
         fullName: product.translations.tr.fullName || "",
         description: product.translations.tr.description || "",
+        allergens: product.allergens?.join(", ") || "",
+        badges: product.badges?.join(", ") || "",
+        storageConditions: product.storageConditions || "",
       },
       en: {
         name: product.translations.en.name,
         fullName: product.translations.en.fullName || "",
         description: product.translations.en.description || "",
+        allergens: "",
+        badges: "",
+        storageConditions: "",
       },
       pl: {
         name: product.translations.pl.name,
         fullName: product.translations.pl.fullName || "",
         description: product.translations.pl.description || "",
+        allergens: "",
+        badges: "",
+        storageConditions: "",
       },
     },
   };
@@ -236,6 +242,11 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
         };
       });
 
+      const trTranslation = form.translations.tr;
+      const allAllergens = parseArray(trTranslation.allergens);
+      const allBadges = parseArray(trTranslation.badges);
+      const allStorageConditions = trTranslation.storageConditions || undefined;
+
       const payload: AdminProductPayload = {
         productCode: form.productCode,
         categoryId: form.categoryId || undefined,
@@ -245,14 +256,14 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
         price: parseNumber(form.price),
         currency: form.currency || undefined,
         stock: parseNumber(form.stock),
-        allergens: parseArray(form.allergens),
+        allergens: allAllergens,
         nutritionalValues: parseJson(form.nutritionalValues),
         netQuantity: form.netQuantity || undefined,
         expiryDate: normalizeDate(form.expiryDate),
-        storageConditions: form.storageConditions || undefined,
+        storageConditions: allStorageConditions,
         manufacturerInfo: parseJson(form.manufacturerInfo),
         originCountry: form.originCountry || undefined,
-        badges: parseArray(form.badges),
+        badges: allBadges,
         individualPrice: parseNumber(form.individualPrice),
         corporatePrice: parseNumber(form.corporatePrice),
         minQuantityIndividual: parseNumber(form.minQuantityIndividual),
@@ -281,160 +292,145 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader className="flex flex-col items-start gap-2 pb-0">
-        <h3 className="text-xl font-semibold text-slate-900">
-          {mode === "create" ? "Yeni Ürün Ekle" : "Ürün Güncelle"}
-        </h3>
-        <p className="text-sm text-default-500">
-          Tüm alanları doldurarak çok dilli ürün yönetimi yapabilirsiniz.
-        </p>
-      </CardHeader>
-      <CardBody>
-        <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
-          {mode === "update" ? (
-            <Input
-              label="Ürün ID"
-              placeholder="Ürün UUID değeri"
-              value={productId}
-              onValueChange={setProductId}
-              variant="bordered"
-              isRequired
-            />
-          ) : null}
+    <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+      {mode === "update" && (
+        <Input
+          label="Ürün ID"
+          placeholder="Ürün UUID değeri"
+          value={productId}
+          onValueChange={setProductId}
+          variant="bordered"
+          isRequired
+        />
+      )}
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Input
-              label="Ürün Kodu"
-              placeholder="ÜRÜN-001"
-              value={form.productCode}
-              onValueChange={(value) => updateField("productCode", value)}
-              variant="bordered"
-              isRequired
-            />
-            <Input
-              label="Kategori ID"
-              placeholder="Opsiyonel"
-              value={form.categoryId}
-              onValueChange={(value) => updateField("categoryId", value)}
-              variant="bordered"
-            />
-            <Input
-              label="Marka"
-              value={form.brand}
-              onValueChange={(value) => updateField("brand", value)}
-              variant="bordered"
-            />
-            <Input
-              label="Boyut"
-              value={form.size}
-              onValueChange={(value) => updateField("size", value)}
-              variant="bordered"
-            />
-            <Input
-              label="Görsel URL"
-              value={form.imageUrl}
-              onValueChange={(value) => updateField("imageUrl", value)}
-              variant="bordered"
-            />
-            <Input
-              label="Fiyat"
-              placeholder="Örn. 49.99"
-              value={form.price}
-              onValueChange={(value) => updateField("price", value)}
-              variant="bordered"
-            />
-            <Input
-              label="Para Birimi"
-              value={form.currency}
-              onValueChange={(value) => updateField("currency", value)}
-              variant="bordered"
-              maxLength={3}
-            />
-            <Input
-              label="Stok"
-              value={form.stock}
-              onValueChange={(value) => updateField("stock", value)}
-              variant="bordered"
-            />
-            <Input
-              label="Bireysel Fiyat"
-              value={form.individualPrice}
-              onValueChange={(value) => updateField("individualPrice", value)}
-              variant="bordered"
-            />
-            <Input
-              label="Kurumsal Fiyat"
-              value={form.corporatePrice}
-              onValueChange={(value) => updateField("corporatePrice", value)}
-              variant="bordered"
-            />
-            <Input
-              label="Bireysel Minimum Adet"
-              value={form.minQuantityIndividual}
-              onValueChange={(value) =>
-                updateField("minQuantityIndividual", value)
-              }
-              variant="bordered"
-            />
-            <Input
-              label="Kurumsal Minimum Adet"
-              value={form.minQuantityCorporate}
-              onValueChange={(value) =>
-                updateField("minQuantityCorporate", value)
-              }
-              variant="bordered"
-            />
-            <Input
-              label="Koli Başına Adet"
-              value={form.quantityPerBox}
-              onValueChange={(value) => updateField("quantityPerBox", value)}
-              variant="bordered"
-            />
-            <Input
-              label="Net Miktar"
-              value={form.netQuantity}
-              onValueChange={(value) => updateField("netQuantity", value)}
-              variant="bordered"
-            />
-            <Input
-              label="Son Kullanma Tarihi"
-              type="datetime-local"
-              value={form.expiryDate}
-              onValueChange={(value) => updateField("expiryDate", value)}
-              variant="bordered"
-            />
-            <Input
-              label="Menşe Ülke"
-              value={form.originCountry}
-              onValueChange={(value) => updateField("originCountry", value)}
-              variant="bordered"
-            />
+      <Tabs aria-label="Ürün formu" color="primary" variant="underlined">
+        <Tab key="basic" title="Temel Bilgiler">
+          <div className="flex flex-col gap-4 pt-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Input
+                label="Ürün Kodu"
+                placeholder="ÜRÜN-001"
+                value={form.productCode}
+                onValueChange={(value) => updateField("productCode", value)}
+                variant="bordered"
+                isRequired
+              />
+              <Input
+                label="Kategori ID"
+                placeholder="Opsiyonel"
+                value={form.categoryId}
+                onValueChange={(value) => updateField("categoryId", value)}
+                variant="bordered"
+              />
+              <Input
+                label="Marka"
+                value={form.brand}
+                onValueChange={(value) => updateField("brand", value)}
+                variant="bordered"
+              />
+              <Input
+                label="Boyut"
+                value={form.size}
+                onValueChange={(value) => updateField("size", value)}
+                variant="bordered"
+              />
+              <Input
+                label="Görsel URL"
+                value={form.imageUrl}
+                onValueChange={(value) => updateField("imageUrl", value)}
+                variant="bordered"
+                className="md:col-span-2"
+              />
+            </div>
           </div>
+        </Tab>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-slate-700">
-                Alerjenler (virgülle ayırınız)
-              </label>
-              <textarea
-                className="min-h-[80px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0"
-                value={form.allergens}
-                onChange={(event) =>
-                  updateField("allergens", event.target.value)
+        <Tab key="pricing" title="Fiyatlandırma & Stok">
+          <div className="flex flex-col gap-4 pt-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Input
+                label="Fiyat"
+                placeholder="Örn. 49.99"
+                value={form.price}
+                onValueChange={(value) => updateField("price", value)}
+                variant="bordered"
+              />
+              <Input
+                label="Para Birimi"
+                value={form.currency}
+                onValueChange={(value) => updateField("currency", value)}
+                variant="bordered"
+                maxLength={3}
+              />
+              <Input
+                label="Stok"
+                value={form.stock}
+                onValueChange={(value) => updateField("stock", value)}
+                variant="bordered"
+              />
+              <Input
+                label="Koli Başına Adet"
+                value={form.quantityPerBox}
+                onValueChange={(value) => updateField("quantityPerBox", value)}
+                variant="bordered"
+              />
+              <Input
+                label="Bireysel Fiyat"
+                value={form.individualPrice}
+                onValueChange={(value) => updateField("individualPrice", value)}
+                variant="bordered"
+              />
+              <Input
+                label="Kurumsal Fiyat"
+                value={form.corporatePrice}
+                onValueChange={(value) => updateField("corporatePrice", value)}
+                variant="bordered"
+              />
+              <Input
+                label="Bireysel Minimum Adet"
+                value={form.minQuantityIndividual}
+                onValueChange={(value) =>
+                  updateField("minQuantityIndividual", value)
                 }
+                variant="bordered"
+              />
+              <Input
+                label="Kurumsal Minimum Adet"
+                value={form.minQuantityCorporate}
+                onValueChange={(value) =>
+                  updateField("minQuantityCorporate", value)
+                }
+                variant="bordered"
               />
             </div>
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium text-slate-700">
-                Rozetler (virgülle ayırınız)
-              </label>
-              <textarea
-                className="min-h-[80px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0"
-                value={form.badges}
-                onChange={(event) => updateField("badges", event.target.value)}
+          </div>
+        </Tab>
+
+        <Tab key="details" title="Ürün Detayları">
+          <div className="flex flex-col gap-4 pt-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <Input
+                label="Net Miktar"
+                value={form.netQuantity}
+                onValueChange={(value) => updateField("netQuantity", value)}
+                variant="bordered"
+              />
+              <Input
+                label="Son Kullanma Tarihi"
+                type="datetime-local"
+                value={form.expiryDate}
+                onValueChange={(value) => updateField("expiryDate", value)}
+                variant="bordered"
+              />
+              <Input
+                label="Menşe Ülke"
+                value={form.originCountry}
+                onValueChange={(value) => updateField("originCountry", value)}
+                variant="bordered"
               />
             </div>
+
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-slate-700">
                 Besin Değerleri (JSON)
@@ -460,77 +456,105 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
               />
             </div>
           </div>
+        </Tab>
 
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-slate-700">
-              Saklama Koşulları
-            </label>
-            <textarea
-              className="min-h-[80px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0"
-              value={form.storageConditions}
-              onChange={(event) =>
-                updateField("storageConditions", event.target.value)
-              }
-            />
-          </div>
-
-          <Tabs className="w-full" aria-label="Ürün çevirileri">
-            {currentTranslations.map(({ code, label, value }) => (
-              <Tab key={code} title={label} className="pt-4">
-                <div className="flex flex-col gap-4">
-                  <Input
-                    label="Ad"
-                    value={value.name}
-                    onValueChange={(v) => updateTranslation(code, "name", v)}
-                    variant="bordered"
-                    isRequired
-                  />
-                  <Input
-                    label="Tam Ad"
-                    value={value.fullName}
-                    onValueChange={(v) => updateTranslation(code, "fullName", v)}
-                    variant="bordered"
-                  />
-                  <div className="flex flex-col gap-2">
-                    <label className="text-sm font-medium text-slate-700">
-                      Açıklama
-                    </label>
-                    <textarea
-                      className="min-h-[120px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0"
-                      value={value.description}
-                      onChange={(event) =>
-                        updateTranslation(code, "description", event.target.value)
-                      }
+        <Tab key="translations" title="Çeviriler">
+          <div className="flex flex-col gap-4 pt-4">
+            <Tabs aria-label="Diller" variant="bordered">
+              {currentTranslations.map(({ code, label, value }) => (
+                <Tab key={code} title={label}>
+                  <div className="flex flex-col gap-4 pt-4">
+                    <Input
+                      label="Ürün Adı"
+                      value={value.name}
+                      onValueChange={(v) => updateTranslation(code, "name", v)}
+                      variant="bordered"
+                      isRequired
                     />
+                    <Input
+                      label="Tam Ad (Opsiyonel)"
+                      value={value.fullName}
+                      onValueChange={(v) => updateTranslation(code, "fullName", v)}
+                      variant="bordered"
+                    />
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-medium text-slate-700">
+                        Açıklama
+                      </label>
+                      <textarea
+                        className="min-h-[100px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0"
+                        value={value.description}
+                        onChange={(event) =>
+                          updateTranslation(code, "description", event.target.value)
+                        }
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-medium text-slate-700">
+                        Alerjenler (virgülle ayırınız)
+                      </label>
+                      <textarea
+                        className="min-h-[80px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0"
+                        value={value.allergens}
+                        onChange={(event) =>
+                          updateTranslation(code, "allergens", event.target.value)
+                        }
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-medium text-slate-700">
+                        Rozetler (virgülle ayırınız)
+                      </label>
+                      <textarea
+                        className="min-h-[80px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0"
+                        value={value.badges}
+                        onChange={(event) =>
+                          updateTranslation(code, "badges", event.target.value)
+                        }
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-medium text-slate-700">
+                        Saklama Koşulları
+                      </label>
+                      <textarea
+                        className="min-h-[80px] rounded-medium border border-default-200 bg-white px-3 py-2 text-sm outline-none focus-visible:border-primary focus-visible:ring-0"
+                        value={value.storageConditions}
+                        onChange={(event) =>
+                          updateTranslation(code, "storageConditions", event.target.value)
+                        }
+                      />
+                    </div>
                   </div>
-                </div>
-              </Tab>
-            ))}
-          </Tabs>
+                </Tab>
+              ))}
+            </Tabs>
+          </div>
+        </Tab>
+      </Tabs>
 
-          {error ? (
-            <p className="text-sm text-red-500" role="alert">
-              {error}
-            </p>
-          ) : null}
+      {error && (
+        <p className="text-sm text-red-500" role="alert">
+          {error}
+        </p>
+      )}
 
-          {success ? (
-            <p className="text-sm text-green-600" role="status">
-              {success}
-            </p>
-          ) : null}
+      {success && (
+        <p className="text-sm text-green-600" role="status">
+          {success}
+        </p>
+      )}
 
-          <Spacer y={1} />
-          <Button
-            color="primary"
-            type="submit"
-            isLoading={isSubmitting}
-            className="self-start"
-          >
-            {mode === "create" ? "Ürünü Oluştur" : "Ürünü Güncelle"}
-          </Button>
-        </form>
-      </CardBody>
-    </Card>
+      <div className="flex items-center justify-end gap-2 border-t pt-4">
+        <Button
+          color="primary"
+          type="submit"
+          isLoading={isSubmitting}
+          size="lg"
+        >
+          {mode === "create" ? "Ürünü Oluştur" : "Ürünü Güncelle"}
+        </Button>
+      </div>
+    </form>
   );
 };
