@@ -232,7 +232,6 @@ export const adminProductsRoutes = createApp()
         {
           body: t.Object({
             image: t.File({
-              type: ["image/jpeg", "image/jpg", "image/png", "image/webp"],
               maxSize: 5 * 1024 * 1024,
             }),
           }),

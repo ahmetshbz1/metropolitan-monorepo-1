@@ -1,21 +1,28 @@
 import { apiClient } from "../../api/client";
+import { ADMIN_TOKEN_STORAGE_KEY, API_BASE_URL } from "../../config/env";
 import type { AdminProductPayload, ProductsListResponse } from "./types";
 
 export const uploadProductImage = async (file: File): Promise<string> => {
   const formData = new FormData();
   formData.append("image", file);
 
-  const response = await apiClient.post<{ success: boolean; imageUrl: string }>(
-    "/admin/products/upload-image",
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
+  const token = localStorage.getItem(ADMIN_TOKEN_STORAGE_KEY);
 
-  return response.data.imageUrl;
+  const response = await fetch(`${API_BASE_URL}/api/admin/products/upload-image`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Görsel yüklenemedi");
+  }
+
+  const data = await response.json() as { success: boolean; imageUrl: string };
+  return data.imageUrl;
 };
 
 export const getProducts = async (params?: {

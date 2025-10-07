@@ -258,6 +258,11 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
       return;
     }
 
+    if (!form.productCode || form.productCode.trim().length < 2) {
+      setError("Ürün kodu en az 2 karakter olmalıdır");
+      return;
+    }
+
     try {
       const translations = SUPPORTED_LANGUAGES.map((item) => {
         const translation = form.translations[item.code];
