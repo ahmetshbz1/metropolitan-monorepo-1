@@ -7,6 +7,11 @@ import {
   NavbarItem,
   ScrollShadow,
   Spacer,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Avatar,
 } from "@heroui/react";
 import {
   LayoutDashboard,
@@ -20,6 +25,8 @@ import {
   X,
   Moon,
   Sun,
+  LogOut,
+  User,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
@@ -170,6 +177,55 @@ export const AdminLayout = ({
             collapsed={isCollapsed}
             onItemClick={() => setIsMobileOpen(false)}
           />
+          <div className="mt-auto border-t border-slate-200 pt-3 dark:border-[#2a2a2a]">
+            <Dropdown placement="top-start">
+              <DropdownTrigger>
+                <button
+                  type="button"
+                  className={`flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-slate-600 transition-colors hover:bg-slate-50 active:bg-slate-100 dark:text-slate-300 dark:hover:bg-[#222222] dark:active:bg-[#2a2a2a] ${
+                    isCollapsed ? "justify-center" : "justify-start"
+                  }`}
+                >
+                  <Avatar
+                    size="sm"
+                    name="Admin"
+                    className="h-8 w-8 flex-shrink-0"
+                  />
+                  {!isCollapsed && (
+                    <div className="flex flex-1 flex-col items-start">
+                      <span className="text-sm font-medium">Admin</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">
+                        admin@metropolitan.com
+                      </span>
+                    </div>
+                  )}
+                </button>
+              </DropdownTrigger>
+              <DropdownMenu aria-label="Kullanıcı menüsü">
+                <DropdownItem
+                  key="theme"
+                  startContent={
+                    theme === "dark" ? (
+                      <Sun className="h-4 w-4" />
+                    ) : (
+                      <Moon className="h-4 w-4" />
+                    )
+                  }
+                  onPress={toggleTheme}
+                >
+                  {theme === "dark" ? "Açık Tema" : "Koyu Tema"}
+                </DropdownItem>
+                <DropdownItem
+                  key="logout"
+                  color="danger"
+                  startContent={<LogOut className="h-4 w-4" />}
+                  onPress={onLogout}
+                >
+                  Çıkış Yap
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
         </aside>
 
         <div className={`flex flex-1 flex-col transition-all duration-300 ${isCollapsed ? "md:ml-16" : "md:ml-56"}`}>
@@ -197,24 +253,37 @@ export const AdminLayout = ({
               </NavbarBrand>
             </NavbarContent>
             <NavbarContent justify="end">
-              <NavbarItem>
-                <button
-                  type="button"
-                  onClick={toggleTheme}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-slate-100 active:bg-slate-200 dark:text-slate-300 dark:hover:bg-[#2a2a2a] dark:active:bg-[#333333]"
-                  aria-label={theme === "dark" ? "Açık temaya geç" : "Koyu temaya geç"}
-                >
-                  {theme === "dark" ? (
-                    <Sun className="h-5 w-5" />
-                  ) : (
-                    <Moon className="h-5 w-5" />
-                  )}
-                </button>
-              </NavbarItem>
-              <NavbarItem>
-                <Button color="secondary" variant="bordered" onPress={onLogout}>
-                  Çıkış Yap
-                </Button>
+              <NavbarItem className="md:hidden">
+                <Dropdown>
+                  <DropdownTrigger>
+                    <Button isIconOnly variant="light" size="sm">
+                      <Avatar size="sm" name="Admin" className="h-8 w-8" />
+                    </Button>
+                  </DropdownTrigger>
+                  <DropdownMenu aria-label="Kullanıcı menüsü">
+                    <DropdownItem
+                      key="theme"
+                      startContent={
+                        theme === "dark" ? (
+                          <Sun className="h-4 w-4" />
+                        ) : (
+                          <Moon className="h-4 w-4" />
+                        )
+                      }
+                      onPress={toggleTheme}
+                    >
+                      {theme === "dark" ? "Açık Tema" : "Koyu Tema"}
+                    </DropdownItem>
+                    <DropdownItem
+                      key="logout"
+                      color="danger"
+                      startContent={<LogOut className="h-4 w-4" />}
+                      onPress={onLogout}
+                    >
+                      Çıkış Yap
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
               </NavbarItem>
             </NavbarContent>
           </Navbar>
