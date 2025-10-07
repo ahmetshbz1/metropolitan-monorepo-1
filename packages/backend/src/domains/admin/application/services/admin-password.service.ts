@@ -3,9 +3,22 @@
 //  Created by OpenAI Codex on 30.12.2025.
 
 import { randomBytes, scrypt as scryptCallback, timingSafeEqual } from "crypto";
-import { promisify } from "util";
 
-const scrypt = promisify(scryptCallback);
+const runScrypt = (
+  password: string,
+  salt: Buffer,
+  keyLength: number,
+  options: Parameters<typeof scryptCallback>[3]
+) =>
+  new Promise<Buffer>((resolve, reject) => {
+    scryptCallback(password, salt, keyLength, options, (error, derivedKey) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      resolve(derivedKey as Buffer);
+    });
+  });
 
 interface ParsedHash {
   cost: number;
@@ -29,12 +42,12 @@ export class AdminPasswordService {
     }
 
     const salt = randomBytes(this.saltLength);
-    const derivedKey = (await scrypt(password, salt, this.keyLength, {
+    const derivedKey = await runScrypt(password, salt, this.keyLength, {
       N: this.costFactor,
       r: this.blockSize,
       p: this.parallelization,
       maxmem: this.maxMemory,
-    })) as Buffer;
+    });
 
     return [
       "scrypt",
@@ -48,12 +61,17 @@ export class AdminPasswordService {
 
   async verify(password: string, storedHash: string): Promise<boolean> {
     const parsed = this.parse(storedHash);
-    const derivedKey = (await scrypt(password, parsed.salt, parsed.storedKey.length, {
-      N: parsed.cost,
-      r: parsed.blockSize,
-      p: parsed.parallelization,
-      maxmem: this.maxMemory,
-    })) as Buffer;
+    const derivedKey = await runScrypt(
+      password,
+      parsed.salt,
+      parsed.storedKey.length,
+      {
+        N: parsed.cost,
+        r: parsed.blockSize,
+        p: parsed.parallelization,
+        maxmem: this.maxMemory,
+      }
+    );
 
     if (derivedKey.length !== parsed.storedKey.length) {
       return false;
