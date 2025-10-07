@@ -73,18 +73,6 @@ export const getDashboardStatsService = async (): Promise<DashboardStats> => {
     .select({ count: sql<number>`count(*)::int` })
     .from(orders);
 
-  // Debug: payment status kontrolü
-  const paymentStatuses = await db
-    .select({
-      paymentStatus: orders.paymentStatus,
-      count: sql<number>`count(*)::int`,
-      totalAmount: sql<number>`coalesce(sum(${orders.totalAmount}), 0)::numeric`
-    })
-    .from(orders)
-    .groupBy(orders.paymentStatus);
-
-  console.log("💳 Payment status breakdown:", paymentStatuses);
-
   const [totalRevenueResult] = await db
     .select({ sum: sql<number>`coalesce(sum(${orders.totalAmount}), 0)::numeric` })
     .from(orders)
@@ -158,7 +146,7 @@ export const getDashboardStatsService = async (): Promise<DashboardStats> => {
       productTranslations,
       and(
         eq(productTranslations.productId, products.id),
-        eq(productTranslations.languageCode, "en")
+        eq(productTranslations.languageCode, "tr")
       )
     )
     .where(eq(orders.paymentStatus, "succeeded"))
