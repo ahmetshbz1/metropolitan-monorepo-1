@@ -4,12 +4,19 @@ import { createApp } from "../../../../shared/infrastructure/web/app";
 import { isAdminAuthenticated } from "../../application/guards/admin.guard";
 import { GetAdminOrdersService } from "../../application/use-cases/orders/get-orders.service";
 import { UpdateOrderStatusService } from "../../application/use-cases/orders/update-order-status.service";
+import { UpdateOrderPaymentStatusService } from "../../application/use-cases/orders/update-payment-status.service";
 
 const updateOrderStatusSchema = t.Object({
   status: t.String({ enum: ["pending", "confirmed", "preparing", "shipped", "delivered", "cancelled"] }),
   trackingNumber: t.Optional(t.String()),
   shippingCompany: t.Optional(t.String()),
   cancelReason: t.Optional(t.String()),
+});
+
+const updateOrderPaymentStatusSchema = t.Object({
+  paymentStatus: t.String({
+    enum: ["pending", "processing", "requires_action", "completed", "succeeded", "failed", "canceled"],
+  }),
 });
 
 export const adminOrdersRoutes = createApp()
@@ -56,6 +63,28 @@ export const adminOrdersRoutes = createApp()
         {
           params: t.Object({ id: t.String({ format: "uuid" }) }),
           body: updateOrderStatusSchema,
+        }
+      )
+      .patch(
+        "/:id/payment-status",
+        async ({ params, body, set }) => {
+          try {
+            const result = await UpdateOrderPaymentStatusService.execute({
+              orderId: params.id,
+              paymentStatus: body.paymentStatus,
+            });
+            return result;
+          } catch (error) {
+            set.status = 400;
+            return {
+              success: false,
+              message: error instanceof Error ? error.message : "Ödeme durumu güncellenemedi",
+            };
+          }
+        },
+        {
+          params: t.Object({ id: t.String({ format: "uuid" }) }),
+          body: updateOrderPaymentStatusSchema,
         }
       )
   );

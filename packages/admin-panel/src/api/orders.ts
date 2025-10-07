@@ -49,6 +49,10 @@ export interface UpdateOrderStatusInput {
   cancelReason?: string;
 }
 
+export interface UpdateOrderPaymentStatusInput {
+  paymentStatus: string;
+}
+
 export const getOrders = async (filters?: OrderFilters): Promise<OrdersResponse> => {
   const params = new URLSearchParams();
   if (filters?.status) params.append("status", filters.status);
@@ -65,5 +69,13 @@ export const updateOrderStatus = async (
   input: UpdateOrderStatusInput
 ): Promise<{ success: boolean; message: string }> => {
   const response = await apiClient.patch(`/admin/orders/${orderId}/status`, input);
+  return response.data;
+};
+
+export const updateOrderPaymentStatus = async (
+  orderId: string,
+  input: UpdateOrderPaymentStatusInput
+): Promise<{ success: boolean; message: string }> => {
+  const response = await apiClient.patch(`/admin/orders/${orderId}/payment-status`, input);
   return response.data;
 };

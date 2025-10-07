@@ -26,7 +26,7 @@ import {
   ModalHeader,
 } from "@heroui/react";
 import { Package, Search, RefreshCw } from "lucide-react";
-import { getOrders, updateOrderStatus } from "../../api/orders";
+import { getOrders, updateOrderStatus, updateOrderPaymentStatus } from "../../api/orders";
 import type { Order, OrderFilters, UpdateOrderStatusInput } from "../../api/orders";
 import { API_BASE_URL } from "../../config/env";
 
@@ -41,10 +41,27 @@ const ORDER_STATUSES = [
 
 const PAYMENT_STATUSES = [
   { value: "pending", label: "Beklemede", color: "warning" },
-  { value: "succeeded", label: "Başarılı", color: "success" },
   { value: "processing", label: "İşleniyor", color: "primary" },
+  { value: "requires_action", label: "Ek Doğrulama Gerekli", color: "warning" },
+  { value: "succeeded", label: "Başarılı", color: "success" },
+  { value: "completed", label: "Tamamlandı", color: "success" },
+  { value: "failed", label: "Başarısız", color: "danger" },
   { value: "canceled", label: "İptal", color: "danger" },
 ];
+
+const MANUAL_PAYMENT_STATUS_VALUES = new Set([
+  "pending",
+  "processing",
+  "requires_action",
+  "succeeded",
+  "completed",
+  "failed",
+  "canceled",
+]);
+
+const PAYMENT_STATUS_UPDATE_OPTIONS = PAYMENT_STATUSES.filter((status) =>
+  MANUAL_PAYMENT_STATUS_VALUES.has(status.value)
+);
 
 const formatPaymentMethod = (method: string | null): string => {
   if (!method) {
@@ -123,6 +140,24 @@ export const OrderManager = () => {
     }
   };
 
+  const handlePaymentStatusUpdate = async (orderId: string, paymentStatus: string) => {
+    if (!MANUAL_PAYMENT_STATUS_VALUES.has(paymentStatus)) {
+      return;
+    }
+
+    try {
+      setUpdatingStatus(true);
+      await updateOrderPaymentStatus(orderId, { paymentStatus });
+      await loadOrders();
+      setDrawerOpen(false);
+      setSelectedOrder(null);
+    } catch (error) {
+      console.error("Ödeme durumu güncellenemedi:", error);
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
   const getStatusChip = (status: string) => {
     const statusObj = ORDER_STATUSES.find((s) => s.value === status);
     return (
@@ -187,6 +222,9 @@ export const OrderManager = () => {
 
     window.open(invoiceUrl, "_blank", "noopener,noreferrer");
   };
+
+  const canUpdatePaymentStatus =
+    selectedOrder?.paymentMethodType === "bank_transfer" && selectedOrder?.userType === "corporate";
 
   return (
     <div className="space-y-6">
@@ -475,6 +513,27 @@ export const OrderManager = () => {
                       </SelectItem>
                     ))}
                   </Select>
+                  {canUpdatePaymentStatus && (
+                    <Select
+                      label="Ödeme Durumu"
+                      defaultSelectedKeys={[selectedOrder.paymentStatus]}
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          void handlePaymentStatusUpdate(selectedOrder.id, e.target.value);
+                        }
+                      }}
+                      isDisabled={updatingStatus}
+                      classNames={{
+                        trigger: "dark:bg-[#0a0a0a] dark:border-[#2a2a2a]",
+                      }}
+                    >
+                      {PAYMENT_STATUS_UPDATE_OPTIONS.map((status) => (
+                        <SelectItem key={status.value} value={status.value}>
+                          {status.label}
+                        </SelectItem>
+                      ))}
+                    </Select>
+                  )}
                 </div>
               </div>
             )}
