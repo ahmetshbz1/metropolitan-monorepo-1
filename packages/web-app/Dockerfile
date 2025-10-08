@@ -31,9 +31,9 @@ COPY --from=deps /app/packages/shared /app/packages/shared
 COPY packages/web-app /app/packages/web-app
 COPY --from=deps /app/packages/web-app/node_modules /app/packages/web-app/node_modules
 
-# Shared package'ın dependency'lerini de link et
+# Shared package'ı build et
 WORKDIR /app/packages/shared
-RUN bun install
+RUN bun install && bun run build
 
 # Build arguments
 ARG NEXT_PUBLIC_API_URL=https://api.metropolitanfg.pl
@@ -42,8 +42,11 @@ ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Next.js build
+# Web-app node_modules'e shared package'ı link et
 WORKDIR /app/packages/web-app
+RUN cd node_modules && rm -rf @metropolitan && mkdir -p @metropolitan && ln -s ../../shared @metropolitan/shared
+
+# Next.js build
 RUN bun run build
 
 # ---- Production Stage ----
