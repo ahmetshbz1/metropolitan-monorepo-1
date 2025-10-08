@@ -39,6 +39,7 @@
     "@metropolitan/shared": "file:../shared",
     "@sentry/node": "^9.46.0",
     "archiver": "^7.0.1",
+    "exceljs": "^4.4.0",
     "date-fns": "^4.1.0",
     "dotenv": "^16.6.1",
     "drizzle-orm": "^0.44.6",

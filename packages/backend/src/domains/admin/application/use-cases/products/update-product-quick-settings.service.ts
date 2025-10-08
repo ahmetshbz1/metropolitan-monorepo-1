@@ -9,6 +9,9 @@ interface AdminQuickUpdateInput {
   stock?: number;
   individualPrice?: number | null;
   corporatePrice?: number | null;
+  minQuantityIndividual?: number;
+  minQuantityCorporate?: number;
+  quantityPerBox?: number | null;
 }
 
 export class AdminUpdateProductQuickSettingsService {
@@ -17,6 +20,9 @@ export class AdminUpdateProductQuickSettingsService {
     stock,
     individualPrice,
     corporatePrice,
+    minQuantityIndividual,
+    minQuantityCorporate,
+    quantityPerBox,
   }: AdminQuickUpdateInput) {
     const updates: Record<string, unknown> = {};
 
@@ -47,6 +53,30 @@ export class AdminUpdateProductQuickSettingsService {
       }
     }
 
+    if (minQuantityIndividual !== undefined) {
+      if (!Number.isFinite(minQuantityIndividual) || minQuantityIndividual < 0) {
+        throw new Error("Geçersiz bireysel minimum adet değeri");
+      }
+      updates.minQuantityIndividual = Math.floor(minQuantityIndividual);
+    }
+
+    if (minQuantityCorporate !== undefined) {
+      if (!Number.isFinite(minQuantityCorporate) || minQuantityCorporate < 0) {
+        throw new Error("Geçersiz kurumsal minimum adet değeri");
+      }
+      updates.minQuantityCorporate = Math.floor(minQuantityCorporate);
+    }
+
+    if (quantityPerBox !== undefined) {
+      if (quantityPerBox === null) {
+        updates.quantityPerBox = null;
+      } else if (Number.isFinite(quantityPerBox) && quantityPerBox >= 0) {
+        updates.quantityPerBox = Math.floor(quantityPerBox);
+      } else {
+        throw new Error("Geçersiz koli adedi");
+      }
+    }
+
     if (Object.keys(updates).length === 0) {
       throw new Error("Güncellenecek bir alan belirtmelisiniz");
     }
@@ -62,6 +92,9 @@ export class AdminUpdateProductQuickSettingsService {
         stock: products.stock,
         individualPrice: products.individualPrice,
         corporatePrice: products.corporatePrice,
+        minQuantityIndividual: products.minQuantityIndividual,
+        minQuantityCorporate: products.minQuantityCorporate,
+        quantityPerBox: products.quantityPerBox,
       });
 
     if (!result) {
@@ -74,6 +107,9 @@ export class AdminUpdateProductQuickSettingsService {
       stock: result.stock,
       individualPrice: result.individualPrice,
       corporatePrice: result.corporatePrice,
+      minQuantityIndividual: result.minQuantityIndividual,
+      minQuantityCorporate: result.minQuantityCorporate,
+      quantityPerBox: result.quantityPerBox,
     };
   }
 }

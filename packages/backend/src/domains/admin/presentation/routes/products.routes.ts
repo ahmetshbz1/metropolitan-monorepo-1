@@ -23,6 +23,8 @@ import {
 import { AdminUpdateProductService } from "../../application/use-cases/products/update-product.service";
 import { AdminUpdateProductStockService } from "../../application/use-cases/products/update-product-stock.service";
 import { AdminUpdateProductQuickSettingsService } from "../../application/use-cases/products/update-product-quick-settings.service";
+import { AdminExportProductsService } from "../../application/use-cases/products/export-products.service";
+import { AdminImportProductsService } from "../../application/use-cases/products/import-products.service";
 
 const translationSchema = t.Object({
   languageCode: t.String({
@@ -122,6 +124,49 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
     }
   )
   .get(
+    "/export",
+    async ({ query, set }) => {
+      const formatParam = query.format?.toLowerCase() ?? "csv";
+
+      if (formatParam !== "csv" && formatParam !== "xlsx") {
+        set.status = 400;
+        return {
+          success: false,
+          message: "Geçersiz format. 'csv' veya 'xlsx' kullanın.",
+        };
+      }
+
+      try {
+        const exportFile = await AdminExportProductsService.execute({
+          format: formatParam,
+          languageCode: query.languageCode ?? "tr",
+        });
+
+        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+        const filename = `products-${timestamp}.${exportFile.fileExtension}`;
+
+        set.headers["Content-Type"] = exportFile.contentType;
+        set.headers["Content-Disposition"] = `attachment; filename="${filename}"`;
+        set.headers["Cache-Control"] = "no-store";
+
+        return new Response(exportFile.buffer);
+      } catch (error) {
+        set.status = 400;
+        return {
+          success: false,
+          message:
+            error instanceof Error ? error.message : "Ürünler dışa aktarılamadı",
+        };
+      }
+    },
+    {
+      query: t.Object({
+        format: t.Optional(t.String()),
+        languageCode: t.Optional(t.String()),
+      }),
+    }
+  )
+  .get(
     "/stock-alerts",
     async ({ query, set }) => {
       const limit = query.limit ? Number(query.limit) : undefined;
@@ -199,6 +244,38 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
       body: createProductSchema,
     }
   )
+  .post(
+    "/import",
+    async ({ body, set }) => {
+      if (!body.file) {
+        set.status = 400;
+        return {
+          success: false,
+          message: "Dosya yüklenmedi",
+        };
+      }
+
+      try {
+        const summary = await AdminImportProductsService.execute(body.file);
+        return {
+          success: true,
+          summary,
+        };
+      } catch (error) {
+        set.status = 400;
+        return {
+          success: false,
+          message:
+            error instanceof Error ? error.message : "Toplu yükleme başarısız",
+        };
+      }
+    },
+    {
+      body: t.Object({
+        file: t.File({ maxSize: 5 * 1024 * 1024 }),
+      }),
+    }
+  )
   .put(
     "/:id",
     async ({ body, params, set }) => {
@@ -251,6 +328,9 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
           stock: body.stock,
           individualPrice: body.individualPrice,
           corporatePrice: body.corporatePrice,
+          minQuantityIndividual: body.minQuantityIndividual,
+          minQuantityCorporate: body.minQuantityCorporate,
+          quantityPerBox: body.quantityPerBox,
         });
         return result;
       } catch (error) {
@@ -272,6 +352,11 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
           t.Union([t.Number({ minimum: 0 }), t.Null()])
         ),
         corporatePrice: t.Optional(
+          t.Union([t.Number({ minimum: 0 }), t.Null()])
+        ),
+        minQuantityIndividual: t.Optional(t.Number({ minimum: 0 })),
+        minQuantityCorporate: t.Optional(t.Number({ minimum: 0 })),
+        quantityPerBox: t.Optional(
           t.Union([t.Number({ minimum: 0 }), t.Null()])
         ),
       }),

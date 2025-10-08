@@ -96,3 +96,30 @@ export const downloadOrderInvoice = async (orderId: string): Promise<Blob> => {
 
   return response.data;
 };
+
+export const exportOrders = async (options?: {
+  format?: "csv" | "xlsx";
+  status?: string;
+  paymentStatus?: string;
+}): Promise<Blob> => {
+  const params = new URLSearchParams();
+  if (options?.format) {
+    params.append("format", options.format);
+  }
+  if (options?.status) {
+    params.append("status", options.status);
+  }
+  if (options?.paymentStatus) {
+    params.append("paymentStatus", options.paymentStatus);
+  }
+
+  const query = params.toString();
+  const response = await apiClient.get<Blob>(
+    `/admin/orders/export${query ? `?${query}` : ""}`,
+    {
+      responseType: "blob",
+    }
+  );
+
+  return response.data;
+};

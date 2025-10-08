@@ -1,6 +1,7 @@
 import { t } from "elysia";
 
 import { GetAdminOrdersService } from "../../application/use-cases/orders/get-orders.service";
+import { AdminExportOrdersService } from "../../application/use-cases/orders/export-orders.service";
 import { UpdateOrderStatusService } from "../../application/use-cases/orders/update-order-status.service";
 import { UpdateOrderPaymentStatusService } from "../../application/use-cases/orders/update-payment-status.service";
 import { InvoiceService } from "../../../order/application/use-cases/invoice.service";
@@ -42,6 +43,51 @@ export const adminOrdersRoutes = createAdminRouter("/admin/orders")
       };
     }
   })
+  .get(
+    "/export",
+    async ({ query, set }) => {
+      const formatParam = query?.format?.toLowerCase() ?? "csv";
+
+      if (formatParam !== "csv" && formatParam !== "xlsx") {
+        set.status = 400;
+        return {
+          success: false,
+          message: "Geçersiz format. 'csv' veya 'xlsx' kullanın.",
+        };
+      }
+
+      try {
+        const exportFile = await AdminExportOrdersService.execute({
+          format: formatParam,
+          status: query?.status,
+          paymentStatus: query?.paymentStatus,
+        });
+
+        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+        const filename = `orders-${timestamp}.${exportFile.fileExtension}`;
+
+        set.headers["Content-Type"] = exportFile.contentType;
+        set.headers["Content-Disposition"] = `attachment; filename="${filename}"`;
+        set.headers["Cache-Control"] = "no-store";
+
+        return new Response(exportFile.buffer);
+      } catch (error) {
+        set.status = 400;
+        return {
+          success: false,
+          message:
+            error instanceof Error ? error.message : "Siparişler dışa aktarılamadı",
+        };
+      }
+    },
+    {
+      query: t.Object({
+        format: t.Optional(t.String()),
+        status: t.Optional(t.String()),
+        paymentStatus: t.Optional(t.String()),
+      }),
+    }
+  )
   .patch(
     "/:id/status",
     async ({ params, body, set }) => {

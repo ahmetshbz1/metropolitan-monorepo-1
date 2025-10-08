@@ -27,9 +27,10 @@ import {
   ModalHeader,
   type Selection,
 } from "@heroui/react";
-import { Package, RefreshCw } from "lucide-react";
+import { Download, Package, RefreshCw } from "lucide-react";
 import {
   downloadOrderInvoice,
+  exportOrders,
   getOrders,
   updateOrderPaymentStatus,
   updateOrderStatus,
@@ -199,6 +200,7 @@ export const OrderManager = () => {
   const [cancelReason, setCancelReason] = useState("");
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<string | null>(null);
+  const [exportingFormat, setExportingFormat] = useState<"csv" | "xlsx" | null>(null);
 
   useEffect(() => {
     loadOrders();
@@ -257,6 +259,32 @@ export const OrderManager = () => {
       return undefined;
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleExportOrders = async (format: "csv" | "xlsx") => {
+    try {
+      setExportingFormat(format);
+      const blob = await exportOrders({
+        format,
+        status: filters.status,
+        paymentStatus: filters.paymentStatus,
+      });
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      link.href = url;
+      link.download = `orders-${timestamp}.${format}`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Siparişler indirilemedi:", error);
+      window.alert("Sipariş dışa aktarımı başarısız oldu.");
+    } finally {
+      setExportingFormat(null);
     }
   };
 
@@ -495,19 +523,39 @@ export const OrderManager = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-3">
           <Package className="h-6 w-6 text-blue-600 dark:text-blue-400" />
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Siparişler</h1>
         </div>
-        <Button
-          startContent={<RefreshCw className="h-4 w-4" />}
-          onPress={loadOrders}
-          isLoading={loading}
-          variant="flat"
-        >
-          Yenile
-        </Button>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="flat"
+              startContent={<Download className="h-4 w-4" />}
+              onPress={() => void handleExportOrders("csv")}
+              isLoading={exportingFormat === "csv"}
+            >
+              CSV İndir
+            </Button>
+            <Button
+              variant="flat"
+              startContent={<Download className="h-4 w-4" />}
+              onPress={() => void handleExportOrders("xlsx")}
+              isLoading={exportingFormat === "xlsx"}
+            >
+              Excel İndir
+            </Button>
+          </div>
+          <Button
+            startContent={<RefreshCw className="h-4 w-4" />}
+            onPress={loadOrders}
+            isLoading={loading}
+            variant="flat"
+          >
+            Yenile
+          </Button>
+        </div>
       </div>
 
       <Card className="dark:bg-[#1a1a1a] dark:border dark:border-[#2a2a2a]">

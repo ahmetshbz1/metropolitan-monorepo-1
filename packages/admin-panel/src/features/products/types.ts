@@ -115,3 +115,15 @@ export interface ProductsListResponse {
   offset: number;
   items: AdminProduct[];
 }
+
+export interface ProductImportError {
+  row: number;
+  message: string;
+}
+
+export interface ProductImportSummary {
+  processed: number;
+  updated: number;
+  skipped: number;
+  errors: ProductImportError[];
+}
