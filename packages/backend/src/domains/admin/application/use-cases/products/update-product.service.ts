@@ -9,7 +9,8 @@ import {
   productTranslations,
   products,
 } from "../../../../../shared/infrastructure/database/schema";
-import type { AdminUpdateProductPayload } from "./product.types";
+import type { AdminUpdateProductPayload, SupportedLanguage } from "./product.types";
+import { SUPPORTED_LANGUAGES } from "./product.types";
 import {
   serializeNullableJson,
   toDateOrNull,
@@ -20,52 +21,17 @@ import { ProductTranslationService } from "../../../../../shared/infrastructure/
 export class AdminUpdateProductService {
   static async execute(payload: AdminUpdateProductPayload) {
     try {
-      const turkishTranslation = payload.translations.find(t => t.languageCode === "tr");
+      const turkishTranslation = payload.translations.find(
+        (t) => t.languageCode === "tr"
+      );
       if (!turkishTranslation) {
         throw new Error("Türkçe çeviri zorunludur");
       }
 
-      let finalTranslations;
+      const normalize = (value?: string | null) => (value ?? "").trim();
 
-      if (payload.translations.length === 3) {
-        console.log("Using manual translations (skipping Gemini)...");
-        finalTranslations = payload.translations.map(t => ({
-          languageCode: t.languageCode as "tr" | "en" | "pl",
-          name: t.name,
-          fullName: t.fullName ?? null,
-          description: t.description ?? null,
-        }));
-      } else {
-        console.log("Generating translations with Gemini...");
-        const generatedTranslations = await ProductTranslationService.generateTranslations({
-          name: turkishTranslation.name,
-          fullName: turkishTranslation.fullName,
-          description: turkishTranslation.description,
-          storageConditions: payload.storageConditions || undefined,
-        });
-
-        finalTranslations = [
-          {
-            languageCode: "tr" as const,
-            name: generatedTranslations.tr.name,
-            fullName: generatedTranslations.tr.fullName,
-            description: generatedTranslations.tr.description,
-          },
-          {
-            languageCode: "en" as const,
-            name: generatedTranslations.en.name,
-            fullName: generatedTranslations.en.fullName,
-            description: generatedTranslations.en.description,
-          },
-          {
-            languageCode: "pl" as const,
-            name: generatedTranslations.pl.name,
-            fullName: generatedTranslations.pl.fullName,
-            description: generatedTranslations.pl.description,
-          },
-        ];
-        console.log("Translations generated successfully");
-      }
+      const manualTranslationsProvided =
+        payload.translations.length === SUPPORTED_LANGUAGES.length;
 
       const existingProductResult = await db
         .select()
@@ -78,6 +44,128 @@ export class AdminUpdateProductService {
       }
 
       const existingProduct = existingProductResult[0];
+
+      const existingTranslations = await db
+        .select()
+        .from(productTranslations)
+        .where(eq(productTranslations.productId, payload.productId));
+
+      const existingTranslationsMap: Partial<
+        Record<SupportedLanguage, (typeof existingTranslations)[number]>
+      > = {};
+      for (const translation of existingTranslations) {
+        existingTranslationsMap[
+          translation.languageCode as SupportedLanguage
+        ] = translation;
+      }
+
+      let finalTranslations: Array<{
+        languageCode: SupportedLanguage;
+        name: string;
+        fullName: string | null;
+        description: string | null;
+      }> = [];
+
+      if (manualTranslationsProvided) {
+        console.log("Using manual translations (skipping Gemini)...");
+        finalTranslations = SUPPORTED_LANGUAGES.map((languageCode) => {
+          const translation = payload.translations.find(
+            (item) => item.languageCode === languageCode
+          );
+          if (!translation) {
+            throw new Error(
+              `${languageCode} çevirisi manuel modda zorunludur`
+            );
+          }
+          return {
+            languageCode,
+            name: translation.name,
+            fullName: translation.fullName ?? null,
+            description: translation.description ?? null,
+          };
+        });
+      } else {
+        const existingTurkish = existingTranslationsMap.tr;
+        const baseTranslationChanged =
+          normalize(turkishTranslation.name) !==
+            normalize(existingTurkish?.name) ||
+          normalize(turkishTranslation.fullName ?? null) !==
+            normalize(existingTurkish?.fullName) ||
+          normalize(turkishTranslation.description ?? null) !==
+            normalize(existingTurkish?.description);
+
+        const storageConditionsChanged =
+          normalize(payload.storageConditions ?? null) !==
+          normalize(existingProduct.storageConditions);
+
+        const missingLanguages = SUPPORTED_LANGUAGES.filter(
+          (language) => language !== "tr" && !existingTranslationsMap[language]
+        );
+
+        const shouldRegenerateTranslations =
+          baseTranslationChanged ||
+          storageConditionsChanged ||
+          missingLanguages.length > 0;
+
+        if (shouldRegenerateTranslations) {
+          console.log("Generating translations with Gemini...");
+          const generatedTranslations =
+            await ProductTranslationService.generateTranslations({
+              name: turkishTranslation.name,
+              fullName: turkishTranslation.fullName,
+              description: turkishTranslation.description,
+              storageConditions: payload.storageConditions || undefined,
+            });
+
+          finalTranslations = [
+            {
+              languageCode: "tr",
+              name: generatedTranslations.tr.name,
+              fullName: generatedTranslations.tr.fullName,
+              description: generatedTranslations.tr.description,
+            },
+            {
+              languageCode: "en",
+              name: generatedTranslations.en.name,
+              fullName: generatedTranslations.en.fullName,
+              description: generatedTranslations.en.description,
+            },
+            {
+              languageCode: "pl",
+              name: generatedTranslations.pl.name,
+              fullName: generatedTranslations.pl.fullName,
+              description: generatedTranslations.pl.description,
+            },
+          ];
+          console.log("Translations generated successfully");
+        } else {
+          console.log("Reusing existing translations (no changes detected)...");
+          finalTranslations = SUPPORTED_LANGUAGES.map((languageCode) => {
+            if (languageCode === "tr") {
+              return {
+                languageCode,
+                name: turkishTranslation.name,
+                fullName: turkishTranslation.fullName ?? null,
+                description: turkishTranslation.description ?? null,
+              };
+            }
+
+            const existingTranslation = existingTranslationsMap[languageCode];
+            if (!existingTranslation) {
+              throw new Error(
+                `${languageCode} çevirisi bulunamadı; yeniden oluşturma gerekiyor`
+              );
+            }
+
+            return {
+              languageCode,
+              name: existingTranslation.name,
+              fullName: existingTranslation.fullName ?? null,
+              description: existingTranslation.description ?? null,
+            };
+          });
+        }
+      }
 
       if (payload.productCode !== existingProduct.productCode) {
         const anotherProduct = await db
