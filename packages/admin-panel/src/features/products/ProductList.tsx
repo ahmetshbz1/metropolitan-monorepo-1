@@ -14,6 +14,7 @@ import {
   DropdownMenu,
   DropdownItem,
   Image,
+  type Selection,
 } from "@heroui/react";
 import { MoreVertical, ImageOff } from "lucide-react";
 import { getProducts } from "./api";
@@ -23,12 +24,30 @@ import { API_BASE_URL } from "../../config/env";
 interface ProductListProps {
   onEdit: (product: AdminProduct) => void;
   onDelete: (productId: string, product?: AdminProduct) => void;
+  onSelectionChange?: (ids: string[]) => void;
+  onSelectionDetailsChange?: (products: AdminProduct[]) => void;
+  selectionResetSignal?: number;
   refreshTrigger?: number;
 }
+
+const areSetsEqual = (a: Set<string>, b: Set<string>) => {
+  if (a.size !== b.size) {
+    return false;
+  }
+  for (const value of a) {
+    if (!b.has(value)) {
+      return false;
+    }
+  }
+  return true;
+};
 
 export const ProductList = ({
   onEdit,
   onDelete,
+  onSelectionChange,
+  onSelectionDetailsChange,
+  selectionResetSignal,
   refreshTrigger,
 }: ProductListProps) => {
   const [products, setProducts] = useState<AdminProduct[]>([]);
@@ -37,6 +56,22 @@ export const ProductList = ({
   const [total, setTotal] = useState(0);
   const [limit] = useState(1000);
   const [offset, setOffset] = useState(0);
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set<string>());
+
+  const emitSelection = useCallback(
+    (keys: Set<string>) => {
+      setSelectedKeys(keys);
+
+      const ids = Array.from(keys);
+      onSelectionChange?.(ids);
+
+      if (onSelectionDetailsChange) {
+        const selectedProducts = products.filter((product) => keys.has(product.productId));
+        onSelectionDetailsChange(selectedProducts);
+      }
+    },
+    [onSelectionChange, onSelectionDetailsChange, products]
+  );
 
   const loadProducts = useCallback(async () => {
     try {
@@ -55,6 +90,33 @@ export const ProductList = ({
   useEffect(() => {
     loadProducts();
   }, [loadProducts, refreshTrigger]);
+
+  useEffect(() => {
+    const availableIds = new Set(products.map((product) => product.productId));
+    const filteredKeys = new Set<string>(Array.from(selectedKeys).filter((id) => availableIds.has(id)));
+
+    if (!areSetsEqual(filteredKeys, selectedKeys)) {
+      emitSelection(filteredKeys);
+    }
+  }, [products, selectedKeys, emitSelection]);
+
+  useEffect(() => {
+    if (selectionResetSignal !== undefined) {
+      emitSelection(new Set<string>());
+    }
+  }, [selectionResetSignal, emitSelection]);
+
+  const handleSelectionChange = useCallback(
+    (keys: Selection) => {
+      const normalizedKeys =
+        keys === "all"
+          ? new Set<string>(products.map((product) => product.productId))
+          : new Set<string>(Array.from(keys as Set<string>));
+
+      emitSelection(normalizedKeys);
+    },
+    [emitSelection, products]
+  );
 
   const currentPage = Math.floor(offset / limit) + 1;
   const totalPages = Math.ceil(total / limit);
@@ -106,14 +168,9 @@ export const ProductList = ({
             {total}
           </Chip>
         </div>
-        {totalPages > 1 && (
+        {totalPages > 1 ? (
           <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="flat"
-              isDisabled={offset === 0}
-              onPress={handlePrevPage}
-            >
+            <Button size="sm" variant="flat" isDisabled={offset === 0} onPress={handlePrevPage}>
               Önceki
             </Button>
             <span className="text-sm text-slate-600 dark:text-slate-400">
@@ -128,97 +185,95 @@ export const ProductList = ({
               Sonraki
             </Button>
           </div>
-        )}
+        ) : null}
       </div>
 
       <div className="overflow-x-auto">
-        <Table aria-label="Ürün listesi">
-        <TableHeader>
-          <TableColumn width={80}>GÖRSEL</TableColumn>
-          <TableColumn>KOD</TableColumn>
-          <TableColumn>ÜRÜN ADI</TableColumn>
-          <TableColumn>MARKA</TableColumn>
-          <TableColumn>STOK</TableColumn>
-          <TableColumn>FİYAT</TableColumn>
-          <TableColumn>GÜNCELLEME</TableColumn>
-          <TableColumn width={50}>İŞLEM</TableColumn>
-        </TableHeader>
-        <TableBody
-          items={products}
-          isLoading={isLoading}
-          loadingContent={<Spinner label="Yükleniyor..." />}
-          emptyContent="Ürün bulunamadı"
+        <Table
+          aria-label="Ürün listesi"
+          selectionMode="multiple"
+          selectedKeys={selectedKeys}
+          onSelectionChange={handleSelectionChange}
         >
-          {(product) => (
-            <TableRow key={product.productId}>
-              <TableCell>
-                {product.imageUrl ? (
-                  <Image
-                    src={`${API_BASE_URL}${product.imageUrl}`}
-                    alt={product.translations.tr.name}
-                    width={48}
-                    height={48}
-                    className="rounded-lg object-cover"
-                  />
-                ) : (
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#2a2a2a]">
-                    <ImageOff className="h-5 w-5 text-slate-400 dark:text-slate-500" />
-                  </div>
-                )}
-              </TableCell>
-              <TableCell>
-                <span className="font-mono text-xs dark:text-slate-300">{product.productCode}</span>
-              </TableCell>
-              <TableCell>
-                <span className="font-medium dark:text-slate-200">{product.translations.tr.name}</span>
-              </TableCell>
-              <TableCell><span className="dark:text-slate-300">{product.brand || "-"}</span></TableCell>
-              <TableCell>
-                <Chip
-                  size="sm"
-                  color={product.stock > 0 ? "success" : "danger"}
-                  variant="flat"
-                >
-                  {product.stock}
-                </Chip>
-              </TableCell>
-              <TableCell>
-                {formatPrice(
-                  product.individualPrice || product.price,
-                  product.currency
-                )}
-              </TableCell>
-              <TableCell>
-                <span className="text-xs text-slate-500 dark:text-slate-400">
-                  {formatDate(product.updatedAt)}
-                </span>
-              </TableCell>
-              <TableCell>
-                <Dropdown>
-                  <DropdownTrigger>
-                    <Button isIconOnly size="sm" variant="light">
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </DropdownTrigger>
-                  <DropdownMenu aria-label="Ürün işlemleri">
-                    <DropdownItem key="edit" onPress={() => onEdit(product)}>
-                      Düzenle
-                    </DropdownItem>
-                    <DropdownItem
-                      key="delete"
-                      className="text-danger"
-                      color="danger"
-                      onPress={() => onDelete(product.productId, product)}
-                    >
-                      Sil
-                    </DropdownItem>
-                  </DropdownMenu>
-                </Dropdown>
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+          <TableHeader>
+            <TableColumn width={80}>GÖRSEL</TableColumn>
+            <TableColumn>KOD</TableColumn>
+            <TableColumn>ÜRÜN ADI</TableColumn>
+            <TableColumn>MARKA</TableColumn>
+            <TableColumn>STOK</TableColumn>
+            <TableColumn>FİYAT</TableColumn>
+            <TableColumn>GÜNCELLEME</TableColumn>
+            <TableColumn width={50}>İŞLEM</TableColumn>
+          </TableHeader>
+          <TableBody
+            items={products}
+            isLoading={isLoading}
+            loadingContent={<Spinner label="Yükleniyor..." />}
+            emptyContent="Ürün bulunamadı"
+          >
+            {(product) => (
+              <TableRow key={product.productId}>
+                <TableCell>
+                  {product.imageUrl ? (
+                    <Image
+                      src={`${API_BASE_URL}${product.imageUrl}`}
+                      alt={product.translations.tr.name}
+                      width={48}
+                      height={48}
+                      className="rounded-lg object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-slate-100 dark:bg-[#2a2a2a]">
+                      <ImageOff className="h-5 w-5 text-slate-400 dark:text-slate-500" />
+                    </div>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <span className="font-mono text-xs dark:text-slate-300">{product.productCode}</span>
+                </TableCell>
+                <TableCell>
+                  <span className="font-medium dark:text-slate-200">{product.translations.tr.name}</span>
+                </TableCell>
+                <TableCell>
+                  <span className="dark:text-slate-300">{product.brand || "-"}</span>
+                </TableCell>
+                <TableCell>
+                  <Chip size="sm" color={product.stock > 0 ? "success" : "danger"} variant="flat">
+                    {product.stock}
+                  </Chip>
+                </TableCell>
+                <TableCell>
+                  {formatPrice(product.individualPrice || product.price, product.currency)}
+                </TableCell>
+                <TableCell>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">{formatDate(product.updatedAt)}</span>
+                </TableCell>
+                <TableCell>
+                  <Dropdown>
+                    <DropdownTrigger>
+                      <Button isIconOnly size="sm" variant="light">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownTrigger>
+                    <DropdownMenu aria-label="Ürün işlemleri">
+                      <DropdownItem key="edit" onPress={() => onEdit(product)}>
+                        Düzenle
+                      </DropdownItem>
+                      <DropdownItem
+                        key="delete"
+                        className="text-danger"
+                        color="danger"
+                        onPress={() => onDelete(product.productId, product)}
+                      >
+                        Sil
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

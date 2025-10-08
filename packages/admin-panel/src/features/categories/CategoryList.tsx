@@ -13,6 +13,7 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
+  type Selection,
 } from "@heroui/react";
 import { MoreVertical } from "lucide-react";
 import { getCategories } from "./api";
@@ -20,17 +21,38 @@ import type { AdminCategory } from "./types";
 
 interface CategoryListProps {
   onDelete: (categoryId: string) => void;
+  onSelectionChange?: (ids: string[]) => void;
+  onSelectionDetailsChange?: (categories: AdminCategory[]) => void;
+  selectionResetSignal?: number;
   refreshTrigger?: number;
 }
 
 export const CategoryList = ({
   onDelete,
+  onSelectionChange,
+  onSelectionDetailsChange,
+  selectionResetSignal,
   refreshTrigger,
 }: CategoryListProps) => {
   const [categories, setCategories] = useState<AdminCategory[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set<string>());
+
+  const emitSelection = useCallback(
+    (keys: Set<string>) => {
+      setSelectedKeys(keys);
+      const ids = Array.from(keys);
+      onSelectionChange?.(ids);
+
+      if (onSelectionDetailsChange) {
+        const selectedCategories = categories.filter((category) => keys.has(category.id));
+        onSelectionDetailsChange(selectedCategories);
+      }
+    },
+    [categories, onSelectionChange, onSelectionDetailsChange]
+  );
 
   const loadCategories = useCallback(async () => {
     try {
@@ -49,6 +71,33 @@ export const CategoryList = ({
   useEffect(() => {
     loadCategories();
   }, [loadCategories, refreshTrigger]);
+
+  useEffect(() => {
+    const availableIds = new Set(categories.map((category) => category.id));
+    const filteredKeys = new Set<string>(Array.from(selectedKeys).filter((id) => availableIds.has(id)));
+
+    if (filteredKeys.size !== selectedKeys.size) {
+      emitSelection(filteredKeys);
+    }
+  }, [categories, selectedKeys, emitSelection]);
+
+  useEffect(() => {
+    if (selectionResetSignal !== undefined) {
+      emitSelection(new Set<string>());
+    }
+  }, [selectionResetSignal, emitSelection]);
+
+  const handleSelectionChange = useCallback(
+    (keys: Selection) => {
+      const normalized =
+        keys === "all"
+          ? new Set<string>(categories.map((category) => category.id))
+          : new Set<string>(Array.from(keys as Set<string>));
+
+      emitSelection(normalized);
+    },
+    [categories, emitSelection]
+  );
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString("tr-TR", {
@@ -83,7 +132,12 @@ export const CategoryList = ({
       </div>
 
       <div className="overflow-x-auto">
-        <Table aria-label="Kategori listesi">
+        <Table
+          aria-label="Kategori listesi"
+          selectionMode="multiple"
+          selectedKeys={selectedKeys}
+          onSelectionChange={handleSelectionChange}
+        >
           <TableHeader>
             <TableColumn>SLUG</TableColumn>
             <TableColumn>AD (TR)</TableColumn>

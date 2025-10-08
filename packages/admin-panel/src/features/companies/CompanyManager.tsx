@@ -18,6 +18,7 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
+  type Selection,
 } from "@heroui/react";
 import { Building2, PencilLine, RefreshCw } from "lucide-react";
 
@@ -30,6 +31,18 @@ interface EditableCompany {
   nip: string;
 }
 
+const areSetsEqual = (a: Set<string>, b: Set<string>) => {
+  if (a.size !== b.size) {
+    return false;
+  }
+  for (const value of a) {
+    if (!b.has(value)) {
+      return false;
+    }
+  }
+  return true;
+};
+
 export const CompanyManager = () => {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -37,6 +50,7 @@ export const CompanyManager = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCompany, setEditingCompany] = useState<EditableCompany | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set<string>());
   const { showToast } = useToast();
 
   const loadCompanies = useCallback(async () => {
@@ -56,14 +70,59 @@ export const CompanyManager = () => {
     void loadCompanies();
   }, [loadCompanies]);
 
-  const handleEdit = (company: Company) => {
+  useEffect(() => {
+    const availableIds = new Set(companies.map((company) => company.id));
+    const filtered = new Set<string>(Array.from(selectedKeys).filter((id) => availableIds.has(id)));
+    if (!areSetsEqual(filtered, selectedKeys)) {
+      setSelectedKeys(filtered);
+    }
+  }, [companies, selectedKeys]);
+
+  const formattedCompanies = useMemo(
+    () =>
+      companies.map((company) => ({
+        ...company,
+        createdAt: new Date(company.createdAt).toLocaleString("tr-TR"),
+        updatedAt: new Date(company.updatedAt).toLocaleString("tr-TR"),
+      })),
+    [companies]
+  );
+
+  const selectedCompanies = useMemo(
+    () => companies.filter((company) => selectedKeys.has(company.id)),
+    [companies, selectedKeys]
+  );
+
+  const clearSelection = useCallback(() => {
+    setSelectedKeys(new Set<string>());
+  }, []);
+
+  const handleSelectionChange = useCallback(
+    (keys: Selection) => {
+      const normalized =
+        keys === "all"
+          ? new Set<string>(companies.map((company) => company.id))
+          : new Set<string>(Array.from(keys as Set<string>));
+      setSelectedKeys(normalized);
+    },
+    [companies]
+  );
+
+  const handleEdit = useCallback((company: Company) => {
     setEditingCompany({
       id: company.id,
       name: company.name,
       nip: company.nip,
     });
     setIsModalOpen(true);
-  };
+  }, []);
+
+  const handleEditSelected = useCallback(() => {
+    const [first] = selectedCompanies;
+    if (first) {
+      handleEdit(first);
+    }
+  }, [handleEdit, selectedCompanies]);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -95,16 +154,6 @@ export const CompanyManager = () => {
       setIsSaving(false);
     }
   };
-
-  const formattedCompanies = useMemo(
-    () =>
-      companies.map((company) => ({
-        ...company,
-        createdAt: new Date(company.createdAt).toLocaleString("tr-TR"),
-        updatedAt: new Date(company.updatedAt).toLocaleString("tr-TR"),
-      })),
-    [companies]
-  );
 
   return (
     <div className="space-y-6">
@@ -140,7 +189,13 @@ export const CompanyManager = () => {
               </Button>
             </div>
           ) : (
-            <Table aria-label="Şirket listesi" removeWrapper>
+            <Table
+              aria-label="Şirket listesi"
+              removeWrapper
+              selectionMode="multiple"
+              selectedKeys={selectedKeys}
+              onSelectionChange={handleSelectionChange}
+            >
               <TableHeader>
                 <TableColumn>ŞİRKET</TableColumn>
                 <TableColumn>NIP</TableColumn>
@@ -161,9 +216,7 @@ export const CompanyManager = () => {
                         <span className="text-sm font-medium text-slate-900 dark:text-slate-100">
                           {company.name}
                         </span>
-                        <span className="text-xs text-slate-500 dark:text-slate-400">
-                          {company.id}
-                        </span>
+                        <span className="text-xs text-slate-500 dark:text-slate-400">{company.id}</span>
                       </div>
                     </TableCell>
                     <TableCell>
@@ -195,6 +248,24 @@ export const CompanyManager = () => {
         </CardBody>
       </Card>
 
+      {selectedCompanies.length > 0 ? (
+        <Card className="dark:bg-[#1a1a1a] dark:border dark:border-[#2a2a2a]">
+          <CardBody className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+              Seçilen şirket: {selectedCompanies.length}
+            </span>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="flat" onPress={clearSelection}>
+                Seçimi Temizle
+              </Button>
+              <Button color="primary" variant="solid" onPress={handleEditSelected}>
+                İlkini Düzenle
+              </Button>
+            </div>
+          </CardBody>
+        </Card>
+      ) : null}
+
       <Modal isOpen={isModalOpen} onClose={handleCloseModal} size="lg">
         <ModalContent>
           {(close) => (
@@ -206,9 +277,7 @@ export const CompanyManager = () => {
                   variant="bordered"
                   value={editingCompany?.name ?? ""}
                   onValueChange={(value) => {
-                    setEditingCompany((current) =>
-                      current ? { ...current, name: value } : current
-                    );
+                    setEditingCompany((current) => (current ? { ...current, name: value } : current));
                   }}
                 />
                 <Input
@@ -216,9 +285,7 @@ export const CompanyManager = () => {
                   variant="bordered"
                   value={editingCompany?.nip ?? ""}
                   onValueChange={(value) => {
-                    setEditingCompany((current) =>
-                      current ? { ...current, nip: value } : current
-                    );
+                    setEditingCompany((current) => (current ? { ...current, nip: value } : current));
                   }}
                 />
               </ModalBody>

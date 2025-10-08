@@ -20,6 +20,7 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
+  type Selection,
 } from "@heroui/react";
 import { AlertTriangle, Pencil, RefreshCw, Search } from "lucide-react";
 import { getStockAlerts, updateProductQuickSettings } from "./api";
@@ -110,6 +111,12 @@ export const StockAlertsPanel = () => {
     corporatePrice: string;
   }>({ productId: null, stock: "", individualPrice: "", corporatePrice: "" });
   const [isQuickSaving, setIsQuickSaving] = useState(false);
+  const [selectedAlertIds, setSelectedAlertIds] = useState<Set<string>>(new Set<string>());
+
+  const selectedAlerts = useMemo(
+    () => alerts.filter((alert) => selectedAlertIds.has(alert.productId)),
+    [alerts, selectedAlertIds]
+  );
 
   const loadAlerts = useCallback(async () => {
     try {
@@ -132,6 +139,41 @@ export const StockAlertsPanel = () => {
   useEffect(() => {
     void loadAlerts();
   }, [loadAlerts]);
+
+  const areSetsEqual = useCallback((a: Set<string>, b: Set<string>) => {
+    if (a.size !== b.size) {
+      return false;
+    }
+    for (const value of a) {
+      if (!b.has(value)) {
+        return false;
+      }
+    }
+    return true;
+  }, []);
+
+  useEffect(() => {
+    const availableIds = new Set(alerts.map((alert) => alert.productId));
+    const filtered = new Set<string>(Array.from(selectedAlertIds).filter((id) => availableIds.has(id)));
+    if (!areSetsEqual(filtered, selectedAlertIds)) {
+      setSelectedAlertIds(filtered);
+    }
+  }, [alerts, areSetsEqual, selectedAlertIds]);
+
+  const clearSelection = useCallback(() => {
+    setSelectedAlertIds(new Set<string>());
+  }, []);
+
+  const handleSelectionChange = useCallback(
+    (keys: Selection) => {
+      const normalized =
+        keys === "all"
+          ? new Set<string>(alerts.map((alert) => alert.productId))
+          : new Set<string>(Array.from(keys as Set<string>));
+      setSelectedAlertIds(normalized);
+    },
+    [alerts]
+  );
 
   useEffect(() => {
     if (!isQuickModalOpen || !quickEdit.productId) {
@@ -204,6 +246,14 @@ export const StockAlertsPanel = () => {
     });
     setIsQuickModalOpen(true);
   };
+
+  const handleOpenSelectedQuickEdit = useCallback(() => {
+    const [first] = selectedAlerts;
+    if (!first) {
+      return;
+    }
+    handleOpenQuickEdit(first);
+  }, [handleOpenQuickEdit, selectedAlerts]);
 
   const handleCloseQuickEdit = () => {
     setIsQuickModalOpen(false);
@@ -392,7 +442,9 @@ export const StockAlertsPanel = () => {
           <Table
             aria-label="Stok uyarıları"
             isHeaderSticky
-            selectionMode="none"
+            selectionMode="multiple"
+            selectedKeys={selectedAlertIds}
+            onSelectionChange={handleSelectionChange}
             classNames={{ table: "min-w-full" }}
           >
             <TableHeader>
@@ -466,6 +518,23 @@ export const StockAlertsPanel = () => {
           </Table>
         </CardBody>
       </Card>
+      {selectedAlerts.length > 0 ? (
+        <Card>
+          <CardBody className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+              Seçilen ürün: {selectedAlerts.length}
+            </span>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="flat" onPress={clearSelection}>
+                Seçimi Temizle
+              </Button>
+              <Button color="primary" variant="solid" onPress={handleOpenSelectedQuickEdit}>
+                İlkini Düzenle
+              </Button>
+            </div>
+          </CardBody>
+        </Card>
+      ) : null}
       <Modal isOpen={isQuickModalOpen} onClose={handleCloseQuickEdit} size="sm">
         <ModalContent>
           {() => (

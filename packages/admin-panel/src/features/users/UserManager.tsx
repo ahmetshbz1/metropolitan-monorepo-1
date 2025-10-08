@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Button } from "@heroui/react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Button, type Selection } from "@heroui/react";
 import { Users, RefreshCw } from "lucide-react";
 import { getUsers, updateUser, deleteUser } from "../../api/users";
 import type { User, UserFilters as UserFiltersType, UpdateUserInput } from "../../api/users";
@@ -20,6 +20,8 @@ export const UserManager = () => {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [editForm, setEditForm] = useState<UpdateUserInput>({});
+  const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(new Set<string>());
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const confirm = useConfirm();
   const { showToast } = useToast();
 
@@ -59,6 +61,46 @@ export const UserManager = () => {
       setLoading(false);
     }
   };
+
+  const areSetsEqual = useCallback((a: Set<string>, b: Set<string>) => {
+    if (a.size !== b.size) {
+      return false;
+    }
+    for (const value of a) {
+      if (!b.has(value)) {
+        return false;
+      }
+    }
+    return true;
+  }, []);
+
+  useEffect(() => {
+    const availableIds = new Set(users.map((user) => user.id));
+    const filtered = new Set<string>(Array.from(selectedUserIds).filter((id) => availableIds.has(id)));
+    if (!areSetsEqual(filtered, selectedUserIds)) {
+      setSelectedUserIds(filtered);
+    }
+  }, [users, selectedUserIds, areSetsEqual]);
+
+  const selectedUsers = useMemo(
+    () => users.filter((user) => selectedUserIds.has(user.id)),
+    [users, selectedUserIds]
+  );
+
+  const clearSelection = useCallback(() => {
+    setSelectedUserIds(new Set<string>());
+  }, []);
+
+  const handleSelectionChange = useCallback(
+    (keys: Selection) => {
+      const normalized =
+        keys === "all"
+          ? new Set<string>(users.map((user) => user.id))
+          : new Set<string>(Array.from(keys as Set<string>));
+      setSelectedUserIds(normalized);
+    },
+    [users]
+  );
 
   const handleSearch = () => {
     setFilters({ ...filters, search: searchInput || undefined });
@@ -114,6 +156,11 @@ export const UserManager = () => {
       setDrawerOpen(false);
       setSelectedUser(null);
       setEditMode(false);
+      setSelectedUserIds((current) => {
+        const next = new Set(current);
+        next.delete(selectedUser.id);
+        return next;
+      });
       showToast({ type: "success", title: "Kullanıcı silindi" });
     } catch (error) {
       console.error("Kullanıcı silinemedi:", error);
@@ -126,6 +173,62 @@ export const UserManager = () => {
       setDeleting(false);
     }
   };
+
+  const handleBulkDelete = useCallback(async () => {
+    if (selectedUsers.length === 0) {
+      return;
+    }
+
+    const confirmed = await confirm({
+      title: "Seçilen kullanıcıları sil",
+      description: `${selectedUsers.length} kullanıcıyı kalıcı olarak silmek istediğinize emin misiniz?`,
+      confirmLabel: "Sil",
+      cancelLabel: "Vazgeç",
+      tone: "danger",
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setIsBulkDeleting(true);
+      const results = await Promise.allSettled(
+        selectedUsers.map(async (user) => {
+          await deleteUser(user.id);
+          return user;
+        })
+      );
+
+      const succeeded = results.filter(
+        (result): result is PromiseFulfilledResult<User> => result.status === "fulfilled"
+      );
+      const failed = results.filter(
+        (result): result is PromiseRejectedResult => result.status === "rejected"
+      );
+
+      if (succeeded.length > 0) {
+        await loadUsers();
+        showToast({
+          type: "success",
+          title: "Kullanıcılar silindi",
+          description: `${succeeded.length} kullanıcı kaldırıldı.`,
+        });
+      }
+
+      if (failed.length > 0) {
+        console.error("Toplu kullanıcı silme hataları:", failed);
+        showToast({
+          type: "error",
+          title: "Bazı kullanıcılar silinemedi",
+          description: `${failed.length} kullanıcı silinemedi, ayrıntılar için günlükleri kontrol edin.`,
+        });
+      }
+    } finally {
+      setIsBulkDeleting(false);
+      clearSelection();
+    }
+  }, [clearSelection, confirm, loadUsers, selectedUsers, showToast]);
 
   const handleCloseDrawer = () => {
     setDrawerOpen(false);
@@ -157,7 +260,35 @@ export const UserManager = () => {
         onSearch={handleSearch}
       />
 
-      <UserTable users={users} loading={loading} onUserSelect={handleUserSelect} />
+      <UserTable
+        users={users}
+        loading={loading}
+        onUserSelect={handleUserSelect}
+        selectedKeys={selectedUserIds}
+        onSelectionChange={handleSelectionChange}
+      />
+
+      {selectedUsers.length > 0 ? (
+        <div className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 dark:border-[#2a2a2a] dark:bg-[#161616] dark:text-slate-200">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <span className="font-semibold">Seçilen kullanıcı: {selectedUsers.length}</span>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="flat" onPress={clearSelection} className="min-w-[140px]">
+                Seçimi Temizle
+              </Button>
+              <Button
+                color="danger"
+                variant="solid"
+                onPress={() => void handleBulkDelete()}
+                isLoading={isBulkDeleting}
+                className="min-w-[160px]"
+              >
+                Seçilenleri Sil
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <UserDrawer
         isOpen={drawerOpen}

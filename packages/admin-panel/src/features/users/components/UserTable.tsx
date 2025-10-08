@@ -10,6 +10,7 @@ import {
   TableColumn,
   TableHeader,
   TableRow,
+  type Selection,
 } from "@heroui/react";
 import type { User } from "../../../api/users";
 
@@ -17,6 +18,9 @@ interface UserTableProps {
   users: User[];
   loading: boolean;
   onUserSelect: (user: User) => void;
+  selectedKeys?: Set<string>;
+  onSelectionChange?: (keys: Selection) => void;
+  selectionMode?: "single" | "multiple";
 }
 
 const formatDate = (dateString: string) => {
@@ -41,7 +45,14 @@ const getUserTypeChip = (userType: string) => {
   );
 };
 
-export const UserTable = ({ users, loading, onUserSelect }: UserTableProps) => {
+export const UserTable = ({
+  users,
+  loading,
+  onUserSelect,
+  selectedKeys,
+  onSelectionChange,
+  selectionMode = "multiple",
+}: UserTableProps) => {
   return (
     <Card className="dark:bg-[#1a1a1a] dark:border dark:border-[#2a2a2a]">
       <CardBody>
@@ -50,7 +61,12 @@ export const UserTable = ({ users, loading, onUserSelect }: UserTableProps) => {
             <Spinner size="lg" color="primary" />
           </div>
         ) : (
-          <Table aria-label="Kullanıcılar tablosu">
+          <Table
+            aria-label="Kullanıcılar tablosu"
+            selectionMode={selectionMode}
+            selectedKeys={selectedKeys}
+            onSelectionChange={onSelectionChange}
+          >
             <TableHeader>
               <TableColumn>AD SOYAD</TableColumn>
               <TableColumn>TELEFON</TableColumn>

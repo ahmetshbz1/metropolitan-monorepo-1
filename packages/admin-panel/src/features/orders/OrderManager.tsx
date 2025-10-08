@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Card,
   CardBody,
@@ -198,11 +198,61 @@ export const OrderManager = () => {
     estimatedDelivery: "",
     notes: "",
   });
+  const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(new Set<string>());
+
+  const selectedOrders = useMemo(
+    () => orders.filter((order) => selectedOrderIds.has(order.id)),
+    [orders, selectedOrderIds]
+  );
   const [cancelReason, setCancelReason] = useState("");
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<string | null>(null);
   const [exportingFormat, setExportingFormat] = useState<"csv" | "xlsx" | null>(null);
   const { showToast } = useToast();
+
+  const areSetsEqual = useCallback((a: Set<string>, b: Set<string>) => {
+    if (a.size !== b.size) {
+      return false;
+    }
+    for (const value of a) {
+      if (!b.has(value)) {
+        return false;
+      }
+    }
+    return true;
+  }, []);
+
+  useEffect(() => {
+    const availableIds = new Set(orders.map((order) => order.id));
+    const filtered = new Set<string>(Array.from(selectedOrderIds).filter((id) => availableIds.has(id)));
+    if (!areSetsEqual(filtered, selectedOrderIds)) {
+      setSelectedOrderIds(filtered);
+    }
+  }, [areSetsEqual, orders, selectedOrderIds]);
+
+  const clearOrderSelection = useCallback(() => {
+    setSelectedOrderIds(new Set<string>());
+  }, []);
+
+  const handleOrderSelectionChange = useCallback(
+    (keys: Selection) => {
+      const normalized =
+        keys === "all"
+          ? new Set<string>(orders.map((order) => order.id))
+          : new Set<string>(Array.from(keys as Set<string>));
+      setSelectedOrderIds(normalized);
+    },
+    [orders]
+  );
+
+  const handleOpenFirstSelected = useCallback(() => {
+    const [first] = selectedOrders;
+    if (!first) {
+      return;
+    }
+    setSelectedOrder(first);
+    setDrawerOpen(true);
+  }, [selectedOrders]);
 
   useEffect(() => {
     loadOrders();
@@ -627,6 +677,23 @@ export const OrderManager = () => {
           </div>
         </CardBody>
       </Card>
+      {selectedOrders.length > 0 ? (
+        <Card className="dark:bg-[#1a1a1a] dark:border dark:border-[#2a2a2a]">
+          <CardBody className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+              Seçilen sipariş: {selectedOrders.length}
+            </span>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="flat" onPress={clearOrderSelection}>
+                Seçimi Temizle
+              </Button>
+              <Button color="primary" variant="solid" onPress={handleOpenFirstSelected}>
+                İlkini Aç
+              </Button>
+            </div>
+          </CardBody>
+        </Card>
+      ) : null}
 
       <Card className="dark:bg-[#1a1a1a] dark:border dark:border-[#2a2a2a]">
         <CardBody>
@@ -635,7 +702,12 @@ export const OrderManager = () => {
               <Spinner size="lg" color="primary" />
             </div>
           ) : (
-            <Table aria-label="Siparişler tablosu">
+            <Table
+              aria-label="Siparişler tablosu"
+              selectionMode="multiple"
+              selectedKeys={selectedOrderIds}
+              onSelectionChange={handleOrderSelectionChange}
+            >
               <TableHeader>
                 <TableColumn>SİPARİŞ NO</TableColumn>
                 <TableColumn>MÜŞTERİ</TableColumn>

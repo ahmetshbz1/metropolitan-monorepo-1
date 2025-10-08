@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Button, Drawer, DrawerBody, DrawerContent, DrawerHeader } from "@heroui/react";
 import { Download, Plus, Upload } from "lucide-react";
 
@@ -17,8 +17,29 @@ export const ProductManager = () => {
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [exportingFormat, setExportingFormat] = useState<"csv" | "xlsx" | null>(null);
   const [importSummary, setImportSummary] = useState<ProductImportSummary | null>(null);
+  const [selectedProducts, setSelectedProducts] = useState<AdminProduct[]>([]);
+  const [selectionResetSignal, setSelectionResetSignal] = useState(0);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const { showToast } = useToast();
   const confirm = useConfirm();
+
+  const clearSelection = useCallback(() => {
+    setSelectedProducts([]);
+    setSelectionResetSignal((prev) => prev + 1);
+  }, []);
+
+  const handleSelectionDetailsChange = useCallback((items: AdminProduct[]) => {
+    setSelectedProducts(items);
+  }, []);
+
+  const handleSelectionIdsChange = useCallback(
+    (ids: string[]) => {
+      if (ids.length === 0) {
+        setSelectedProducts([]);
+      }
+    },
+    []
+  );
 
   const handleCreate = async (payload: AdminProductPayload) => {
     await createProduct(payload);
@@ -56,6 +77,7 @@ export const ProductManager = () => {
     try {
       await deleteProduct(productId);
       setRefreshTrigger((prev) => prev + 1);
+      setSelectedProducts((current) => current.filter((item) => item.productId !== productId));
       showToast({
         type: "success",
         title: "Ürün silindi",
@@ -66,6 +88,63 @@ export const ProductManager = () => {
       showToast({ type: "error", title: "Silme işlemi başarısız", description: message });
     }
   };
+
+  const handleBulkDelete = useCallback(async () => {
+    if (selectedProducts.length === 0) {
+      return;
+    }
+
+    const confirmed = await confirm({
+      title: "Seçilen ürünleri sil",
+      description: `${selectedProducts.length} ürünü kalıcı olarak silmek istediğinize emin misiniz?` +
+        " Ürünler siparişlerde kullanılıyorsa silme işlemi engellenecektir.",
+      confirmLabel: "Sil",
+      cancelLabel: "Vazgeç",
+      tone: "danger",
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setIsBulkDeleting(true);
+      const results = await Promise.allSettled(
+        selectedProducts.map(async (product) => {
+          await deleteProduct(product.productId);
+          return product;
+        })
+      );
+
+      const succeeded = results.filter(
+        (result): result is PromiseFulfilledResult<AdminProduct> => result.status === "fulfilled"
+      );
+      const failed = results.filter(
+        (result): result is PromiseRejectedResult => result.status === "rejected"
+      );
+
+      if (succeeded.length > 0) {
+        setRefreshTrigger((prev) => prev + 1);
+        showToast({
+          type: "success",
+          title: "Silme işlemi tamamlandı",
+          description: `${succeeded.length} ürün listeden kaldırıldı.`,
+        });
+      }
+
+      if (failed.length > 0) {
+        console.error("Toplu ürün silme hataları:", failed);
+        showToast({
+          type: "error",
+          title: "Bazı ürünler silinemedi",
+          description: `${failed.length} ürün silinemedi, ayrıntılar için günlükleri kontrol edin.`,
+        });
+      }
+    } finally {
+      setIsBulkDeleting(false);
+      clearSelection();
+    }
+  }, [clearSelection, confirm, selectedProducts, showToast]);
 
   const handleEdit = (product: AdminProduct) => {
     setEditingProduct(product);
@@ -189,8 +268,33 @@ export const ProductManager = () => {
       <ProductList
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onSelectionChange={handleSelectionIdsChange}
+        onSelectionDetailsChange={handleSelectionDetailsChange}
+        selectionResetSignal={selectionResetSignal}
         refreshTrigger={refreshTrigger}
       />
+
+      {selectedProducts.length > 0 ? (
+        <div className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 dark:border-[#2a2a2a] dark:bg-[#161616] dark:text-slate-200">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <span className="font-semibold">Seçilen ürün: {selectedProducts.length}</span>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="flat" onPress={clearSelection} className="min-w-[140px]">
+                Seçimi Temizle
+              </Button>
+              <Button
+                color="danger"
+                variant="solid"
+                onPress={() => void handleBulkDelete()}
+                isLoading={isBulkDeleting}
+                className="min-w-[160px]"
+              >
+                Seçilenleri Sil
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <Drawer
         isOpen={isDrawerOpen}
