@@ -253,27 +253,6 @@ export const ProductManager = () => {
         </div>
       </div>
 
-      {importSummary ? (
-        <div className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600 dark:border-[#2a2a2a] dark:bg-[#161616] dark:text-slate-200">
-          <span className="font-medium text-slate-700 dark:text-slate-100">Son toplu yükleme özeti:</span>
-          <div className="mt-1 flex flex-wrap gap-3">
-            <span>İşlenen: {importSummary.processed}</span>
-            <span>Güncellenen: {importSummary.updated}</span>
-            <span>Atlanan: {importSummary.skipped}</span>
-            <span>Hata: {importSummary.errors.length}</span>
-          </div>
-        </div>
-      ) : null}
-
-      <ProductList
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onSelectionChange={handleSelectionIdsChange}
-        onSelectionDetailsChange={handleSelectionDetailsChange}
-        selectionResetSignal={selectionResetSignal}
-        refreshTrigger={refreshTrigger}
-      />
-
       {selectedProducts.length > 0 ? (
         <div className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 dark:border-[#2a2a2a] dark:bg-[#161616] dark:text-slate-200">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -295,6 +274,27 @@ export const ProductManager = () => {
           </div>
         </div>
       ) : null}
+
+      {importSummary ? (
+        <div className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600 dark:border-[#2a2a2a] dark:bg-[#161616] dark:text-slate-200">
+          <span className="font-medium text-slate-700 dark:text-slate-100">Son toplu yükleme özeti:</span>
+          <div className="mt-1 flex flex-wrap gap-3">
+            <span>İşlenen: {importSummary.processed}</span>
+            <span>Güncellenen: {importSummary.updated}</span>
+            <span>Atlanan: {importSummary.skipped}</span>
+            <span>Hata: {importSummary.errors.length}</span>
+          </div>
+        </div>
+      ) : null}
+
+      <ProductList
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        onSelectionChange={handleSelectionIdsChange}
+        onSelectionDetailsChange={handleSelectionDetailsChange}
+        selectionResetSignal={selectionResetSignal}
+        refreshTrigger={refreshTrigger}
+      />
 
       <Drawer
         isOpen={isDrawerOpen}

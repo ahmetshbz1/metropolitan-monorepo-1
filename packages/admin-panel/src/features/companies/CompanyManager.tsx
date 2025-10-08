@@ -179,6 +179,24 @@ export const CompanyManager = () => {
         </Button>
       </div>
 
+      {selectedCompanies.length > 0 ? (
+        <Card className="dark:bg-[#1a1a1a] dark:border dark:border-[#2a2a2a]">
+          <CardBody className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+              Seçilen şirket: {selectedCompanies.length}
+            </span>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="flat" onPress={clearSelection}>
+                Seçimi Temizle
+              </Button>
+              <Button color="primary" variant="solid" onPress={handleEditSelected}>
+                İlkini Düzenle
+              </Button>
+            </div>
+          </CardBody>
+        </Card>
+      ) : null}
+
       <Card className="dark:bg-[#1a1a1a] dark:border dark:border-[#2a2a2a]">
         <CardBody>
           {error ? (
@@ -247,24 +265,6 @@ export const CompanyManager = () => {
           )}
         </CardBody>
       </Card>
-
-      {selectedCompanies.length > 0 ? (
-        <Card className="dark:bg-[#1a1a1a] dark:border dark:border-[#2a2a2a]">
-          <CardBody className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-              Seçilen şirket: {selectedCompanies.length}
-            </span>
-            <div className="flex flex-wrap gap-2">
-              <Button variant="flat" onPress={clearSelection}>
-                Seçimi Temizle
-              </Button>
-              <Button color="primary" variant="solid" onPress={handleEditSelected}>
-                İlkini Düzenle
-              </Button>
-            </div>
-          </CardBody>
-        </Card>
-      ) : null}
 
       <Modal isOpen={isModalOpen} onClose={handleCloseModal} size="lg">
         <ModalContent>

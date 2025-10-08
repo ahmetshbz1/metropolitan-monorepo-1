@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Button, type Selection } from "@heroui/react";
+import { Button, Pagination, type Selection } from "@heroui/react";
 import { Users, RefreshCw } from "lucide-react";
 import { getUsers, updateUser, deleteUser } from "../../api/users";
 import type { User, UserFilters as UserFiltersType, UpdateUserInput } from "../../api/users";
@@ -20,14 +20,30 @@ export const UserManager = () => {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [editForm, setEditForm] = useState<UpdateUserInput>({});
+  const [limit] = useState(25);
+  const [offset, setOffset] = useState(0);
+  const [totalUsers, setTotalUsers] = useState(0);
   const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(new Set<string>());
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const confirm = useConfirm();
   const { showToast } = useToast();
 
+  const loadUsers = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await getUsers({ ...filters, limit, offset });
+      setUsers(response.users);
+      setTotalUsers(response.total);
+    } catch (error) {
+      console.error("Kullanıcılar yüklenemedi:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [filters, limit, offset]);
+
   useEffect(() => {
-    loadUsers();
-  }, [filters]);
+    void loadUsers();
+  }, [loadUsers]);
 
   useEffect(() => {
     if (selectedUser && editMode) {
@@ -49,18 +65,6 @@ export const UserManager = () => {
       });
     }
   }, [selectedUser, editMode]);
-
-  const loadUsers = async () => {
-    try {
-      setLoading(true);
-      const response = await getUsers(filters);
-      setUsers(response.users);
-    } catch (error) {
-      console.error("Kullanıcılar yüklenemedi:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const areSetsEqual = useCallback((a: Set<string>, b: Set<string>) => {
     if (a.size !== b.size) {
@@ -103,8 +107,14 @@ export const UserManager = () => {
   );
 
   const handleSearch = () => {
+    setOffset(0);
     setFilters({ ...filters, search: searchInput || undefined });
   };
+
+  const handleFiltersChange = useCallback((nextFilters: UserFiltersType) => {
+    setOffset(0);
+    setFilters(nextFilters);
+  }, []);
 
   const handleUserSelect = (user: User) => {
     setSelectedUser(user);
@@ -235,6 +245,13 @@ export const UserManager = () => {
     setEditMode(false);
   };
 
+  const currentPage = Math.floor(offset / limit) + 1;
+  const totalPages = Math.max(1, Math.ceil(totalUsers / limit));
+
+  const handlePageChange = (page: number) => {
+    setOffset((page - 1) * limit);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -251,22 +268,6 @@ export const UserManager = () => {
           Yenile
         </Button>
       </div>
-
-      <UserFilters
-        filters={filters}
-        searchInput={searchInput}
-        onSearchInputChange={setSearchInput}
-        onFiltersChange={setFilters}
-        onSearch={handleSearch}
-      />
-
-      <UserTable
-        users={users}
-        loading={loading}
-        onUserSelect={handleUserSelect}
-        selectedKeys={selectedUserIds}
-        onSelectionChange={handleSelectionChange}
-      />
 
       {selectedUsers.length > 0 ? (
         <div className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 dark:border-[#2a2a2a] dark:bg-[#161616] dark:text-slate-200">
@@ -289,6 +290,34 @@ export const UserManager = () => {
           </div>
         </div>
       ) : null}
+
+      <UserFilters
+        filters={filters}
+        searchInput={searchInput}
+        onSearchInputChange={setSearchInput}
+        onFiltersChange={handleFiltersChange}
+        onSearch={handleSearch}
+      />
+
+      {totalPages > 1 ? (
+        <div className="flex justify-end">
+          <Pagination
+            size="sm"
+            showControls
+            total={totalPages}
+            page={currentPage}
+            onChange={handlePageChange}
+          />
+        </div>
+      ) : null}
+
+      <UserTable
+        users={users}
+        loading={loading}
+        onUserSelect={handleUserSelect}
+        selectedKeys={selectedUserIds}
+        onSelectionChange={handleSelectionChange}
+      />
 
       <UserDrawer
         isOpen={drawerOpen}

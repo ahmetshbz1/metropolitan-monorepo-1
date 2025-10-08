@@ -14,6 +14,7 @@ import {
   DropdownMenu,
   DropdownItem,
   Image,
+  Pagination,
   type Selection,
 } from "@heroui/react";
 import { MoreVertical, ImageOff } from "lucide-react";
@@ -54,7 +55,7 @@ export const ProductList = ({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
-  const [limit] = useState(1000);
+  const [limit] = useState(50);
   const [offset, setOffset] = useState(0);
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set<string>());
 
@@ -88,7 +89,7 @@ export const ProductList = ({
   }, [limit, offset]);
 
   useEffect(() => {
-    loadProducts();
+    void loadProducts();
   }, [loadProducts, refreshTrigger]);
 
   useEffect(() => {
@@ -119,18 +120,10 @@ export const ProductList = ({
   );
 
   const currentPage = Math.floor(offset / limit) + 1;
-  const totalPages = Math.ceil(total / limit);
+  const totalPages = Math.max(1, Math.ceil(total / limit));
 
-  const handleNextPage = () => {
-    if (offset + limit < total) {
-      setOffset(offset + limit);
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (offset > 0) {
-      setOffset(Math.max(0, offset - limit));
-    }
+  const handlePageChange = (page: number) => {
+    setOffset((page - 1) * limit);
   };
 
   const formatPrice = (price: number | null, currency: string) => {
@@ -169,22 +162,14 @@ export const ProductList = ({
           </Chip>
         </div>
         {totalPages > 1 ? (
-          <div className="flex items-center gap-2">
-            <Button size="sm" variant="flat" isDisabled={offset === 0} onPress={handlePrevPage}>
-              Önceki
-            </Button>
-            <span className="text-sm text-slate-600 dark:text-slate-400">
-              Sayfa {currentPage} / {totalPages}
-            </span>
-            <Button
-              size="sm"
-              variant="flat"
-              isDisabled={offset + limit >= total}
-              onPress={handleNextPage}
-            >
-              Sonraki
-            </Button>
-          </div>
+          <Pagination
+            size="sm"
+            showControls
+            total={totalPages}
+            page={currentPage}
+            onChange={handlePageChange}
+            className="ml-auto"
+          />
         ) : null}
       </div>
 

@@ -25,6 +25,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  Pagination,
   type Selection,
 } from "@heroui/react";
 import { Download, Package, RefreshCw } from "lucide-react";
@@ -186,6 +187,9 @@ export const OrderManager = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<OrderFilters>({});
+  const [limit] = useState(25);
+  const [offset, setOffset] = useState(0);
+  const [totalOrders, setTotalOrders] = useState(0);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
@@ -209,6 +213,21 @@ export const OrderManager = () => {
   const [pendingStatus, setPendingStatus] = useState<string | null>(null);
   const [exportingFormat, setExportingFormat] = useState<"csv" | "xlsx" | null>(null);
   const { showToast } = useToast();
+
+  const loadOrders = useCallback(async (): Promise<OrdersResponse | undefined> => {
+    try {
+      setLoading(true);
+      const response = await getOrders({ ...filters, limit, offset });
+      setOrders(response.orders);
+      setTotalOrders(response.total);
+      return response;
+    } catch (error) {
+      console.error("Siparişler yüklenemedi:", error);
+      return undefined;
+    } finally {
+      setLoading(false);
+    }
+  }, [filters, limit, offset]);
 
   const areSetsEqual = useCallback((a: Set<string>, b: Set<string>) => {
     if (a.size !== b.size) {
@@ -254,9 +273,16 @@ export const OrderManager = () => {
     setDrawerOpen(true);
   }, [selectedOrders]);
 
+  const currentPage = Math.floor(offset / limit) + 1;
+  const totalPages = Math.max(1, Math.ceil(totalOrders / limit));
+
+  const handlePageChange = (page: number) => {
+    setOffset((page - 1) * limit);
+  };
+
   useEffect(() => {
-    loadOrders();
-  }, [filters]);
+    void loadOrders();
+  }, [loadOrders]);
 
   useEffect(() => {
     setInvoicePreviewOpen(false);
@@ -299,20 +325,6 @@ export const OrderManager = () => {
   }, [selectedOrder]);
 
   const invoiceAvailable = Boolean(selectedOrder?.invoiceGeneratedAt || selectedOrder?.invoicePdfPath);
-
-  const loadOrders = async (): Promise<OrdersResponse | undefined> => {
-    try {
-      setLoading(true);
-      const response = await getOrders(filters);
-      setOrders(response.orders);
-      return response;
-    } catch (error) {
-      console.error("Siparişler yüklenemedi:", error);
-      return undefined;
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleExportOrders = async (format: "csv" | "xlsx") => {
     try {
@@ -637,11 +649,13 @@ export const OrderManager = () => {
               selectedKeys={filters.status ? new Set<Selection>([filters.status]) : new Set()}
               onSelectionChange={(keys) => {
                 if (keys === "all" || keys.size === 0) {
+                  setOffset(0);
                   setFilters({ ...filters, status: undefined });
                   return;
                 }
 
                 const [value] = keys;
+                setOffset(0);
                 setFilters({ ...filters, status: value as string });
               }}
               classNames={{
@@ -659,11 +673,13 @@ export const OrderManager = () => {
               selectedKeys={filters.paymentStatus ? new Set<Selection>([filters.paymentStatus]) : new Set()}
               onSelectionChange={(keys) => {
                 if (keys === "all" || keys.size === 0) {
+                  setOffset(0);
                   setFilters({ ...filters, paymentStatus: undefined });
                   return;
                 }
 
                 const [value] = keys;
+                setOffset(0);
                 setFilters({ ...filters, paymentStatus: value as string });
               }}
               classNames={{
@@ -693,6 +709,18 @@ export const OrderManager = () => {
             </div>
           </CardBody>
         </Card>
+      ) : null}
+
+      {totalPages > 1 ? (
+        <div className="flex justify-end">
+          <Pagination
+            size="sm"
+            showControls
+            total={totalPages}
+            page={currentPage}
+            onChange={handlePageChange}
+          />
+        </div>
       ) : null}
 
       <Card className="dark:bg-[#1a1a1a] dark:border dark:border-[#2a2a2a]">

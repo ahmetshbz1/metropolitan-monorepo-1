@@ -141,14 +141,6 @@ export const CategoryManager = () => {
         </Button>
       </div>
 
-      <CategoryList
-        onDelete={handleDelete}
-        onSelectionChange={handleSelectionIdsChange}
-        onSelectionDetailsChange={handleSelectionDetailsChange}
-        selectionResetSignal={selectionResetSignal}
-        refreshTrigger={refreshTrigger}
-      />
-
       {selectedCategories.length > 0 ? (
         <div className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 dark:border-[#2a2a2a] dark:bg-[#161616] dark:text-slate-200">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -170,6 +162,14 @@ export const CategoryManager = () => {
           </div>
         </div>
       ) : null}
+
+      <CategoryList
+        onDelete={handleDelete}
+        onSelectionChange={handleSelectionIdsChange}
+        onSelectionDetailsChange={handleSelectionDetailsChange}
+        selectionResetSignal={selectionResetSignal}
+        refreshTrigger={refreshTrigger}
+      />
 
       <Drawer
         isOpen={isDrawerOpen}

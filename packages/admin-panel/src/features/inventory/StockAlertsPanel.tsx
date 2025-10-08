@@ -437,6 +437,24 @@ export const StockAlertsPanel = () => {
         </CardBody>
       </Card>
 
+      {selectedAlerts.length > 0 ? (
+        <Card>
+          <CardBody className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+              Seçilen ürün: {selectedAlerts.length}
+            </span>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="flat" onPress={clearSelection}>
+                Seçimi Temizle
+              </Button>
+              <Button color="primary" variant="solid" onPress={handleOpenSelectedQuickEdit}>
+                İlkini Düzenle
+              </Button>
+            </div>
+          </CardBody>
+        </Card>
+      ) : null}
+
       <Card>
         <CardBody className="p-0">
           <Table
@@ -518,23 +536,6 @@ export const StockAlertsPanel = () => {
           </Table>
         </CardBody>
       </Card>
-      {selectedAlerts.length > 0 ? (
-        <Card>
-          <CardBody className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-              Seçilen ürün: {selectedAlerts.length}
-            </span>
-            <div className="flex flex-wrap gap-2">
-              <Button variant="flat" onPress={clearSelection}>
-                Seçimi Temizle
-              </Button>
-              <Button color="primary" variant="solid" onPress={handleOpenSelectedQuickEdit}>
-                İlkini Düzenle
-              </Button>
-            </div>
-          </CardBody>
-        </Card>
-      ) : null}
       <Modal isOpen={isQuickModalOpen} onClose={handleCloseQuickEdit} size="sm">
         <ModalContent>
           {() => (
