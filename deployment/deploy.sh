@@ -5,7 +5,7 @@ echo '🚀 Starting deployment...'
 
 # Variables
 REPO_DIR='/opt/metropolitan'
-BRANCH='prod'
+BRANCH='main'
 ENV_FILE='/opt/metropolitan.env'
 
 # Create directory if not exists
@@ -46,17 +46,39 @@ docker-compose down || true
 
 # Build and start services
 echo '🔨 Building Docker images...'
-docker-compose build --no-cache backend web-app
+docker-compose build --no-cache backend web-app admin-panel
 
-echo '🚀 Starting services...'
+echo '🚀 Starting database services...'
 docker-compose up -d postgres redis
-sleep 10
+echo '⏳ Waiting for database to be ready...'
+sleep 15
+
+echo '🗄️ Running database migrations...'
+docker-compose run --rm backend bun run db:migrate
+
+echo '🌱 Seeding system data...'
+docker-compose run --rm backend bun run db:seed
+
+echo '👥 Creating admin users...'
+docker-compose run --rm backend bun run db:seed:admins
 
 echo '🚀 Starting backend...'
 docker-compose up -d backend
+echo '⏳ Waiting for backend to be ready...'
+sleep 10
 
 echo '🌐 Starting web-app...'
 docker-compose up -d web-app
 
+echo '👨‍💼 Starting admin-panel...'
+docker-compose up -d admin-panel
+
 echo '✅ Deployment complete!'
+echo ''
+echo '📊 Container status:'
 docker-compose ps
+echo ''
+echo '🔗 Services:'
+echo '   - API: https://api.metropolitanfg.pl'
+echo '   - Web: https://metropolitanfg.pl'
+echo '   - Admin: https://admin.metropolitanfg.pl'

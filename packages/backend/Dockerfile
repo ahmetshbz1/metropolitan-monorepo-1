@@ -33,5 +33,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
   CMD curl -f http://localhost:3000/health || exit 1
 
-# Run TypeScript directly with Bun (no build needed)
-CMD ["bun", "--hot", "index.ts"]
+# Run TypeScript directly with Bun (production mode, no hot reload)
+CMD ["bun", "index.ts"]
