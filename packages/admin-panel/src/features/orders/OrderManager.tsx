@@ -37,6 +37,7 @@ import {
 } from "../../api/orders";
 import type { Order, OrderFilters, OrdersResponse, UpdateOrderStatusInput } from "../../api/orders";
 import { API_BASE_URL } from "../../config/env";
+import { useToast } from "../../hooks/useToast";
 
 const ORDER_STATUSES = [
   { value: "pending", label: "Beklemede", color: "warning" },
@@ -201,6 +202,7 @@ export const OrderManager = () => {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<string | null>(null);
   const [exportingFormat, setExportingFormat] = useState<"csv" | "xlsx" | null>(null);
+  const { showToast } = useToast();
 
   useEffect(() => {
     loadOrders();
@@ -280,9 +282,18 @@ export const OrderManager = () => {
       link.click();
       link.remove();
       URL.revokeObjectURL(url);
+      showToast({
+        type: "success",
+        title: format === "xlsx" ? "Siparişler Excel olarak indirildi" : "Siparişler CSV olarak indirildi",
+        duration: 3000,
+      });
     } catch (error) {
       console.error("Siparişler indirilemedi:", error);
-      window.alert("Sipariş dışa aktarımı başarısız oldu.");
+      showToast({
+        type: "error",
+        title: "Sipariş dışa aktarma başarısız",
+        description: error instanceof Error ? error.message : undefined,
+      });
     } finally {
       setExportingFormat(null);
     }
@@ -508,11 +519,20 @@ export const OrderManager = () => {
 
       if (nav?.clipboard?.writeText) {
         await nav.clipboard.writeText(shareUrl);
-        window.alert("Fatura bağlantısı panoya kopyalandı.");
+        showToast({
+          type: "success",
+          title: "Bağlantı kopyalandı",
+          description: "Fatura bağlantısı panoya kopyalandı.",
+        });
         return;
       }
     } catch (error) {
       console.error("Fatura paylaşımı başarısız:", error);
+      showToast({
+        type: "error",
+        title: "Paylaşım başarısız",
+        description: error instanceof Error ? error.message : undefined,
+      });
     }
 
     window.open(shareUrl, "_blank", "noopener,noreferrer");

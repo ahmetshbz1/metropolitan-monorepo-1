@@ -6,10 +6,14 @@ import { deleteCategory, createCategory } from "./api";
 import { CategoryForm } from "./CategoryForm";
 import { CategoryList } from "./CategoryList";
 import type { AdminCategoryPayload } from "./types";
+import { useConfirm } from "../../hooks/useConfirm";
+import { useToast } from "../../hooks/useToast";
 
 export const CategoryManager = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const confirm = useConfirm();
+  const { showToast } = useToast();
 
   const handleCreate = async (payload: AdminCategoryPayload) => {
     await createCategory(payload);
@@ -18,15 +22,25 @@ export const CategoryManager = () => {
   };
 
   const handleDelete = async (categoryId: string) => {
-    if (!confirm("Bu kategoriyi silmek istediğinize emin misiniz?")) {
+    const confirmed = await confirm({
+      title: "Kategori Sil",
+      description: "Bu kategoriyi kalıcı olarak silmek istediğinizden emin misiniz?",
+      confirmLabel: "Sil",
+      cancelLabel: "Vazgeç",
+      tone: "danger",
+    });
+
+    if (!confirmed) {
       return;
     }
 
     try {
       await deleteCategory(categoryId);
       setRefreshTrigger((prev) => prev + 1);
+      showToast({ type: "success", title: "Kategori silindi" });
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Kategori silinemedi");
+      const message = error instanceof Error ? error.message : "Kategori silinemedi";
+      showToast({ type: "error", title: "Silme başarısız", description: message });
     }
   };
 

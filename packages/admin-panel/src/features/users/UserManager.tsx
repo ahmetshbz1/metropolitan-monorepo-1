@@ -6,6 +6,8 @@ import type { User, UserFilters as UserFiltersType, UpdateUserInput } from "../.
 import { UserFilters } from "./components/UserFilters";
 import { UserTable } from "./components/UserTable";
 import { UserDrawer } from "./components/UserDrawer";
+import { useConfirm } from "../../hooks/useConfirm";
+import { useToast } from "../../hooks/useToast";
 
 export const UserManager = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -18,6 +20,8 @@ export const UserManager = () => {
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [editForm, setEditForm] = useState<UpdateUserInput>({});
+  const confirm = useConfirm();
+  const { showToast } = useToast();
 
   useEffect(() => {
     loadUsers();
@@ -76,8 +80,14 @@ export const UserManager = () => {
       setEditMode(false);
       setDrawerOpen(false);
       setSelectedUser(null);
+      showToast({ type: "success", title: "Kullanıcı güncellendi" });
     } catch (error) {
       console.error("Kullanıcı güncellenemedi:", error);
+      showToast({
+        type: "error",
+        title: "Güncelleme başarısız",
+        description: error instanceof Error ? error.message : undefined,
+      });
     } finally {
       setSaving(false);
     }
@@ -85,8 +95,17 @@ export const UserManager = () => {
 
   const handleDelete = async () => {
     if (!selectedUser) return;
-    if (!confirm(`${selectedUser.phoneNumber} numaralı kullanıcıyı silmek istediğinize emin misiniz?`))
+    const confirmed = await confirm({
+      title: "Kullanıcıyı Sil",
+      description: `${selectedUser.phoneNumber} numaralı kullanıcıyı silmek istediğinize emin misiniz?`,
+      confirmLabel: "Sil",
+      cancelLabel: "Vazgeç",
+      tone: "danger",
+    });
+
+    if (!confirmed) {
       return;
+    }
 
     try {
       setDeleting(true);
@@ -95,8 +114,14 @@ export const UserManager = () => {
       setDrawerOpen(false);
       setSelectedUser(null);
       setEditMode(false);
+      showToast({ type: "success", title: "Kullanıcı silindi" });
     } catch (error) {
       console.error("Kullanıcı silinemedi:", error);
+      showToast({
+        type: "error",
+        title: "Silme başarısız",
+        description: error instanceof Error ? error.message : undefined,
+      });
     } finally {
       setDeleting(false);
     }

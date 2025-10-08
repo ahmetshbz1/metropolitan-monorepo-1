@@ -1,4 +1,4 @@
-import { useMemo, useState, type ChangeEvent } from "react";
+import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import {
   Button,
   Modal,
@@ -28,6 +28,14 @@ export const ProductImportModal = ({
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [summary, setSummary] = useState<ProductImportSummary | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setSelectedFile(null);
+      setSummary(null);
+      setError(null);
+    }
+  }, [isOpen]);
 
   const handleClose = () => {
     setSelectedFile(null);

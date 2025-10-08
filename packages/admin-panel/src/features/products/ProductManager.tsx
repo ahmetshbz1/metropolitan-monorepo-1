@@ -7,6 +7,8 @@ import { ProductFormV2 } from "./ProductForm.v2";
 import { ProductList } from "./ProductList";
 import { ProductImportModal } from "./ProductImportModal";
 import type { AdminProduct, AdminProductPayload, ProductImportSummary } from "./types";
+import { useToast } from "../../hooks/useToast";
+import { useConfirm } from "../../hooks/useConfirm";
 
 export const ProductManager = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -15,6 +17,8 @@ export const ProductManager = () => {
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [exportingFormat, setExportingFormat] = useState<"csv" | "xlsx" | null>(null);
   const [importSummary, setImportSummary] = useState<ProductImportSummary | null>(null);
+  const { showToast } = useToast();
+  const confirm = useConfirm();
 
   const handleCreate = async (payload: AdminProductPayload) => {
     await createProduct(payload);
@@ -35,16 +39,31 @@ export const ProductManager = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
 
-  const handleDelete = async (productId: string) => {
-    if (!confirm("Bu ürünü silmek istediğinize emin misiniz?")) {
+  const handleDelete = async (productId: string, product?: AdminProduct) => {
+    const confirmed = await confirm({
+      title: "Ürünü Sil",
+      description:
+        "Bu ürünü kalıcı olarak silmek istediğinizden emin misiniz? Ürün siparişlerde kullanılıyorsa işlem engellenecektir.",
+      confirmLabel: "Sil",
+      cancelLabel: "Vazgeç",
+      tone: "danger",
+    });
+
+    if (!confirmed) {
       return;
     }
 
     try {
       await deleteProduct(productId);
       setRefreshTrigger((prev) => prev + 1);
+      showToast({
+        type: "success",
+        title: "Ürün silindi",
+        description: product ? `${product.translations.tr.name} listeden kaldırıldı.` : undefined,
+      });
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Ürün silinemedi");
+      const message = error instanceof Error ? error.message : "Ürün silinemedi";
+      showToast({ type: "error", title: "Silme işlemi başarısız", description: message });
     }
   };
 
@@ -76,8 +95,15 @@ export const ProductManager = () => {
       link.click();
       link.remove();
       URL.revokeObjectURL(url);
+      showToast({
+        type: "success",
+        title: format === "xlsx" ? "Excel indirildi" : "CSV indirildi",
+        description: "Dışa aktarma tamamlandı.",
+        duration: 3000,
+      });
     } catch (error) {
-      alert(error instanceof Error ? error.message : "Dosya indirilemedi");
+      const message = error instanceof Error ? error.message : "Dosya indirilemedi";
+      showToast({ type: "error", title: "Dışa aktarma başarısız", description: message });
     } finally {
       setExportingFormat(null);
     }
@@ -91,6 +117,12 @@ export const ProductManager = () => {
   const handleImportCompleted = (summary: ProductImportSummary) => {
     setImportSummary(summary);
     setRefreshTrigger((prev) => prev + 1);
+    setIsImportModalOpen(false);
+    showToast({
+      type: summary.errors.length > 0 ? "warning" : "success",
+      title: "Toplu ürün güncellemesi tamamlandı",
+      description: `Güncellenen: ${summary.updated}, Atlanan: ${summary.skipped}, Hata: ${summary.errors.length}`,
+    });
   };
 
   return (

@@ -22,7 +22,7 @@ import { API_BASE_URL } from "../../config/env";
 
 interface ProductListProps {
   onEdit: (product: AdminProduct) => void;
-  onDelete: (productId: string) => void;
+  onDelete: (productId: string, product?: AdminProduct) => void;
   refreshTrigger?: number;
 }
 
@@ -208,7 +208,7 @@ export const ProductList = ({
                       key="delete"
                       className="text-danger"
                       color="danger"
-                      onPress={() => onDelete(product.productId)}
+                      onPress={() => onDelete(product.productId, product)}
                     >
                       Sil
                     </DropdownItem>

@@ -22,6 +22,7 @@ import {
 import { Building2, PencilLine, RefreshCw } from "lucide-react";
 
 import { getCompanies, updateCompany, type Company } from "../../api/companies";
+import { useToast } from "../../hooks/useToast";
 
 interface EditableCompany {
   id: string;
@@ -36,6 +37,7 @@ export const CompanyManager = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCompany, setEditingCompany] = useState<EditableCompany | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const { showToast } = useToast();
 
   const loadCompanies = useCallback(async () => {
     try {
@@ -81,8 +83,14 @@ export const CompanyManager = () => {
       });
       await loadCompanies();
       handleCloseModal();
+      showToast({
+        type: "success",
+        title: "Şirket güncellendi",
+        description: `${editingCompany.name} kaydedildi.`,
+      });
     } catch (err) {
-      window.alert(err instanceof Error ? err.message : "Şirket güncellenemedi");
+      const message = err instanceof Error ? err.message : "Şirket güncellenemedi";
+      showToast({ type: "error", title: "Kayıt başarısız", description: message });
     } finally {
       setIsSaving(false);
     }
