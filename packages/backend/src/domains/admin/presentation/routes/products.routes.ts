@@ -10,6 +10,10 @@ import { categories } from "../../../../shared/infrastructure/database/schema";
 import { AdminCreateProductService } from "../../application/use-cases/products/create-product.service";
 import { AdminDeleteProductService } from "../../application/use-cases/products/delete-product.service";
 import { AdminGetProductsService } from "../../application/use-cases/products/get-products.service";
+import {
+  AdminGetStockAlertsService,
+  type StockAlertLevel,
+} from "../../application/use-cases/products/get-stock-alerts.service";
 import { ProductImageService } from "../../application/use-cases/products/product-image.service";
 import {
   SUPPORTED_LANGUAGES,
@@ -17,6 +21,8 @@ import {
   type AdminUpdateProductPayload,
 } from "../../application/use-cases/products/product.types";
 import { AdminUpdateProductService } from "../../application/use-cases/products/update-product.service";
+import { AdminUpdateProductStockService } from "../../application/use-cases/products/update-product-stock.service";
+import { AdminUpdateProductQuickSettingsService } from "../../application/use-cases/products/update-product-quick-settings.service";
 
 const translationSchema = t.Object({
   languageCode: t.String({
@@ -115,6 +121,47 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
       }),
     }
   )
+  .get(
+    "/stock-alerts",
+    async ({ query, set }) => {
+      const limit = query.limit ? Number(query.limit) : undefined;
+
+      if (query.limit && Number.isNaN(limit)) {
+        set.status = 400;
+        return {
+          success: false,
+          message: "Geçersiz limit değeri",
+        };
+      }
+
+      const level = query.level as StockAlertLevel | undefined;
+
+      try {
+        const result = await AdminGetStockAlertsService.execute({
+          limit,
+          level,
+          search: query.search ?? null,
+        });
+        return result;
+      } catch (error) {
+        set.status = 400;
+        return {
+          success: false,
+          message:
+            error instanceof Error
+              ? error.message
+              : "Stok uyarıları getirilemedi",
+        };
+      }
+    },
+    {
+      query: t.Object({
+        limit: t.Optional(t.String()),
+        level: t.Optional(t.String({ enum: ["critical", "warning"] as const })),
+        search: t.Optional(t.String()),
+      }),
+    }
+  )
   .post(
     "/",
     async ({ body, set }) => {
@@ -193,6 +240,66 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
     {
       body: createProductSchema,
       params: t.Object({ id: t.String({ format: "uuid" }) }),
+    }
+  )
+  .patch(
+    "/:id/quick-settings",
+    async ({ params, body, set }) => {
+      try {
+        const result = await AdminUpdateProductQuickSettingsService.execute({
+          productId: params.id,
+          stock: body.stock,
+          individualPrice: body.individualPrice,
+          corporatePrice: body.corporatePrice,
+        });
+        return result;
+      } catch (error) {
+        set.status = 400;
+        return {
+          success: false,
+          message:
+            error instanceof Error
+              ? error.message
+              : "Hızlı ürün bilgisi güncellenemedi",
+        };
+      }
+    },
+    {
+      params: t.Object({ id: t.String({ format: "uuid" }) }),
+      body: t.Object({
+        stock: t.Optional(t.Number({ minimum: 0 })),
+        individualPrice: t.Optional(
+          t.Union([t.Number({ minimum: 0 }), t.Null()])
+        ),
+        corporatePrice: t.Optional(
+          t.Union([t.Number({ minimum: 0 }), t.Null()])
+        ),
+      }),
+    }
+  )
+  .patch(
+    "/:id/stock",
+    async ({ params, body, set }) => {
+      try {
+        const result = await AdminUpdateProductStockService.execute({
+          productId: params.id,
+          stock: body.stock,
+        });
+        return result;
+      } catch (error) {
+        set.status = 400;
+        return {
+          success: false,
+          message:
+            error instanceof Error ? error.message : "Stok güncellenemedi",
+        };
+      }
+    },
+    {
+      params: t.Object({ id: t.String({ format: "uuid" }) }),
+      body: t.Object({
+        stock: t.Number({ minimum: 0 }),
+      }),
     }
   )
   .delete(

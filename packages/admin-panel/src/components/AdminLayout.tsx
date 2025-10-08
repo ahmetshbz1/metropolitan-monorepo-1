@@ -29,6 +29,7 @@ import {
   User,
   Layers,
   Building2,
+  AlertTriangle,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
@@ -64,6 +65,12 @@ const NAV_ITEMS: Array<{
     label: "Ürün Yönetimi",
     description: "Çok dilli içerikler",
     icon: Package,
+  },
+  {
+    key: "inventory",
+    label: "Stok Uyarıları",
+    description: "Kritik stoklar",
+    icon: AlertTriangle,
   },
   {
     key: "orders",

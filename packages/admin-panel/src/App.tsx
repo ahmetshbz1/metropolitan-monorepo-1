@@ -10,11 +10,13 @@ import { UserManager } from "./features/users/UserManager";
 import { CompanyManager } from "./features/companies/CompanyManager";
 import { AISettings } from "./features/settings/AISettings";
 import { LoginPage } from "./pages/LoginPage";
+import { StockAlertsPanel } from "./features/inventory/StockAlertsPanel";
 
 type AdminPage =
   | "dashboard"
   | "categories"
   | "products"
+  | "inventory"
   | "orders"
   | "companies"
   | "users"
@@ -32,6 +34,7 @@ const isAdminPage = (value: string | null | undefined): value is AdminPage =>
   value === "dashboard" ||
   value === "categories" ||
   value === "products" ||
+  value === "inventory" ||
   value === "orders" ||
   value === "companies" ||
   value === "users" ||
@@ -89,6 +92,8 @@ export default function App() {
         return <CategoryManager />;
       case "products":
         return <ProductManager />;
+      case "inventory":
+        return <StockAlertsPanel />;
       case "orders":
         return <OrderManager />;
       case "companies":
