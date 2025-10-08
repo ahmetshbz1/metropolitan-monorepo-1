@@ -6,7 +6,7 @@ export class MockRedis {
   private locks = new Map<string, {userId: string, expiry: number}>();
 
   // Simulate Redis commands
-  async set(key: string, value: string, ...args: any[]): Promise<string | null> {
+  async set(key: string, value: string, ...args: Array<string | number>): Promise<string | null> {
     // Handle SET with PX (milliseconds) and NX (if not exists)
     if (args.includes('NX')) {
       if (this.store.has(key) || this.isLocked(key)) {
@@ -15,8 +15,10 @@ export class MockRedis {
     }
     
     const pxIndex = args.indexOf('PX');
-    if (pxIndex !== -1 && args[pxIndex + 1]) {
-      const expiry = Date.now() + parseInt(args[pxIndex + 1]);
+    const expiryArg = pxIndex !== -1 ? args[pxIndex + 1] : undefined;
+    if (pxIndex !== -1 && expiryArg !== undefined) {
+      const milliseconds = typeof expiryArg === 'number' ? expiryArg : parseInt(String(expiryArg), 10);
+      const expiry = Date.now() + milliseconds;
       this.locks.set(key, { userId: value, expiry });
     }
     

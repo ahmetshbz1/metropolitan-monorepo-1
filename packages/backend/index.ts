@@ -4,6 +4,7 @@ import "./src/shared/infrastructure/config/env.config";
 import { randomBytes } from "crypto";
 
 import { logger } from "@bogeychan/elysia-logger";
+import { jwt } from "@elysiajs/jwt";
 import { staticPlugin } from "@elysiajs/static";
 import { swagger } from "@elysiajs/swagger";
 import { Elysia } from "elysia";
@@ -14,14 +15,8 @@ import pretty from "pino-pretty";
 // Shared Infrastructure
 
 // Domain Routes
-import { adminAISettingsRoutes } from "./src/domains/admin/presentation/routes/ai-settings.routes";
-import { adminAuthRoutes } from "./src/domains/admin/presentation/routes/auth.routes";
-import { adminCategoriesRoutes } from "./src/domains/admin/presentation/routes/categories.routes";
-import { adminCompaniesRoutes } from "./src/domains/admin/presentation/routes/companies.routes";
-import { adminDashboardRoutes } from "./src/domains/admin/presentation/routes/dashboard.routes";
-import { adminOrdersRoutes } from "./src/domains/admin/presentation/routes/orders.routes";
-import { adminProductsRoutes } from "./src/domains/admin/presentation/routes/products.routes";
-import { adminUsersRoutes } from "./src/domains/admin/presentation/routes/users.routes";
+import { adminRoutes } from "./src/domains/admin/presentation/routes";
+import { isAdminAuthenticated } from "./src/domains/admin/application/guards/admin.guard";
 import { productRoutes } from "./src/domains/catalog/presentation/routes/products.routes";
 import { contentRoutes } from "./src/domains/content/presentation/routes/content.routes";
 import { guestRoutes } from "./src/domains/content/presentation/routes/guest.routes";
@@ -58,6 +53,7 @@ import {
   rateLimitConfigs,
 } from "./src/shared/infrastructure/middleware/rate-limit";
 import { initializeSentry } from "./src/shared/infrastructure/monitoring/sentry.config";
+import { envConfig } from "./src/shared/infrastructure/config/env.config";
 
 // Initialize Sentry monitoring
 initializeSentry();
@@ -72,6 +68,54 @@ const stream = pretty({
   sync: true,
 });
 
+const swaggerApp = new Elysia();
+
+if (envConfig.NODE_ENV === "production") {
+  swaggerApp.use(isAdminAuthenticated);
+}
+
+swaggerApp.use(
+  swagger({
+    documentation: {
+      info: {
+        title: "Metropolitan Food API",
+        description: "Metropolitan Food Group API dokümantasyonu",
+        version: "1.0.0",
+      },
+      servers: [
+        {
+          url:
+            process.env.NODE_ENV === "production"
+              ? "https://api.metropolitanfg.pl"
+              : "http://localhost:3000",
+          description:
+            process.env.NODE_ENV === "production"
+              ? "Production server"
+              : "Development server",
+        },
+      ],
+      tags: [
+        { name: "Admin", description: "Admin paneli işlemleri" },
+        { name: "Auth", description: "Kimlik doğrulama işlemleri" },
+        { name: "Users", description: "Kullanıcı işlemleri" },
+        { name: "Products", description: "Ürün işlemleri" },
+        { name: "Orders", description: "Sipariş işlemleri" },
+        { name: "Cart", description: "Sepet işlemleri" },
+        { name: "Content", description: "İçerik işlemleri" },
+        { name: "Utils", description: "Yardımcı işlemler" },
+      ],
+    },
+  })
+);
+
+const healthApp = new Elysia();
+
+if (envConfig.NODE_ENV === "production") {
+  healthApp.use(isAdminAuthenticated);
+}
+
+healthApp.use(healthRoutes);
+
 // Git commit hash kaldırıldı - production'da gereksiz
 
 export const app = new Elysia()
@@ -80,48 +124,22 @@ export const app = new Elysia()
   .use(createRateLimiter(rateLimitConfigs.default)) // Rate limiting
   .use(compressionPlugin) // Add compression before logging
   .use(
+    jwt({
+      name: "jwt",
+      secret: envConfig.JWT_SECRET,
+    })
+  )
+  .use(
     logger({
       stream,
       level: "info",
     })
   )
-  .use(
-    swagger({
-      documentation: {
-        info: {
-          title: "Metropolitan Food API",
-          description: "Metropolitan Food Group API dokümantasyonu",
-          version: "1.0.0",
-        },
-        servers: [
-          {
-            url:
-              process.env.NODE_ENV === "production"
-                ? "https://api.metropolitanfg.pl"
-                : "http://localhost:3000",
-            description:
-              process.env.NODE_ENV === "production"
-                ? "Production server"
-                : "Development server",
-          },
-        ],
-        tags: [
-          { name: "Admin", description: "Admin paneli işlemleri" },
-          { name: "Auth", description: "Kimlik doğrulama işlemleri" },
-          { name: "Users", description: "Kullanıcı işlemleri" },
-          { name: "Products", description: "Ürün işlemleri" },
-          { name: "Orders", description: "Sipariş işlemleri" },
-          { name: "Cart", description: "Sepet işlemleri" },
-          { name: "Content", description: "İçerik işlemleri" },
-          { name: "Utils", description: "Yardımcı işlemler" },
-        ],
-      },
-    })
-  )
+  .use(swaggerApp)
   .decorate("db", db)
 
   // Health check routes (global level)
-  .use(healthRoutes)
+  .use(healthApp)
 
   // Stripe webhook routes (root level - not in API group)
   .use(stripeWebhookRoutes)
@@ -146,14 +164,7 @@ export const app = new Elysia()
   .group("/api", (app) =>
     app
       // Admin Domain
-      .use(adminAuthRoutes)
-      .use(adminAISettingsRoutes)
-      .use(adminCategoriesRoutes)
-      .use(adminCompaniesRoutes)
-      .use(adminDashboardRoutes)
-      .use(adminOrdersRoutes)
-      .use(adminProductsRoutes)
-      .use(adminUsersRoutes)
+      .use(adminRoutes)
 
       // Identity Domain
       .use(authRoutes)

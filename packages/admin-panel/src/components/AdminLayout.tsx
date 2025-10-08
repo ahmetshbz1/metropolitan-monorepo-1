@@ -28,6 +28,7 @@ import {
   LogOut,
   User,
   Layers,
+  Building2,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
@@ -69,6 +70,12 @@ const NAV_ITEMS: Array<{
     label: "Siparişler",
     description: "Sipariş akışı",
     icon: ShoppingCart,
+  },
+  {
+    key: "companies",
+    label: "Şirketler",
+    description: "Kurumsal hesaplar",
+    icon: Building2,
   },
   {
     key: "users",

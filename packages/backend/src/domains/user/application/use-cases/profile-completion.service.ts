@@ -19,7 +19,12 @@ import {
   extractDeviceInfo,
   storeDeviceSession,
   storeRefreshToken,
+  type DeviceInfo,
 } from "../../../identity/infrastructure/security/device-fingerprint";
+
+interface JwtSigner {
+  sign: (payload: Record<string, unknown>) => Promise<string>;
+}
 
 interface ProfileCompletionResponse {
   success: boolean;
@@ -75,8 +80,8 @@ export class ProfileCompletionService {
   static async completeProfile(
     phoneNumberOrUserId: string,
     profileData: CompleteProfileRequest,
-    jwt: any,
-    headers?: any,
+    jwt: JwtSigner,
+    headers: Record<string, string | undefined> | undefined = undefined,
     isUserId: boolean = false
   ): Promise<ProfileCompletionResponse> {
     // 1. Validate terms and privacy policy acceptance
@@ -84,7 +89,7 @@ export class ProfileCompletionService {
     UserProfileOperationsService.validatePrivacyAcceptance(profileData.privacyAccepted);
 
     let companyId: string | null = null;
-    let nipValidation: any = null;
+    let nipValidation: NipVerificationResult | null = null;
 
     // 2. Handle corporate profile flow
     if (profileData.userType === "corporate") {
@@ -136,7 +141,7 @@ export class ProfileCompletionService {
     }
 
     // 5. Generate enhanced tokens with device fingerprinting
-    let deviceInfo = {};
+    let deviceInfo: DeviceInfo = {};
     let deviceId = "unknown";
     let sessionId = generateSessionId();
     let ipAddress = "unknown";
@@ -213,7 +218,7 @@ export class ProfileCompletionService {
   static async completeIndividualProfile(
     phoneNumber: string,
     profileData: CompleteProfileRequest,
-    jwt: any
+    jwt: JwtSigner
   ): Promise<ProfileCompletionResponse> {
     // Ensure it's individual type
     if (profileData.userType !== "individual") {
@@ -229,7 +234,7 @@ export class ProfileCompletionService {
   static async completeCorporateProfile(
     phoneNumber: string,
     profileData: CompleteProfileRequest,
-    jwt: any
+    jwt: JwtSigner
   ): Promise<ProfileCompletionResponse> {
     // Ensure it's corporate type
     if (profileData.userType !== "corporate") {

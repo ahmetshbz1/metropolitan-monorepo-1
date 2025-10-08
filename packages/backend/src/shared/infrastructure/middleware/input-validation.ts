@@ -115,28 +115,33 @@ export const validationSchemas = {
   }),
 };
 
+type SanitizableValue =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | SanitizableValue[]
+  | { [key: string]: SanitizableValue };
+
 /**
  * Sanitize all string inputs in an object recursively
  */
-export const sanitizeObject = (obj: any): any => {
+export const sanitizeObject = <T extends SanitizableValue>(obj: T): T => {
   if (typeof obj === 'string') {
-    return sanitizeSqlInput(escapeHtml(obj.trim()));
+    return sanitizeSqlInput(escapeHtml(obj.trim())) as T;
   }
 
   if (Array.isArray(obj)) {
-    return obj.map(sanitizeObject);
+    return obj.map((item) => sanitizeObject(item)) as T;
   }
 
   if (obj && typeof obj === 'object') {
-    const sanitized: any = {};
-    for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        // Sanitize the key as well
-        const sanitizedKey = sanitizeSqlInput(key);
-        sanitized[sanitizedKey] = sanitizeObject(obj[key]);
-      }
-    }
-    return sanitized;
+    const entries = Object.entries(obj).map(([key, value]) => {
+      const sanitizedKey = sanitizeSqlInput(key);
+      return [sanitizedKey, sanitizeObject(value) as SanitizableValue];
+    });
+    return Object.fromEntries(entries) as T;
   }
 
   return obj;

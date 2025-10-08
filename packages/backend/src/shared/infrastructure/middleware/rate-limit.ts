@@ -3,10 +3,21 @@ import { envConfig } from "../config/env.config";
 import { logger } from "../monitoring/logger.config";
 import { Elysia } from "elysia";
 
+type RequestHeaders = Record<string, string | undefined>;
+
+interface ClientIdentifierContext {
+  request: Request;
+  headers: RequestHeaders;
+}
+
+interface RateLimiterContext extends ClientIdentifierContext {
+  path: string;
+}
+
 export interface RateLimitConfig {
   max: number; // Maximum number of requests
   windowMs: number; // Time window in milliseconds
-  keyGenerator?: (context: any) => string; // Function to generate rate limit key
+  keyGenerator?: (context: RateLimiterContext) => string; // Function to generate rate limit key
   skipSuccessfulRequests?: boolean; // Skip successful requests from rate limiting
   skipFailedRequests?: boolean; // Skip failed requests from rate limiting
   message?: string; // Custom message when rate limit is exceeded
@@ -78,7 +89,11 @@ export const rateLimitConfigs = {
 export const createRateLimiter = (config: RateLimitConfig = rateLimitConfigs.default) => {
   return new Elysia()
     .onBeforeHandle(async ({ request, headers, set, path }) => {
-      const clientIdentifier = getClientIdentifier({ request, headers });
+      const headerRecord = headers as RequestHeaders;
+      const rateLimiterContext: RateLimiterContext = { request, headers: headerRecord, path };
+      const clientIdentifier = config.keyGenerator
+        ? config.keyGenerator(rateLimiterContext)
+        : getClientIdentifier(rateLimiterContext);
       // Skip rate limiting for health check endpoints
       if (path.includes('/health')) {
         return;
@@ -101,12 +116,11 @@ export const createRateLimiter = (config: RateLimitConfig = rateLimitConfigs.def
 
         if (count >= max) {
           // Rate limit exceeded
-          logger.warn({
+          logger.warn("Rate limit exceeded", {
             clientIdentifier,
             path,
             count,
             max,
-            message: "Rate limit exceeded"
           });
 
           // Set rate limit headers
@@ -156,10 +170,9 @@ export const createRateLimiter = (config: RateLimitConfig = rateLimitConfigs.def
         }
       } catch (error) {
         // If Redis is down, log the error but don't block the request
-        logger.error({
-          error,
-          message: "Rate limiting failed, allowing request",
+        logger.error("Rate limiting failed, allowing request", error instanceof Error ? error : undefined, {
           key,
+          details: error instanceof Error ? undefined : error,
         });
         // Continue without rate limiting if Redis fails
       }
@@ -170,7 +183,7 @@ export const createRateLimiter = (config: RateLimitConfig = rateLimitConfigs.def
  * Gets client identifier for rate limiting
  * Uses IP address, user ID, or API key
  */
-function getClientIdentifier({ request, headers }: any): string {
+function getClientIdentifier({ request, headers }: ClientIdentifierContext): string {
   // Try to get user ID from JWT (if authenticated)
   const authHeader = headers.authorization;
   if (authHeader?.startsWith('Bearer ')) {

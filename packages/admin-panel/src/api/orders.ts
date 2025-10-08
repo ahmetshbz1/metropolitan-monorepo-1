@@ -27,6 +27,12 @@ export interface Order {
   userType: "individual" | "corporate";
   invoicePdfPath: string | null;
   invoiceGeneratedAt: string | null;
+  trackingNumber: string | null;
+  shippingCompany: string | null;
+  estimatedDelivery: string | null;
+  cancelledAt: string | null;
+  cancelReason: string | null;
+  notes: string | null;
   itemCount: number;
   items: OrderItem[];
 }
@@ -48,6 +54,8 @@ export interface UpdateOrderStatusInput {
   trackingNumber?: string;
   shippingCompany?: string;
   cancelReason?: string;
+  estimatedDelivery?: string;
+  notes?: string;
 }
 
 export interface UpdateOrderPaymentStatusInput {

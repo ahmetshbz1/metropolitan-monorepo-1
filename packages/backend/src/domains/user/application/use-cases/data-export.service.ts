@@ -13,7 +13,12 @@ import {
   addresses,
   orders,
   users,
+  orderItems,
 } from "../../../../shared/infrastructure/database/schema";
+
+type ExportAddress = typeof addresses.$inferSelect;
+type ExportOrderItem = typeof orderItems.$inferSelect;
+type ExportOrder = typeof orders.$inferSelect & { items: ExportOrderItem[] };
 
 interface ExportResult {
   downloadUrl?: string;
@@ -32,8 +37,8 @@ interface UserDataExport {
     createdAt: string;
     updatedAt: string;
   };
-  addresses: any[];
-  orders: any[];
+  addresses: ExportAddress[];
+  orders: ExportOrder[];
   preferences: {
     smsNotifications: boolean;
     pushNotifications: boolean;

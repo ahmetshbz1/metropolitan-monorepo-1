@@ -7,10 +7,18 @@ import { ProductManager } from "./features/products/ProductManager";
 import { CategoryManager } from "./features/categories/CategoryManager";
 import { OrderManager } from "./features/orders/OrderManager";
 import { UserManager } from "./features/users/UserManager";
+import { CompanyManager } from "./features/companies/CompanyManager";
 import { AISettings } from "./features/settings/AISettings";
 import { LoginPage } from "./pages/LoginPage";
 
-type AdminPage = "dashboard" | "categories" | "products" | "orders" | "users" | "settings";
+type AdminPage =
+  | "dashboard"
+  | "categories"
+  | "products"
+  | "orders"
+  | "companies"
+  | "users"
+  | "settings";
 
 const storeToken = (token: string) => {
   localStorage.setItem(ADMIN_TOKEN_STORAGE_KEY, token);
@@ -25,6 +33,7 @@ const isAdminPage = (value: string | null | undefined): value is AdminPage =>
   value === "categories" ||
   value === "products" ||
   value === "orders" ||
+  value === "companies" ||
   value === "users" ||
   value === "settings";
 
@@ -82,6 +91,8 @@ export default function App() {
         return <ProductManager />;
       case "orders":
         return <OrderManager />;
+      case "companies":
+        return <CompanyManager />;
       case "users":
         return <UserManager />;
       case "settings":

@@ -67,9 +67,16 @@ describe("🏁 Race Condition Logic Tests (Standalone)", () => {
   test("🔄 Payment failure rollback simulation", async () => {
     console.log("\n🎯 Testing payment failure rollback...");
     
+    interface OrderRecord {
+      orderId: string;
+      userId: string;
+      quantity: number;
+      status: "pending" | "cancelled";
+    }
+
     class OrderSystem {
       private stock: number = 5;
-      private orders: any[] = [];
+      private orders: OrderRecord[] = [];
       
       async createOrder(userId: string, quantity: number): Promise<{ orderId: string, success: boolean }> {
         // Step 1: Reserve stock

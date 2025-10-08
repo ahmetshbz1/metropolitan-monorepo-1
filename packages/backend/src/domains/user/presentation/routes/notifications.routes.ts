@@ -223,7 +223,7 @@ export const createNotification = async (
     title: string;
     body: string;
     type?: string;
-    data?: any;
+    data?: Record<string, unknown>;
     source?: string;
     pushId?: string;
   }

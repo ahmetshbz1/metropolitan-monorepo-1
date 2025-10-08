@@ -17,6 +17,22 @@ interface NipInfo {
   registrationDate?: string;
 }
 
+interface NipApiSubject {
+  name: string;
+  nip?: string;
+  statusVat?: string;
+  regon?: string;
+  krs?: string;
+  workingAddress?: string;
+  registrationLegalDate?: string;
+}
+
+interface NipApiResponse {
+  result?: {
+    subject?: NipApiSubject;
+  };
+}
+
 /**
  * Verifies a Polish NIP number against the official government "White List" API.
  * First checks Redis cache, then fetches from API if not cached.
@@ -81,7 +97,7 @@ async function fetchNipFromApi(nip: string): Promise<NipInfo> {
       );
     }
 
-    const data = (await response.json()) as any;
+    const data = (await response.json()) as NipApiResponse;
 
     // API response'u "result" objesine sarar, asıl veri subject içinde
     const subject = data?.result?.subject;
@@ -103,11 +119,12 @@ async function fetchNipFromApi(nip: string): Promise<NipInfo> {
       workingAddress: subject.workingAddress,
       registrationDate: subject.registrationLegalDate,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
     console.error("Error during NIP API request:", error);
     return {
       success: false,
-      message: `An error occurred while trying to verify the NIP: ${error.message}`,
+      message: `An error occurred while trying to verify the NIP: ${message}`,
     };
   }
 }

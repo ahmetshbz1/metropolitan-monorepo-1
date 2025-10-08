@@ -8,12 +8,12 @@ import { sql } from "drizzle-orm";
 import { db } from "../../database/connection";
 import { redis } from "../../database/redis";
 
-import type { 
-  APIMetrics, 
-  DatabaseMetrics, 
-  RedisMetrics, 
+import type {
+  APIMetrics,
+  DatabaseMetrics,
+  RedisMetrics,
   SystemMetrics,
-  PerformanceMetrics
+  PerformanceMetrics,
 } from "./performance-types";
 import { PERFORMANCE_CONFIG } from "./performance-types";
 
@@ -98,15 +98,42 @@ export class MetricsCollectionService {
         WHERE datname = current_database()
       `);
       
-      const stats = queryStats[0] as any;
-      const pool = poolStats[0] as any;
-      const dl = deadlocks[0] as any;
+      type QueryStatsRow = {
+        avg_query_time: number | string | null;
+        slow_queries: number | string | null;
+        total_queries: number | string | null;
+      } | undefined;
+
+      type PoolStatsRow = {
+        total_connections: number | string | null;
+        active_connections: number | string | null;
+        waiting_on_locks: number | string | null;
+      } | undefined;
+
+      type DeadlockRow = {
+        deadlocks: number | string | null;
+      } | undefined;
+
+      const stats = queryStats[0] as QueryStatsRow;
+      const pool = poolStats[0] as PoolStatsRow;
+      const dl = deadlocks[0] as DeadlockRow;
+
+      const parseNumber = (value: number | string | null | undefined): number => {
+        if (typeof value === "number") {
+          return value;
+        }
+        if (typeof value === "string") {
+          const parsed = Number(value);
+          return Number.isNaN(parsed) ? 0 : parsed;
+        }
+        return 0;
+      };
       
       return {
-        queryTime: parseFloat(stats?.avg_query_time || 0),
-        connectionPoolUsage: (parseInt(pool?.active_connections || 0) / 20) * 100, // Assuming max 20 connections
-        slowQueries: parseInt(stats?.slow_queries || 0),
-        deadlocks: parseInt(dl?.deadlocks || 0),
+        queryTime: parseNumber(stats?.avg_query_time),
+        connectionPoolUsage: (parseNumber(pool?.active_connections) / 20) * 100, // Assuming max 20 connections
+        slowQueries: parseNumber(stats?.slow_queries),
+        deadlocks: parseNumber(dl?.deadlocks),
       };
     } catch (error) {
       console.error('Failed to collect database metrics:', error);

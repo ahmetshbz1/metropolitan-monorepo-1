@@ -19,6 +19,7 @@ import {
   DrawerBody,
   Input,
   Divider,
+  Textarea,
   Modal,
   ModalBody,
   ModalContent,
@@ -26,14 +27,14 @@ import {
   ModalHeader,
   type Selection,
 } from "@heroui/react";
-import { Package, Search, RefreshCw } from "lucide-react";
+import { Package, RefreshCw } from "lucide-react";
 import {
   downloadOrderInvoice,
   getOrders,
   updateOrderPaymentStatus,
   updateOrderStatus,
 } from "../../api/orders";
-import type { Order, OrderFilters, UpdateOrderStatusInput } from "../../api/orders";
+import type { Order, OrderFilters, OrdersResponse, UpdateOrderStatusInput } from "../../api/orders";
 import { API_BASE_URL } from "../../config/env";
 
 const ORDER_STATUSES = [
@@ -68,6 +69,34 @@ const MANUAL_PAYMENT_STATUS_VALUES = new Set([
 const PAYMENT_STATUS_UPDATE_OPTIONS = PAYMENT_STATUSES.filter((status) =>
   MANUAL_PAYMENT_STATUS_VALUES.has(status.value)
 );
+
+const toDateTimeLocalInput = (value: string | null): string => {
+  if (!value) {
+    return "";
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  const pad = (num: number) => num.toString().padStart(2, "0");
+
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+};
+
+const toIsoStringFromInput = (value: string | null | undefined): string | undefined => {
+  if (!value) {
+    return undefined;
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return undefined;
+  }
+
+  return date.toISOString();
+};
 
 const formatPaymentMethod = (method: string | null): string => {
   if (!method) {
@@ -118,6 +147,15 @@ export const OrderManager = () => {
   const [invoicePreviewOpen, setInvoicePreviewOpen] = useState(false);
   const [invoicePreviewUrl, setInvoicePreviewUrl] = useState<string | null>(null);
   const [invoiceLoading, setInvoiceLoading] = useState(false);
+  const [logisticsForm, setLogisticsForm] = useState({
+    trackingNumber: "",
+    shippingCompany: "",
+    estimatedDelivery: "",
+    notes: "",
+  });
+  const [cancelReason, setCancelReason] = useState("");
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState<string | null>(null);
 
   useEffect(() => {
     loadOrders();
@@ -138,25 +176,110 @@ export const OrderManager = () => {
     }
   }, [invoicePreviewOpen, invoicePreviewUrl]);
 
+  useEffect(() => {
+    if (!selectedOrder) {
+      setLogisticsForm({
+        trackingNumber: "",
+        shippingCompany: "",
+        estimatedDelivery: "",
+        notes: "",
+      });
+      setCancelReason("");
+      setPendingStatus(null);
+      setIsCancelModalOpen(false);
+      return;
+    }
+
+    setLogisticsForm({
+      trackingNumber: selectedOrder.trackingNumber ?? "",
+      shippingCompany: selectedOrder.shippingCompany ?? "",
+      estimatedDelivery: toDateTimeLocalInput(selectedOrder.estimatedDelivery),
+      notes: selectedOrder.notes ?? "",
+    });
+    setCancelReason(selectedOrder.cancelReason ?? "");
+    setPendingStatus(null);
+    setIsCancelModalOpen(false);
+  }, [selectedOrder]);
+
   const invoiceAvailable = Boolean(selectedOrder?.invoiceGeneratedAt || selectedOrder?.invoicePdfPath);
 
-  const loadOrders = async () => {
+  const loadOrders = async (): Promise<OrdersResponse | undefined> => {
     try {
       setLoading(true);
       const response = await getOrders(filters);
       setOrders(response.orders);
+      return response;
     } catch (error) {
       console.error("Siparişler yüklenemedi:", error);
+      return undefined;
     } finally {
       setLoading(false);
     }
   };
 
-  const handleStatusUpdate = async (orderId: string, input: UpdateOrderStatusInput) => {
+  const handleStatusUpdate = async (
+    orderId: string,
+    input: UpdateOrderStatusInput,
+    options?: { keepOpen?: boolean }
+  ) => {
     try {
       setUpdatingStatus(true);
-      await updateOrderStatus(orderId, input);
-      await loadOrders();
+      const payload: UpdateOrderStatusInput = {
+        status: input.status,
+      };
+
+      if (input.trackingNumber !== undefined) {
+        payload.trackingNumber = input.trackingNumber.trim();
+      } else {
+        const fallbackTracking = logisticsForm.trackingNumber.trim();
+        if (fallbackTracking) {
+          payload.trackingNumber = fallbackTracking;
+        }
+      }
+
+      if (input.shippingCompany !== undefined) {
+        payload.shippingCompany = input.shippingCompany.trim();
+      } else {
+        const fallbackShipping = logisticsForm.shippingCompany.trim();
+        if (fallbackShipping) {
+          payload.shippingCompany = fallbackShipping;
+        }
+      }
+
+      if (input.estimatedDelivery !== undefined) {
+        payload.estimatedDelivery = input.estimatedDelivery;
+      } else {
+        const fallbackEstimated = toIsoStringFromInput(logisticsForm.estimatedDelivery);
+        if (fallbackEstimated) {
+          payload.estimatedDelivery = fallbackEstimated;
+        }
+      }
+
+      if (input.notes !== undefined) {
+        payload.notes = input.notes.trim();
+      } else {
+        const fallbackNotes = logisticsForm.notes.trim();
+        if (fallbackNotes) {
+          payload.notes = fallbackNotes;
+        }
+      }
+
+      if (input.status === "cancelled") {
+        const cancelValue = (input.cancelReason ?? cancelReason).trim();
+        payload.cancelReason = cancelValue;
+      } else if (input.cancelReason !== undefined) {
+        payload.cancelReason = input.cancelReason.trim();
+      }
+
+      await updateOrderStatus(orderId, payload);
+      const refreshed = await loadOrders();
+
+      if (options?.keepOpen) {
+        const updatedOrder = refreshed?.orders.find((order) => order.id === orderId) ?? null;
+        setSelectedOrder(updatedOrder);
+        return;
+      }
+
       setDrawerOpen(false);
       setSelectedOrder(null);
     } catch (error) {
@@ -182,6 +305,29 @@ export const OrderManager = () => {
     } finally {
       setUpdatingStatus(false);
     }
+  };
+
+  const handleDetailsSave = async () => {
+    if (!selectedOrder) {
+      return;
+    }
+
+    const estimatedPayload = logisticsForm.estimatedDelivery
+      ? toIsoStringFromInput(logisticsForm.estimatedDelivery) ?? ""
+      : "";
+
+    await handleStatusUpdate(
+      selectedOrder.id,
+      {
+        status: selectedOrder.status,
+        trackingNumber: logisticsForm.trackingNumber,
+        shippingCompany: logisticsForm.shippingCompany,
+        estimatedDelivery: estimatedPayload,
+        notes: logisticsForm.notes,
+        cancelReason,
+      },
+      { keepOpen: true }
+    );
   };
 
   const getStatusChip = (status: string) => {
@@ -573,6 +719,85 @@ export const OrderManager = () => {
                 <Divider />
 
                 <div>
+                  <h4 className="mb-3 text-sm font-semibold">Teslimat ve Notlar</h4>
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <Input
+                      label="Takip Numarası"
+                      variant="bordered"
+                      value={logisticsForm.trackingNumber}
+                      onValueChange={(value) => {
+                        setLogisticsForm((current) => ({
+                          ...current,
+                          trackingNumber: value,
+                        }));
+                      }}
+                      isDisabled={updatingStatus}
+                    />
+                    <Input
+                      label="Kargo Firması"
+                      variant="bordered"
+                      value={logisticsForm.shippingCompany}
+                      onValueChange={(value) => {
+                        setLogisticsForm((current) => ({
+                          ...current,
+                          shippingCompany: value,
+                        }));
+                      }}
+                      isDisabled={updatingStatus}
+                    />
+                    <Input
+                      label="Tahmini Teslimat"
+                      type="datetime-local"
+                      variant="bordered"
+                      value={logisticsForm.estimatedDelivery}
+                      onValueChange={(value) => {
+                        setLogisticsForm((current) => ({
+                          ...current,
+                          estimatedDelivery: value,
+                        }));
+                      }}
+                      isDisabled={updatingStatus}
+                    />
+                    <Textarea
+                      label="Sipariş Notları"
+                      minRows={3}
+                      variant="bordered"
+                      value={logisticsForm.notes}
+                      onValueChange={(value) => {
+                        setLogisticsForm((current) => ({
+                          ...current,
+                          notes: value,
+                        }));
+                      }}
+                      isDisabled={updatingStatus}
+                    />
+                    <Textarea
+                      label="İptal Nedeni"
+                      minRows={3}
+                      variant="bordered"
+                      value={cancelReason}
+                      onValueChange={(value) => {
+                        setCancelReason(value);
+                      }}
+                      isDisabled={updatingStatus}
+                    />
+                  </div>
+                  <div className="mt-4 flex justify-end">
+                    <Button
+                      variant="flat"
+                      onPress={() => {
+                        void handleDetailsSave();
+                      }}
+                      isLoading={updatingStatus}
+                    >
+                      Detayları Kaydet
+                    </Button>
+                  </div>
+                </div>
+
+                <Divider />
+
+                <div>
                   <h4 className="mb-3 text-sm font-semibold">Durumu Güncelle</h4>
                   <div className="flex flex-wrap items-end gap-4">
                     <Select
@@ -585,7 +810,19 @@ export const OrderManager = () => {
                         }
 
                         const [value] = keys;
-                        handleStatusUpdate(selectedOrder.id, { status: value as string });
+                        const nextStatus = value as string;
+
+                        if (nextStatus === selectedOrder.status) {
+                          return;
+                        }
+
+                        if (nextStatus === "cancelled") {
+                          setPendingStatus(nextStatus);
+                          setIsCancelModalOpen(true);
+                          return;
+                        }
+
+                        void handleStatusUpdate(selectedOrder.id, { status: nextStatus });
                       }}
                       isDisabled={updatingStatus}
                       classNames={{
@@ -660,6 +897,67 @@ export const OrderManager = () => {
                     İndir
                   </Button>
                 )}
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={isCancelModalOpen} onClose={() => setIsCancelModalOpen(false)}>
+        <ModalContent>
+          {(close) => (
+            <>
+              <ModalHeader>Siparişi İptal Et</ModalHeader>
+              <ModalBody className="space-y-3">
+                <p className="text-sm text-slate-600 dark:text-slate-300">
+                  İptal nedenini belirterek müşteriye bilgilendirme sağlayabilirsiniz.
+                </p>
+                <Textarea
+                  label="İptal Nedeni"
+                  minRows={3}
+                  variant="bordered"
+                  value={cancelReason}
+                  onValueChange={(value) => {
+                    setCancelReason(value);
+                  }}
+                  isDisabled={updatingStatus}
+                />
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  variant="light"
+                  onPress={() => {
+                    setIsCancelModalOpen(false);
+                    setPendingStatus(null);
+                    close();
+                  }}
+                  isDisabled={updatingStatus}
+                >
+                  Vazgeç
+                </Button>
+                <Button
+                  color="danger"
+                  onPress={() => {
+                    if (!selectedOrder || !pendingStatus) {
+                      setIsCancelModalOpen(false);
+                      setPendingStatus(null);
+                      close();
+                      return;
+                    }
+
+                    setIsCancelModalOpen(false);
+                    const statusToApply = pendingStatus;
+                    setPendingStatus(null);
+                    void handleStatusUpdate(selectedOrder.id, {
+                      status: statusToApply,
+                      cancelReason,
+                    });
+                    close();
+                  }}
+                  isLoading={updatingStatus}
+                >
+                  Onayla
+                </Button>
               </ModalFooter>
             </>
           )}

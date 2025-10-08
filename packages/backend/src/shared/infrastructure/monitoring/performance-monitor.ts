@@ -9,6 +9,7 @@ import { MetricsCollectionService } from "./performance/metrics-collection.servi
 import { MonitoringHealthService } from "./performance/monitoring-health.service";
 import { MonitoringOrchestrationService } from "./performance/monitoring-orchestration.service";
 import { PerformanceAnalyticsService } from "./performance/performance-analytics.service";
+import type { PerformanceThresholds } from "./performance/performance-types";
 
 // Re-export types and middleware for backward compatibility
 export type { 
@@ -71,7 +72,7 @@ export class PerformanceMonitor {
 
   // === ALERT MANAGEMENT (delegated to AlertManagementService) ===
 
-  static setThresholds(thresholds: any) {
+  static setThresholds(thresholds: Partial<PerformanceThresholds>) {
     return AlertManagementService.setThresholds(thresholds);
   }
 

@@ -45,9 +45,10 @@ export const dataExportRoutes = createApp()
             password: result.password,
           }),
         };
-      } catch (error) {
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Unknown error";
         log.error(
-          { userId: userId, error: error.message },
+          { userId: userId, error: message },
           `Data export failed`
         );
         return {
@@ -85,12 +86,13 @@ export const dataExportRoutes = createApp()
           downloadUrl: status.downloadUrl,
           expiresAt: status.expiresAt,
         };
-      } catch (error) {
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Unknown error";
         log.error(
           {
             userId: userId,
             requestId: params.requestId,
-            error: error.message,
+            error: message,
           },
           `Failed to get export status`
         );
@@ -164,9 +166,10 @@ export const dataExportRoutes = createApp()
         );
 
         return fileContent;
-      } catch (error) {
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Unknown error";
         log.error(
-          { userId: userId, error: error.message },
+          { userId: userId, error: message },
           `File download failed`
         );
         set.status = 500;
@@ -251,7 +254,12 @@ export const dataExportRoutes = createApp()
 
           // Read extracted files
           const files = fs.readdirSync(tempDir);
-          const fileContents: any[] = [];
+          const fileContents: Array<{
+            name: string;
+            size: number;
+            content: unknown;
+            type: string;
+          }> = [];
 
           for (const file of files) {
             const extractedFilePath = path.join(tempDir, file);
@@ -281,9 +289,12 @@ export const dataExportRoutes = createApp()
             files: fileContents,
             totalFiles: files.length,
           };
-        } catch (extractError) {
+        } catch (extractError: unknown) {
+          const extractMessage =
+            extractError instanceof Error ? extractError.message : "Unknown error";
+
           log.warn(
-            { userId: userId, fileName, error: extractError.message },
+            { userId: userId, fileName, error: extractMessage },
             `ZIP extraction failed - likely wrong password`
           );
           set.status = 400;
@@ -299,7 +310,10 @@ export const dataExportRoutes = createApp()
         }
       } catch (error) {
         log.error(
-          { userId: userId, error: error.message },
+          {
+            userId: userId,
+            error: error instanceof Error ? error.message : "Unknown error",
+          },
           `ZIP view failed`
         );
         set.status = 500;

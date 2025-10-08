@@ -7,7 +7,7 @@ import { redis } from "../../database/redis";
 import { AlertManagementService } from "./alert-management.service";
 import { MetricsCollectionService } from "./metrics-collection.service";
 import { PerformanceAnalyticsService } from "./performance-analytics.service";
-import { PERFORMANCE_CONFIG } from "./performance-types";
+import { PERFORMANCE_CONFIG, type PerformanceMetrics } from "./performance-types";
 
 export class MonitoringOrchestrationService {
   private static monitoringInterval: Timer | null = null;
@@ -70,7 +70,7 @@ export class MonitoringOrchestrationService {
   /**
    * Store metrics in Redis with proper TTL
    */
-  private static async storeMetricsInRedis(metrics: any): Promise<void> {
+  private static async storeMetricsInRedis(metrics: PerformanceMetrics): Promise<void> {
     const key = `${PERFORMANCE_CONFIG.REDIS_KEYS.METRICS}:${Date.now()}`;
     await redis.setex(
       key,
@@ -100,7 +100,7 @@ export class MonitoringOrchestrationService {
   /**
    * Perform manual metric collection (one-time)
    */
-  static async collectOnce(): Promise<any> {
+  static async collectOnce(): Promise<void> {
     return this.performMonitoringCycle();
   }
 }

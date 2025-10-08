@@ -16,7 +16,7 @@ type Language = "tr" | "en" | "pl";
 interface PushNotificationData {
   title?: string;
   body?: string;
-  data?: any;
+  data?: Record<string, unknown>;
   badge?: number;
   sound?: string;
   type?: string;

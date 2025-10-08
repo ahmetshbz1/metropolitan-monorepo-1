@@ -26,6 +26,34 @@ interface CartResponse {
   summary: CartSummary;
 }
 
+type ProductTranslationRow = typeof productTranslations.$inferSelect;
+
+interface RawCartItem {
+  id: string;
+  quantity: number;
+  createdAt: Date;
+  product: {
+    id: string;
+    productCode: string;
+    brand: string | null;
+    size: string | null;
+    image: string | null;
+    price: string | null;
+    individualPrice: string | null;
+    corporatePrice: string | null;
+    currency: string;
+    stock: number;
+    name: string | null;
+    category: string | null;
+  };
+}
+
+type CartItemWithTranslations = typeof cartItems.$inferSelect & {
+  product: (typeof products.$inferSelect) & {
+    translations: ProductTranslationRow[];
+  };
+};
+
 export class CartItemService {
   /**
    * Kullanıcının sepet öğelerini getirir
@@ -33,7 +61,7 @@ export class CartItemService {
   /**
    * Maps raw cart item data to CartItem type
    */
-  private static mapCartItem(item: any, userType?: "individual" | "corporate"): CartItem {
+  private static mapCartItem(item: RawCartItem, userType?: "individual" | "corporate"): CartItem {
     // Kullanıcı tipine göre doğru fiyatı seç
     let finalPrice = Number(item.product.price);
     if (userType === "corporate" && item.product.corporatePrice) {
@@ -275,7 +303,7 @@ export class CartItemService {
         // Sepet öğesinin kullanıcıya ait olduğunu kontrol et
         await CartValidationService.validateCartOwnership(itemId, userId);
 
-        const cartItem = await db.query.cartItems.findFirst({
+        const cartItem = (await db.query.cartItems.findFirst({
           where: eq(cartItems.id, itemId),
           with: {
             product: {
@@ -286,7 +314,7 @@ export class CartItemService {
               },
             },
           },
-        });
+        })) as CartItemWithTranslations | undefined;
 
         if (!cartItem) continue;
 
@@ -310,11 +338,12 @@ export class CartItemService {
         // Eğer istenen miktar stoktan fazlaysa, otomatik olarak stok limitine ayarla
         if (quantity > availableStock) {
           finalQuantity = availableStock;
+          const translationName = cartItem.product.translations[0]?.name;
           adjustedItems.push({
             itemId,
             requestedQty: quantity,
             adjustedQty: finalQuantity,
-            productName: (cartItem.product as any).translations?.[0]?.name || product.productCode || "Ürün",
+            productName: translationName || product.productCode || "Ürün",
           });
         } else {
           // Normal stok kontrolü

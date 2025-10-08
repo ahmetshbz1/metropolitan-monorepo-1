@@ -19,8 +19,10 @@ export interface LogContext {
   operation?: string;
   domain?: string;
   duration?: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
+
+export type LogMetadata = Record<string, unknown>;
 
 // Create logger instance
 export const logger = pino({
@@ -59,7 +61,7 @@ export class Logger {
     this.requestId = context.requestId || randomUUID();
   }
 
-  private formatMessage(level: LogLevel, message: string, meta?: any) {
+  private formatMessage(level: LogLevel, message: string, meta?: LogMetadata) {
     const logData = {
       ...this.context,
       requestId: this.requestId,
@@ -70,23 +72,23 @@ export class Logger {
     return { message, ...logData };
   }
 
-  trace(message: string, meta?: any) {
+  trace(message: string, meta?: LogMetadata) {
     logger.trace(this.formatMessage("trace", message, meta));
   }
 
-  debug(message: string, meta?: any) {
+  debug(message: string, meta?: LogMetadata) {
     logger.debug(this.formatMessage("debug", message, meta));
   }
 
-  info(message: string, meta?: any) {
+  info(message: string, meta?: LogMetadata) {
     logger.info(this.formatMessage("info", message, meta));
   }
 
-  warn(message: string, meta?: any) {
+  warn(message: string, meta?: LogMetadata) {
     logger.warn(this.formatMessage("warn", message, meta));
   }
 
-  error(message: string, error?: Error, meta?: any) {
+  error(message: string, error?: Error, meta?: LogMetadata) {
     const logData = this.formatMessage("error", message, {
       ...meta,
       error: error
@@ -100,7 +102,7 @@ export class Logger {
     logger.error(logData);
   }
 
-  fatal(message: string, error?: Error, meta?: any) {
+  fatal(message: string, error?: Error, meta?: LogMetadata) {
     const logData = this.formatMessage("fatal", message, {
       ...meta,
       error: error
@@ -115,7 +117,7 @@ export class Logger {
   }
 
   // Performance logging
-  performanceLog(operation: string, duration: number, meta?: any) {
+  performanceLog(operation: string, duration: number, meta?: LogMetadata) {
     this.info(`${operation}completed`, {
       ...meta,
       operation,
@@ -125,7 +127,7 @@ export class Logger {
   }
 
   // Domain-specific logging
-  domainLog(domain: string, operation: string, message: string, meta?: any) {
+  domainLog(domain: string, operation: string, message: string, meta?: LogMetadata) {
     this.info(message, {
       ...meta,
       domain,
@@ -134,7 +136,7 @@ export class Logger {
   }
 
   // Business metrics
-  businessMetric(metric: string, value: number | string, meta?: any) {
+  businessMetric(metric: string, value: number | string, meta?: LogMetadata) {
     this.info(`Business metric: ${metric}`, {
       ...meta,
       metric,
@@ -147,7 +149,7 @@ export class Logger {
   securityLog(
     event: string,
     severity: "low" | "medium" | "high" | "critical",
-    meta?: any
+    meta?: LogMetadata
   ) {
     this.warn(`Security event: ${event}`, {
       ...meta,

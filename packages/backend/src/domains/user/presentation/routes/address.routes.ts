@@ -192,11 +192,12 @@ export const addressRoutes = createApp()
               success: true,
               message: "Default address updated successfully.",
             };
-          } catch (e: any) {
-            if (e.message === "Address not found or access denied.") {
-              return error(404, e.message);
+          } catch (caughtError: unknown) {
+            if (caughtError instanceof Error && caughtError.message === "Address not found or access denied.") {
+              return error(404, caughtError.message);
             }
-            console.error("Failed to set default address:", e.message);
+            const message = caughtError instanceof Error ? caughtError.message : "Unknown error";
+            console.error("Failed to set default address:", message);
             return error(500, "An internal server error occurred.");
           }
         },

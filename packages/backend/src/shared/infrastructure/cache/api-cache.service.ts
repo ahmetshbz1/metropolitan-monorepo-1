@@ -19,7 +19,7 @@ export class ApiCacheService {
    */
   static generateCacheKey(
     endpoint: string,
-    params?: Record<string, any>,
+    params?: Record<string, unknown>,
     userId?: string
   ): string {
     const baseKey = `${this.CACHE_PREFIX}${endpoint}`;
@@ -125,7 +125,7 @@ export class ApiCacheService {
   static async warmupCache(
     fetchFunctions: Array<{
       key: string;
-      fetch: () => Promise<any>;
+      fetch: () => Promise<unknown>;
       options?: CacheOptions;
     }>
   ): Promise<void> {
@@ -176,42 +176,51 @@ export class ApiCacheService {
 }
 
 // Cache middleware for Elysia
+interface CacheMiddlewareSet {
+  headers: Record<string, string>;
+}
+
+interface CacheMiddlewareContext {
+  request: Request;
+  set: CacheMiddlewareSet;
+  params?: Record<string, unknown>;
+  query?: Record<string, unknown>;
+  user?: { id?: string };
+  response?: unknown;
+  error?: unknown;
+  afterHandle?: (response: unknown) => unknown | Promise<unknown>;
+}
+
 export function cacheMiddleware(options: CacheOptions = {}) {
-  return async function(context: any) {
+  return async function (context: CacheMiddlewareContext) {
     const { request, set, params, query, user } = context;
-    
-    // Generate cache key
+
+    const mergedParams = { ...(params ?? {}), ...(query ?? {}) };
     const cacheKey = ApiCacheService.generateCacheKey(
       request.url,
-      { ...params, ...query },
+      mergedParams,
       user?.id
     );
-    
-    // Try to get from cache
-    const cached = await ApiCacheService.get(cacheKey);
-    if (cached) {
+
+    const cached = await ApiCacheService.get<unknown>(cacheKey);
+    if (cached !== null) {
       set.headers["X-Cache"] = "HIT";
       return cached;
     }
-    
-    // Mark as cache miss
+
     set.headers["X-Cache"] = "MISS";
-    
-    // Store original response handler
+
     const originalAfterHandle = context.afterHandle;
-    
-    // Override afterHandle to cache the response
-    context.afterHandle = async (response: any) => {
-      // Cache successful responses only
-      if (response && !context.error) {
+
+    context.afterHandle = async (response: unknown) => {
+      if (response !== undefined && !context.error) {
         await ApiCacheService.set(cacheKey, response, options);
       }
-      
-      // Call original afterHandle if exists
+
       if (originalAfterHandle) {
         return originalAfterHandle(response);
       }
-      
+
       return response;
     };
   };

@@ -1,8 +1,15 @@
-import { desc, eq, sql, inArray, and } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 
 import { db } from "../../../../../shared/infrastructure/database/connection";
-import { orders, orderItems, users, addresses, products, productTranslations } from "../../../../../shared/infrastructure/database/schema";
+import {
+  addresses,
+  orderItems,
+  orders,
+  productTranslations,
+  products,
+  users,
+} from "../../../../../shared/infrastructure/database/schema";
 
 export interface AdminOrderItem {
   id: string;
@@ -31,6 +38,12 @@ export interface AdminOrder {
   userType: "individual" | "corporate";
   invoicePdfPath: string | null;
   invoiceGeneratedAt: Date | null;
+  trackingNumber: string | null;
+  shippingCompany: string | null;
+  estimatedDelivery: Date | null;
+  cancelledAt: Date | null;
+  cancelReason: string | null;
+  notes: string | null;
   itemCount: number;
   items: AdminOrderItem[];
 }
@@ -43,7 +56,9 @@ export interface GetOrdersFilters {
 }
 
 export class GetAdminOrdersService {
-  static async execute(filters: GetOrdersFilters = {}): Promise<{ orders: AdminOrder[]; total: number }> {
+  static async execute(
+    filters: GetOrdersFilters = {}
+  ): Promise<{ orders: AdminOrder[]; total: number }> {
     try {
       const { status, paymentStatus, limit = 50, offset = 0 } = filters;
 
@@ -61,8 +76,8 @@ export class GetAdminOrdersService {
         conditions.length === 0
           ? undefined
           : conditions.length === 1
-            ? conditions[0]
-            : and(...conditions);
+          ? conditions[0]
+          : and(...conditions);
 
       let ordersQuery = db
         .select({
@@ -82,6 +97,12 @@ export class GetAdminOrdersService {
           customerPhone: users.phoneNumber,
           shippingCity: addresses.city,
           userType: users.userType,
+          trackingNumber: orders.trackingNumber,
+          shippingCompany: orders.shippingCompany,
+          estimatedDelivery: orders.estimatedDelivery,
+          cancelledAt: orders.cancelledAt,
+          cancelReason: orders.cancelReason,
+          notes: orders.notes,
         })
         .from(orders)
         .innerJoin(users, eq(orders.userId, users.id))
@@ -183,6 +204,12 @@ export class GetAdminOrdersService {
         userType: order.userType === "corporate" ? "corporate" : "individual",
         invoicePdfPath: order.invoicePdfPath,
         invoiceGeneratedAt: order.invoiceGeneratedAt,
+        trackingNumber: order.trackingNumber,
+        shippingCompany: order.shippingCompany,
+        estimatedDelivery: order.estimatedDelivery,
+        cancelledAt: order.cancelledAt,
+        cancelReason: order.cancelReason,
+        notes: order.notes,
         itemCount: itemsByOrder[order.id]?.length || 0,
         items: itemsByOrder[order.id] || [],
       }));

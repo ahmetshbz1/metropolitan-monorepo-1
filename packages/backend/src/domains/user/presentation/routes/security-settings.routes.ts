@@ -89,11 +89,12 @@ export const securitySettingsRoutes = createApp()
               success: true,
               message: "Security settings updated successfully",
             };
-          } catch (error: any) {
+          } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : "Unknown error";
             log.error(
               {
                 userId,
-                error: error.message
+                error: message
               },
               "Failed to update security settings"
             );

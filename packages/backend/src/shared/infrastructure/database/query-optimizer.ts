@@ -12,7 +12,7 @@ export class QueryOptimizer {
    */
   static async analyzeQuery(query: string): Promise<{
     executionTime: number;
-    plan: any;
+    plan: unknown;
     suggestions: string[];
   }> {
     const startTime = process.hrtime.bigint();
@@ -36,7 +36,7 @@ export class QueryOptimizer {
   /**
    * Generate optimization suggestions based on query plan
    */
-  private static generateSuggestions(plan: any): string[] {
+  private static generateSuggestions(plan: unknown): string[] {
     const suggestions: string[] = [];
     const planText = JSON.stringify(plan);
     
@@ -142,19 +142,32 @@ export class QueryOptimizer {
       WHERE datname = current_database()
     `);
     
-    const stats = result.rows[0] as any;
-    
+    const [row] = Array.isArray((result as { rows?: unknown[] }).rows)
+      ? ((result as { rows: unknown[] }).rows as Array<Record<string, unknown>>)
+      : [];
+
+    const parseNumber = (value: unknown): number => {
+      if (typeof value === "number") {
+        return value;
+      }
+      if (typeof value === "string") {
+        const parsed = Number(value);
+        return Number.isNaN(parsed) ? 0 : parsed;
+      }
+      return 0;
+    };
+
     return {
-      totalConnections: parseInt(stats.total_connections),
-      idleConnections: parseInt(stats.idle_connections),
-      waitingRequests: parseInt(stats.waiting_requests),
+      totalConnections: parseNumber(row?.total_connections),
+      idleConnections: parseNumber(row?.idle_connections),
+      waitingRequests: parseNumber(row?.waiting_requests),
     };
   }
   
   /**
    * Optimize bulk inserts with COPY
    */
-  static async bulkInsert<T extends Record<string, any>>(
+  static async bulkInsert<T extends Record<string, unknown>>(
     tableName: string,
     data: T[],
     columns: (keyof T)[]
@@ -163,11 +176,12 @@ export class QueryOptimizer {
     
     // Convert data to CSV format for COPY command
     const csvData = data.map(row => 
-      columns.map(col => {
+      columns.map((col) => {
         const value = row[col];
-        if (value === null || value === undefined) return '\\N';
-        if (typeof value === 'string') return `"${value.replace(/"/g, '""')}"`;
-        return String(value);
+        if (value === null || value === undefined) return "\\N";
+        if (typeof value === "string") return `"${value.replace(/"/g, '""')}"`;
+        if (typeof value === "number" || typeof value === "boolean") return String(value);
+        return JSON.stringify(value);
       }).join(',')
     ).join('\n');
     

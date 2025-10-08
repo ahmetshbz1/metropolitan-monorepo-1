@@ -49,7 +49,7 @@ describe("Favorites API", () => {
     );
     const productsBody = (await productsResponse.json()) as {
       success: boolean;
-      data: any[];
+      data: Array<{ id: string }>;
     };
     productId = productsBody.data[0]!.id;
   });
@@ -123,7 +123,10 @@ describe("Favorites API", () => {
       })
     );
     expect(response.status).toBe(200);
-    const body = (await response.json()) as { success: boolean; data: any[] };
+    const body = (await response.json()) as {
+      success: boolean;
+      data: Array<{ id: string }>;
+    };
     expect(body.data.length).toBe(1);
     expect(body.data[0]!.id).toBe(productId);
   });
@@ -155,7 +158,7 @@ describe("Favorites API", () => {
     );
     const listBody = (await listResponse.json()) as {
       success: boolean;
-      data: any[];
+      data: Array<{ id: string }>;
     };
     expect(listBody.data.length).toBe(0);
   });

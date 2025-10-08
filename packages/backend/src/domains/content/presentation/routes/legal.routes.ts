@@ -13,6 +13,9 @@ const LANGUAGES = ["tr", "en", "pl"] as const;
 type LegalType = (typeof LEGAL_TYPES)[number];
 type Language = (typeof LANGUAGES)[number];
 
+const isNodeError = (error: unknown): error is NodeJS.ErrnoException =>
+  typeof error === "object" && error !== null && "code" in error;
+
 export const legalRoutes = createApp().group("/legal", (app) =>
   app.get(
     "/:type",
@@ -56,8 +59,8 @@ export const legalRoutes = createApp().group("/legal", (app) =>
             content,
           },
         };
-      } catch (err: any) {
-        if (err.code === "ENOENT") {
+      } catch (error: unknown) {
+        if (isNodeError(error) && error.code === "ENOENT") {
           set.status = 404;
           return {
             success: false,
@@ -65,7 +68,7 @@ export const legalRoutes = createApp().group("/legal", (app) =>
           };
         }
 
-        console.error("Error reading legal document:", err);
+        console.error("Error reading legal document:", error);
         set.status = 500;
         return {
           success: false,
