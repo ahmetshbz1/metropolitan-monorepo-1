@@ -24,12 +24,16 @@ WORKDIR /app
 # Bun kurulumu
 RUN npm install -g bun
 
-# Shared package'ı kopyala
+# Shared package'ı kopyala (with node_modules)
 COPY --from=deps /app/packages/shared /app/packages/shared
 
 # Web-app dosyalarını kopyala
 COPY packages/web-app /app/packages/web-app
 COPY --from=deps /app/packages/web-app/node_modules /app/packages/web-app/node_modules
+
+# Shared package'ın dependency'lerini de link et
+WORKDIR /app/packages/shared
+RUN bun install
 
 # Build arguments
 ARG NEXT_PUBLIC_API_URL=https://api.metropolitanfg.pl
