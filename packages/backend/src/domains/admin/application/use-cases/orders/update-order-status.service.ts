@@ -6,11 +6,11 @@ import { orders } from "../../../../../shared/infrastructure/database/schema";
 export interface UpdateOrderStatusInput {
   orderId: string;
   status: string;
-  trackingNumber?: string;
-  shippingCompany?: string;
-  cancelReason?: string;
-  estimatedDelivery?: string;
-  notes?: string;
+  trackingNumber?: string | null;
+  shippingCompany?: string | null;
+  cancelReason?: string | null;
+  estimatedDelivery?: string | null;
+  notes?: string | null;
 }
 
 export class UpdateOrderStatusService {
@@ -44,51 +44,50 @@ export class UpdateOrderStatusService {
       updatedAt: new Date(),
     };
 
-    const sanitizedTrackingNumber =
-      typeof trackingNumber === "string" ? trackingNumber.trim() : undefined;
-    const sanitizedShippingCompany =
-      typeof shippingCompany === "string" ? shippingCompany.trim() : undefined;
-    const sanitizedNotes = typeof notes === "string" ? notes.trim() : undefined;
-    const sanitizedCancelReason =
-      typeof cancelReason === "string" ? cancelReason.trim() : undefined;
+    const sanitizeOptionalString = (
+      value: string | null | undefined
+    ): string | null | undefined => {
+      if (value === undefined) return undefined;
+      if (value === null) return null;
+      const trimmed = value.trim();
+      return trimmed.length > 0 ? trimmed : null;
+    };
 
-    if (trackingNumber !== undefined) {
-      updateData.trackingNumber =
-        sanitizedTrackingNumber && sanitizedTrackingNumber.length > 0
-          ? sanitizedTrackingNumber
-          : null;
+    const sanitizedTrackingNumber = sanitizeOptionalString(trackingNumber);
+    if (sanitizedTrackingNumber !== undefined) {
+      updateData.trackingNumber = sanitizedTrackingNumber;
     }
 
-    if (shippingCompany !== undefined) {
-      updateData.shippingCompany =
-        sanitizedShippingCompany && sanitizedShippingCompany.length > 0
-          ? sanitizedShippingCompany
-          : null;
+    const sanitizedShippingCompany = sanitizeOptionalString(shippingCompany);
+    if (sanitizedShippingCompany !== undefined) {
+      updateData.shippingCompany = sanitizedShippingCompany;
     }
 
     if (estimatedDelivery !== undefined) {
-      updateData.estimatedDelivery = estimatedDelivery
-        ? new Date(estimatedDelivery)
-        : null;
+      if (estimatedDelivery === null) {
+        updateData.estimatedDelivery = null;
+      } else {
+        const parsedDate = new Date(estimatedDelivery);
+        if (Number.isNaN(parsedDate.getTime())) {
+          throw new Error("Invalid estimated delivery date");
+        }
+        updateData.estimatedDelivery = parsedDate;
+      }
     }
 
-    if (notes !== undefined) {
-      updateData.notes =
-        sanitizedNotes && sanitizedNotes.length > 0 ? sanitizedNotes : null;
+    const sanitizedNotes = sanitizeOptionalString(notes);
+    if (sanitizedNotes !== undefined) {
+      updateData.notes = sanitizedNotes;
     }
+
+    const sanitizedCancelReason = sanitizeOptionalString(cancelReason);
 
     if (status === "cancelled") {
       updateData.cancelledAt = new Date();
-      updateData.cancelReason =
-        sanitizedCancelReason && sanitizedCancelReason.length > 0
-          ? sanitizedCancelReason
-          : null;
-    } else if (cancelReason !== undefined) {
-      updateData.cancelReason =
-        sanitizedCancelReason && sanitizedCancelReason.length > 0
-          ? sanitizedCancelReason
-          : null;
-      if (!sanitizedCancelReason) {
+      updateData.cancelReason = sanitizedCancelReason ?? null;
+    } else if (sanitizedCancelReason !== undefined) {
+      updateData.cancelReason = sanitizedCancelReason;
+      if (sanitizedCancelReason === null) {
         updateData.cancelledAt = null;
       }
     }

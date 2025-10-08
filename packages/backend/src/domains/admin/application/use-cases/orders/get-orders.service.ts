@@ -48,6 +48,15 @@ export interface AdminOrder {
   items: AdminOrderItem[];
 }
 
+const normalizeShippingCompany = (value: string | null): string | null => {
+  if (!value) {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  return trimmed.toLowerCase() === "dhl express" ? null : trimmed;
+};
+
 export interface GetOrdersFilters {
   status?: string;
   paymentStatus?: string;
@@ -205,7 +214,7 @@ export class GetAdminOrdersService {
         invoicePdfPath: order.invoicePdfPath,
         invoiceGeneratedAt: order.invoiceGeneratedAt,
         trackingNumber: order.trackingNumber,
-        shippingCompany: order.shippingCompany,
+        shippingCompany: normalizeShippingCompany(order.shippingCompany),
         estimatedDelivery: order.estimatedDelivery,
         cancelledAt: order.cancelledAt,
         cancelReason: order.cancelReason,

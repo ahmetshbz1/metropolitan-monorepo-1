@@ -162,6 +162,13 @@
       "when": 1759848289060,
       "tag": "0022_confused_kid_colt",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1760000000000,
+      "tag": "0023_drop_shipping_company_default",
+      "breakpoints": true
     }
   ]
 }

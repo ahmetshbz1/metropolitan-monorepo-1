@@ -8,11 +8,11 @@ import { createAdminRouter } from "./admin-router.factory";
 
 const updateOrderStatusSchema = t.Object({
   status: t.String({ enum: ["pending", "confirmed", "preparing", "shipped", "delivered", "cancelled"] }),
-  trackingNumber: t.Optional(t.String()),
-  shippingCompany: t.Optional(t.String()),
-  cancelReason: t.Optional(t.String()),
-  estimatedDelivery: t.Optional(t.String({ format: "date-time" })),
-  notes: t.Optional(t.String()),
+  trackingNumber: t.Optional(t.Union([t.String(), t.Null()])),
+  shippingCompany: t.Optional(t.Union([t.String(), t.Null()])),
+  cancelReason: t.Optional(t.Union([t.String(), t.Null()])),
+  estimatedDelivery: t.Optional(t.Union([t.String({ format: "date-time" }), t.Null()])),
+  notes: t.Optional(t.Union([t.String(), t.Null()])),
 });
 
 const updateOrderPaymentStatusSchema = t.Object({

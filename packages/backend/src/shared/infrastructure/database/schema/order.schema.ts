@@ -40,7 +40,7 @@ export const orders = pgTable("orders", {
   paymentTermDays: integer("payment_term_days"), // Banka havalesi için vade süresi (gün)
 
   trackingNumber: text("tracking_number"),
-  shippingCompany: text("shipping_company").default("DHL Express"),
+  shippingCompany: text("shipping_company"),
   estimatedDelivery: timestamp("estimated_delivery"),
   notes: text("notes"),
   invoicePdfPath: text("invoice_pdf_path"), // Fatura PDF dosya yolu

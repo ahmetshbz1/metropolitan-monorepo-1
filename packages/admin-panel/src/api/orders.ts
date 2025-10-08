@@ -51,11 +51,11 @@ export interface OrderFilters {
 
 export interface UpdateOrderStatusInput {
   status: string;
-  trackingNumber?: string;
-  shippingCompany?: string;
-  cancelReason?: string;
-  estimatedDelivery?: string;
-  notes?: string;
+  trackingNumber?: string | null;
+  shippingCompany?: string | null;
+  cancelReason?: string | null;
+  estimatedDelivery?: string | null;
+  notes?: string | null;
 }
 
 export interface UpdateOrderPaymentStatusInput {

@@ -70,6 +70,21 @@ const PAYMENT_STATUS_UPDATE_OPTIONS = PAYMENT_STATUSES.filter((status) =>
   MANUAL_PAYMENT_STATUS_VALUES.has(status.value)
 );
 
+const LEGACY_SHIPPING_COMPANY = "dhl express";
+
+const isLegacyShippingCompany = (value: string | null | undefined): boolean =>
+  typeof value === "string" && value.trim().toLowerCase() === LEGACY_SHIPPING_COMPANY;
+
+const sanitizeShippingCompanyForForm = (
+  value: string | null | undefined
+): string => {
+  if (!value) {
+    return "";
+  }
+
+  return isLegacyShippingCompany(value) ? "" : value;
+};
+
 const toDateTimeLocalInput = (value: string | null): string => {
   if (!value) {
     return "";
@@ -96,6 +111,34 @@ const toIsoStringFromInput = (value: string | null | undefined): string | undefi
   }
 
   return date.toISOString();
+};
+
+const normalizeOptionalString = (value: string | null | undefined): string | null | undefined => {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (value === null) {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+};
+
+const normalizeOptionalDateTime = (
+  value: string | null | undefined
+): string | null | undefined => {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (value === null) {
+    return null;
+  }
+
+  const isoString = toIsoStringFromInput(value);
+  return isoString ?? null;
 };
 
 const formatPaymentMethod = (method: string | null): string => {
@@ -192,7 +235,7 @@ export const OrderManager = () => {
 
     setLogisticsForm({
       trackingNumber: selectedOrder.trackingNumber ?? "",
-      shippingCompany: selectedOrder.shippingCompany ?? "",
+      shippingCompany: sanitizeShippingCompanyForForm(selectedOrder.shippingCompany),
       estimatedDelivery: toDateTimeLocalInput(selectedOrder.estimatedDelivery),
       notes: selectedOrder.notes ?? "",
     });
@@ -228,47 +271,73 @@ export const OrderManager = () => {
         status: input.status,
       };
 
-      if (input.trackingNumber !== undefined) {
-        payload.trackingNumber = input.trackingNumber.trim();
-      } else {
-        const fallbackTracking = logisticsForm.trackingNumber.trim();
-        if (fallbackTracking) {
-          payload.trackingNumber = fallbackTracking;
+      const resolveStringField = (
+        primary: string | null | undefined,
+        fallback: string
+      ): string | null | undefined => {
+        if (primary !== undefined) {
+          return normalizeOptionalString(primary);
         }
+
+        const normalizedFallback = normalizeOptionalString(fallback);
+        return normalizedFallback === null ? undefined : normalizedFallback;
+      };
+
+      const resolveDateField = (
+        primary: string | null | undefined,
+        fallback: string
+      ): string | null | undefined => {
+        if (primary !== undefined) {
+          return normalizeOptionalDateTime(primary);
+        }
+
+        const trimmedFallback = fallback.trim();
+        if (trimmedFallback.length === 0) {
+          return undefined;
+        }
+
+        const normalizedFallback = normalizeOptionalDateTime(trimmedFallback);
+        return normalizedFallback ?? null;
+      };
+
+      const resolvedTracking = resolveStringField(
+        input.trackingNumber,
+        logisticsForm.trackingNumber
+      );
+      if (resolvedTracking !== undefined) {
+        payload.trackingNumber = resolvedTracking;
       }
 
-      if (input.shippingCompany !== undefined) {
-        payload.shippingCompany = input.shippingCompany.trim();
-      } else {
-        const fallbackShipping = logisticsForm.shippingCompany.trim();
-        if (fallbackShipping) {
-          payload.shippingCompany = fallbackShipping;
-        }
+      const resolvedShipping = resolveStringField(
+        input.shippingCompany,
+        logisticsForm.shippingCompany
+      );
+      if (resolvedShipping !== undefined) {
+        payload.shippingCompany = resolvedShipping;
       }
 
-      if (input.estimatedDelivery !== undefined) {
-        payload.estimatedDelivery = input.estimatedDelivery;
-      } else {
-        const fallbackEstimated = toIsoStringFromInput(logisticsForm.estimatedDelivery);
-        if (fallbackEstimated) {
-          payload.estimatedDelivery = fallbackEstimated;
-        }
+      const resolvedEstimated = resolveDateField(
+        input.estimatedDelivery,
+        logisticsForm.estimatedDelivery
+      );
+      if (resolvedEstimated !== undefined) {
+        payload.estimatedDelivery = resolvedEstimated;
       }
 
-      if (input.notes !== undefined) {
-        payload.notes = input.notes.trim();
-      } else {
-        const fallbackNotes = logisticsForm.notes.trim();
-        if (fallbackNotes) {
-          payload.notes = fallbackNotes;
-        }
+      const resolvedNotes = resolveStringField(
+        input.notes,
+        logisticsForm.notes
+      );
+      if (resolvedNotes !== undefined) {
+        payload.notes = resolvedNotes;
       }
 
-      if (input.status === "cancelled") {
-        const cancelValue = (input.cancelReason ?? cancelReason).trim();
-        payload.cancelReason = cancelValue;
-      } else if (input.cancelReason !== undefined) {
-        payload.cancelReason = input.cancelReason.trim();
+      const resolvedCancel = resolveStringField(
+        input.cancelReason,
+        cancelReason
+      );
+      if (resolvedCancel !== undefined) {
+        payload.cancelReason = resolvedCancel;
       }
 
       await updateOrderStatus(orderId, payload);
@@ -312,19 +381,15 @@ export const OrderManager = () => {
       return;
     }
 
-    const estimatedPayload = logisticsForm.estimatedDelivery
-      ? toIsoStringFromInput(logisticsForm.estimatedDelivery) ?? ""
-      : "";
-
     await handleStatusUpdate(
       selectedOrder.id,
       {
         status: selectedOrder.status,
-        trackingNumber: logisticsForm.trackingNumber,
-        shippingCompany: logisticsForm.shippingCompany,
-        estimatedDelivery: estimatedPayload,
-        notes: logisticsForm.notes,
-        cancelReason,
+        trackingNumber: normalizeOptionalString(logisticsForm.trackingNumber),
+        shippingCompany: normalizeOptionalString(logisticsForm.shippingCompany),
+        estimatedDelivery: normalizeOptionalDateTime(logisticsForm.estimatedDelivery),
+        notes: normalizeOptionalString(logisticsForm.notes),
+        cancelReason: normalizeOptionalString(cancelReason),
       },
       { keepOpen: true }
     );
