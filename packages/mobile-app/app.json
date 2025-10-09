@@ -24,7 +24,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.metropolitan.food",
-      "buildNumber": "40",
+      "buildNumber": "41",
       "deploymentTarget": "18.0",
       "config": {
         "googleSignIn": {
@@ -35,7 +35,15 @@
         "LSApplicationCategoryType": "public.app-category.food-and-drink",
         "CFBundleAllowMixedLocalizations": true,
         "CFBundleLocalizations": ["tr", "en", "pl"],
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.18493082891-0qg1bp44jncs4m7jt6426ud1cv7bil4t",
+              "com.metropolitan.food"
+            ]
+          }
+        ]
       },
       "appleTeamId": "64XKK46655",
       "entitlements": {
