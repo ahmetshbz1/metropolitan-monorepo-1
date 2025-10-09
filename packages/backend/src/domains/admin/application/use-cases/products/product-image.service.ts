@@ -51,14 +51,11 @@ export class ProductImageService {
     const buffer = await photo.arrayBuffer();
     await fs.writeFile(filePath, new Uint8Array(buffer));
 
-    return process.env.NODE_ENV === "production"
-      ? `/api/uploads/product-images/${uniqueName}`
-      : `/uploads/product-images/${uniqueName}`;
+    return `/uploads/product-images/${uniqueName}`;
   }
 
   public static async deleteProductImage(imageUrl: string): Promise<void> {
-    const validPaths = ["/uploads/product-images/", "/api/uploads/product-images/"];
-    if (!imageUrl || !validPaths.some(p => imageUrl.startsWith(p))) {
+    if (!imageUrl || !imageUrl.startsWith("/uploads/product-images/")) {
       return;
     }
 
