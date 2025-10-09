@@ -29,10 +29,19 @@ COPY --from=deps /app/packages/shared /app/packages/shared
 WORKDIR /app/packages/shared
 RUN bun run build
 
-# Web-app dosyalarını kopyala
+# Web-app için çalışma dizini
 WORKDIR /app/packages/web-app
-COPY packages/web-app/package.json packages/web-app/bun.lock* ./
+
+# Dependencies'i kopyala
 COPY --from=deps /app/packages/web-app/node_modules ./node_modules
+
+# Shared package'ı node_modules'e link et
+RUN rm -rf ./node_modules/@metropolitan/shared && \
+    mkdir -p ./node_modules/@metropolitan && \
+    ln -s /app/packages/shared ./node_modules/@metropolitan/shared
+
+# Web-app dosyalarını kopyala
+COPY packages/web-app/package.json packages/web-app/bun.lock* ./
 COPY packages/web-app .
 
 # Build arguments
