@@ -1,9 +1,13 @@
 import "dotenv/config";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
+import { randomBytes, scrypt } from "crypto";
+import { promisify } from "util";
 import * as schema from "./schema";
 
 console.log("👤 Creating admin users...");
+
+const scryptAsync = promisify(scrypt);
 
 const ADMIN_USERS = [
   {
@@ -29,11 +33,29 @@ const ADMIN_USERS = [
 ];
 
 const hashPassword = async (password: string): Promise<string> => {
-  const hashedPassword = await Bun.password.hash(password, {
-    algorithm: "bcrypt",
-    cost: 10,
-  });
-  return hashedPassword;
+  const saltLength = 16;
+  const keyLength = 64;
+  const costFactor = 16384;
+  const blockSize = 8;
+  const parallelization = 1;
+  const maxMemory = 32 * 1024 * 1024;
+
+  const salt = randomBytes(saltLength);
+  const derivedKey = (await scryptAsync(password, salt, keyLength, {
+    N: costFactor,
+    r: blockSize,
+    p: parallelization,
+    maxmem: maxMemory,
+  })) as Buffer;
+
+  return [
+    "scrypt",
+    costFactor.toString(10),
+    blockSize.toString(10),
+    parallelization.toString(10),
+    salt.toString("base64"),
+    derivedKey.toString("base64"),
+  ].join(":");
 };
 
 const main = async () => {
