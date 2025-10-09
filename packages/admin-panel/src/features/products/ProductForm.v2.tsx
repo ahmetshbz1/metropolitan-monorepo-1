@@ -4,12 +4,13 @@ import {
   Card,
   CardBody,
   Input,
-  Spacer,
   Image,
   Select,
   SelectItem,
   Textarea,
   Checkbox,
+  Tabs,
+  Tab,
 } from "@heroui/react";
 import { Save, Upload, X, Loader2 } from "lucide-react";
 
@@ -494,115 +495,146 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
             </Checkbox>
           </div>
 
-          <div className="flex flex-col gap-4">
-            <h4 className="text-md font-semibold text-slate-800 dark:text-slate-200">
-              Türkçe
-            </h4>
-            <Input
-            label="Ürün Adı"
-            placeholder="Örn: Tam Yağlı Süt"
-            value={form.name}
-            onValueChange={(value) => updateField("name", value)}
-            variant="bordered"
-            isRequired
-            size="lg"
-          />
-          <Input
-            label="Tam Ad (Opsiyonel)"
-            placeholder="Örn: Yayla Tam Yağlı Süt 1L"
-            value={form.fullName}
-            onValueChange={(value) => updateField("fullName", value)}
-            variant="bordered"
-            size="lg"
-          />
-          <Textarea
-            label="Açıklama"
-            placeholder="Ürün açıklaması..."
-            value={form.description}
-            onValueChange={(value) => updateField("description", value)}
-            variant="bordered"
-            minRows={3}
-            size="lg"
-          />
-          <Textarea
-            label="Saklama Koşulları"
-            placeholder="Örn: Serin ve kuru yerde saklayınız"
-            value={form.storageConditions}
-            onValueChange={(value) => updateField("storageConditions", value)}
-            variant="bordered"
-            minRows={2}
-            size="lg"
-          />
-          </div>
-
-          {form.manualTranslationMode && (
-            <>
-              <Spacer y={4} />
-              <div className="flex flex-col gap-4">
-                <h4 className="text-md font-semibold text-slate-800 dark:text-slate-200">
-                  İngilizce (English)
-                </h4>
-                <Input
-                  label="Ürün Adı / Product Name"
-                  placeholder="e.g: Whole Milk"
-                  value={form.nameEn}
-                  onValueChange={(value) => updateField("nameEn", value)}
-                  variant="bordered"
-                  isRequired
-                  size="lg"
-                />
-                <Input
-                  label="Tam Ad (Opsiyonel) / Full Name"
-                  placeholder="e.g: Yayla Whole Milk 1L"
-                  value={form.fullNameEn}
-                  onValueChange={(value) => updateField("fullNameEn", value)}
-                  variant="bordered"
-                  size="lg"
-                />
-                <Textarea
-                  label="Açıklama / Description"
-                  placeholder="Product description..."
-                  value={form.descriptionEn}
-                  onValueChange={(value) => updateField("descriptionEn", value)}
-                  variant="bordered"
-                  minRows={3}
-                  size="lg"
-                />
-              </div>
-
-              <Spacer y={4} />
-              <div className="flex flex-col gap-4">
-                <h4 className="text-md font-semibold text-slate-800 dark:text-slate-200">
-                  Lehçe (Polski)
-                </h4>
-                <Input
-                  label="Ürün Adı / Nazwa produktu"
-                  placeholder="np: Mleko pełnotłuste"
-                  value={form.namePl}
-                  onValueChange={(value) => updateField("namePl", value)}
-                  variant="bordered"
-                  isRequired
-                  size="lg"
-                />
-                <Input
-                  label="Tam Ad (Opsiyonel) / Pełna nazwa"
-                  placeholder="np: Yayla Mleko pełnotłuste 1L"
-                  value={form.fullNamePl}
-                  onValueChange={(value) => updateField("fullNamePl", value)}
-                  variant="bordered"
-                  size="lg"
-                />
-                <Textarea
-                  label="Açıklama / Opis"
-                  placeholder="Opis produktu..."
-                  value={form.descriptionPl}
-                  onValueChange={(value) => updateField("descriptionPl", value)}
-                  variant="bordered"
-                  minRows={3}
-                  size="lg"
-                />
-              </div>
-            </>
+          {form.manualTranslationMode ? (
+            <Tabs aria-label="Diller" variant="bordered">
+              <Tab key="tr" title="Türkçe">
+                <div className="flex flex-col gap-4 pt-4">
+                  <Input
+                    label="Ürün Adı"
+                    placeholder="Örn: Tam Yağlı Süt"
+                    value={form.name}
+                    onValueChange={(value) => updateField("name", value)}
+                    variant="bordered"
+                    isRequired
+                    size="lg"
+                  />
+                  <Input
+                    label="Tam Ad (Opsiyonel)"
+                    placeholder="Örn: Yayla Tam Yağlı Süt 1L"
+                    value={form.fullName}
+                    onValueChange={(value) => updateField("fullName", value)}
+                    variant="bordered"
+                    size="lg"
+                  />
+                  <Textarea
+                    label="Açıklama"
+                    placeholder="Ürün açıklaması..."
+                    value={form.description}
+                    onValueChange={(value) => updateField("description", value)}
+                    variant="bordered"
+                    minRows={3}
+                    size="lg"
+                  />
+                  <Textarea
+                    label="Saklama Koşulları"
+                    placeholder="Örn: Serin ve kuru yerde saklayınız"
+                    value={form.storageConditions}
+                    onValueChange={(value) => updateField("storageConditions", value)}
+                    variant="bordered"
+                    minRows={2}
+                    size="lg"
+                  />
+                </div>
+              </Tab>
+              <Tab key="en" title="English">
+                <div className="flex flex-col gap-4 pt-4">
+                  <Input
+                    label="Product Name"
+                    placeholder="e.g: Whole Milk"
+                    value={form.nameEn}
+                    onValueChange={(value) => updateField("nameEn", value)}
+                    variant="bordered"
+                    isRequired
+                    size="lg"
+                  />
+                  <Input
+                    label="Full Name (Optional)"
+                    placeholder="e.g: Yayla Whole Milk 1L"
+                    value={form.fullNameEn}
+                    onValueChange={(value) => updateField("fullNameEn", value)}
+                    variant="bordered"
+                    size="lg"
+                  />
+                  <Textarea
+                    label="Description"
+                    placeholder="Product description..."
+                    value={form.descriptionEn}
+                    onValueChange={(value) => updateField("descriptionEn", value)}
+                    variant="bordered"
+                    minRows={3}
+                    size="lg"
+                  />
+                </div>
+              </Tab>
+              <Tab key="pl" title="Polski">
+                <div className="flex flex-col gap-4 pt-4">
+                  <Input
+                    label="Nazwa produktu"
+                    placeholder="np: Mleko pełnotłuste"
+                    value={form.namePl}
+                    onValueChange={(value) => updateField("namePl", value)}
+                    variant="bordered"
+                    isRequired
+                    size="lg"
+                  />
+                  <Input
+                    label="Pełna nazwa (Opcjonalnie)"
+                    placeholder="np: Yayla Mleko pełnotłuste 1L"
+                    value={form.fullNamePl}
+                    onValueChange={(value) => updateField("fullNamePl", value)}
+                    variant="bordered"
+                    size="lg"
+                  />
+                  <Textarea
+                    label="Opis"
+                    placeholder="Opis produktu..."
+                    value={form.descriptionPl}
+                    onValueChange={(value) => updateField("descriptionPl", value)}
+                    variant="bordered"
+                    minRows={3}
+                    size="lg"
+                  />
+                </div>
+              </Tab>
+            </Tabs>
+          ) : (
+            <div className="flex flex-col gap-4">
+              <Input
+                label="Ürün Adı (Türkçe)"
+                placeholder="Örn: Tam Yağlı Süt"
+                value={form.name}
+                onValueChange={(value) => updateField("name", value)}
+                variant="bordered"
+                isRequired
+                size="lg"
+              />
+              <Input
+                label="Tam Ad (Opsiyonel)"
+                placeholder="Örn: Yayla Tam Yağlı Süt 1L"
+                value={form.fullName}
+                onValueChange={(value) => updateField("fullName", value)}
+                variant="bordered"
+                size="lg"
+              />
+              <Textarea
+                label="Açıklama"
+                placeholder="Ürün açıklaması..."
+                value={form.description}
+                onValueChange={(value) => updateField("description", value)}
+                variant="bordered"
+                minRows={3}
+                size="lg"
+              />
+              <Textarea
+                label="Saklama Koşulları"
+                placeholder="Örn: Serin ve kuru yerde saklayınız"
+                value={form.storageConditions}
+                onValueChange={(value) => updateField("storageConditions", value)}
+                variant="bordered"
+                minRows={2}
+                size="lg"
+              />
+            </div>
           )}
         </CardBody>
       </Card>
