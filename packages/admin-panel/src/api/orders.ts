@@ -128,3 +128,8 @@ export const deleteOrder = async (orderId: string): Promise<{ success: boolean; 
   const response = await apiClient.delete(`/admin/orders/${orderId}`);
   return response.data;
 };
+
+export const bulkDeleteOrders = async (orderIds: string[]): Promise<{ success: boolean; message: string; deletedCount: number }> => {
+  const response = await apiClient.post(`/admin/orders/bulk-delete`, { orderIds });
+  return response.data;
+};

@@ -173,4 +173,24 @@ export const adminOrdersRoutes = createAdminRouter("/admin/orders")
     {
       params: t.Object({ id: t.String({ format: "uuid" }) }),
     }
+  )
+  .post(
+    "/bulk-delete",
+    async ({ body, set }) => {
+      try {
+        const result = await AdminDeleteOrderService.bulkDelete(body.orderIds);
+        return result;
+      } catch (error) {
+        set.status = 400;
+        return {
+          success: false,
+          message: error instanceof Error ? error.message : "Siparişler silinemedi",
+        };
+      }
+    },
+    {
+      body: t.Object({
+        orderIds: t.Array(t.String({ format: "uuid" })),
+      }),
+    }
   );

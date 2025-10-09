@@ -30,6 +30,7 @@ import {
 } from "@heroui/react";
 import { Download, Package, RefreshCw } from "lucide-react";
 import {
+  bulkDeleteOrders,
   deleteOrder,
   downloadOrderInvoice,
   exportOrders,
@@ -215,6 +216,7 @@ export const OrderManager = () => {
   const [exportingFormat, setExportingFormat] = useState<"csv" | "xlsx" | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deletingOrderId, setDeletingOrderId] = useState<string | null>(null);
+  const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
   const { showToast } = useToast();
 
   const loadOrders = useCallback(async (): Promise<OrdersResponse | undefined> => {
@@ -634,6 +636,33 @@ export const OrderManager = () => {
     }
   };
 
+  const handleBulkDelete = async () => {
+    if (selectedOrderIds.size === 0) return;
+
+    try {
+      setUpdatingStatus(true);
+      const orderIdsArray = Array.from(selectedOrderIds);
+      const result = await bulkDeleteOrders(orderIdsArray);
+      showToast({
+        type: "success",
+        title: result.message,
+        duration: 3000,
+      });
+      await loadOrders();
+      setIsBulkDeleteModalOpen(false);
+      clearOrderSelection();
+    } catch (error) {
+      console.error("Siparişler silinemedi:", error);
+      showToast({
+        type: "error",
+        title: "Toplu silme başarısız",
+        description: error instanceof Error ? error.message : undefined,
+      });
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -736,6 +765,14 @@ export const OrderManager = () => {
               </Button>
               <Button color="primary" variant="solid" onPress={handleOpenFirstSelected}>
                 İlkini Aç
+              </Button>
+              <Button
+                color="danger"
+                variant="flat"
+                onPress={() => setIsBulkDeleteModalOpen(true)}
+                isDisabled={updatingStatus}
+              >
+                Siparişleri Sil ({selectedOrders.length})
               </Button>
             </div>
           </CardBody>
@@ -1281,6 +1318,54 @@ export const OrderManager = () => {
                   isLoading={updatingStatus}
                 >
                   Siparişi Sil
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={isBulkDeleteModalOpen} onClose={() => setIsBulkDeleteModalOpen(false)}>
+        <ModalContent>
+          {(close) => (
+            <>
+              <ModalHeader className="text-red-600 dark:text-red-400">Toplu Sipariş Silme</ModalHeader>
+              <ModalBody className="space-y-3">
+                <p className="text-sm text-slate-600 dark:text-slate-300">
+                  Seçilen <span className="font-semibold">{selectedOrderIds.size}</span> siparişi kalıcı olarak silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+                </p>
+                <div className="max-h-48 overflow-y-auto rounded-lg border border-slate-200 p-3 dark:border-[#2a2a2a]">
+                  <p className="mb-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                    Silinecek siparişler:
+                  </p>
+                  <ul className="space-y-1 text-xs text-slate-600 dark:text-slate-300">
+                    {selectedOrders.map((order) => (
+                      <li key={order.id} className="font-mono">
+                        {order.orderNumber} - {order.customerName}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  variant="light"
+                  onPress={() => {
+                    setIsBulkDeleteModalOpen(false);
+                    close();
+                  }}
+                  isDisabled={updatingStatus}
+                >
+                  Vazgeç
+                </Button>
+                <Button
+                  color="danger"
+                  onPress={() => {
+                    void handleBulkDelete();
+                  }}
+                  isLoading={updatingStatus}
+                >
+                  {selectedOrderIds.size} Siparişi Sil
                 </Button>
               </ModalFooter>
             </>
