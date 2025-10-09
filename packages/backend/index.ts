@@ -213,12 +213,28 @@ export const app = new Elysia()
       prefix: "",
     })
   )
-  .use(
-    staticPlugin({
-      assets: envConfig.NODE_ENV === "production" ? "/app/uploads" : "public/uploads",
-      prefix: "/uploads",
-    })
-  );
+  .get("/uploads/product-images/:filename", async ({ params, set }) => {
+    const uploadDir = envConfig.NODE_ENV === "production"
+      ? "/app/uploads/product-images"
+      : "public/uploads/product-images";
+
+    const filePath = `${uploadDir}/${params.filename}`;
+
+    try {
+      const file = Bun.file(filePath);
+      const exists = await file.exists();
+
+      if (!exists) {
+        set.status = 404;
+        return "Not Found";
+      }
+
+      return file;
+    } catch (error) {
+      set.status = 500;
+      return "Internal Server Error";
+    }
+  });
 
 if (process.env.NODE_ENV !== "test") {
   app.listen({ port: 3000, hostname: "0.0.0.0" });
