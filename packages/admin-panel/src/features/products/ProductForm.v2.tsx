@@ -177,6 +177,7 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isDeletingImage, setIsDeletingImage] = useState(false);
   const [categories, setCategories] = useState<AdminCategory[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -231,14 +232,18 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
   };
 
   const handleRemoveImage = async () => {
-    if (!form.imageUrl) return;
+    if (!form.imageUrl || isDeletingImage) return;
 
     try {
+      setIsDeletingImage(true);
+      setError(null);
       await deleteProductImage(form.imageUrl);
       updateField("imageUrl", "");
     } catch (error) {
       console.error("Görsel silinirken hata oluştu:", error);
       setError(error instanceof Error ? error.message : "Görsel silinemedi");
+    } finally {
+      setIsDeletingImage(false);
     }
   };
 
@@ -427,10 +432,15 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
                 />
                 <button
                   type="button"
-                  onClick={handleRemoveImage}
-                  className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600"
+                  onClick={() => void handleRemoveImage()}
+                  disabled={isDeletingImage}
+                  className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <X className="h-4 w-4" />
+                  {isDeletingImage ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <X className="h-4 w-4" />
+                  )}
                 </button>
               </div>
             ) : (
