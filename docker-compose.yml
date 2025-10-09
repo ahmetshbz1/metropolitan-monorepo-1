@@ -108,6 +108,7 @@ services:
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-https://metropolitan.com,https://app.metropolitan.com}
     volumes:
       - ./packages/backend/public:/app/public:ro
+      - product_images:/app/public/uploads/product-images
       - backend_logs:/app/logs
     ports:
       - "127.0.0.1:${API_PORT:-3000}:3000"
@@ -216,6 +217,8 @@ volumes:
   postgres_data:
     driver: local
   redis_data:
+    driver: local
+  product_images:
     driver: local
   backend_logs:
     driver: local
