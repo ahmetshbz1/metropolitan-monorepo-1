@@ -17,6 +17,7 @@ import {
   toDecimalString,
 } from "./product.utils";
 import { ProductTranslationService } from "../../../../../shared/infrastructure/ai/product-translation.service";
+import { ProductImageService } from "./product-image.service";
 
 export class AdminUpdateProductService {
   static async execute(payload: AdminUpdateProductPayload) {
@@ -44,6 +45,13 @@ export class AdminUpdateProductService {
       }
 
       const existingProduct = existingProductResult[0];
+
+      if (
+        existingProduct.imageUrl &&
+        existingProduct.imageUrl !== payload.imageUrl
+      ) {
+        await ProductImageService.deleteProductImage(existingProduct.imageUrl);
+      }
 
       const existingTranslations = await db
         .select()

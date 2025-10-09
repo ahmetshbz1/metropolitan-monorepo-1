@@ -29,6 +29,10 @@ export const uploadProductImage = async (file: File): Promise<string> => {
   return data.imageUrl;
 };
 
+export const deleteProductImage = async (imageUrl: string): Promise<void> => {
+  await apiClient.delete("/admin/products/delete-image", { data: { imageUrl } });
+};
+
 export const getProducts = async (params?: {
   limit?: number;
   offset?: number;

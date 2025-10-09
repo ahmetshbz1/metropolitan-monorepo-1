@@ -13,7 +13,7 @@ import {
 } from "@heroui/react";
 import { Save, Upload, X, Loader2 } from "lucide-react";
 
-import { uploadProductImage } from "./api";
+import { deleteProductImage, uploadProductImage } from "./api";
 import type { AdminProductPayload } from "./types";
 import { API_BASE_URL } from "../../config/env";
 import { getCategories } from "../categories/api";
@@ -230,8 +230,16 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
     }
   };
 
-  const handleRemoveImage = () => {
-    updateField("imageUrl", "");
+  const handleRemoveImage = async () => {
+    if (!form.imageUrl) return;
+
+    try {
+      await deleteProductImage(form.imageUrl);
+      updateField("imageUrl", "");
+    } catch (error) {
+      console.error("Görsel silinirken hata oluştu:", error);
+      setError(error instanceof Error ? error.message : "Görsel silinemedi");
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {

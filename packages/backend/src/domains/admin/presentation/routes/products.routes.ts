@@ -440,4 +440,36 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
         }),
       }),
     }
+  )
+  .delete(
+    "/delete-image",
+    async ({ body, set }) => {
+      try {
+        if (!body.imageUrl) {
+          set.status = 400;
+          return {
+            success: false,
+            message: "Görsel URL'si gerekli",
+          };
+        }
+
+        await ProductImageService.deleteProductImage(body.imageUrl);
+        return {
+          success: true,
+          message: "Görsel silindi",
+        };
+      } catch (error) {
+        set.status = 400;
+        return {
+          success: false,
+          message:
+            error instanceof Error ? error.message : "Görsel silinemedi",
+        };
+      }
+    },
+    {
+      body: t.Object({
+        imageUrl: t.String(),
+      }),
+    }
   );
