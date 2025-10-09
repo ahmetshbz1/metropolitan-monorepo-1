@@ -11,6 +11,10 @@ export interface AdminCategoryPayload {
   translations: CategoryTranslation[];
 }
 
+export interface AdminUpdateCategoryPayload extends AdminCategoryPayload {
+  categoryId: string;
+}
+
 export interface AdminCategory {
   id: string;
   slug: string;

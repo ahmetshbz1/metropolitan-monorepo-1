@@ -11,6 +11,7 @@ import {
   Checkbox,
   Tabs,
   Tab,
+  Spacer,
 } from "@heroui/react";
 import { Save, Upload, X, Loader2 } from "lucide-react";
 

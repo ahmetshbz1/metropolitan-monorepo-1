@@ -3,8 +3,10 @@ import { t } from "elysia";
 import {
   SUPPORTED_LANGUAGES,
   type AdminCategoryPayload,
+  type AdminUpdateCategoryPayload,
 } from "../../application/use-cases/categories/category.types";
 import { AdminCreateCategoryService } from "../../application/use-cases/categories/create-category.service";
+import { AdminUpdateCategoryService } from "../../application/use-cases/categories/update-category.service";
 import { AdminDeleteCategoryService } from "../../application/use-cases/categories/delete-category.service";
 import { AdminGetCategoriesService } from "../../application/use-cases/categories/get-categories.service";
 
@@ -18,6 +20,12 @@ const translationSchema = t.Object({
 });
 
 const createCategorySchema = t.Object({
+  slug: t.Optional(t.String()),
+  translations: t.Array(translationSchema, { minItems: 1 }),
+});
+
+const updateCategorySchema = t.Object({
+  categoryId: t.String({ format: "uuid" }),
   slug: t.Optional(t.String()),
   translations: t.Array(translationSchema, { minItems: 1 }),
 });
@@ -55,6 +63,29 @@ export const adminCategoriesRoutes = createAdminRouter("/admin/categories")
     },
     {
       body: createCategorySchema,
+    }
+  )
+  .put(
+    "/:id",
+    async ({ params, body, set }) => {
+      try {
+        const result = await AdminUpdateCategoryService.execute({
+          ...body,
+          categoryId: params.id,
+        } as AdminUpdateCategoryPayload);
+        return result;
+      } catch (error) {
+        set.status = 400;
+        return {
+          success: false,
+          message:
+            error instanceof Error ? error.message : "Kategori güncellenemedi",
+        };
+      }
+    },
+    {
+      params: t.Object({ id: t.String({ format: "uuid" }) }),
+      body: updateCategorySchema,
     }
   )
   .delete(
