@@ -20,6 +20,9 @@ bun.lockb
 # Server environment file (contains production secrets)
 sunucu.env
 
+# Admin credentials (sensitive)
+ADMIN_CREDENTIALS.md
+
 # Build outputs
 dist/
 build/
