@@ -212,6 +212,12 @@ export const app = new Elysia()
       assets: "public",
       prefix: "",
     })
+  )
+  .use(
+    staticPlugin({
+      assets: envConfig.NODE_ENV === "production" ? "/app/uploads" : "public/uploads",
+      prefix: "/api/uploads",
+    })
   );
 
 if (process.env.NODE_ENV !== "test") {

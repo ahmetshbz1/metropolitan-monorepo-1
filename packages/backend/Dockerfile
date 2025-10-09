@@ -28,6 +28,9 @@ RUN bun install
 # Do not bake .env into the image; rely on runtime env from docker-compose
 # and /opt/metropolitan/.env copied by deploy script.
 
+# Create uploads directory with proper permissions
+RUN mkdir -p /app/uploads/product-images && chmod -R 755 /app/uploads
+
 EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \

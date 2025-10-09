@@ -2,12 +2,9 @@ import { randomBytes } from "crypto";
 import fs from "fs/promises";
 import path from "path";
 
-const UPLOAD_DIR = path.join(
-  process.cwd(),
-  "public",
-  "uploads",
-  "product-images"
-);
+const UPLOAD_DIR = process.env.NODE_ENV === "production"
+  ? path.join("/app", "uploads", "product-images")
+  : path.join(process.cwd(), "public", "uploads", "product-images");
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_MIME_TYPES = [
@@ -54,16 +51,22 @@ export class ProductImageService {
     const buffer = await photo.arrayBuffer();
     await fs.writeFile(filePath, new Uint8Array(buffer));
 
-    return `/uploads/product-images/${uniqueName}`;
+    return process.env.NODE_ENV === "production"
+      ? `/api/uploads/product-images/${uniqueName}`
+      : `/uploads/product-images/${uniqueName}`;
   }
 
   public static async deleteProductImage(imageUrl: string): Promise<void> {
-    if (!imageUrl || !imageUrl.startsWith("/uploads/product-images/")) {
+    const validPaths = ["/uploads/product-images/", "/api/uploads/product-images/"];
+    if (!imageUrl || !validPaths.some(p => imageUrl.startsWith(p))) {
       return;
     }
 
     const fileName = path.basename(imageUrl);
-    const filePath = path.join(UPLOAD_DIR, fileName);
+    const uploadDir = process.env.NODE_ENV === "production"
+      ? path.join("/app", "uploads", "product-images")
+      : path.join(process.cwd(), "public", "uploads", "product-images");
+    const filePath = path.join(uploadDir, fileName);
 
     try {
       await fs.unlink(filePath);
