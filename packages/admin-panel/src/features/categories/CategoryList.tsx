@@ -20,6 +20,7 @@ import { getCategories } from "./api";
 import type { AdminCategory } from "./types";
 
 interface CategoryListProps {
+  onEdit: (category: AdminCategory) => void;
   onDelete: (categoryId: string) => void;
   onSelectionChange?: (ids: string[]) => void;
   onSelectionDetailsChange?: (categories: AdminCategory[]) => void;
@@ -28,6 +29,7 @@ interface CategoryListProps {
 }
 
 export const CategoryList = ({
+  onEdit,
   onDelete,
   onSelectionChange,
   onSelectionDetailsChange,
@@ -179,6 +181,12 @@ export const CategoryList = ({
                       </Button>
                     </DropdownTrigger>
                     <DropdownMenu aria-label="Kategori işlemleri">
+                      <DropdownItem
+                        key="edit"
+                        onPress={() => onEdit(category)}
+                      >
+                        Düzenle
+                      </DropdownItem>
                       <DropdownItem
                         key="delete"
                         className="text-danger"

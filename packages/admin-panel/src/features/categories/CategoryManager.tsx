@@ -2,15 +2,16 @@ import { useCallback, useState } from "react";
 import { Button, Drawer, DrawerBody, DrawerContent, DrawerHeader } from "@heroui/react";
 import { Plus } from "lucide-react";
 
-import { deleteCategory, createCategory } from "./api";
+import { deleteCategory, createCategory, updateCategory } from "./api";
 import { CategoryForm } from "./CategoryForm";
 import { CategoryList } from "./CategoryList";
-import type { AdminCategory, AdminCategoryPayload } from "./types";
+import type { AdminCategory, AdminCategoryPayload, AdminUpdateCategoryPayload } from "./types";
 import { useConfirm } from "../../hooks/useConfirm";
 import { useToast } from "../../hooks/useToast";
 
 export const CategoryManager = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<AdminCategory | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [selectedCategories, setSelectedCategories] = useState<AdminCategory[]>([]);
   const [selectionResetSignal, setSelectionResetSignal] = useState(0);
@@ -28,6 +29,21 @@ export const CategoryManager = () => {
     setIsDrawerOpen(false);
     setRefreshTrigger((prev) => prev + 1);
   };
+
+  const handleUpdate = async (payload: AdminCategoryPayload | AdminUpdateCategoryPayload, categoryId?: string) => {
+    if (!categoryId) {
+      throw new Error("Kategori ID zorunludur");
+    }
+    await updateCategory(categoryId, payload as AdminUpdateCategoryPayload);
+    setIsDrawerOpen(false);
+    setEditingCategory(null);
+    setRefreshTrigger((prev) => prev + 1);
+  };
+
+  const handleEdit = useCallback((category: AdminCategory) => {
+    setEditingCategory(category);
+    setIsDrawerOpen(true);
+  }, []);
 
   const handleDelete = useCallback(
     async (categoryId: string) => {
@@ -164,6 +180,7 @@ export const CategoryManager = () => {
       ) : null}
 
       <CategoryList
+        onEdit={handleEdit}
         onDelete={handleDelete}
         onSelectionChange={handleSelectionIdsChange}
         onSelectionDetailsChange={handleSelectionDetailsChange}
@@ -173,16 +190,25 @@ export const CategoryManager = () => {
 
       <Drawer
         isOpen={isDrawerOpen}
-        onClose={() => setIsDrawerOpen(false)}
+        onClose={() => {
+          setIsDrawerOpen(false);
+          setEditingCategory(null);
+        }}
         size="3xl"
         className="max-sm:!w-full"
       >
         <DrawerContent className="dark:bg-[#1a1a1a]">
           <DrawerHeader className="dark:border-b dark:border-[#2a2a2a]">
-            <h2 className="text-lg font-semibold dark:text-white">Yeni Kategori Ekle</h2>
+            <h2 className="text-lg font-semibold dark:text-white">
+              {editingCategory ? "Kategori Düzenle" : "Yeni Kategori Ekle"}
+            </h2>
           </DrawerHeader>
           <DrawerBody>
-            <CategoryForm onSubmit={handleCreate} />
+            <CategoryForm
+              mode={editingCategory ? "update" : "create"}
+              initialCategory={editingCategory || undefined}
+              onSubmit={editingCategory ? handleUpdate : handleCreate}
+            />
           </DrawerBody>
         </DrawerContent>
       </Drawer>

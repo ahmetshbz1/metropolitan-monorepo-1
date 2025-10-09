@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Input, Tabs, Tab, Checkbox, Card, CardBody } from "@heroui/react";
 import { Save } from "lucide-react";
 
 import { SUPPORTED_LANGUAGES } from "./constants";
-import type { AdminCategoryPayload, SupportedLanguage } from "./types";
+import type { AdminCategory, AdminCategoryPayload, AdminUpdateCategoryPayload, SupportedLanguage } from "./types";
 
 interface TranslationState {
   name: string;
@@ -24,15 +24,47 @@ const createInitialState = (): CategoryFormState => ({
   }, {} as Record<SupportedLanguage, TranslationState>),
 });
 
+const loadCategoryToForm = (category: AdminCategory): CategoryFormState => {
+  const translations: Record<SupportedLanguage, TranslationState> = {} as Record<SupportedLanguage, TranslationState>;
+
+  SUPPORTED_LANGUAGES.forEach((lang) => {
+    translations[lang.code] = {
+      name: category.translations[lang.code]?.name || "",
+    };
+  });
+
+  const hasAllTranslations = SUPPORTED_LANGUAGES.every(
+    (lang) => category.translations[lang.code]?.name
+  );
+
+  return {
+    slug: category.slug,
+    manualTranslationMode: hasAllTranslations,
+    translations,
+  };
+};
+
 interface CategoryFormProps {
-  onSubmit: (payload: AdminCategoryPayload) => Promise<void>;
+  mode?: "create" | "update";
+  initialCategory?: AdminCategory;
+  onSubmit: (payload: AdminCategoryPayload | AdminUpdateCategoryPayload, categoryId?: string) => Promise<void>;
 }
 
-export const CategoryForm = ({ onSubmit }: CategoryFormProps) => {
-  const [form, setForm] = useState<CategoryFormState>(createInitialState);
+export const CategoryForm = ({ mode = "create", initialCategory, onSubmit }: CategoryFormProps) => {
+  const [form, setForm] = useState<CategoryFormState>(() =>
+    initialCategory ? loadCategoryToForm(initialCategory) : createInitialState()
+  );
+  const [categoryId, setCategoryId] = useState<string>(initialCategory?.id || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initialCategory) {
+      setForm(loadCategoryToForm(initialCategory));
+      setCategoryId(initialCategory.id);
+    }
+  }, [initialCategory]);
 
   const updateField = <K extends keyof CategoryFormState>(
     field: K,
@@ -96,19 +128,32 @@ export const CategoryForm = ({ onSubmit }: CategoryFormProps) => {
         ];
       }
 
-      const payload: AdminCategoryPayload = {
-        slug: form.slug.trim() || undefined,
-        translations,
-      };
+      const payload: AdminCategoryPayload | AdminUpdateCategoryPayload = mode === "update"
+        ? {
+            categoryId,
+            slug: form.slug.trim() || undefined,
+            translations,
+          }
+        : {
+            slug: form.slug.trim() || undefined,
+            translations,
+          };
 
       setIsSubmitting(true);
-      await onSubmit(payload);
+      await onSubmit(payload, mode === "update" ? categoryId : undefined);
       setSuccess(
-        form.manualTranslationMode
-          ? "Kategori başarıyla oluşturuldu"
-          : "Kategori başarıyla oluşturuldu ve çeviriler otomatik oluşturuldu"
+        mode === "create"
+          ? form.manualTranslationMode
+            ? "Kategori başarıyla oluşturuldu"
+            : "Kategori başarıyla oluşturuldu ve çeviriler otomatik oluşturuldu"
+          : form.manualTranslationMode
+          ? "Kategori başarıyla güncellendi"
+          : "Kategori başarıyla güncellendi ve çeviriler otomatik güncellendi"
       );
-      setForm(createInitialState());
+      if (mode === "create") {
+        setForm(createInitialState());
+        setCategoryId("");
+      }
     } catch (submitError) {
       const message =
         submitError instanceof Error
@@ -122,6 +167,17 @@ export const CategoryForm = ({ onSubmit }: CategoryFormProps) => {
 
   return (
     <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+      {mode === "update" && (
+        <Input
+          label="Kategori ID"
+          value={categoryId}
+          onValueChange={setCategoryId}
+          variant="bordered"
+          isRequired
+          size="lg"
+        />
+      )}
+
       <Card className="dark:bg-[#1a1a1a]">
         <CardBody className="gap-4">
           <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
@@ -211,7 +267,7 @@ export const CategoryForm = ({ onSubmit }: CategoryFormProps) => {
           isLoading={isSubmitting}
           startContent={<Save className="h-4 w-4" />}
         >
-          Kategori Oluştur
+          {mode === "create" ? "Kategori Oluştur" : "Kategoriyi Güncelle"}
         </Button>
       </div>
     </form>
