@@ -35,7 +35,16 @@
       },
       "env": {
         "NODE_ENV": "production",
-        "EXPO_PUBLIC_API_BASE_URL": "https://api.metropolitanfg.pl"
+        "EXPO_PUBLIC_API_BASE_URL": "https://api.metropolitanfg.pl",
+        "EXPO_PUBLIC_FIREBASE_API_KEY": "AIzaSyDZTjMiSNfP9kwHJpCF3CCl8ZwvLbsjDGw",
+        "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "metropolitan-c84b7.firebaseapp.com",
+        "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "metropolitan-c84b7",
+        "EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET": "metropolitan-c84b7.firebasestorage.app",
+        "EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID": "18493082891",
+        "EXPO_PUBLIC_FIREBASE_APP_ID": "1:18493082891:ios:4090c7f397e7038f7ce60e",
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "18493082891-n9791nsddr9om7r55gjp3pcfsadrqsjj.apps.googleusercontent.com",
+        "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID": "18493082891-0qg1bp44jncs4m7jt6426ud1cv7bil4t.apps.googleusercontent.com",
+        "EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID": "18493082891-srvgo3hsv9khuhvdpe80s1hkfqjlb1of.apps.googleusercontent.com"
       }
     }
   },

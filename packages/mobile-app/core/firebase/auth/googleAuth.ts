@@ -19,9 +19,6 @@ export const signInWithGoogle = async () => {
       useProxy: isExpoGo,
     });
 
-    // Removed console statement
-    // Removed console statement
-
     const discovery = {
       authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
       tokenEndpoint: 'https://oauth2.googleapis.com/token',
