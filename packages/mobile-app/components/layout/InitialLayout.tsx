@@ -5,6 +5,7 @@
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
+import * as Updates from "expo-updates";
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useTranslation } from "react-i18next";
@@ -39,6 +40,26 @@ export const InitialLayout: React.FC = () => {
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
+    }
+  }, [loaded]);
+
+  useEffect(() => {
+    const checkForUpdates = async () => {
+      if (!__DEV__ && Updates.isEnabled) {
+        try {
+          const update = await Updates.checkForUpdateAsync();
+          if (update.isAvailable) {
+            await Updates.fetchUpdateAsync();
+            await Updates.reloadAsync();
+          }
+        } catch (error) {
+          console.log("Update check failed:", error);
+        }
+      }
+    };
+
+    if (loaded) {
+      checkForUpdates();
     }
   }, [loaded]);
 

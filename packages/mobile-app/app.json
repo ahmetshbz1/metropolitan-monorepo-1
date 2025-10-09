@@ -114,6 +114,7 @@
       "eas": {
         "projectId": "45dcd12c-24ab-49ba-9cdf-b8f73c3f4632"
       },
+      "apiBaseUrl": "https://api.metropolitanfg.pl",
       "firebase": {
         "apiKey": "AIzaSyDZTjMiSNfP9kwHJpCF3CCl8ZwvLbsjDGw",
         "authDomain": "metropolitan-c84b7.firebaseapp.com",

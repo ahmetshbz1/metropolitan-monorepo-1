@@ -3,10 +3,18 @@
 //  Created by Ahmet on 08.07.2025.
 
 import axios from "axios";
+import Constants from "expo-constants";
 import { setupInterceptors } from "./api-interceptors";
 
 // Environment variables'dan API URL'sini al
 const getApiBaseUrl = (): string => {
+  // Önce Constants'tan dene (EAS Update sonrası güvenilir)
+  const constantsUrl = Constants.expoConfig?.extra?.apiBaseUrl;
+
+  if (constantsUrl && typeof constantsUrl === "string" && constantsUrl.trim() !== "") {
+    return constantsUrl;
+  }
+
   // Environment variable'ı kontrol et
   const envUrl = process.env.EXPO_PUBLIC_API_BASE_URL;
 
