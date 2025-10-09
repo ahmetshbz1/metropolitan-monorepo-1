@@ -26,6 +26,7 @@ export const corsConfig = () => {
       "https://admin.metropolitan.com",
       "https://metropolitanfg.pl",
       "https://www.metropolitanfg.pl",
+      "https://admin.metropolitanfg.pl",
       "https://api.metropolitanfg.pl",
       "capacitor://localhost", // iOS native app
       "http://localhost", // iOS native app alternative
