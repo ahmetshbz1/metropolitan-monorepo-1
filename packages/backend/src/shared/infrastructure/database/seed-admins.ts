@@ -8,22 +8,22 @@ console.log("👤 Creating admin users...");
 const ADMIN_USERS = [
   {
     email: "ahmet@metropolitanfg.pl",
-    password: "Admin123!",
+    password: "7#mK9$xN2@pL5&vR",
     role: "Super Admin",
   },
   {
     email: "manager@metropolitanfg.pl",
-    password: "Manager123!",
+    password: "4%wQ8*dF3#hJ6!zX",
     role: "Manager",
   },
   {
     email: "orders@metropolitanfg.pl",
-    password: "Orders123!",
+    password: "9&bT5@nM2$gK7*cP",
     role: "Orders Manager",
   },
   {
     email: "support@metropolitanfg.pl",
-    password: "Support123!",
+    password: "3!vR6#xL8%fD4@sW",
     role: "Support",
   },
 ];

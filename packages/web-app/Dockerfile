@@ -24,16 +24,16 @@ WORKDIR /app
 # Bun kurulumu
 RUN npm install -g bun
 
-# Shared package'ı kopyala (with node_modules)
+# Shared package'ı kopyala ve build et
 COPY --from=deps /app/packages/shared /app/packages/shared
+WORKDIR /app/packages/shared
+RUN bun run build
 
 # Web-app dosyalarını kopyala
-COPY packages/web-app /app/packages/web-app
-COPY --from=deps /app/packages/web-app/node_modules /app/packages/web-app/node_modules
-
-# Shared package'ı build et
-WORKDIR /app/packages/shared
-RUN bun install && bun run build
+WORKDIR /app/packages/web-app
+COPY packages/web-app/package.json packages/web-app/bun.lock* ./
+COPY --from=deps /app/packages/web-app/node_modules ./node_modules
+COPY packages/web-app .
 
 # Build arguments
 ARG NEXT_PUBLIC_API_URL=https://api.metropolitanfg.pl
@@ -41,10 +41,6 @@ ARG NEXT_PUBLIC_API_URL=https://api.metropolitanfg.pl
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-
-# Web-app node_modules'e shared package'ı link et
-WORKDIR /app/packages/web-app
-RUN cd node_modules && rm -rf @metropolitan && mkdir -p @metropolitan && ln -s ../../shared @metropolitan/shared
 
 # Next.js build
 RUN bun run build
