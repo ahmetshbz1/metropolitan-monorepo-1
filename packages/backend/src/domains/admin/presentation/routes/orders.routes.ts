@@ -4,6 +4,7 @@ import { GetAdminOrdersService } from "../../application/use-cases/orders/get-or
 import { AdminExportOrdersService } from "../../application/use-cases/orders/export-orders.service";
 import { UpdateOrderStatusService } from "../../application/use-cases/orders/update-order-status.service";
 import { UpdateOrderPaymentStatusService } from "../../application/use-cases/orders/update-payment-status.service";
+import { AdminDeleteOrderService } from "../../application/use-cases/orders/delete-order.service";
 import { InvoiceService } from "../../../order/application/use-cases/invoice.service";
 import { createAdminRouter } from "./admin-router.factory";
 
@@ -153,5 +154,23 @@ export const adminOrdersRoutes = createAdminRouter("/admin/orders")
     {
       params: t.Object({ id: t.String({ format: "uuid" }) }),
       body: updateOrderPaymentStatusSchema,
+    }
+  )
+  .delete(
+    "/:id",
+    async ({ params, set }) => {
+      try {
+        const result = await AdminDeleteOrderService.execute(params.id);
+        return result;
+      } catch (error) {
+        set.status = 400;
+        return {
+          success: false,
+          message: error instanceof Error ? error.message : "Sipariş silinemedi",
+        };
+      }
+    },
+    {
+      params: t.Object({ id: t.String({ format: "uuid" }) }),
     }
   );

@@ -30,6 +30,7 @@ import {
 } from "@heroui/react";
 import { Download, Package, RefreshCw } from "lucide-react";
 import {
+  deleteOrder,
   downloadOrderInvoice,
   exportOrders,
   getOrders,
@@ -212,6 +213,8 @@ export const OrderManager = () => {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<string | null>(null);
   const [exportingFormat, setExportingFormat] = useState<"csv" | "xlsx" | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deletingOrderId, setDeletingOrderId] = useState<string | null>(null);
   const { showToast } = useToast();
 
   const loadOrders = useCallback(async (): Promise<OrdersResponse | undefined> => {
@@ -602,6 +605,34 @@ export const OrderManager = () => {
 
   const canUpdatePaymentStatus =
     selectedOrder?.paymentMethodType === "bank_transfer" && selectedOrder?.userType === "corporate";
+
+  const handleDeleteOrder = async () => {
+    if (!deletingOrderId) return;
+
+    try {
+      setUpdatingStatus(true);
+      await deleteOrder(deletingOrderId);
+      showToast({
+        type: "success",
+        title: "Sipariş başarıyla silindi",
+        duration: 3000,
+      });
+      await loadOrders();
+      setIsDeleteModalOpen(false);
+      setDeletingOrderId(null);
+      setDrawerOpen(false);
+      setSelectedOrder(null);
+    } catch (error) {
+      console.error("Sipariş silinemedi:", error);
+      showToast({
+        type: "error",
+        title: "Sipariş silme başarısız",
+        description: error instanceof Error ? error.message : undefined,
+      });
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -1091,6 +1122,26 @@ export const OrderManager = () => {
                     )}
                   </div>
                 </div>
+
+                <Divider />
+
+                <div>
+                  <h4 className="mb-3 text-sm font-semibold text-red-600 dark:text-red-400">Tehlikeli Bölge</h4>
+                  <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
+                    Bu siparişi kalıcı olarak silmek için aşağıdaki butona tıklayın. Bu işlem geri alınamaz.
+                  </p>
+                  <Button
+                    color="danger"
+                    variant="flat"
+                    onPress={() => {
+                      setDeletingOrderId(selectedOrder.id);
+                      setIsDeleteModalOpen(true);
+                    }}
+                    isDisabled={updatingStatus}
+                  >
+                    Siparişi Sil
+                  </Button>
+                </div>
               </div>
             )}
           </DrawerBody>
@@ -1190,6 +1241,46 @@ export const OrderManager = () => {
                   isLoading={updatingStatus}
                 >
                   Onayla
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)}>
+        <ModalContent>
+          {(close) => (
+            <>
+              <ModalHeader className="text-red-600 dark:text-red-400">Siparişi Sil</ModalHeader>
+              <ModalBody className="space-y-3">
+                <p className="text-sm text-slate-600 dark:text-slate-300">
+                  Bu siparişi kalıcı olarak silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Sipariş numarası: <span className="font-mono font-semibold">{selectedOrder?.orderNumber}</span>
+                </p>
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  variant="light"
+                  onPress={() => {
+                    setIsDeleteModalOpen(false);
+                    setDeletingOrderId(null);
+                    close();
+                  }}
+                  isDisabled={updatingStatus}
+                >
+                  Vazgeç
+                </Button>
+                <Button
+                  color="danger"
+                  onPress={() => {
+                    void handleDeleteOrder();
+                  }}
+                  isLoading={updatingStatus}
+                >
+                  Siparişi Sil
                 </Button>
               </ModalFooter>
             </>

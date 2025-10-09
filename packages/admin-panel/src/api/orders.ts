@@ -123,3 +123,8 @@ export const exportOrders = async (options?: {
 
   return response.data;
 };
+
+export const deleteOrder = async (orderId: string): Promise<{ success: boolean; message: string }> => {
+  const response = await apiClient.delete(`/admin/orders/${orderId}`);
+  return response.data;
+};
