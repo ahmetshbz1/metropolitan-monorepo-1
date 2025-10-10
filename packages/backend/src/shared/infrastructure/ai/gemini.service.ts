@@ -32,19 +32,8 @@ export class GeminiTranslationService {
 
     const contextInstruction = context ? `Context: This is ${context}. ` : "";
 
-    const culturalRules = fromLanguage === "Turkish"
-      ? `
-CRITICAL RULES FOR PRODUCT NAME TRANSLATION:
-- NEVER translate Turkish food product names to other country's equivalents
-- PRESERVE the EXACT original product name, including ALL English words
-- Keep brand names, product names, and English words EXACTLY as they are
-- Example: "Süzme Yoğurt" → "Süzme Yoğurt" (NOT "Greek Yogurt" or "jogurt grecki")
-- Example: "Of Lehçesi" → "Of Lehçesi" (NOT any translation of "of")
-- For mixed Turkish-English names: keep the ENTIRE name as-is
-- Traditional Turkish foods (Ayran, Lahmacun, Pide, Börek, etc.): keep original Turkish name
-- Only translate generic descriptions if absolutely necessary, NEVER product names
-- When in doubt, DO NOT translate - preserve the original
-`
+    const culturalRules = fromLanguage === "Turkish" && context?.includes("product")
+      ? `IMPORTANT: Do NOT use country names or nationalities. Translate literally.\n- Example: "Süzme Yoğurt" → "Strained Yogurt" (NOT "Greek Yogurt" or "jogurt grecki")\n`
       : "";
 
     const prompt = `${contextInstruction}${culturalRules}Translate the following text from ${fromLanguage} to ${toLanguage}. Return ONLY the translated text, no explanations or extra text.\n\nText to translate:\n${text}`;
@@ -75,19 +64,8 @@ CRITICAL RULES FOR PRODUCT NAME TRANSLATION:
 
     const contextInstruction = context ? `Context: These are ${context}. ` : "";
 
-    const culturalRules = fromLanguage === "Turkish"
-      ? `
-CRITICAL RULES FOR PRODUCT NAME TRANSLATION:
-- NEVER translate Turkish food product names to other country's equivalents
-- PRESERVE the EXACT original product name, including ALL English words
-- Keep brand names, product names, and English words EXACTLY as they are
-- Example: "Süzme Yoğurt" → "Süzme Yoğurt" (NOT "Greek Yogurt" or "jogurt grecki")
-- Example: "Of Lehçesi" → "Of Lehçesi" (NOT any translation of "of")
-- For mixed Turkish-English names: keep the ENTIRE name as-is
-- Traditional Turkish foods (Ayran, Lahmacun, Pide, Börek, etc.): keep original Turkish name
-- Only translate generic descriptions if absolutely necessary, NEVER product names
-- When in doubt, DO NOT translate - preserve the original
-`
+    const culturalRules = fromLanguage === "Turkish" && context?.includes("product")
+      ? `IMPORTANT: Do NOT use country names or nationalities. Translate literally.\n- Example: "Süzme Yoğurt" → "Strained Yogurt" (NOT "Greek Yogurt" or "jogurt grecki")\n`
       : "";
 
     const numberedTexts = texts
@@ -113,7 +91,7 @@ CRITICAL RULES FOR PRODUCT NAME TRANSLATION:
           `Translation count mismatch: expected ${texts.length}, got ${translations.length}`
         );
         return texts.map((_, index) =>
-          translations[index] ? translations[index] : texts[index]
+          translations[index] !== undefined ? translations[index] : texts[index]
         );
       }
 
