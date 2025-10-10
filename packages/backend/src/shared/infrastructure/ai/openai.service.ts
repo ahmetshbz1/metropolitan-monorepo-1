@@ -34,7 +34,18 @@ export class OpenAITranslationService {
     const contextInstruction = context ? `Context: This is ${context}. ` : "";
 
     const culturalRules = fromLanguage === "Turkish" && context?.includes("product")
-      ? `IMPORTANT: Do NOT use country names or nationalities. Translate literally.\n- Example: "Süzme Yoğurt" → "Strained Yogurt" (NOT "Greek Yogurt" or "jogurt grecki")\n`
+      ? `You are translating Turkish to ${toLanguage}. Follow these rules:
+
+1. TRANSLATE EVERY WORD: Translate all Turkish words to ${toLanguage}. Do not leave any Turkish words untranslated.
+
+2. LITERAL TRANSLATION: Translate word-by-word with exact meaning. Do NOT use cultural equivalents, country names, or nationalities.
+
+3. CAPITALIZATION: If input is ALL UPPERCASE, translate with normal Title Case. Otherwise keep normal case.
+
+4. NO COPYING: Never copy Turkish text. Always provide actual ${toLanguage} translation.
+
+Return ONLY the translated text in ${toLanguage}.
+`
       : "";
 
     const prompt = `${contextInstruction}${culturalRules}Translate the following text from ${fromLanguage} to ${toLanguage}. Return ONLY the translated text, no explanations or extra text.\n\nText to translate:\n${text}`;
@@ -91,7 +102,18 @@ export class OpenAITranslationService {
     const contextInstruction = context ? `Context: These are ${context}. ` : "";
 
     const culturalRules = fromLanguage === "Turkish" && context?.includes("product")
-      ? `IMPORTANT: Do NOT use country names or nationalities. Translate literally.\n- Example: "Süzme Yoğurt" → "Strained Yogurt" (NOT "Greek Yogurt" or "jogurt grecki")\n`
+      ? `You are translating Turkish to ${toLanguage}. Follow these rules:
+
+1. TRANSLATE EVERY WORD: Translate all Turkish words to ${toLanguage}. Do not leave any Turkish words untranslated.
+
+2. LITERAL TRANSLATION: Translate word-by-word with exact meaning. Do NOT use cultural equivalents, country names, or nationalities.
+
+3. CAPITALIZATION: If input is ALL UPPERCASE, translate with normal Title Case. Otherwise keep normal case.
+
+4. NO COPYING: Never copy Turkish text. Always provide actual ${toLanguage} translation.
+
+Return ONLY the translated text in ${toLanguage}.
+`
       : "";
 
     const numberedTexts = texts
