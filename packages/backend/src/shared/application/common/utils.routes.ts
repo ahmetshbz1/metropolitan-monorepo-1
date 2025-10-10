@@ -8,8 +8,22 @@ import { verifyNipAndGetName } from "../../infrastructure/external/nip.service";
 import { createApp } from "../../infrastructure/web/app";
 
 export const utilsRoutes = createApp().group("/utils", (app) =>
-  app.post(
-    "/check-nip",
+  app
+    .post(
+      "/client-error-log",
+      async ({ body }) => {
+        console.log("🔴 CLIENT ERROR LOG:", JSON.stringify(body, null, 2));
+        return { success: true };
+      },
+      {
+        body: t.Object({
+          source: t.String(),
+          error: t.Any(),
+        }),
+      }
+    )
+    .post(
+      "/check-nip",
     async ({ body, error }) => {
       const { nip } = body;
 

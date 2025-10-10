@@ -25,8 +25,19 @@ export const processCardPayment = async ({
   const { error: initError } = await initPaymentSheet(initConfig);
 
   if (initError) {
-    // Removed console statement
-    // ❌ Full error details
+    const errorDetails = {
+      code: initError.code,
+      message: initError.message,
+      localizedMessage: initError.localizedMessage,
+      timestamp: new Date().toISOString(),
+    };
+
+    // Backend'e error log gönder (fire and forget)
+    api.post("/utils/client-error-log", {
+      source: "stripe_init_payment_sheet",
+      error: errorDetails,
+    }).catch(() => {});
+
     return {
       success: false,
       error:
