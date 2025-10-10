@@ -2,7 +2,7 @@
   "expo": {
     "name": "metropolitan",
     "slug": "metropolitan",
-    "version": "1.0.9",
+    "version": "1.0.10",
     "hooks": {
       "postInstall": "cd ../shared && (bun run build || npm run build || yarn build) || true"
     },
@@ -24,7 +24,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.metropolitan.food",
-      "buildNumber": "47",
+      "buildNumber": "48",
       "deploymentTarget": "18.0",
       "config": {
         "googleSignIn": {
@@ -98,6 +98,13 @@
           "ios": {
             "deploymentTarget": "18.0"
           }
+        }
+      ],
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.metropolitan.food",
+          "enableGooglePay": true
         }
       ]
     ],
