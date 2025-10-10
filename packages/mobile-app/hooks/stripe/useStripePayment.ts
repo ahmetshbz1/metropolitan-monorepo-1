@@ -71,11 +71,12 @@ export const useStripePayment = () => {
         t,
         orderId,
       });
-    } catch (error: any) {
-      // Removed console statement
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : t("payment.unknown_error");
       return {
         success: false,
-        error: error?.message || t("payment.unknown_error"),
+        error: errorMessage,
       };
     } finally {
       setLoading(false);

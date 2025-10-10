@@ -49,10 +49,8 @@ export const processCardPayment = async ({
       // Removed console statement}, attempting stock rollback for order ${orderId}`);
 
       try {
-        const rollbackResponse = await api.post(`/orders/${orderId}/rollback-stock`);
-        // Removed console statement
-      } catch (rollbackError: any) {
-        // Removed console statement
+        await api.post(`/orders/${orderId}/rollback-stock`);
+      } catch (rollbackError: unknown) {
         // Don't fail the payment error response due to rollback failure
         // Just log it for monitoring
       }

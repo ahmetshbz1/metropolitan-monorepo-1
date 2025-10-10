@@ -8,7 +8,20 @@ class StripeService {
   private stripe: Stripe;
 
   constructor() {
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+    const isProduction = process.env.NODE_ENV === "production";
+    const secretKey = isProduction
+      ? process.env.STRIPE_SECRET_KEY_LIVE
+      : process.env.STRIPE_SECRET_KEY;
+
+    if (!secretKey) {
+      throw new Error(
+        `Stripe secret key is missing. Expected ${
+          isProduction ? "STRIPE_SECRET_KEY_LIVE" : "STRIPE_SECRET_KEY"
+        } in environment variables.`
+      );
+    }
+
+    this.stripe = new Stripe(secretKey);
   }
 
   async createPaymentIntent({
@@ -39,8 +52,9 @@ class StripeService {
         paymentIntentConfig.automatic_payment_methods = automaticPaymentMethods;
       }
 
-      const paymentIntent =
-        await this.stripe.paymentIntents.create(paymentIntentConfig);
+      const paymentIntent = await this.stripe.paymentIntents.create(
+        paymentIntentConfig
+      );
 
       return paymentIntent;
     } catch (error) {
@@ -92,7 +106,11 @@ class StripeService {
         },
       });
 
-      console.log(`✅ Stripe Checkout Session created: ${session.id} (${paymentMethodTypes.join(", ")})`);
+      console.log(
+        `✅ Stripe Checkout Session created: ${
+          session.id
+        } (${paymentMethodTypes.join(", ")})`
+      );
       return session;
     } catch (error) {
       console.error("Stripe Checkout Session creation error:", error);
@@ -104,8 +122,9 @@ class StripeService {
     paymentIntentId: string
   ): Promise<Stripe.PaymentIntent> {
     try {
-      const paymentIntent =
-        await this.stripe.paymentIntents.retrieve(paymentIntentId);
+      const paymentIntent = await this.stripe.paymentIntents.retrieve(
+        paymentIntentId
+      );
       return paymentIntent;
     } catch (error) {
       console.error("Stripe PaymentIntent retrieval error:", error);
@@ -133,8 +152,9 @@ class StripeService {
     paymentIntentId: string
   ): Promise<Stripe.PaymentIntent> {
     try {
-      const paymentIntent =
-        await this.stripe.paymentIntents.cancel(paymentIntentId);
+      const paymentIntent = await this.stripe.paymentIntents.cancel(
+        paymentIntentId
+      );
       return paymentIntent;
     } catch (error) {
       console.error("Stripe PaymentIntent cancellation error:", error);

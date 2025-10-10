@@ -12,7 +12,7 @@
         "@react-navigation/bottom-tabs": "^7.3.10",
         "@react-navigation/elements": "^2.5.2",
         "@react-navigation/native": "^7.1.6",
-        "@stripe/stripe-react-native": "0.45.0",
+        "@stripe/stripe-react-native": "0.50.3",
         "axios": "^1.10.0",
         "date-fns": "^4.1.0",
         "expo": "~53.0.23",
@@ -571,7 +571,7 @@
 
     "@sinonjs/fake-timers": ["@sinonjs/fake-timers@10.3.0", "", { "dependencies": { "@sinonjs/commons": "^3.0.0" } }, "sha512-V4BG07kuYSUkTCSBHG8G8TNhM+F19jXFWnQtzj+we8DrkpSBCee9Z3Ms8yiGer/dlmhe35/Xdgyo3/0rQKg7YA=="],
 
-    "@stripe/stripe-react-native": ["@stripe/stripe-react-native@0.45.0", "", { "peerDependencies": { "expo": ">=46.0.9", "react": "*", "react-native": "*" }, "optionalPeers": ["expo"] }, "sha512-7ebzpzkbTrlSfwHJkxv2ixP+YhrF7rLncIr0Sxk6iOeVarB1rOoURWlLRf+Yy5G5OJYjgZDVSVpITcOddtgAVw=="],
+    "@stripe/stripe-react-native": ["@stripe/stripe-react-native@0.50.3", "", { "peerDependencies": { "expo": ">=46.0.9", "react": "*", "react-native": "*" }, "optionalPeers": ["expo"] }, "sha512-nzOjqZXQKdM7y33Em2JZxCTAgf/q/J51IJQ50XtwIL0QT6Jt5WSmfKm9rGmBhoXxxG4DcXu/qxJeAHlhcPDGQg=="],
 
     "@tybys/wasm-util": ["@tybys/wasm-util@0.10.1", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg=="],
 

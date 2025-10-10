@@ -34,7 +34,7 @@ export const StripeProviderWrapper: React.FC<{ children: ReactNode }> = ({
           const { publishableKey } = response.data.data;
           setPublishableKey(publishableKey);
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         // Fallback to environment variable if API fails
         const envKey = process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY;
         if (envKey) {
