@@ -9,7 +9,7 @@ export const getPaymentSheetConfig = (
   const baseConfig = {
     merchantDisplayName: "Metropolitan Food",
     paymentIntentClientSecret: clientSecret,
-    returnURL: "com.metropolitan.food://payment-return",
+    returnURL: "metropolitan://payment-return",
   };
 
   // Belirli payment method'ları için konfigürasyon
