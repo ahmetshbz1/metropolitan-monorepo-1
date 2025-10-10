@@ -32,7 +32,19 @@ export class GeminiTranslationService {
 
     const contextInstruction = context ? `Context: This is ${context}. ` : "";
 
-    const prompt = `${contextInstruction}Translate the following text from ${fromLanguage} to ${toLanguage}. Return ONLY the translated text, no explanations or extra text.\n\nText to translate:\n${text}`;
+    const culturalRules = fromLanguage === "Turkish"
+      ? `
+CRITICAL RULES:
+- NEVER translate Turkish food product names to other country's equivalents
+- PRESERVE the original Turkish product name authenticity
+- If translating "Süzme Yoğurt", keep it as "Süzme Yoğurt" or "Strained Yogurt", NEVER as "Greek Yogurt" or "jogurt grecki"
+- For Turkish traditional foods (Ayran, Lahmacun, Pide, etc.), keep the original Turkish name
+- Only provide descriptive translations when absolutely necessary
+- Respect cultural food heritage and original product naming
+`
+      : "";
+
+    const prompt = `${contextInstruction}${culturalRules}Translate the following text from ${fromLanguage} to ${toLanguage}. Return ONLY the translated text, no explanations or extra text.\n\nText to translate:\n${text}`;
 
     try {
       const result = await model.generateContent(prompt);
@@ -60,11 +72,23 @@ export class GeminiTranslationService {
 
     const contextInstruction = context ? `Context: These are ${context}. ` : "";
 
+    const culturalRules = fromLanguage === "Turkish"
+      ? `
+CRITICAL RULES:
+- NEVER translate Turkish food product names to other country's equivalents
+- PRESERVE the original Turkish product name authenticity
+- If translating "Süzme Yoğurt", keep it as "Süzme Yoğurt" or "Strained Yogurt", NEVER as "Greek Yogurt" or "jogurt grecki"
+- For Turkish traditional foods (Ayran, Lahmacun, Pide, etc.), keep the original Turkish name
+- Only provide descriptive translations when absolutely necessary
+- Respect cultural food heritage and original product naming
+`
+      : "";
+
     const numberedTexts = texts
       .map((text, index) => `${index + 1}. ${text}`)
       .join("\n");
 
-    const prompt = `${contextInstruction}Translate the following texts from ${fromLanguage} to ${toLanguage}. Return ONLY the translations in the same numbered format, no explanations.\n\n${numberedTexts}`;
+    const prompt = `${contextInstruction}${culturalRules}Translate the following texts from ${fromLanguage} to ${toLanguage}. Return ONLY the translations in the same numbered format, no explanations.\n\n${numberedTexts}`;
 
     try {
       const result = await model.generateContent(prompt);
