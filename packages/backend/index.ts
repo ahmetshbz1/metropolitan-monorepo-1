@@ -15,8 +15,8 @@ import pretty from "pino-pretty";
 // Shared Infrastructure
 
 // Domain Routes
-import { adminRoutes } from "./src/domains/admin/presentation/routes";
 import { isAdminAuthenticated } from "./src/domains/admin/application/guards/admin.guard";
+import { adminRoutes } from "./src/domains/admin/presentation/routes";
 import { productRoutes } from "./src/domains/catalog/presentation/routes/products.routes";
 import { contentRoutes } from "./src/domains/content/presentation/routes/content.routes";
 import { guestRoutes } from "./src/domains/content/presentation/routes/guest.routes";
@@ -26,8 +26,8 @@ import { changePhoneRoutes } from "./src/domains/identity/presentation/routes/ch
 import { refreshTokenRoutes } from "./src/domains/identity/presentation/routes/refresh-token.routes";
 import { invoicesRoutes } from "./src/domains/order/presentation/routes/invoices.routes";
 import { ordersRoutes } from "./src/domains/order/presentation/routes/orders.routes";
-import { paymentRoutes } from "./src/domains/payment/presentation/routes/payment.routes";
 import { paymentTermsRoutes } from "./src/domains/payment/presentation/routes/payment-terms.routes";
+import { paymentRoutes } from "./src/domains/payment/presentation/routes/payment.routes";
 import { stripeWebhookRoutes } from "./src/domains/payment/presentation/routes/stripe-webhook.routes";
 import { cartRoutes } from "./src/domains/shopping/presentation/routes/cart.routes";
 import { favoritesRoutes } from "./src/domains/shopping/presentation/routes/favorites.routes";
@@ -41,6 +41,7 @@ import { profileRoutes } from "./src/domains/user/presentation/routes/profile.ro
 import { securitySettingsRoutes } from "./src/domains/user/presentation/routes/security-settings.routes";
 import { healthRoutes } from "./src/shared/application/common/health.routes";
 import { utilsRoutes } from "./src/shared/application/common/utils.routes";
+import { envConfig } from "./src/shared/infrastructure/config/env.config";
 import { db } from "./src/shared/infrastructure/database/connection";
 import { compressionPlugin } from "./src/shared/infrastructure/middleware/compression";
 import {
@@ -53,7 +54,6 @@ import {
   rateLimitConfigs,
 } from "./src/shared/infrastructure/middleware/rate-limit";
 import { initializeSentry } from "./src/shared/infrastructure/monitoring/sentry.config";
-import { envConfig } from "./src/shared/infrastructure/config/env.config";
 
 // Initialize Sentry monitoring
 initializeSentry();
@@ -110,10 +110,7 @@ swaggerApp.use(
 
 const healthApp = new Elysia();
 
-if (envConfig.NODE_ENV === "production") {
-  healthApp.use(isAdminAuthenticated);
-}
-
+// Health endpoint should always be public for Docker healthcheck
 healthApp.use(healthRoutes);
 
 // Git commit hash kaldırıldı - production'da gereksiz
@@ -156,7 +153,9 @@ export const app = new Elysia()
       const requestId = randomBytes(8).toString("hex");
 
       if (typeof response === "string") {
-        return `${response} (${requestId}) in ${durationInMs.toPrecision(15)}ms.`;
+        return `${response} (${requestId}) in ${durationInMs.toPrecision(
+          15
+        )}ms.`;
       }
       return response;
     },
@@ -214,9 +213,10 @@ export const app = new Elysia()
     })
   )
   .get("/uploads/product-images/:filename", async ({ params, set }) => {
-    const uploadDir = envConfig.NODE_ENV === "production"
-      ? "/app/uploads/product-images"
-      : "public/uploads/product-images";
+    const uploadDir =
+      envConfig.NODE_ENV === "production"
+        ? "/app/uploads/product-images"
+        : "public/uploads/product-images";
 
     const filePath = `${uploadDir}/${params.filename}`;
 
