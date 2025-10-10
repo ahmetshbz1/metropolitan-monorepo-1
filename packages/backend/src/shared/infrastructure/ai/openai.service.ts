@@ -35,13 +35,16 @@ export class OpenAITranslationService {
 
     const culturalRules = fromLanguage === "Turkish"
       ? `
-CRITICAL RULES:
+CRITICAL RULES FOR PRODUCT NAME TRANSLATION:
 - NEVER translate Turkish food product names to other country's equivalents
-- PRESERVE the original Turkish product name authenticity
-- If translating "Süzme Yoğurt", keep it as "Süzme Yoğurt" or "Strained Yogurt", NEVER as "Greek Yogurt" or "jogurt grecki"
-- For Turkish traditional foods (Ayran, Lahmacun, Pide, etc.), keep the original Turkish name
-- Only provide descriptive translations when absolutely necessary
-- Respect cultural food heritage and original product naming
+- PRESERVE the EXACT original product name, including ALL English words
+- Keep brand names, product names, and English words EXACTLY as they are
+- Example: "Süzme Yoğurt" → "Süzme Yoğurt" (NOT "Greek Yogurt" or "jogurt grecki")
+- Example: "Of Lehçesi" → "Of Lehçesi" (NOT any translation of "of")
+- For mixed Turkish-English names: keep the ENTIRE name as-is
+- Traditional Turkish foods (Ayran, Lahmacun, Pide, Börek, etc.): keep original Turkish name
+- Only translate generic descriptions if absolutely necessary, NEVER product names
+- When in doubt, DO NOT translate - preserve the original
 `
       : "";
 
@@ -100,13 +103,16 @@ CRITICAL RULES:
 
     const culturalRules = fromLanguage === "Turkish"
       ? `
-CRITICAL RULES:
+CRITICAL RULES FOR PRODUCT NAME TRANSLATION:
 - NEVER translate Turkish food product names to other country's equivalents
-- PRESERVE the original Turkish product name authenticity
-- If translating "Süzme Yoğurt", keep it as "Süzme Yoğurt" or "Strained Yogurt", NEVER as "Greek Yogurt" or "jogurt grecki"
-- For Turkish traditional foods (Ayran, Lahmacun, Pide, etc.), keep the original Turkish name
-- Only provide descriptive translations when absolutely necessary
-- Respect cultural food heritage and original product naming
+- PRESERVE the EXACT original product name, including ALL English words
+- Keep brand names, product names, and English words EXACTLY as they are
+- Example: "Süzme Yoğurt" → "Süzme Yoğurt" (NOT "Greek Yogurt" or "jogurt grecki")
+- Example: "Of Lehçesi" → "Of Lehçesi" (NOT any translation of "of")
+- For mixed Turkish-English names: keep the ENTIRE name as-is
+- Traditional Turkish foods (Ayran, Lahmacun, Pide, Börek, etc.): keep original Turkish name
+- Only translate generic descriptions if absolutely necessary, NEVER product names
+- When in doubt, DO NOT translate - preserve the original
 `
       : "";
 
