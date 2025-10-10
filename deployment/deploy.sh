@@ -44,6 +44,10 @@ fi
 echo '🛑 Stopping existing containers...'
 docker-compose down || true
 
+# Remove old images to force fresh build
+echo '🗑️ Removing old Docker images...'
+docker rmi metropolitan/backend:latest || true
+
 # Build and start services
 echo '🔨 Building Docker images...'
 docker-compose build --no-cache backend web-app admin-panel
