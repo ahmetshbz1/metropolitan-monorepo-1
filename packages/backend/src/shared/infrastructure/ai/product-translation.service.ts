@@ -82,12 +82,34 @@ export class ProductTranslationService {
     try {
       const provider = await TranslationProviderFactory.getProvider();
 
-      translations.en.name = turkishData.name;
-      translations.pl.name = turkishData.name;
+      translations.en.name = await provider.translateText({
+        text: turkishData.name,
+        fromLanguage: "Turkish",
+        toLanguage: "English",
+        context: "product name",
+      });
+
+      translations.pl.name = await provider.translateText({
+        text: turkishData.name,
+        fromLanguage: "Turkish",
+        toLanguage: "Polish",
+        context: "product name",
+      });
 
       if (turkishData.fullName) {
-        translations.en.fullName = turkishData.fullName;
-        translations.pl.fullName = turkishData.fullName;
+        translations.en.fullName = await provider.translateText({
+          text: turkishData.fullName,
+          fromLanguage: "Turkish",
+          toLanguage: "English",
+          context: "product full name",
+        });
+
+        translations.pl.fullName = await provider.translateText({
+          text: turkishData.fullName,
+          fromLanguage: "Turkish",
+          toLanguage: "Polish",
+          context: "product full name",
+        });
       }
 
       if (turkishData.description) {
