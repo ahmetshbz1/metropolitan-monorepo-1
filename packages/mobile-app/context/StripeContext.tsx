@@ -61,7 +61,7 @@ export const StripeProviderWrapper: React.FC<{ children: ReactNode }> = ({
     <StripeProvider
       publishableKey={publishableKey}
       merchantIdentifier="merchant.com.metropolitan.food"
-      urlScheme="metropolitan"
+      urlScheme="com.metropolitan.food"
     >
       <StripeContext.Provider value={{ isReady: true }}>
         {children}
