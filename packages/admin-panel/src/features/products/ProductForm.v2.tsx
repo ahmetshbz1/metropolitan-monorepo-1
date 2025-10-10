@@ -91,7 +91,7 @@ const createInitialState = (): ProductFormState => ({
   minQuantityIndividual: "",
   minQuantityCorporate: "",
   quantityPerBox: "",
-  manualTranslationMode: false,
+  manualTranslationMode: true,
   name: "",
   fullName: "",
   description: "",
