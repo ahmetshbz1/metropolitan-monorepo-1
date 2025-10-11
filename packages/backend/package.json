@@ -32,7 +32,8 @@
     "db:setup:dev": "bun run db:migrate && bun run db:seed && bun run db:seed:products && bun run db:seed:admins",
     "db:setup:prod": "bun run db:migrate && bun run db:seed && bun run db:seed:admins",
     "studio": "drizzle-kit studio",
-    "sync:fakturownia": "bun src/shared/infrastructure/database/sync-fakturownia-products.ts"
+    "sync:fakturownia": "bun src/shared/infrastructure/database/sync-fakturownia-products.ts",
+    "report:fakturownia": "bun src/shared/infrastructure/database/report-fakturownia-products.ts"
   },
   "dependencies": {
     "@bogeychan/elysia-logger": "^0.1.10",
