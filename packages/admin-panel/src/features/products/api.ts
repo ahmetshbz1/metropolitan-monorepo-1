@@ -36,6 +36,7 @@ export const deleteProductImage = async (imageUrl: string): Promise<void> => {
 export const getProducts = async (params?: {
   limit?: number;
   offset?: number;
+  search?: string;
 }): Promise<ProductsListResponse> => {
   const searchParams = new URLSearchParams();
   if (params?.limit !== undefined) {
@@ -43,6 +44,9 @@ export const getProducts = async (params?: {
   }
   if (params?.offset !== undefined) {
     searchParams.append("offset", params.offset.toString());
+  }
+  if (params?.search !== undefined && params.search.trim() !== "") {
+    searchParams.append("search", params.search.trim());
   }
 
   const query = searchParams.toString();

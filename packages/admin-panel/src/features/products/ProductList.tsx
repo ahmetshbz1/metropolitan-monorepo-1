@@ -15,9 +15,10 @@ import {
   DropdownItem,
   Image,
   Pagination,
+  Input,
   type Selection,
 } from "@heroui/react";
-import { MoreVertical, ImageOff } from "lucide-react";
+import { MoreVertical, ImageOff, Search } from "lucide-react";
 import { getProducts } from "./api";
 import type { AdminProduct } from "./types";
 import { API_BASE_URL } from "../../config/env";
@@ -58,6 +59,8 @@ export const ProductList = ({
   const [limit] = useState(50);
   const [offset, setOffset] = useState(0);
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set<string>());
+  const [search, setSearch] = useState("");
+  const [searchDraft, setSearchDraft] = useState("");
 
   const emitSelection = useCallback(
     (keys: Set<string>) => {
@@ -78,7 +81,7 @@ export const ProductList = ({
     try {
       setIsLoading(true);
       setError(null);
-      const response = await getProducts({ limit, offset });
+      const response = await getProducts({ limit, offset, search });
       setProducts(response.items);
       setTotal(response.total);
     } catch (err) {
@@ -86,7 +89,7 @@ export const ProductList = ({
     } finally {
       setIsLoading(false);
     }
-  }, [limit, offset]);
+  }, [limit, offset, search]);
 
   useEffect(() => {
     void loadProducts();
@@ -126,6 +129,17 @@ export const ProductList = ({
     setOffset((page - 1) * limit);
   };
 
+  const handleSearchSubmit = () => {
+    setSearch(searchDraft.trim());
+    setOffset(0);
+  };
+
+  const handleSearchClear = () => {
+    setSearchDraft("");
+    setSearch("");
+    setOffset(0);
+  };
+
   const formatPrice = (price: number | null, currency: string) => {
     if (price === null) return "-";
     return `${price.toFixed(2)} ${currency}`;
@@ -141,6 +155,15 @@ export const ProductList = ({
     });
   };
 
+  const getProductName = (product: AdminProduct): string => {
+    return (
+      product.translations.tr.name ||
+      product.translations.en.name ||
+      product.translations.pl.name ||
+      product.productCode
+    );
+  };
+
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-red-200 bg-red-50 p-8 dark:border-red-900 dark:bg-red-950">
@@ -154,23 +177,45 @@ export const ProductList = ({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-slate-600 dark:text-slate-400">Toplam:</span>
-          <Chip size="sm" variant="flat" color="primary">
-            {total}
-          </Chip>
-        </div>
-        {totalPages > 1 ? (
-          <Pagination
+      <div className="flex flex-col gap-3">
+        <div className="flex max-w-sm items-center gap-2">
+          <Input
             size="sm"
-            showControls
-            total={totalPages}
-            page={currentPage}
-            onChange={handlePageChange}
-            className="ml-auto"
+            value={searchDraft}
+            onValueChange={setSearchDraft}
+            placeholder="Ürün adı veya kodu"
+            startContent={<Search className="h-4 w-4 text-slate-400" />}
+            onClear={handleSearchClear}
+            isClearable
+            aria-label="Ürün arama"
           />
-        ) : null}
+          <Button
+            size="sm"
+            variant="flat"
+            onPress={handleSearchSubmit}
+            isDisabled={isLoading}
+          >
+            Ara
+          </Button>
+        </div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-slate-600 dark:text-slate-400">Toplam:</span>
+            <Chip size="sm" variant="flat" color="primary">
+              {total}
+            </Chip>
+          </div>
+          {totalPages > 1 ? (
+            <Pagination
+              size="sm"
+              showControls
+              total={totalPages}
+              page={currentPage}
+              onChange={handlePageChange}
+              className="ml-auto"
+            />
+          ) : null}
+        </div>
       </div>
 
       <div className="overflow-x-auto">
@@ -202,7 +247,7 @@ export const ProductList = ({
                   {product.imageUrl ? (
                     <Image
                       src={`${API_BASE_URL}${product.imageUrl}`}
-                      alt={product.translations.tr.name}
+                      alt={getProductName(product)}
                       width={48}
                       height={48}
                       className="rounded-lg object-cover"
@@ -217,7 +262,7 @@ export const ProductList = ({
                   <span className="font-mono text-xs dark:text-slate-300">{product.productCode}</span>
                 </TableCell>
                 <TableCell>
-                  <span className="font-medium dark:text-slate-200">{product.translations.tr.name}</span>
+                  <span className="font-medium dark:text-slate-200">{getProductName(product)}</span>
                 </TableCell>
                 <TableCell>
                   <span className="dark:text-slate-300">{product.brand || "-"}</span>
