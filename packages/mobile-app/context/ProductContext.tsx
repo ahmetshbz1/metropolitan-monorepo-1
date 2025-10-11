@@ -30,11 +30,13 @@ interface ProductContextType {
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
 const sortProductsByStock = (products: Product[]): Product[] => {
-  return [...products].sort((a, b) => {
-    if (a.stock > 0 && b.stock === 0) return -1;
-    if (a.stock === 0 && b.stock > 0) return 1;
-    return 0;
-  });
+  return [...products]
+    .filter((product) => product && product.name && product.brand && product.category)
+    .sort((a, b) => {
+      if (a.stock > 0 && b.stock === 0) return -1;
+      if (a.stock === 0 && b.stock > 0) return 1;
+      return 0;
+    });
 };
 
 export const ProductProvider = ({ children }: { children: ReactNode }) => {

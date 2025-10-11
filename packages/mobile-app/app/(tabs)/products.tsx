@@ -18,14 +18,19 @@ import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 const sortProductsByStock = (products: Product[]): Product[] => {
-  return [...products].sort((a, b) => {
-    if (a.stock > 0 && b.stock === 0) return -1;
-    if (a.stock === 0 && b.stock > 0) return 1;
-    return 0;
-  });
+  return [...products]
+    .filter((product) => product && product.name && product.brand && product.category)
+    .sort((a, b) => {
+      if (a.stock > 0 && b.stock === 0) return -1;
+      if (a.stock === 0 && b.stock > 0) return 1;
+      return 0;
+    });
 };
 
-const normalizeText = (text: string): string => {
+const normalizeText = (text: string | undefined | null): string => {
+  if (!text) {
+    return "";
+  }
   return text
     .toLowerCase()
     .replace(/ğ/g, "g")
@@ -114,6 +119,8 @@ export default function ProductsScreen() {
 
     const normalizedQuery = normalizeText(searchQuery.trim());
     return baseProducts.filter((product) => {
+      if (!product) return false;
+
       const normalizedName = normalizeText(product.name);
       const normalizedBrand = normalizeText(product.brand);
       const normalizedCategory = normalizeText(product.category);
