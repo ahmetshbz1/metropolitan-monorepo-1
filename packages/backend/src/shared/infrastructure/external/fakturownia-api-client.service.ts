@@ -21,7 +21,8 @@ export class FakturowniaApiClientService {
    * Build API URL with token
    */
   private getApiUrl(endpoint: string): string {
-    return `${this.apiUrl}/${endpoint}?api_token=${this.apiToken}`;
+    const separator = endpoint.includes('?') ? '&' : '?';
+    return `${this.apiUrl}/${endpoint}${separator}api_token=${this.apiToken}`;
   }
 
   /**
