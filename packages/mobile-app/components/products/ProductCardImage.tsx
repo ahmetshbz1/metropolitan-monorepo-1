@@ -100,9 +100,6 @@ const ProductCardImageComponent: React.FC<ProductCardImageProps> = ({
     setImageLoading(false);
   }, []);
 
-  // Generate unique cache key
-  const cacheKey = useMemo(() => `product-${product.id}`, [product.id]);
-
   return (
     <View
       className="relative items-center justify-center overflow-hidden"
@@ -129,10 +126,9 @@ const ProductCardImageComponent: React.FC<ProductCardImageProps> = ({
               opacity: imageLoading ? 0.5 : 1,
             }}
             contentFit="contain"
-            transition={0}
-            cachePolicy="memory-disk"
+            transition={300}
+            cachePolicy="none"
             priority="high"
-            recyclingKey={cacheKey}
             placeholder="L6PZfSi_.AyE_3t7t7R**0o#DgR4"
             placeholderContentFit="contain"
             allowDownscaling={false}

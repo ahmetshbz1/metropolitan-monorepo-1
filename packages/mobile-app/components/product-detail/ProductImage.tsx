@@ -39,7 +39,6 @@ export const ProductImage = memo(function ProductImage({ product }: ProductImage
   const [retryCount, setRetryCount] = useState(0);
 
   const imageUrl = useMemo(() => getValidImageUrl(product?.image), [product?.image]);
-  const cacheKey = useMemo(() => product?.id ? `product-detail-${product.id}` : undefined, [product?.id]);
 
   const handleImageError = useCallback(() => {
     if (retryCount < 2) {
@@ -66,14 +65,13 @@ export const ProductImage = memo(function ProductImage({ product }: ProductImage
           }}
           style={{ width: "100%", height: "100%" }}
           contentFit="contain"
-          transition={200}
+          transition={300}
           placeholder="L6Pj42%M4nWBVZJr00%M_4RjO[M|"
           placeholderContentFit="contain"
-          cachePolicy="memory-disk"
+          cachePolicy="none"
           priority="high"
           allowDownscaling={false}
           contentPosition="center"
-          recyclingKey={cacheKey}
           onLoad={handleImageLoad}
           onError={handleImageError}
         />

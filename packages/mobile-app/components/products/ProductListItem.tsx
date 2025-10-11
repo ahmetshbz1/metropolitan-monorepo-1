@@ -50,7 +50,6 @@ export const ProductListItem = React.memo<ProductListItemProps>(function Product
   const [imageError, setImageError] = useState(false);
 
   const imageUrl = useMemo(() => getValidImageUrl(product.image), [product.image]);
-  const cacheKey = useMemo(() => `product-list-${product.id}`, [product.id]);
 
   const handlePress = () => {
     safePush(`/product/${product.id}`);
@@ -115,10 +114,9 @@ export const ProductListItem = React.memo<ProductListItemProps>(function Product
                 height: '85%',
               }}
               contentFit="contain"
-              transition={150}
-              cachePolicy="memory-disk"
-              priority="normal"
-              recyclingKey={cacheKey}
+              transition={300}
+              cachePolicy="none"
+              priority="high"
               placeholder="L6PZfSi_.AyE_3t7t7R**0o#DgR4"
               placeholderContentFit="contain"
               allowDownscaling={false}
