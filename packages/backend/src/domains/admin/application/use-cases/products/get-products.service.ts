@@ -136,7 +136,7 @@ export class AdminGetProductsService {
       .select({ count: sql<number>`count(*)::int` })
       .from(products);
 
-    const rows = await db
+    const productRows = await db
       .select({
         productId: products.id,
         productCode: products.productCode,
@@ -163,74 +163,88 @@ export class AdminGetProductsService {
         badges: products.badges,
         createdAt: products.createdAt,
         updatedAt: products.updatedAt,
-        translationLanguage: productTranslations.languageCode,
-        translationName: productTranslations.name,
-        translationFullName: productTranslations.fullName,
-        translationDescription: productTranslations.description,
       })
       .from(products)
-      .leftJoin(productTranslations, eq(products.id, productTranslations.productId))
       .orderBy(desc(products.createdAt))
       .limit(safeLimit)
       .offset(safeOffset);
 
+    if (productRows.length === 0) {
+      return {
+        success: true,
+        total: countResult?.count ?? 0,
+        limit: safeLimit,
+        offset: safeOffset,
+        items: [],
+      };
+    }
+
+    const productIds = productRows.map(p => p.productId);
+
+    const translationRows = await db
+      .select({
+        productId: productTranslations.productId,
+        languageCode: productTranslations.languageCode,
+        name: productTranslations.name,
+        fullName: productTranslations.fullName,
+        description: productTranslations.description,
+      })
+      .from(productTranslations)
+      .where(sql`${productTranslations.productId} = ANY(${productIds})`);
+
     const itemsMap = new Map<string, AdminProductListItem>();
 
-    rows.forEach((row) => {
-      if (!itemsMap.has(row.productId)) {
-        itemsMap.set(row.productId, {
-          productId: row.productId,
-          productCode: row.productCode,
-          categoryId: row.categoryId,
-          brand: row.brand,
-          size: row.size,
-          imageUrl: row.imageUrl,
-          price: toNumber(row.price),
-          currency: row.currency,
-          stock: toInt(row.stock),
-          tax: toNumber(row.tax),
-          individualPrice: toNumber(row.individualPrice),
-          corporatePrice: toNumber(row.corporatePrice),
-          minQuantityIndividual: toInt(row.minQuantityIndividual, 1),
-          minQuantityCorporate: toInt(row.minQuantityCorporate, 1),
-          quantityPerBox: row.quantityPerBox ? toInt(row.quantityPerBox) : null,
-          netQuantity: row.netQuantity,
-          expiryDate: row.expiryDate ? row.expiryDate.toISOString() : null,
-          storageConditions: row.storageConditions,
-          manufacturerInfo: parseJsonObject(row.manufacturerInfo),
-          nutritionalValues: parseNutritionalValues(row.nutritionalValues),
-          originCountry: row.originCountry,
-          allergens: parseJsonArray(row.allergens),
-          badges: parseBadges(row.badges),
-          translations: SUPPORTED_LANGUAGES.reduce((acc, lang) => {
-            acc[lang] = {
-              name: "",
-              fullName: null,
-              description: null,
-            };
-            return acc;
-          }, {} as AdminProductListItem["translations"]),
-          createdAt: row.createdAt.toISOString(),
-          updatedAt: row.updatedAt.toISOString(),
-        });
-      }
+    productRows.forEach((row) => {
+      itemsMap.set(row.productId, {
+        productId: row.productId,
+        productCode: row.productCode,
+        categoryId: row.categoryId,
+        brand: row.brand,
+        size: row.size,
+        imageUrl: row.imageUrl,
+        price: toNumber(row.price),
+        currency: row.currency,
+        stock: toInt(row.stock),
+        tax: toNumber(row.tax),
+        individualPrice: toNumber(row.individualPrice),
+        corporatePrice: toNumber(row.corporatePrice),
+        minQuantityIndividual: toInt(row.minQuantityIndividual, 1),
+        minQuantityCorporate: toInt(row.minQuantityCorporate, 1),
+        quantityPerBox: row.quantityPerBox ? toInt(row.quantityPerBox) : null,
+        netQuantity: row.netQuantity,
+        expiryDate: row.expiryDate ? row.expiryDate.toISOString() : null,
+        storageConditions: row.storageConditions,
+        manufacturerInfo: parseJsonObject(row.manufacturerInfo),
+        nutritionalValues: parseNutritionalValues(row.nutritionalValues),
+        originCountry: row.originCountry,
+        allergens: parseJsonArray(row.allergens),
+        badges: parseBadges(row.badges),
+        translations: SUPPORTED_LANGUAGES.reduce((acc, lang) => {
+          acc[lang] = {
+            name: "",
+            fullName: null,
+            description: null,
+          };
+          return acc;
+        }, {} as AdminProductListItem["translations"]),
+        createdAt: row.createdAt.toISOString(),
+        updatedAt: row.updatedAt.toISOString(),
+      });
+    });
 
-      if (!row.translationLanguage) {
-        return;
-      }
-
-      const item = itemsMap.get(row.productId);
+    translationRows.forEach((translation) => {
+      const item = itemsMap.get(translation.productId);
       if (!item) return;
 
-      const lang = row.translationLanguage as SupportedLanguage;
+      const lang = translation.languageCode as SupportedLanguage;
       if (!SUPPORTED_LANGUAGES.includes(lang)) {
         return;
       }
 
       item.translations[lang] = {
-        name: row.translationName ?? "",
-        fullName: row.translationFullName ?? null,
-        description: row.translationDescription ?? null,
+        name: translation.name ?? "",
+        fullName: translation.fullName ?? null,
+        description: translation.description ?? null,
       };
     });
 
