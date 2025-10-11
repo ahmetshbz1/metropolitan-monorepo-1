@@ -2,7 +2,7 @@
 //  metropolitan backend
 //  Admin ürün listeleme servisi
 
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq, inArray, sql } from "drizzle-orm";
 
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import {
@@ -190,7 +190,7 @@ export class AdminGetProductsService {
         description: productTranslations.description,
       })
       .from(productTranslations)
-      .where(sql`${productTranslations.productId} = ANY(${productIds})`);
+      .where(inArray(productTranslations.productId, productIds));
 
     const itemsMap = new Map<string, AdminProductListItem>();
 
