@@ -9,7 +9,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useNavigationProtection } from "@/hooks/useNavigationProtection";
 import React from "react";
-import { TouchableOpacity, View, Share } from "react-native";
+import { TouchableOpacity, View, Share, type GestureResponderEvent } from "react-native";
 import { useTranslation } from "react-i18next";
 import ContextMenu from "react-native-context-menu-view";
 import * as Haptics from "expo-haptics";
@@ -21,6 +21,9 @@ import { MinimumQuantityDialog } from "./MinimumQuantityDialog";
 interface ProductCardProps {
   product: Product;
   replaceNavigation?: boolean;
+  index?: number;
+  isVisible?: boolean;
+  isHighPriority?: boolean;
 }
 
 // Helper function to determine favorite icon color
@@ -36,6 +39,9 @@ const getFavoriteIconColor = (
 export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
   product,
   replaceNavigation = false,
+  index = 0,
+  isVisible = true,
+  isHighPriority = false,
 }) {
   const {
     colors,
@@ -72,18 +78,19 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
     }
   };
 
-  const handleContextMenu = (index: number) => {
+  const handleContextMenu = async (index: number) => {
     switch (index) {
       case 0: // Sepete ekle
         if (!isOutOfStock) {
-          handleAddToCart();
+          // Mock event oluştur - handleAddToCart GestureResponderEvent bekliyor
+          await handleAddToCart({} as GestureResponderEvent);
         }
         break;
       case 1: // Favori ekle/çıkar
         handleToggleFavorite();
         break;
       case 2: // Paylaş
-        handleShare();
+        await handleShare();
         break;
       case 3: // Detayları gör
         if (replaceNavigation) {
@@ -177,6 +184,9 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
             cartQuantity={cartQuantity}
             handleToggleFavorite={handleToggleFavorite}
             handleAddToCart={handleAddToCart}
+            index={index}
+            isVisible={isVisible}
+            isHighPriority={isHighPriority}
           />
 
           <ProductCardContent

@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import NotificationService from "@/core/firebase/notifications/notificationService";
 import { useAuth } from "@/context/AuthContext";
 import { useNotifications } from "@/context/NotificationContext";
+import { useProducts } from "@/context/ProductContext";
 import { router } from "expo-router";
 import * as Notifications from 'expo-notifications';
 import { EventEmitter, AppEvent } from "@/utils/eventEmitter";
@@ -27,7 +28,9 @@ export const InitialLayout: React.FC = () => {
   const { i18n, t } = useTranslation();
   const { isAuthenticated, isGuest, logout } = useAuth();
   const { refreshUnreadCount } = useNotifications();
+  const { fetchAllProducts, fetchCategories } = useProducts();
   const [sessionExpired, setSessionExpired] = useState(false);
+  const [isProductsReady, setIsProductsReady] = useState(false);
 
   // Push notification navigasyon kontrolü için
   const lastNavigationRef = React.useRef<{ screen: string; time: number } | null>(null);
@@ -37,11 +40,34 @@ export const InitialLayout: React.FC = () => {
     if (error) throw error;
   }, [error]);
 
+  // Splash screen sırasında ürünleri çek
   useEffect(() => {
-    if (loaded) {
+    const loadInitialData = async () => {
+      if (loaded) {
+        try {
+          // Ürünleri ve kategorileri paralel çek
+          await Promise.all([
+            fetchAllProducts(),
+            fetchCategories()
+          ]);
+          setIsProductsReady(true);
+        } catch (error) {
+          console.error("Failed to load initial data:", error);
+          // Hata olsa bile splash screen'i gizle
+          setIsProductsReady(true);
+        }
+      }
+    };
+
+    loadInitialData();
+  }, [loaded, fetchAllProducts, fetchCategories]);
+
+  // Hem fontlar hem de ürünler hazır olduğunda splash screen'i gizle
+  useEffect(() => {
+    if (loaded && isProductsReady) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [loaded, isProductsReady]);
 
   useEffect(() => {
     const checkForUpdates = async () => {

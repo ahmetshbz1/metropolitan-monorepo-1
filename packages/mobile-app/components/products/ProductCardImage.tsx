@@ -26,6 +26,9 @@ interface ProductCardImageProps {
   cartQuantity: number;
   handleToggleFavorite: (e?: GestureResponderEvent) => void;
   handleAddToCart: (e: GestureResponderEvent) => Promise<void>;
+  index?: number;
+  isVisible?: boolean;
+  isHighPriority?: boolean;
 }
 
 // Helper function to ensure valid image URL
@@ -55,12 +58,15 @@ const ProductCardImageComponent: React.FC<ProductCardImageProps> = ({
   cartQuantity,
   handleToggleFavorite,
   handleAddToCart,
+  index = 0,
+  isVisible = true,
+  isHighPriority = false,
 }) => {
   const { t } = useTranslation();
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
   const [retryCount, setRetryCount] = useState(0);
-  const retryTimeoutRef = useRef<NodeJS.Timeout>();
+  const retryTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   // Memoize image URL to prevent unnecessary recalculations
   const imageUrl = useMemo(
@@ -100,6 +106,12 @@ const ProductCardImageComponent: React.FC<ProductCardImageProps> = ({
     setImageLoading(false);
   }, []);
 
+  // İlk 30 item için yüksek öncelik, diğerleri için normal
+  const imagePriority = isHighPriority ? "high" : "normal";
+
+  // Cache stratejisi: memory-disk (hem RAM hem disk cache)
+  const cachePolicy = "memory-disk";
+
   return (
     <View
       className="relative items-center justify-center overflow-hidden"
@@ -126,15 +138,16 @@ const ProductCardImageComponent: React.FC<ProductCardImageProps> = ({
               opacity: imageLoading ? 0.5 : 1,
             }}
             contentFit="contain"
-            transition={300}
-            cachePolicy="none"
-            priority="high"
+            transition={200}
+            cachePolicy={cachePolicy}
+            priority={imagePriority}
             placeholder="L6PZfSi_.AyE_3t7t7R**0o#DgR4"
             placeholderContentFit="contain"
             allowDownscaling={false}
             contentPosition="center"
             onLoad={handleImageLoad}
             onError={handleImageError}
+            recyclingKey={`product-${product.id}`}
           />
           {imageLoading && (
             <View
@@ -290,5 +303,7 @@ export const ProductCardImage = React.memo(
     prev.product.image === next.product.image &&
     prev.isOutOfStock === next.isOutOfStock &&
     prev.isProductFavorite === next.isProductFavorite &&
-    prev.cartQuantity === next.cartQuantity
+    prev.cartQuantity === next.cartQuantity &&
+    prev.isVisible === next.isVisible &&
+    prev.isHighPriority === next.isHighPriority
 );
