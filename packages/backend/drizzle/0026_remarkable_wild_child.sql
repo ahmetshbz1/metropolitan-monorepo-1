@@ -1,0 +1,1 @@
+ALTER TABLE "products" ALTER COLUMN "fakturownia_product_id" SET DATA TYPE bigint;
