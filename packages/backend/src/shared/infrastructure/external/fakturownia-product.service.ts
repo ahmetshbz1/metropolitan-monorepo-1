@@ -13,21 +13,42 @@ export class FakturowniaProductService {
   }
 
   /**
-   * Tüm ürünleri listele
+   * Tüm ürünleri listele (tüm sayfaları çek)
    */
   async listProducts(): Promise<FakturowniaProduct[]> {
     try {
       console.log("📦 Fakturownia: Ürünler listeleniyor...");
 
-      const response = await this.apiClient.makeRequest<FakturowniaProduct[]>(
-        "products.json",
-        {
-          method: "GET",
-        }
-      );
+      const allProducts: FakturowniaProduct[] = [];
+      let page = 1;
+      const perPage = 100; // Maksimum değer
 
-      console.log(`✅ Fakturownia: ${response.length} ürün bulundu`);
-      return response;
+      while (true) {
+        console.log(`  Sayfa ${page} çekiliyor...`);
+
+        const response = await this.apiClient.makeRequest<FakturowniaProduct[]>(
+          `products.json?page=${page}&per_page=${perPage}`,
+          {
+            method: "GET",
+          }
+        );
+
+        if (!response || response.length === 0) {
+          break;
+        }
+
+        allProducts.push(...response);
+        console.log(`  Sayfa ${page}: ${response.length} ürün bulundu`);
+
+        if (response.length < perPage) {
+          break;
+        }
+
+        page++;
+      }
+
+      console.log(`✅ Fakturownia: Toplam ${allProducts.length} ürün bulundu`);
+      return allProducts;
     } catch (error) {
       console.error("❌ Fakturownia ürün listeleme hatası:", error);
       throw new Error(

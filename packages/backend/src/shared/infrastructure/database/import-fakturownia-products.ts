@@ -64,7 +64,7 @@ async function main() {
 
       // Import et
       try {
-        const stockQuantity = fProduct.quantity ?? 0;
+        const stockQuantity = Math.round(fProduct.quantity ?? 0);
         console.log(
           `🔄 Import ediliyor: Code=${fProduct.code}, Name="${fProduct.name}", Tax=${fProduct.tax}%, Price=${fProduct.price_gross || "N/A"}, Stock=${stockQuantity}`
         );
