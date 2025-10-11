@@ -64,8 +64,9 @@ async function main() {
 
       // Import et
       try {
+        const stockQuantity = fProduct.quantity ?? 0;
         console.log(
-          `🔄 Import ediliyor: Code=${fProduct.code}, Name="${fProduct.name}", Tax=${fProduct.tax}%, Price=${fProduct.price_gross || "N/A"}`
+          `🔄 Import ediliyor: Code=${fProduct.code}, Name="${fProduct.name}", Tax=${fProduct.tax}%, Price=${fProduct.price_gross || "N/A"}, Stock=${stockQuantity}`
         );
 
         // Ürünü ekle
@@ -79,7 +80,7 @@ async function main() {
             imageUrl: null,
             price: fProduct.price_gross?.toString() || "0",
             currency: "PLN",
-            stock: 0,
+            stock: stockQuantity,
             individualPrice: fProduct.price_gross?.toString() || "0",
             corporatePrice: fProduct.price_gross
               ? (fProduct.price_gross * 0.85).toFixed(2)
@@ -140,7 +141,7 @@ async function main() {
 
     if (result.imported > 0) {
       console.log("\n💡 NOT:");
-      console.log("  - Import edilen ürünlerin stoku 0 olarak ayarlandı");
+      console.log("  - Stok miktarları Fakturownia'dan sync edildi");
       console.log("  - Kategori bilgisi yok (admin panelden ayarlanabilir)");
       console.log("  - Görseller eklenmedi (admin panelden yüklenebilir)");
       console.log("  - Tüm dillerde aynı isim kullanıldı (admin düzenleyebilir)");

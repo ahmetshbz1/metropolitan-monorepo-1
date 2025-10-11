@@ -65,19 +65,21 @@ export class FakturowniaSyncService {
             continue;
           }
 
-          // 3. Eşleşen ürünü güncelle (hem fakturownia_tax hem de tax)
+          // 3. Eşleşen ürünü güncelle (tax, stock)
+          const stockQuantity = fakturowniaProduct.quantity ?? 0;
           await db
             .update(products)
             .set({
               fakturowniaProductId: fakturowniaProduct.id,
               fakturowniaTax: fakturowniaProduct.tax.toString(),
               tax: fakturowniaProduct.tax.toString(), // Admin panel'de de doğru VAT görünsün
+              stock: stockQuantity,
               updatedAt: new Date(),
             })
             .where(eq(products.id, dbProduct.id));
 
           console.log(
-            `✅ Eşleşti ve güncellendi: ${fakturowniaProduct.code} → Fakturownia ID: ${fakturowniaProduct.id}, Tax: ${fakturowniaProduct.tax}%`
+            `✅ Eşleşti ve güncellendi: ${fakturowniaProduct.code} → Fakturownia ID: ${fakturowniaProduct.id}, Tax: ${fakturowniaProduct.tax}%, Stock: ${stockQuantity}`
           );
 
           result.matched++;
@@ -145,19 +147,21 @@ export class FakturowniaSyncService {
         return false;
       }
 
-      // Güncelle (hem fakturownia_tax hem de tax)
+      // Güncelle (tax, stock)
+      const stockQuantity = fakturowniaProduct.quantity ?? 0;
       await db
         .update(products)
         .set({
           fakturowniaProductId: fakturowniaProduct.id,
           fakturowniaTax: fakturowniaProduct.tax.toString(),
           tax: fakturowniaProduct.tax.toString(), // Admin panel'de de doğru VAT görünsün
+          stock: stockQuantity,
           updatedAt: new Date(),
         })
         .where(eq(products.id, dbProduct.id));
 
       console.log(
-        `✅ Sync başarılı: ${productCode} → Fakturownia ID: ${fakturowniaProduct.id}, Tax: ${fakturowniaProduct.tax}%`
+        `✅ Sync başarılı: ${productCode} → Fakturownia ID: ${fakturowniaProduct.id}, Tax: ${fakturowniaProduct.tax}%, Stock: ${stockQuantity}`
       );
       return true;
     } catch (error) {
