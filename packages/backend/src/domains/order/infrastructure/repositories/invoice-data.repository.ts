@@ -76,6 +76,8 @@ export class InvoiceDataRepository {
           brand: products.brand,
           size: products.size,
           tax: products.tax,
+          fakturowniaProductId: products.fakturowniaProductId,
+          fakturowniaTax: products.fakturowniaTax,
           name: productTranslations.name,
         },
       })

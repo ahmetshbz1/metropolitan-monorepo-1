@@ -18,14 +18,23 @@ export class FakturowniaAdapterService {
   ): FakturowniaInvoice {
     // Pozisyonları Fakturownia formatına çevir
     const positions: FakturowniaInvoiceItem[] = invoiceData.items.map(
-      (item) => ({
-        name: item.description,
-        code: item.productCode, // Ürün kodu - Fakturownia'da eşleştirme için
-        tax: item.vatRate, // VAT oranı (örn: 23, 8, 5, 0)
-        total_price_gross: item.totalPrice,
-        quantity: item.quantity,
-        kind: "service", // Hizmet olarak tanımla
-      })
+      (item) => {
+        const position: FakturowniaInvoiceItem = {
+          name: item.description,
+          tax: item.vatRate, // Fakturownia'dan sync edilmiş VAT oranı
+          total_price_gross: item.totalPrice,
+          quantity: item.quantity,
+          kind: "service",
+        };
+
+        // Fakturownia product ID varsa kullan (sync edilmişse)
+        // Bu sayede mevcut ürünü kullanır, yeni ürün yaratmaz
+        if (item.fakturowniaProductId) {
+          position.product_id = item.fakturowniaProductId;
+        }
+
+        return position;
+      }
     );
 
     // Ana fatura objesi

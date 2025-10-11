@@ -5,10 +5,12 @@
 import { FakturowniaApiClientService } from "./fakturownia-api-client.service";
 import { FakturowniaClientService } from "./fakturownia-client.service";
 import { FakturowniaInvoiceService } from "./fakturownia-invoice.service";
-import type { 
-  FakturowniaInvoice, 
+import { FakturowniaProductService } from "./fakturownia-product.service";
+import type {
+  FakturowniaInvoice,
   FakturowniaInvoiceResponse,
-  FakturowniaClient
+  FakturowniaClient,
+  FakturowniaProduct
 } from "./fakturownia-types";
 
 // Re-export types for backward compatibility
@@ -18,11 +20,13 @@ class FakturowniaService {
   private apiClient: FakturowniaApiClientService;
   private invoiceService: FakturowniaInvoiceService;
   private clientService: FakturowniaClientService;
+  private productService: FakturowniaProductService;
 
   constructor() {
     this.apiClient = new FakturowniaApiClientService();
     this.invoiceService = new FakturowniaInvoiceService();
     this.clientService = new FakturowniaClientService();
+    this.productService = new FakturowniaProductService();
   }
 
   // Invoice operations
@@ -45,6 +49,19 @@ class FakturowniaService {
 
   async getClients(): Promise<Array<{ id: number; name: string; tax_no?: string }>> {
     return this.clientService.getClients();
+  }
+
+  // Product operations
+  async listProducts(): Promise<FakturowniaProduct[]> {
+    return this.productService.listProducts();
+  }
+
+  async searchProductByCode(code: string): Promise<FakturowniaProduct | null> {
+    return this.productService.searchProductByCode(code);
+  }
+
+  async getProduct(productId: number): Promise<FakturowniaProduct> {
+    return this.productService.getProduct(productId);
   }
 
   // Connection test

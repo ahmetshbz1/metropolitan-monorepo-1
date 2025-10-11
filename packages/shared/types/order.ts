@@ -133,6 +133,7 @@ export interface InvoiceItem {
   unitPrice: number;
   totalPrice: number;
   vatRate: number;
+  fakturowniaProductId?: number | null;
 }
 
 export interface InvoiceGenerationOptions {

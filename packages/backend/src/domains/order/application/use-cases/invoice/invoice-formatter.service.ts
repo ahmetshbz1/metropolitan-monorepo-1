@@ -92,7 +92,14 @@ export class InvoiceFormatterService {
       quantity: item.quantity,
       unitPrice: Number(item.unitPrice),
       totalPrice: Number(item.totalPrice),
-      vatRate: item.product.tax ? Number(item.product.tax) : defaultVatRate, // Ürün bazlı VAT oranı
+      // Fakturownia'dan sync edilmiş VAT kullan, yoksa product tax, o da yoksa default
+      vatRate: item.product.fakturowniaTax
+        ? Number(item.product.fakturowniaTax)
+        : item.product.tax
+          ? Number(item.product.tax)
+          : defaultVatRate,
+      // Fakturownia product ID varsa ekle
+      fakturowniaProductId: item.product.fakturowniaProductId || null,
     }));
   }
 }

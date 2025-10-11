@@ -4,7 +4,8 @@
 
 export interface FakturowniaInvoiceItem {
   name: string;
-  code?: string; // Ürün kodu - Fakturownia'da ürün eşleştirmesi için
+  code?: string; // Ürün kodu (kullanılmıyor - product_id tercih edilmeli)
+  product_id?: number; // Fakturownia product ID - mevcut ürünü kullanmak için
   tax: number;
   total_price_gross: number;
   quantity: number;
@@ -54,4 +55,20 @@ export interface FakturowniaError {
   error: string;
   message?: string;
   errors?: Record<string, string[]>;
+}
+
+export interface FakturowniaProduct {
+  id: number;
+  name: string;
+  code?: string;
+  tax: number;
+  price_gross?: number;
+  price_net?: number;
+  quantity?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface FakturowniaProductsResponse {
+  products: FakturowniaProduct[];
 }
