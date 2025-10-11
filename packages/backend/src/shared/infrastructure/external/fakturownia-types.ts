@@ -65,6 +65,9 @@ export interface FakturowniaProduct {
   price_gross?: number;
   price_net?: number;
   quantity?: number;
+  stock_level?: number;
+  warehouse_quantity?: number;
+  use_product_warehouses?: boolean;
   created_at?: string;
   updated_at?: string;
 }

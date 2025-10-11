@@ -66,7 +66,13 @@ export class FakturowniaSyncService {
           }
 
           // 3. Eşleşen ürünü güncelle (tax, stock)
-          const stockQuantity = Math.round(fakturowniaProduct.quantity ?? 0);
+          // stock_level veya warehouse_quantity gerçek stok, quantity sadece satış birimi
+          const stockQuantity = Math.round(
+            fakturowniaProduct.stock_level ??
+            fakturowniaProduct.warehouse_quantity ??
+            fakturowniaProduct.quantity ??
+            0
+          );
           await db
             .update(products)
             .set({
@@ -148,7 +154,13 @@ export class FakturowniaSyncService {
       }
 
       // Güncelle (tax, stock)
-      const stockQuantity = Math.round(fakturowniaProduct.quantity ?? 0);
+      // stock_level veya warehouse_quantity gerçek stok, quantity sadece satış birimi
+      const stockQuantity = Math.round(
+        fakturowniaProduct.stock_level ??
+        fakturowniaProduct.warehouse_quantity ??
+        fakturowniaProduct.quantity ??
+        0
+      );
       await db
         .update(products)
         .set({

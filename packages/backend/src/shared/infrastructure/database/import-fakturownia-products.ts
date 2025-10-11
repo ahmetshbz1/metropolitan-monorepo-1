@@ -64,7 +64,13 @@ async function main() {
 
       // Import et
       try {
-        const stockQuantity = Math.round(fProduct.quantity ?? 0);
+        // stock_level veya warehouse_quantity gerçek stok, quantity sadece satış birimi
+        const stockQuantity = Math.round(
+          fProduct.stock_level ??
+          fProduct.warehouse_quantity ??
+          fProduct.quantity ??
+          0
+        );
         console.log(
           `🔄 Import ediliyor: Code=${fProduct.code}, Name="${fProduct.name}", Tax=${fProduct.tax}%, Price=${fProduct.price_gross || "N/A"}, Stock=${stockQuantity}`
         );
