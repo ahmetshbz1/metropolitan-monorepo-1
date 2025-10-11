@@ -2,7 +2,7 @@
   "expo": {
     "name": "metropolitan",
     "slug": "metropolitan",
-    "version": "1.0.10",
+    "version": "1.0.9",
     "hooks": {
       "postInstall": "cd ../shared && (bun run build || npm run build || yarn build) || true"
     },

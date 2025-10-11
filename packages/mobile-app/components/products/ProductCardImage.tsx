@@ -23,6 +23,7 @@ interface ProductCardImageProps {
   isOutOfStock: boolean;
   colors: any;
   isProductFavorite: boolean;
+  cartQuantity: number;
   handleToggleFavorite: (e?: GestureResponderEvent) => void;
   handleAddToCart: (e: GestureResponderEvent) => Promise<void>;
 }
@@ -51,6 +52,7 @@ const ProductCardImageComponent: React.FC<ProductCardImageProps> = ({
   isOutOfStock,
   colors,
   isProductFavorite,
+  cartQuantity,
   handleToggleFavorite,
   handleAddToCart,
 }) => {
@@ -173,29 +175,53 @@ const ProductCardImageComponent: React.FC<ProductCardImageProps> = ({
 
       {/* Add to Cart Button - Top Right */}
       {!isOutOfStock && (
-        <HapticIconButton
-          onPress={(e) => {
-            if (e) handleAddToCart(e);
-          }}
-          className="absolute top-1.5 right-1.5 rounded-full justify-center items-center z-20"
-          style={{
-            backgroundColor: colors.primary,
-            width: 32,
-            height: 32,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.25,
-            shadowRadius: 3.84,
-            elevation: 5,
-          }}
-        >
-          <Ionicons
-            name="add"
-            size={20}
-            color="#fff"
-            style={{ fontWeight: "bold" }}
-          />
-        </HapticIconButton>
+        <View className="absolute top-1.5 right-1.5 z-20">
+          <HapticIconButton
+            onPress={(e) => {
+              if (e) handleAddToCart(e);
+            }}
+            className="rounded-full justify-center items-center"
+            style={{
+              backgroundColor: colors.primary,
+              width: 32,
+              height: 32,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.25,
+              shadowRadius: 3.84,
+              elevation: 5,
+            }}
+          >
+            <Ionicons
+              name="add"
+              size={20}
+              color="#fff"
+              style={{ fontWeight: "bold" }}
+            />
+          </HapticIconButton>
+
+          {/* Quantity Badge */}
+          {cartQuantity > 0 && (
+            <View
+              className="absolute -top-1 -right-1 rounded-full items-center justify-center"
+              style={{
+                backgroundColor: colors.danger,
+                minWidth: 18,
+                height: 18,
+                paddingHorizontal: 4,
+                borderWidth: 2,
+                borderColor: colorScheme === "dark" ? "#1a1a1a" : "#fff",
+              }}
+            >
+              <ThemedText
+                className="text-white font-bold"
+                style={{ fontSize: 10, lineHeight: 12 }}
+              >
+                {cartQuantity}
+              </ThemedText>
+            </View>
+          )}
+        </View>
       )}
 
       {/* Favorite Button - Top Left */}
@@ -267,5 +293,6 @@ export const ProductCardImage = React.memo(
     prev.product.id === next.product.id &&
     prev.product.image === next.product.image &&
     prev.isOutOfStock === next.isOutOfStock &&
-    prev.isProductFavorite === next.isProductFavorite
+    prev.isProductFavorite === next.isProductFavorite &&
+    prev.cartQuantity === next.cartQuantity
 );

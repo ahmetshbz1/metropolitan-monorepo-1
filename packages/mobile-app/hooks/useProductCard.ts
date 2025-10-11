@@ -54,6 +54,10 @@ export const useProductCard = (product: Product) => {
     (item) => item.product.id === product.id
   );
 
+  const cartQuantity = cartItems.find(
+    (item) => item.product.id === product.id
+  )?.quantity || 0;
+
   // Actions
   const handleAddToCart = async (e: GestureResponderEvent) => {
     // Race condition koruması: Eğer zaten ekleme işlemi devam ediyorsa, yeni request gönderme
@@ -125,6 +129,7 @@ export const useProductCard = (product: Product) => {
     isLowStock,
     isOutOfStock,
     isProductInCart,
+    cartQuantity,
     displayPrice,
     minQuantity,
 

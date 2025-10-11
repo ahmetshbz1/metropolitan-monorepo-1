@@ -44,6 +44,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
     categoryName,
     isLowStock,
     isOutOfStock,
+    cartQuantity,
     displayPrice,
     handleAddToCart,
     handleToggleFavorite,
@@ -173,6 +174,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
             isOutOfStock={isOutOfStock}
             colors={colors}
             isProductFavorite={isProductFavorite}
+            cartQuantity={cartQuantity}
             handleToggleFavorite={handleToggleFavorite}
             handleAddToCart={handleAddToCart}
           />
