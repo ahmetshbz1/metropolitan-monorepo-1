@@ -65,12 +65,13 @@ export class FakturowniaSyncService {
             continue;
           }
 
-          // 3. Eşleşen ürünü güncelle
+          // 3. Eşleşen ürünü güncelle (hem fakturownia_tax hem de tax)
           await db
             .update(products)
             .set({
               fakturowniaProductId: fakturowniaProduct.id,
               fakturowniaTax: fakturowniaProduct.tax.toString(),
+              tax: fakturowniaProduct.tax.toString(), // Admin panel'de de doğru VAT görünsün
               updatedAt: new Date(),
             })
             .where(eq(products.id, dbProduct.id));
@@ -144,12 +145,13 @@ export class FakturowniaSyncService {
         return false;
       }
 
-      // Güncelle
+      // Güncelle (hem fakturownia_tax hem de tax)
       await db
         .update(products)
         .set({
           fakturowniaProductId: fakturowniaProduct.id,
           fakturowniaTax: fakturowniaProduct.tax.toString(),
+          tax: fakturowniaProduct.tax.toString(), // Admin panel'de de doğru VAT görünsün
           updatedAt: new Date(),
         })
         .where(eq(products.id, dbProduct.id));
