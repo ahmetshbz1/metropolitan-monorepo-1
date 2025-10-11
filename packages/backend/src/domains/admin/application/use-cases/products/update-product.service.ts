@@ -202,6 +202,7 @@ export class AdminUpdateProductService {
             price: toDecimalString(payload.price),
             currency: payload.currency ?? "PLN",
             stock: payload.stock ?? 0,
+            tax: toDecimalString(payload.tax),
             allergens: serializeNullableJson(payload.allergens),
             nutritionalValues: serializeNullableJson(payload.nutritionalValues),
             netQuantity: payload.netQuantity ?? null,

@@ -1,0 +1,1 @@
+ALTER TABLE "products" ADD COLUMN "tax" numeric(5, 2) DEFAULT '23.00';

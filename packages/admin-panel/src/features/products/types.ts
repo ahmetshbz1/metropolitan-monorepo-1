@@ -16,6 +16,7 @@ export interface AdminProductPayload {
   price?: number;
   currency?: string;
   stock?: number;
+  tax?: number;
   allergens?: string[];
   nutritionalValues?: {
     energy?: string;
@@ -75,6 +76,7 @@ export interface AdminProduct {
   price: number | null;
   currency: string;
   stock: number;
+  tax: number | null;
   individualPrice: number | null;
   corporatePrice: number | null;
   minQuantityIndividual: number;

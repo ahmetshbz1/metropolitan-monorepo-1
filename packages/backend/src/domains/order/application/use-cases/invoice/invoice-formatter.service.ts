@@ -83,8 +83,8 @@ export class InvoiceFormatterService {
    * Format order items for invoice
    */
   private static formatItems(items: any[]) {
-    const vatRatePercentage = VatCalculatorService.getVatRatePercentage();
-    
+    const defaultVatRate = VatCalculatorService.getVatRatePercentage();
+
     return items.map((item) => ({
       description:
         item.product.name || `${item.product.brand} ${item.product.size}`,
@@ -92,7 +92,7 @@ export class InvoiceFormatterService {
       quantity: item.quantity,
       unitPrice: Number(item.unitPrice),
       totalPrice: Number(item.totalPrice),
-      vatRate: vatRatePercentage,
+      vatRate: item.product.tax ? Number(item.product.tax) : defaultVatRate, // Ürün bazlı VAT oranı
     }));
   }
 }

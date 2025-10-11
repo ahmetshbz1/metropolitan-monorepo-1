@@ -169,6 +169,13 @@
       "when": 1760000000000,
       "tag": "0023_drop_shipping_company_default",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1760219254444,
+      "tag": "0024_damp_dreadnoughts",
+      "breakpoints": true
     }
   ]
 }

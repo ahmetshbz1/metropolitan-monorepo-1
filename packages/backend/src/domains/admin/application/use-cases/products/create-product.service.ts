@@ -2,23 +2,26 @@
 //  metropolitan backend
 //  Admin ürün oluşturma servisi
 
+import { ProductTranslationService } from "../../../../../shared/infrastructure/ai/product-translation.service";
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import {
   productTranslations,
   products,
 } from "../../../../../shared/infrastructure/database/schema";
+
 import type { AdminProductPayload } from "./product.types";
 import {
   serializeNullableJson,
   toDateOrNull,
   toDecimalString,
 } from "./product.utils";
-import { ProductTranslationService } from "../../../../../shared/infrastructure/ai/product-translation.service";
 
 export class AdminCreateProductService {
   static async execute(payload: AdminProductPayload) {
     try {
-      const turkishTranslation = payload.translations.find(t => t.languageCode === "tr");
+      const turkishTranslation = payload.translations.find(
+        (t) => t.languageCode === "tr"
+      );
       if (!turkishTranslation) {
         throw new Error("Türkçe çeviri zorunludur");
       }
@@ -27,7 +30,7 @@ export class AdminCreateProductService {
 
       if (payload.translations.length === 3) {
         console.log("Using manual translations (skipping Gemini)...");
-        finalTranslations = payload.translations.map(t => ({
+        finalTranslations = payload.translations.map((t) => ({
           languageCode: t.languageCode as "tr" | "en" | "pl",
           name: t.name,
           fullName: t.fullName ?? null,
@@ -35,12 +38,13 @@ export class AdminCreateProductService {
         }));
       } else {
         console.log("Generating translations with Gemini...");
-        const generatedTranslations = await ProductTranslationService.generateTranslations({
-          name: turkishTranslation.name,
-          fullName: turkishTranslation.fullName,
-          description: turkishTranslation.description,
-          storageConditions: payload.storageConditions || undefined,
-        });
+        const generatedTranslations =
+          await ProductTranslationService.generateTranslations({
+            name: turkishTranslation.name,
+            fullName: turkishTranslation.fullName,
+            description: turkishTranslation.description,
+            storageConditions: payload.storageConditions || undefined,
+          });
 
         finalTranslations = [
           {
@@ -77,6 +81,7 @@ export class AdminCreateProductService {
             price: toDecimalString(payload.price),
             currency: payload.currency ?? "PLN",
             stock: payload.stock ?? 0,
+            tax: toDecimalString(payload.tax),
             allergens: serializeNullableJson(payload.allergens),
             nutritionalValues: serializeNullableJson(payload.nutritionalValues),
             netQuantity: payload.netQuantity ?? null,

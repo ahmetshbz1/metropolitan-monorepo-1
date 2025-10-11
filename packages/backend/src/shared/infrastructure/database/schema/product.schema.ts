@@ -56,6 +56,7 @@ export const products = pgTable("products", {
   minQuantityIndividual: integer("min_quantity_individual").default(1), // Bireysel min adet
   minQuantityCorporate: integer("min_quantity_corporate").default(1), // Kurumsal min adet
   quantityPerBox: integer("quantity_per_box"), // Karton/koli başına adet
+  tax: decimal("tax", { precision: 5, scale: 2 }).default("23.00"), // VAT oranı (%) - Polonya PTU
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

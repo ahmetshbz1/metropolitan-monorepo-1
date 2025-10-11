@@ -4,6 +4,7 @@
 
 export interface FakturowniaInvoiceItem {
   name: string;
+  code?: string; // Ürün kodu - Fakturownia'da ürün eşleştirmesi için
   tax: number;
   total_price_gross: number;
   quantity: number;

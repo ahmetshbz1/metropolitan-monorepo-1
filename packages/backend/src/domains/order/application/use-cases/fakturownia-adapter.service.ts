@@ -19,8 +19,9 @@ export class FakturowniaAdapterService {
     // Pozisyonları Fakturownia formatına çevir
     const positions: FakturowniaInvoiceItem[] = invoiceData.items.map(
       (item) => ({
-        name: `${item.description} (${item.productCode})`,
-        tax: item.vatRate, // %23 -> 23
+        name: item.description,
+        code: item.productCode, // Ürün kodu - Fakturownia'da eşleştirme için
+        tax: item.vatRate, // VAT oranı (örn: 23, 8, 5, 0)
         total_price_gross: item.totalPrice,
         quantity: item.quantity,
         kind: "service", // Hizmet olarak tanımla

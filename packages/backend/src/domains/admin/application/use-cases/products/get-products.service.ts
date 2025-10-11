@@ -28,6 +28,7 @@ interface AdminProductListItem {
   price: number | null;
   currency: string;
   stock: number;
+  tax: number | null;
   individualPrice: number | null;
   corporatePrice: number | null;
   minQuantityIndividual: number;
@@ -146,6 +147,7 @@ export class AdminGetProductsService {
         price: products.price,
         currency: products.currency,
         stock: products.stock,
+        tax: products.tax,
         individualPrice: products.individualPrice,
         corporatePrice: products.corporatePrice,
         minQuantityIndividual: products.minQuantityIndividual,
@@ -186,6 +188,7 @@ export class AdminGetProductsService {
           price: toNumber(row.price),
           currency: row.currency,
           stock: toInt(row.stock),
+          tax: toNumber(row.tax),
           individualPrice: toNumber(row.individualPrice),
           corporatePrice: toNumber(row.corporatePrice),
           minQuantityIndividual: toInt(row.minQuantityIndividual, 1),

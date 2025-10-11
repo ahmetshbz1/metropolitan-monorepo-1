@@ -34,6 +34,7 @@ interface ProductFormState {
   price: string;
   currency: string;
   stock: string;
+  tax: string;
   netQuantity: string;
   expiryDate: string;
   originCountry: string;
@@ -83,6 +84,7 @@ const createInitialState = (): ProductFormState => ({
   price: "",
   currency: "PLN",
   stock: "",
+  tax: "23",
   netQuantity: "",
   expiryDate: "",
   originCountry: "",
@@ -136,6 +138,7 @@ const loadProductToForm = (product: import("./types").AdminProduct): ProductForm
     price: product.price?.toString() || "",
     currency: product.currency,
     stock: product.stock.toString(),
+    tax: product.tax?.toString() || "23",
     netQuantity: product.netQuantity || "",
     expiryDate: product.expiryDate
       ? new Date(product.expiryDate).toISOString().slice(0, 16)
@@ -290,6 +293,7 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
         price: parseNumber(form.price),
         currency: form.currency || undefined,
         stock: parseNumber(form.stock),
+        tax: parseNumber(form.tax),
         allergens: form.allergens.length > 0 ? form.allergens : undefined,
         nutritionalValues: Object.keys(form.nutritionalValues).length > 0 ? form.nutritionalValues : undefined,
         netQuantity: form.netQuantity || undefined,
@@ -669,6 +673,24 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
               variant="bordered"
               size="lg"
             />
+            <Select
+              label="VAT Oranı (%)"
+              placeholder="VAT seçin"
+              selectedKeys={form.tax ? [form.tax] : []}
+              onSelectionChange={(keys) => {
+                const selected = Array.from(keys)[0] as string;
+                updateField("tax", selected || "23");
+              }}
+              variant="bordered"
+              size="lg"
+              description="Polonya PTU oranı"
+            >
+              <SelectItem key="0" value="0">0%</SelectItem>
+              <SelectItem key="5" value="5">5%</SelectItem>
+              <SelectItem key="7" value="7">7%</SelectItem>
+              <SelectItem key="8" value="8">8%</SelectItem>
+              <SelectItem key="23" value="23">23% (Varsayılan)</SelectItem>
+            </Select>
             <Input
               label="Bireysel Fiyat"
               value={form.individualPrice}
