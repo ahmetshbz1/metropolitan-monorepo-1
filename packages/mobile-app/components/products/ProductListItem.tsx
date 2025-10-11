@@ -114,15 +114,16 @@ export const ProductListItem = React.memo<ProductListItemProps>(function Product
                 height: '85%',
               }}
               contentFit="contain"
-              transition={300}
-              cachePolicy="none"
-              priority="high"
+              transition={200}
+              cachePolicy="memory-disk"
+              priority="normal"
               placeholder="L6PZfSi_.AyE_3t7t7R**0o#DgR4"
               placeholderContentFit="contain"
               allowDownscaling={false}
               contentPosition="center"
               onLoad={handleImageLoad}
               onError={handleImageError}
+              recyclingKey={`product-list-${product.id}`}
             />
           ) : (
             <Ionicons

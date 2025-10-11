@@ -65,15 +65,16 @@ export const ProductImage = memo(function ProductImage({ product }: ProductImage
           }}
           style={{ width: "100%", height: "100%" }}
           contentFit="contain"
-          transition={300}
+          transition={200}
           placeholder="L6Pj42%M4nWBVZJr00%M_4RjO[M|"
           placeholderContentFit="contain"
-          cachePolicy="none"
+          cachePolicy="memory-disk"
           priority="high"
           allowDownscaling={false}
           contentPosition="center"
           onLoad={handleImageLoad}
           onError={handleImageError}
+          recyclingKey={`product-detail-${product?.id}`}
         />
       ) : (
         <View className="items-center justify-center" style={{ width: "100%", height: "100%" }}>
