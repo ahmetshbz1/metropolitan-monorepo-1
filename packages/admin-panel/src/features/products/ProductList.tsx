@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Button,
   Table,
@@ -59,8 +59,7 @@ export const ProductList = ({
   const [limit] = useState(50);
   const [offset, setOffset] = useState(0);
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set<string>());
-  const [search, setSearch] = useState("");
-  const [searchDraft, setSearchDraft] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const emitSelection = useCallback(
     (keys: Set<string>) => {
@@ -81,7 +80,7 @@ export const ProductList = ({
     try {
       setIsLoading(true);
       setError(null);
-      const response = await getProducts({ limit, offset, search });
+      const response = await getProducts({ limit, offset });
       setProducts(response.items);
       setTotal(response.total);
     } catch (err) {
@@ -89,7 +88,7 @@ export const ProductList = ({
     } finally {
       setIsLoading(false);
     }
-  }, [limit, offset, search]);
+  }, [limit, offset]);
 
   useEffect(() => {
     void loadProducts();
@@ -129,15 +128,12 @@ export const ProductList = ({
     setOffset((page - 1) * limit);
   };
 
-  const handleSearchSubmit = () => {
-    setSearch(searchDraft.trim());
-    setOffset(0);
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
   };
 
   const handleSearchClear = () => {
-    setSearchDraft("");
-    setSearch("");
-    setOffset(0);
+    setSearchQuery("");
   };
 
   const formatPrice = (price: number | null, currency: string) => {
@@ -164,6 +160,25 @@ export const ProductList = ({
     );
   };
 
+  const filteredProducts = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return products;
+    }
+
+    const query = searchQuery.toLowerCase().trim();
+    return products.filter((product) => {
+      const productName = getProductName(product).toLowerCase();
+      const productCode = product.productCode.toLowerCase();
+      const brand = (product.brand || "").toLowerCase();
+
+      return (
+        productName.includes(query) ||
+        productCode.includes(query) ||
+        brand.includes(query)
+      );
+    });
+  }, [products, searchQuery]);
+
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 rounded-lg border border-red-200 bg-red-50 p-8 dark:border-red-900 dark:bg-red-950">
@@ -178,31 +193,24 @@ export const ProductList = ({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3">
-        <div className="flex max-w-sm items-center gap-2">
-          <Input
-            size="sm"
-            value={searchDraft}
-            onValueChange={setSearchDraft}
-            placeholder="Ürün adı veya kodu"
-            startContent={<Search className="h-4 w-4 text-slate-400" />}
-            onClear={handleSearchClear}
-            isClearable
-            aria-label="Ürün arama"
-          />
-          <Button
-            size="sm"
-            variant="flat"
-            onPress={handleSearchSubmit}
-            isDisabled={isLoading}
-          >
-            Ara
-          </Button>
-        </div>
+        <Input
+          size="sm"
+          value={searchQuery}
+          onValueChange={handleSearchChange}
+          placeholder="Ürün adı, kodu veya marka"
+          startContent={<Search className="h-4 w-4 text-slate-400" />}
+          onClear={handleSearchClear}
+          isClearable
+          aria-label="Ürün arama"
+          className="max-w-sm"
+        />
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-slate-600 dark:text-slate-400">Toplam:</span>
+            <span className="text-sm text-slate-600 dark:text-slate-400">
+              {searchQuery ? "Filtrelenmiş: " : "Toplam: "}
+            </span>
             <Chip size="sm" variant="flat" color="primary">
-              {total}
+              {searchQuery ? filteredProducts.length : total}
             </Chip>
           </div>
           {totalPages > 1 ? (
@@ -236,10 +244,10 @@ export const ProductList = ({
             <TableColumn width={50}>İŞLEM</TableColumn>
           </TableHeader>
           <TableBody
-            items={products}
+            items={filteredProducts}
             isLoading={isLoading}
             loadingContent={<Spinner label="Yükleniyor..." />}
-            emptyContent="Ürün bulunamadı"
+            emptyContent={searchQuery ? "Arama sonucu bulunamadı" : "Ürün bulunamadı"}
           >
             {(product) => (
               <TableRow key={product.productId}>
