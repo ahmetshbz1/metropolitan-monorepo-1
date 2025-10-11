@@ -128,7 +128,7 @@ const toInt = (value: number | string | null | undefined, fallback = 0): number 
 };
 
 export class AdminGetProductsService {
-  static async execute({ limit = 20, offset = 0 }: GetProductsParams) {
+  static async execute({ limit = 50, offset = 0 }: GetProductsParams) {
     const safeLimit = Math.min(Math.max(limit, 1), 100);
     const safeOffset = Math.max(offset, 0);
 
