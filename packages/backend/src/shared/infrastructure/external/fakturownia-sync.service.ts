@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 import { db } from "../database/connection";
 import { products } from "../database/schema";
 import { fakturowniaService } from "./fakturownia.service";
+import { validateTaxRate } from "../../types/product.types";
 
 interface SyncResult {
   total: number;
@@ -73,13 +74,17 @@ export class FakturowniaSyncService {
             fakturowniaProduct.quantity ??
             0
           );
+
+          const taxValue = validateTaxRate(fakturowniaProduct.tax);
+
           await db
             .update(products)
             .set({
               fakturowniaProductId: fakturowniaProduct.id,
-              fakturowniaTax: fakturowniaProduct.tax.toString(),
-              tax: fakturowniaProduct.tax.toString(), // Admin panel'de de doğru VAT görünsün
+              tax: taxValue, // Integer tax value
               stock: stockQuantity,
+              syncStatus: "synced",
+              lastSyncedAt: new Date(),
               updatedAt: new Date(),
             })
             .where(eq(products.id, dbProduct.id));

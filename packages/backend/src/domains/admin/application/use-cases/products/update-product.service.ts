@@ -19,6 +19,7 @@ import {
 import { ProductTranslationService } from "../../../../../shared/infrastructure/ai/product-translation.service";
 import { ProductImageService } from "./product-image.service";
 import { fakturowniaService } from "../../../../../shared/infrastructure/external/fakturownia.service";
+import { validateTaxRate } from "../../../../../shared/types/product.types";
 
 export class AdminUpdateProductService {
   static async execute(payload: AdminUpdateProductPayload) {
@@ -191,6 +192,44 @@ export class AdminUpdateProductService {
         }
       }
 
+      // Fakturownia-first: Önce Fakturownia'yı güncelle, sonra database'e yaz
+      let finalTax = validateTaxRate(payload.tax);
+      let finalStock = payload.stock ?? 0;
+      let syncStatus: "synced" | "pending" | "error" = "pending";
+      let lastSyncedAt: Date | null = null;
+
+      if (existingProduct.fakturowniaProductId) {
+        try {
+          console.log(
+            `🔄 Fakturownia ÖNCE güncelleniyor (ID: ${existingProduct.fakturowniaProductId})...`
+          );
+
+          const fakturowniaResponse = await fakturowniaService.updateProduct(
+            existingProduct.fakturowniaProductId,
+            {
+              stock: finalStock,
+              tax: finalTax,
+              price: payload.price,
+            }
+          );
+
+          // Fakturownia'dan dönen değerleri kullan (source of truth)
+          finalTax = validateTaxRate(fakturowniaResponse.tax);
+          finalStock = fakturowniaResponse.quantity ?? finalStock;
+          syncStatus = "synced";
+          lastSyncedAt = new Date();
+
+          console.log("✅ Fakturownia güncellendi, database'e yazılıyor...");
+        } catch (fakturowniaError) {
+          console.error(
+            "❌ Fakturownia güncelleme hatası:",
+            fakturowniaError
+          );
+          syncStatus = "error";
+          // Fakturownia fail olursa devam et ama sync status error olarak işaretle
+        }
+      }
+
       await db.transaction(async (tx) => {
         await tx
           .update(products)
@@ -202,8 +241,8 @@ export class AdminUpdateProductService {
             imageUrl: payload.imageUrl ?? null,
             price: toDecimalString(payload.price),
             currency: payload.currency ?? "PLN",
-            stock: payload.stock ?? 0,
-            tax: toDecimalString(payload.tax),
+            stock: finalStock, // Fakturownia'dan gelen değer
+            tax: finalTax, // Fakturownia'dan gelen değer (integer)
             allergens: serializeNullableJson(payload.allergens),
             nutritionalValues: serializeNullableJson(payload.nutritionalValues),
             netQuantity: payload.netQuantity ?? null,
@@ -217,6 +256,8 @@ export class AdminUpdateProductService {
             minQuantityIndividual: payload.minQuantityIndividual ?? 1,
             minQuantityCorporate: payload.minQuantityCorporate ?? 1,
             quantityPerBox: payload.quantityPerBox ?? null,
+            syncStatus: syncStatus,
+            lastSyncedAt: lastSyncedAt,
             updatedAt: new Date(),
           })
           .where(eq(products.id, payload.productId));
@@ -235,31 +276,6 @@ export class AdminUpdateProductService {
           }))
         );
       });
-
-      // Fakturownia'ya sync et (eğer fakturowniaProductId varsa)
-      if (existingProduct.fakturowniaProductId) {
-        try {
-          console.log(
-            `🔄 Fakturownia'ya sync ediliyor (ID: ${existingProduct.fakturowniaProductId})...`
-          );
-
-          await fakturowniaService.updateProduct(
-            existingProduct.fakturowniaProductId,
-            {
-              stock: payload.stock,
-              tax: payload.tax,
-            }
-          );
-
-          console.log("✅ Fakturownia sync başarılı");
-        } catch (fakturowniaError) {
-          // Fakturownia hatası ürün güncellemesini engellemesin
-          console.error(
-            "⚠️ Fakturownia sync hatası (ürün database'de güncellendi):",
-            fakturowniaError
-          );
-        }
-      }
 
       return {
         success: true,
