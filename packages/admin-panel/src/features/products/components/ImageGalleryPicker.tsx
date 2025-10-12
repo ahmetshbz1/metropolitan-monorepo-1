@@ -63,6 +63,20 @@ export const ImageGalleryPicker = ({
   }, [isOpen, currentImageUrl]);
 
   useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Enter" && selectedUrl) {
+        event.preventDefault();
+        handleConfirm();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, selectedUrl]);
+
+  useEffect(() => {
     if (!searchQuery.trim()) {
       setFilteredImages(images);
       return;
@@ -76,16 +90,35 @@ export const ImageGalleryPicker = ({
   }, [searchQuery, images]);
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
 
     try {
       setIsUploading(true);
-      const imageUrl = await uploadProductImage(file);
+      const fileArray = Array.from(files);
+
+      // Tüm dosyaları paralel yükle
+      const uploadPromises = fileArray.map(file => uploadProductImage(file));
+      const uploadedUrls = await Promise.all(uploadPromises);
+
+      // Son yüklenen fotoğrafı seçili yap
+      const lastUrl = uploadedUrls[uploadedUrls.length - 1];
+
       await loadImages();
-      setSelectedUrl(imageUrl);
+      setSelectedUrl(lastUrl);
+
+      showToast({
+        type: "success",
+        title: "Fotoğraflar yüklendi",
+        description: `${fileArray.length} fotoğraf başarıyla yüklendi.`,
+      });
     } catch (error) {
       console.error("Görsel yüklenemedi", error);
+      showToast({
+        type: "error",
+        title: "Yükleme başarısız",
+        description: error instanceof Error ? error.message : "Fotoğraflar yüklenemedi",
+      });
     } finally {
       setIsUploading(false);
       event.target.value = "";
@@ -121,7 +154,10 @@ export const ImageGalleryPicker = ({
     try {
       setDeletingImage(imageUrl);
       await deleteProductImage(imageUrl);
-      await loadImages();
+
+      // State'ten silinen görseli kaldır (API'ye yeniden istek atmadan)
+      setImages(prev => prev.filter(img => img.url !== imageUrl));
+      setFilteredImages(prev => prev.filter(img => img.url !== imageUrl));
 
       // Eğer silinen fotoğraf seçili ise seçimi kaldır
       if (selectedUrl === imageUrl) {
@@ -169,6 +205,7 @@ export const ImageGalleryPicker = ({
               <input
                 type="file"
                 accept="image/jpeg,image/jpg,image/png,image/webp"
+                multiple
                 onChange={handleFileSelect}
                 className="hidden"
                 id="gallery-upload"
@@ -187,7 +224,7 @@ export const ImageGalleryPicker = ({
                 </Button>
               </label>
               <span className="text-xs text-slate-500 dark:text-slate-400">
-                veya aşağıdan mevcut bir fotoğraf seçin
+                Çoklu seçim yapabilirsiniz • Aşağıdan mevcut fotoğraf seçebilirsiniz
               </span>
             </div>
 
