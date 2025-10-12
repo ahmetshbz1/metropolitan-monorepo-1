@@ -4,6 +4,7 @@ import type {
   AdminProductPayload,
   ProductsListResponse,
   ProductImportSummary,
+  ProductImageInfo,
 } from "./types";
 
 export const uploadProductImage = async (file: File): Promise<string> => {
@@ -31,6 +32,13 @@ export const uploadProductImage = async (file: File): Promise<string> => {
 
 export const deleteProductImage = async (imageUrl: string): Promise<void> => {
   await apiClient.delete("/admin/products/delete-image", { data: { imageUrl } });
+};
+
+export const getProductImages = async (): Promise<ProductImageInfo[]> => {
+  const response = await apiClient.get<{ success: boolean; images: ProductImageInfo[] }>(
+    "/admin/products/images"
+  );
+  return response.data.images;
 };
 
 export const getProducts = async (params?: {

@@ -1,5 +1,12 @@
 import type { SupportedLanguage } from "./constants";
 
+export interface ProductImageInfo {
+  filename: string;
+  url: string;
+  size: number;
+  createdAt: string;
+}
+
 export interface AdminProductTranslation {
   languageCode: SupportedLanguage;
   name: string;

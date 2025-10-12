@@ -280,6 +280,93 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
       }),
     }
   )
+  .get(
+    "/images",
+    async ({ set }) => {
+      try {
+        const images = await ProductImageService.listAllImages();
+        return {
+          success: true,
+          images,
+        };
+      } catch (error) {
+        set.status = 400;
+        return {
+          success: false,
+          message:
+            error instanceof Error ? error.message : "Görseller listelenemedi",
+        };
+      }
+    }
+  )
+  .post(
+    "/upload-image",
+    async ({ body, set }) => {
+      try {
+        if (!body.image) {
+          set.status = 400;
+          return {
+            success: false,
+            message: "Görsel dosyası gerekli",
+          };
+        }
+
+        const imageUrl = await ProductImageService.uploadProductImage(
+          body.image
+        );
+        return {
+          success: true,
+          imageUrl,
+        };
+      } catch (error) {
+        set.status = 400;
+        return {
+          success: false,
+          message:
+            error instanceof Error ? error.message : "Görsel yüklenemedi",
+        };
+      }
+    },
+    {
+      body: t.Object({
+        image: t.File({
+          maxSize: 5 * 1024 * 1024,
+        }),
+      }),
+    }
+  )
+  .delete(
+    "/delete-image",
+    async ({ body, set }) => {
+      try {
+        if (!body.imageUrl) {
+          set.status = 400;
+          return {
+            success: false,
+            message: "Görsel URL'si gerekli",
+          };
+        }
+
+        await ProductImageService.deleteProductImage(body.imageUrl);
+        return {
+          success: true,
+          message: "Görsel silindi",
+        };
+      } catch (error) {
+        set.status = 400;
+        return {
+          success: false,
+          message:
+            error instanceof Error ? error.message : "Görsel silinemedi",
+        };
+      }
+    },
+    {
+      body: t.Object({
+        imageUrl: t.String(),
+      }),
+    }
+  )
   .put(
     "/:id",
     async ({ body, params, set }) => {
@@ -407,73 +494,5 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
     },
     {
       params: t.Object({ id: t.String({ format: "uuid" }) }),
-    }
-  )
-  .post(
-    "/upload-image",
-    async ({ body, set }) => {
-      try {
-        if (!body.image) {
-          set.status = 400;
-          return {
-            success: false,
-            message: "Görsel dosyası gerekli",
-          };
-        }
-
-        const imageUrl = await ProductImageService.uploadProductImage(
-          body.image
-        );
-        return {
-          success: true,
-          imageUrl,
-        };
-      } catch (error) {
-        set.status = 400;
-        return {
-          success: false,
-          message:
-            error instanceof Error ? error.message : "Görsel yüklenemedi",
-        };
-      }
-    },
-    {
-      body: t.Object({
-        image: t.File({
-          maxSize: 5 * 1024 * 1024,
-        }),
-      }),
-    }
-  )
-  .delete(
-    "/delete-image",
-    async ({ body, set }) => {
-      try {
-        if (!body.imageUrl) {
-          set.status = 400;
-          return {
-            success: false,
-            message: "Görsel URL'si gerekli",
-          };
-        }
-
-        await ProductImageService.deleteProductImage(body.imageUrl);
-        return {
-          success: true,
-          message: "Görsel silindi",
-        };
-      } catch (error) {
-        set.status = 400;
-        return {
-          success: false,
-          message:
-            error instanceof Error ? error.message : "Görsel silinemedi",
-        };
-      }
-    },
-    {
-      body: t.Object({
-        imageUrl: t.String(),
-      }),
     }
   );

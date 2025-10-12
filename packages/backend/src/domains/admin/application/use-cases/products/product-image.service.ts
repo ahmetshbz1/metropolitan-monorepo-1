@@ -15,6 +15,13 @@ const ALLOWED_MIME_TYPES = [
 ];
 const ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp"];
 
+export interface ProductImageInfo {
+  filename: string;
+  url: string;
+  size: number;
+  createdAt: Date;
+}
+
 export class ProductImageService {
   public static async uploadProductImage(
     photo: {
@@ -69,6 +76,43 @@ export class ProductImageService {
       await fs.unlink(filePath);
     } catch {
       // Dosya bulunamadı veya silinemiyor, sessizce devam et
+    }
+  }
+
+  public static async listAllImages(): Promise<ProductImageInfo[]> {
+    try {
+      await fs.mkdir(UPLOAD_DIR, { recursive: true });
+      const files = await fs.readdir(UPLOAD_DIR);
+
+      const imageFiles = files.filter((file) => {
+        const ext = path.extname(file).toLowerCase();
+        return ALLOWED_EXTENSIONS.includes(ext);
+      });
+
+      const imageInfos: ProductImageInfo[] = [];
+
+      for (const filename of imageFiles) {
+        const filePath = path.join(UPLOAD_DIR, filename);
+        try {
+          const stats = await fs.stat(filePath);
+          imageInfos.push({
+            filename,
+            url: `/uploads/product-images/${filename}`,
+            size: stats.size,
+            createdAt: stats.birthtime,
+          });
+        } catch {
+          // Dosya okunamazsa atla
+          continue;
+        }
+      }
+
+      // En yeni dosyalar önce
+      imageInfos.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+      return imageInfos;
+    } catch {
+      return [];
     }
   }
 }

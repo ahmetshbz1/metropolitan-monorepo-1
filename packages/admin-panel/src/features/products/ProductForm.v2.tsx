@@ -13,7 +13,7 @@ import {
   Tab,
   Spacer,
 } from "@heroui/react";
-import { Save, Upload, X, Loader2 } from "lucide-react";
+import { Images, Save, Upload, X, Loader2 } from "lucide-react";
 
 import { deleteProductImage, uploadProductImage } from "./api";
 import type { AdminProductPayload } from "./types";
@@ -24,6 +24,7 @@ import { KeyValueInput } from "./components/KeyValueInput";
 import { TagInput } from "./components/TagInput";
 import { NutritionalValuesInput } from "./components/NutritionalValuesInput";
 import { BadgesInput } from "./components/BadgesInput";
+import { ImageGalleryPicker } from "./components/ImageGalleryPicker";
 import { taxRateToString, validateTaxRate } from "../../types/product.types";
 
 interface ProductFormState {
@@ -187,6 +188,7 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isDeletingImage, setIsDeletingImage] = useState(false);
   const [categories, setCategories] = useState<AdminCategory[]>([]);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // initialProduct.productId değiştiğinde form'u reload et
@@ -476,24 +478,36 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/jpeg,image/jpg,image/png,image/webp"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-                <Button
-                  type="button"
-                  variant="bordered"
-                  startContent={isUploadingImage ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                  onPress={() => fileInputRef.current?.click()}
-                  isDisabled={isUploadingImage}
-                  size="lg"
-                >
-                  {isUploadingImage ? "Yükleniyor..." : "Görsel Yükle"}
-                </Button>
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/png,image/webp"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="bordered"
+                    startContent={isUploadingImage ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                    onPress={() => fileInputRef.current?.click()}
+                    isDisabled={isUploadingImage}
+                    size="lg"
+                  >
+                    {isUploadingImage ? "Yükleniyor..." : "Yeni Yükle"}
+                  </Button>
+                  <Button
+                    type="button"
+                    color="primary"
+                    variant="flat"
+                    startContent={<Images className="h-4 w-4" />}
+                    onPress={() => setIsGalleryOpen(true)}
+                    size="lg"
+                  >
+                    Galeriden Seç
+                  </Button>
+                </div>
                 <span className="text-xs text-slate-500 dark:text-slate-400">
                   Max 5MB (JPEG, PNG, WebP)
                 </span>
@@ -847,6 +861,13 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
             : "Ürünü Güncelle"}
         </Button>
       </div>
+
+      <ImageGalleryPicker
+        isOpen={isGalleryOpen}
+        onClose={() => setIsGalleryOpen(false)}
+        onSelect={(imageUrl) => updateField("imageUrl", imageUrl)}
+        currentImageUrl={form.imageUrl}
+      />
     </form>
   );
 };

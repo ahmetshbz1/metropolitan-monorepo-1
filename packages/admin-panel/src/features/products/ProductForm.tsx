@@ -13,7 +13,7 @@ import {
   SelectItem,
   type Selection,
 } from "@heroui/react";
-import { Save, Upload, X } from "lucide-react";
+import { Images, Save, Upload, X } from "lucide-react";
 
 import { uploadProductImage } from "./api";
 import { SUPPORTED_LANGUAGES, type SupportedLanguage } from "./constants";
@@ -23,6 +23,7 @@ import { getCategories } from "../categories/api";
 import type { AdminCategory } from "../categories/types";
 import { KeyValueInput } from "./components/KeyValueInput";
 import { TagInput } from "./components/TagInput";
+import { ImageGalleryPicker } from "./components/ImageGalleryPicker";
 
 interface TranslationState {
   name: string;
@@ -182,6 +183,7 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
   const [success, setSuccess] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [categories, setCategories] = useState<AdminCategory[]>([]);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -409,23 +411,34 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
                     </button>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2">
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/jpeg,image/jpg,image/png,image/webp"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                    />
-                    <Button
-                      type="button"
-                      variant="bordered"
-                      startContent={<Upload className="h-4 w-4" />}
-                      onPress={() => fileInputRef.current?.click()}
-                      isLoading={isUploadingImage}
-                    >
-                      Görsel Yükle
-                    </Button>
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center gap-2">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/webp"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
+                      <Button
+                        type="button"
+                        variant="bordered"
+                        startContent={<Upload className="h-4 w-4" />}
+                        onPress={() => fileInputRef.current?.click()}
+                        isLoading={isUploadingImage}
+                      >
+                        Yeni Yükle
+                      </Button>
+                      <Button
+                        type="button"
+                        color="primary"
+                        variant="flat"
+                        startContent={<Images className="h-4 w-4" />}
+                        onPress={() => setIsGalleryOpen(true)}
+                      >
+                        Galeriden Seç
+                      </Button>
+                    </div>
                     <span className="text-xs text-slate-500 dark:text-slate-400">
                       Max 5MB (JPEG, PNG, WebP)
                     </span>
@@ -626,6 +639,13 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
           {mode === "create" ? "Ürünü Oluştur" : "Ürünü Güncelle"}
         </Button>
       </div>
+
+      <ImageGalleryPicker
+        isOpen={isGalleryOpen}
+        onClose={() => setIsGalleryOpen(false)}
+        onSelect={(imageUrl) => updateField("imageUrl", imageUrl)}
+        currentImageUrl={form.imageUrl}
+      />
     </form>
   );
 };
