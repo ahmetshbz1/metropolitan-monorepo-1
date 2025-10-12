@@ -2,7 +2,7 @@
 //  metropolitan backend
 //  Admin ürün listeleme servisi
 
-import { desc, eq, inArray, sql } from "drizzle-orm";
+import { desc, eq, inArray, sql, or, ilike, and } from "drizzle-orm";
 
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import {
@@ -16,6 +16,7 @@ import type { ProductBadges, NutritionalValues } from "../../../../../shared/typ
 interface GetProductsParams {
   limit?: number;
   offset?: number;
+  search?: string;
 }
 
 interface AdminProductListItem {
@@ -128,13 +129,43 @@ const toInt = (value: number | string | null | undefined, fallback = 0): number 
 };
 
 export class AdminGetProductsService {
-  static async execute({ limit = 50, offset = 0 }: GetProductsParams) {
+  static async execute({ limit = 50, offset = 0, search }: GetProductsParams) {
     const safeLimit = Math.min(Math.max(limit, 1), 100);
     const safeOffset = Math.max(offset, 0);
 
+    // Search: product_code, brand veya name (translations'da) içinde ara
+    let matchingProductIds: string[] = [];
+    if (search && search.trim()) {
+      const searchTerm = `%${search.trim()}%`;
+
+      // product_translations'da name arama yap
+      const matchingTranslations = await db
+        .select({ productId: productTranslations.productId })
+        .from(productTranslations)
+        .where(ilike(productTranslations.name, searchTerm));
+
+      matchingProductIds = matchingTranslations.map(t => t.productId);
+    }
+
+    // WHERE conditions oluştur
+    const whereConditions = [];
+    if (search && search.trim()) {
+      const searchTerm = `%${search.trim()}%`;
+      whereConditions.push(
+        or(
+          ilike(products.productCode, searchTerm),
+          ilike(products.brand, searchTerm),
+          matchingProductIds.length > 0 ? inArray(products.id, matchingProductIds) : sql`false`
+        )
+      );
+    }
+
+    const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;
+
     const [countResult] = await db
       .select({ count: sql<number>`count(*)::int` })
-      .from(products);
+      .from(products)
+      .where(whereClause);
 
     const productRows = await db
       .select({
@@ -165,6 +196,7 @@ export class AdminGetProductsService {
         updatedAt: products.updatedAt,
       })
       .from(products)
+      .where(whereClause)
       .orderBy(desc(products.createdAt))
       .limit(safeLimit)
       .offset(safeOffset);

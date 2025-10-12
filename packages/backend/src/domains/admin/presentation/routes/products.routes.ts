@@ -89,6 +89,7 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
     async ({ query, set }) => {
       const limit = query.limit ? Number(query.limit) : undefined;
       const offset = query.offset ? Number(query.offset) : undefined;
+      const search = query.search || undefined;
 
       if (
         (limit !== undefined && Number.isNaN(limit)) ||
@@ -105,6 +106,7 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
         const result = await AdminGetProductsService.execute({
           limit,
           offset,
+          search,
         });
         return result;
       } catch (error) {
@@ -120,6 +122,7 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
       query: t.Object({
         limit: t.Optional(t.String()),
         offset: t.Optional(t.String()),
+        search: t.Optional(t.String()),
       }),
     }
   )
