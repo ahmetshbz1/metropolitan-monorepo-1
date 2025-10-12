@@ -130,6 +130,9 @@ const normalizeDate = (value: string): string | undefined => {
 };
 
 const loadProductToForm = (product: import("./types").AdminProduct): ProductFormState => {
+  const taxValue = taxRateToString(product.tax);
+  console.log("🔍 LOAD PRODUCT TAX:", product.tax, "→ CONVERTED:", taxValue);
+
   return {
     productCode: product.productCode,
     categoryId: product.categoryId || "",
@@ -139,7 +142,7 @@ const loadProductToForm = (product: import("./types").AdminProduct): ProductForm
     price: product.price?.toString() || "",
     currency: product.currency,
     stock: product.stock.toString(),
-    tax: taxRateToString(product.tax),
+    tax: taxValue,
     netQuantity: product.netQuantity || "",
     expiryDate: product.expiryDate
       ? new Date(product.expiryDate).toISOString().slice(0, 16)
@@ -187,7 +190,7 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
   const [categories, setCategories] = useState<AdminCategory[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // initialProduct değiştiğinde form'u reload et
+  // initialProduct.productId değiştiğinde form'u reload et
   useEffect(() => {
     if (initialProduct) {
       setForm(loadProductToForm(initialProduct));
@@ -196,7 +199,7 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
       setForm(createInitialState());
       setProductId("");
     }
-  }, [initialProduct, mode]);
+  }, [initialProduct?.productId, mode]);
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -296,6 +299,8 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
     }
 
     try {
+      console.log("🔍 FRONTEND FORM.TAX:", form.tax, "TYPE:", typeof form.tax);
+
       const payload: AdminProductPayload = {
         productCode: form.productCode,
         categoryId: form.categoryId || undefined,

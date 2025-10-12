@@ -56,17 +56,11 @@ export const ProductManager = () => {
     }
     await updateProduct(productId, payload);
 
-    // editingProduct'ı güncelle - böylece re-render'da doğru değerler gelir
-    if (editingProduct) {
-      setEditingProduct({
-        ...editingProduct,
-        tax: payload.tax ?? editingProduct.tax,
-        stock: payload.stock ?? editingProduct.stock,
-      });
-    }
-
-    setIsDrawerOpen(false);
+    // ProductList'i refresh et
     setRefreshTrigger((prev) => prev + 1);
+
+    // Drawer'ı kapat - editingProduct handleDrawerClose'da null olacak
+    setIsDrawerOpen(false);
   };
 
   const handleDelete = async (productId: string, product?: AdminProduct) => {
