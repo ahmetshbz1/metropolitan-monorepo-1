@@ -12,7 +12,7 @@ import {
 } from "@heroui/react";
 import { Check, Trash2, Upload, X } from "lucide-react";
 
-import { getProductImages, uploadProductImage, deleteProductImage, deleteProductImages } from "../api";
+import { getProductImages, uploadProductImage, uploadProductImages, deleteProductImage, deleteProductImages } from "../api";
 import type { ProductImageInfo } from "../types";
 import { API_BASE_URL } from "../../../config/env";
 import { useConfirm } from "../../../hooks/useConfirm";
@@ -83,9 +83,17 @@ export const ImageGalleryPicker = ({
       setIsUploading(true);
       const fileArray = Array.from(files);
 
-      // Tüm dosyaları paralel yükle
-      const uploadPromises = fileArray.map(file => uploadProductImage(file));
-      const uploadedUrls = await Promise.all(uploadPromises);
+      let uploadedUrls: string[];
+
+      // Tek request ile tüm fotoğrafları yükle
+      if (fileArray.length === 1) {
+        // Tek dosya için eski API
+        const url = await uploadProductImage(fileArray[0]);
+        uploadedUrls = [url];
+      } else {
+        // Çoklu dosya için batch API
+        uploadedUrls = await uploadProductImages(fileArray);
+      }
 
       // Son yüklenen fotoğrafı seçili yap
       const lastUrl = uploadedUrls[uploadedUrls.length - 1];

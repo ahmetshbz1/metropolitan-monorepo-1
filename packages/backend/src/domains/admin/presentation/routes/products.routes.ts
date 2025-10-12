@@ -335,6 +335,47 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
       }),
     }
   )
+  .post(
+    "/upload-images",
+    async ({ body, set }) => {
+      try {
+        if (!body.images || body.images.length === 0) {
+          set.status = 400;
+          return {
+            success: false,
+            message: "En az bir görsel dosyası gerekli",
+          };
+        }
+
+        // Tüm görselleri sırayla yükle
+        const imageUrls: string[] = [];
+        for (const image of body.images) {
+          const imageUrl = await ProductImageService.uploadProductImage(image);
+          imageUrls.push(imageUrl);
+        }
+
+        return {
+          success: true,
+          imageUrls,
+        };
+      } catch (error) {
+        set.status = 400;
+        return {
+          success: false,
+          message:
+            error instanceof Error ? error.message : "Görseller yüklenemedi",
+        };
+      }
+    },
+    {
+      body: t.Object({
+        images: t.Files({
+          maxSize: 5 * 1024 * 1024,
+          minItems: 1,
+        }),
+      }),
+    }
+  )
   .delete(
     "/delete-image",
     async ({ body, set }) => {

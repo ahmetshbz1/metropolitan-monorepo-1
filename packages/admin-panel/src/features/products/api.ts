@@ -30,6 +30,31 @@ export const uploadProductImage = async (file: File): Promise<string> => {
   return data.imageUrl;
 };
 
+export const uploadProductImages = async (files: File[]): Promise<string[]> => {
+  const formData = new FormData();
+  for (const file of files) {
+    formData.append("images", file);
+  }
+
+  const token = localStorage.getItem(ADMIN_TOKEN_STORAGE_KEY);
+
+  const response = await fetch(`${API_BASE_URL}/api/admin/products/upload-images`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Görseller yüklenemedi");
+  }
+
+  const data = await response.json() as { success: boolean; imageUrls: string[] };
+  return data.imageUrls;
+};
+
 export const deleteProductImage = async (imageUrl: string): Promise<void> => {
   await apiClient.delete("/admin/products/delete-image", { data: { imageUrl } });
 };
