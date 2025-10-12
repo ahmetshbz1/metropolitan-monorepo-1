@@ -215,7 +215,7 @@ export class AdminUpdateProductService {
 
           // Fakturownia'dan dönen değerleri kullan (source of truth)
           finalTax = validateTaxRate(fakturowniaResponse.tax);
-          finalStock = fakturowniaResponse.quantity ?? finalStock;
+          finalStock = Math.round(fakturowniaResponse.quantity ?? finalStock);
           syncStatus = "synced";
           lastSyncedAt = new Date();
 
