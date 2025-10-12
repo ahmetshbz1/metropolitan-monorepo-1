@@ -9,6 +9,7 @@ import {
   Image,
   Spinner,
   Checkbox,
+  Progress,
 } from "@heroui/react";
 import { Check, Trash2, Upload, X } from "lucide-react";
 
@@ -35,6 +36,9 @@ export const ImageGalleryPicker = ({
   const [isLoading, setIsLoading] = useState(false);
   const [selectedUrl, setSelectedUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadTotal, setUploadTotal] = useState(0);
+  const [uploadCurrent, setUploadCurrent] = useState(0);
   const [deletingImage, setDeletingImage] = useState<string | null>(null);
   const [selectedForDelete, setSelectedForDelete] = useState<Set<string>>(new Set());
   const [isDeletingMultiple, setIsDeletingMultiple] = useState(false);
@@ -82,21 +86,40 @@ export const ImageGalleryPicker = ({
     try {
       setIsUploading(true);
       const fileArray = Array.from(files);
+      setUploadTotal(fileArray.length);
+      setUploadCurrent(0);
+      setUploadProgress(0);
 
-      let uploadedUrls: string[];
+      const allUploadedUrls: string[] = [];
 
-      // Tek request ile tüm fotoğrafları yükle
       if (fileArray.length === 1) {
         // Tek dosya için eski API
         const url = await uploadProductImage(fileArray[0]);
-        uploadedUrls = [url];
+        allUploadedUrls.push(url);
+        setUploadProgress(100);
+        setUploadCurrent(1);
       } else {
-        // Çoklu dosya için batch API
-        uploadedUrls = await uploadProductImages(fileArray);
+        // Çoklu dosya için chunk-based upload (10'ar 10'ar)
+        const CHUNK_SIZE = 10;
+        const chunks: File[][] = [];
+
+        for (let i = 0; i < fileArray.length; i += CHUNK_SIZE) {
+          chunks.push(fileArray.slice(i, i + CHUNK_SIZE));
+        }
+
+        let processedFiles = 0;
+
+        for (const chunk of chunks) {
+          const urls = await uploadProductImages(chunk);
+          allUploadedUrls.push(...urls);
+          processedFiles += chunk.length;
+          setUploadCurrent(processedFiles);
+          setUploadProgress(Math.round((processedFiles / fileArray.length) * 100));
+        }
       }
 
       // Son yüklenen fotoğrafı seçili yap
-      const lastUrl = uploadedUrls[uploadedUrls.length - 1];
+      const lastUrl = allUploadedUrls[allUploadedUrls.length - 1];
 
       await loadImages();
       setSelectedUrl(lastUrl);
@@ -115,6 +138,9 @@ export const ImageGalleryPicker = ({
       });
     } finally {
       setIsUploading(false);
+      setUploadProgress(0);
+      setUploadCurrent(0);
+      setUploadTotal(0);
       event.target.value = "";
     }
   };
@@ -263,31 +289,47 @@ export const ImageGalleryPicker = ({
         <ModalBody>
           <div className="flex flex-col gap-4">
             {/* Upload Section */}
-            <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-[#2a2a2a] dark:bg-[#1a1a1a]">
-              <input
-                type="file"
-                accept="image/jpeg,image/jpg,image/png,image/webp"
-                multiple
-                onChange={handleFileSelect}
-                className="hidden"
-                id="gallery-upload"
-                disabled={isUploading}
-              />
-              <label htmlFor="gallery-upload">
-                <Button
-                  as="span"
-                  color="primary"
-                  variant="flat"
-                  startContent={isUploading ? <Spinner size="sm" /> : <Upload className="h-4 w-4" />}
-                  isDisabled={isUploading}
-                  className="cursor-pointer"
-                >
-                  {isUploading ? "Yükleniyor..." : "Yeni Fotoğraf Yükle"}
-                </Button>
-              </label>
-              <span className="text-xs text-slate-500 dark:text-slate-400">
-                Çoklu seçim yapabilirsiniz • Aşağıdan mevcut fotoğraf seçebilirsiniz
-              </span>
+            <div className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-[#2a2a2a] dark:bg-[#1a1a1a]">
+              <div className="flex items-center gap-3">
+                <input
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/webp"
+                  multiple
+                  onChange={handleFileSelect}
+                  className="hidden"
+                  id="gallery-upload"
+                  disabled={isUploading}
+                />
+                <label htmlFor="gallery-upload">
+                  <Button
+                    as="span"
+                    color="primary"
+                    variant="flat"
+                    startContent={isUploading ? <Spinner size="sm" /> : <Upload className="h-4 w-4" />}
+                    isDisabled={isUploading}
+                    className="cursor-pointer"
+                  >
+                    {isUploading ? "Yükleniyor..." : "Yeni Fotoğraf Yükle"}
+                  </Button>
+                </label>
+                <span className="text-xs text-slate-500 dark:text-slate-400">
+                  Çoklu seçim yapabilirsiniz • Aşağıdan mevcut fotoğraf seçebilirsiniz
+                </span>
+              </div>
+              {isUploading && uploadTotal > 1 && (
+                <div className="flex flex-col gap-1">
+                  <div className="flex justify-between text-xs text-slate-600 dark:text-slate-400">
+                    <span>Yükleniyor...</span>
+                    <span>{uploadCurrent} / {uploadTotal} fotoğraf</span>
+                  </div>
+                  <Progress
+                    value={uploadProgress}
+                    color="primary"
+                    size="sm"
+                    className="w-full"
+                  />
+                </div>
+              )}
             </div>
 
             {/* Bulk Actions */}
