@@ -131,7 +131,6 @@ const normalizeDate = (value: string): string | undefined => {
 
 const loadProductToForm = (product: import("./types").AdminProduct): ProductFormState => {
   const taxValue = taxRateToString(product.tax);
-  console.log("🔍 LOAD PRODUCT TAX:", product.tax, "→ CONVERTED:", taxValue);
 
   return {
     productCode: product.productCode,
@@ -299,8 +298,6 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
     }
 
     try {
-      console.log("🔍 FRONTEND FORM.TAX:", form.tax, "TYPE:", typeof form.tax);
-
       const payload: AdminProductPayload = {
         productCode: form.productCode,
         categoryId: form.categoryId || undefined,

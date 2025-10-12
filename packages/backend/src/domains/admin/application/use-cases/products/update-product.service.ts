@@ -198,8 +198,6 @@ export class AdminUpdateProductService {
       let syncStatus: "synced" | "pending" | "error" = "pending";
       let lastSyncedAt: Date | null = null;
 
-      console.log(`📝 PAYLOAD TAX RECEIVED: ${payload.tax} → validated: ${finalTax}`);
-
       if (existingProduct.fakturowniaProductId) {
         try {
           console.log(
@@ -215,15 +213,11 @@ export class AdminUpdateProductService {
             }
           );
 
-          console.log(`📥 FAKTUROWNIA RESPONSE TAX: ${fakturowniaResponse.tax}`);
-
           // Fakturownia'dan dönen değerleri kullan (source of truth)
           finalTax = validateTaxRate(fakturowniaResponse.tax);
           finalStock = Math.round(fakturowniaResponse.quantity ?? finalStock);
           syncStatus = "synced";
           lastSyncedAt = new Date();
-
-          console.log(`✅ Fakturownia güncellendi, database'e yazılıyor... (finalTax: ${finalTax})`);
         } catch (fakturowniaError) {
           console.error(
             "❌ Fakturownia güncelleme hatası:",

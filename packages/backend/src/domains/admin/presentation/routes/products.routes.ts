@@ -44,6 +44,7 @@ const baseProductSchema = {
   price: t.Optional(t.Number()),
   currency: t.Optional(t.String({ minLength: 3, maxLength: 3 })),
   stock: t.Optional(t.Number()),
+  tax: t.Optional(t.Number()),
   allergens: t.Optional(t.Array(t.String())),
   nutritionalValues: t.Optional(
     t.Object({
