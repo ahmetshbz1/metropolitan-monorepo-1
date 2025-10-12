@@ -5,6 +5,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 import { MobileUser } from "./types";
+import { clearDeviceInfoCache } from "@/utils/deviceFingerprint";
 
 // Storage anahtarları
 const STORAGE_KEYS = {
@@ -142,6 +143,7 @@ export const clearAllAuthData = async (
       tokenStorage.remove(),
       userStorage.remove(),
       socialAuthStorage.remove(),
+      clearDeviceInfoCache(), // Device fingerprint cache'ini de temizle
     ];
 
     // Guest ID'yi sadece istenirse temizle

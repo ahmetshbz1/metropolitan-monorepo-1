@@ -230,13 +230,11 @@ export const refreshTokenRoutes = createApp()
         }),
       }),
       headers: t.Object({
-        "user-agent": t.Optional(t.String()),
+        // Mobile device fingerprinting için gerekli stabil header'lar
         "x-platform": t.Optional(t.String()),
         "x-device-model": t.Optional(t.String()),
-        "x-app-version": t.Optional(t.String()),
-        "x-screen-resolution": t.Optional(t.String()),
         "x-timezone": t.Optional(t.String()),
-        "accept-language": t.Optional(t.String()),
+        // IP tracking için
         "x-forwarded-for": t.Optional(t.String()),
         "x-real-ip": t.Optional(t.String()),
       }),
