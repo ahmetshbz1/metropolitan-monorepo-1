@@ -355,7 +355,10 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
           ? "Ürün başarıyla güncellendi"
           : "Ürün başarıyla güncellendi ve çeviriler otomatik güncellendi"
       );
-      resetForm();
+      // Update modda formu resetleme - VAT ve diğer değerler korunsun
+      if (mode === "create") {
+        resetForm();
+      }
     } catch (submitError) {
       const message =
         submitError instanceof Error
