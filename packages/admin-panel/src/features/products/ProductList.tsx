@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Button,
   Table,
@@ -80,7 +80,11 @@ export const ProductList = ({
     try {
       setIsLoading(true);
       setError(null);
-      const response = await getProducts({ limit, offset });
+      const response = await getProducts({
+        limit,
+        offset,
+        search: searchQuery || undefined
+      });
       setProducts(response.items);
       setTotal(response.total);
     } catch (err) {
@@ -88,7 +92,7 @@ export const ProductList = ({
     } finally {
       setIsLoading(false);
     }
-  }, [limit, offset]);
+  }, [limit, offset, searchQuery]);
 
   useEffect(() => {
     void loadProducts();
@@ -130,10 +134,12 @@ export const ProductList = ({
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
+    setOffset(0); // Search değiştiğinde ilk sayfaya dön
   };
 
   const handleSearchClear = () => {
     setSearchQuery("");
+    setOffset(0); // Search temizlendiğinde ilk sayfaya dön
   };
 
   const formatPrice = (price: number | null, currency: string) => {
@@ -160,24 +166,7 @@ export const ProductList = ({
     );
   };
 
-  const filteredProducts = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return products;
-    }
-
-    const query = searchQuery.toLowerCase().trim();
-    return products.filter((product) => {
-      const productName = getProductName(product).toLowerCase();
-      const productCode = product.productCode.toLowerCase();
-      const brand = (product.brand || "").toLowerCase();
-
-      return (
-        productName.includes(query) ||
-        productCode.includes(query) ||
-        brand.includes(query)
-      );
-    });
-  }, [products, searchQuery]);
+  // Server-side search kullanıyoruz, client-side filtering gerek yok
 
   if (error) {
     return (
@@ -210,7 +199,7 @@ export const ProductList = ({
               {searchQuery ? "Filtrelenmiş: " : "Toplam: "}
             </span>
             <Chip size="sm" variant="flat" color="primary">
-              {searchQuery ? filteredProducts.length : total}
+              {total}
             </Chip>
           </div>
           {totalPages > 1 ? (
@@ -244,7 +233,7 @@ export const ProductList = ({
             <TableColumn width={50}>İŞLEM</TableColumn>
           </TableHeader>
           <TableBody
-            items={filteredProducts}
+            items={products}
             isLoading={isLoading}
             loadingContent={<Spinner label="Yükleniyor..." />}
             emptyContent={searchQuery ? "Arama sonucu bulunamadı" : "Ürün bulunamadı"}
