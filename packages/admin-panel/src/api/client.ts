@@ -9,6 +9,9 @@ export const apiClient = axios.create({
   },
 });
 
+// Custom event for session expiration
+export const SESSION_EXPIRED_EVENT = "admin:session-expired";
+
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem(ADMIN_TOKEN_STORAGE_KEY);
   if (token) {
@@ -16,3 +19,15 @@ apiClient.interceptors.request.use((config) => {
   }
   return config;
 });
+
+// Response interceptor - 401 hatalarını yakala
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Session expired event dispatch et
+      window.dispatchEvent(new CustomEvent(SESSION_EXPIRED_EVENT));
+    }
+    return Promise.reject(error);
+  }
+);

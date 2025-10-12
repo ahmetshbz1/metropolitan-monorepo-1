@@ -27,7 +27,7 @@ export type AdminLoginResult = AdminLoginSuccess;
 
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCK_DURATION_MINUTES = 15;
-const ACCESS_TOKEN_EXPIRY_MINUTES = 60;
+const ACCESS_TOKEN_EXPIRY_MINUTES = 300; // 5 saat
 
 export class AdminAuthError extends Error {
   constructor(public readonly status: number, message: string) {
