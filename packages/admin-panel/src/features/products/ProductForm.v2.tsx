@@ -187,6 +187,17 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
   const [categories, setCategories] = useState<AdminCategory[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // initialProduct değiştiğinde form'u reload et
+  useEffect(() => {
+    if (initialProduct) {
+      setForm(loadProductToForm(initialProduct));
+      setProductId(initialProduct.productId);
+    } else if (mode === "create") {
+      setForm(createInitialState());
+      setProductId("");
+    }
+  }, [initialProduct, mode]);
+
   useEffect(() => {
     const loadCategories = async () => {
       try {
