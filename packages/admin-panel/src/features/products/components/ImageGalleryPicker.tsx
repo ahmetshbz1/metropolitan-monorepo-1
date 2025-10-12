@@ -10,11 +10,13 @@ import {
   Input,
   Spinner,
 } from "@heroui/react";
-import { Check, Search, Upload, X } from "lucide-react";
+import { Check, Search, Trash2, Upload, X } from "lucide-react";
 
-import { getProductImages, uploadProductImage } from "../api";
+import { getProductImages, uploadProductImage, deleteProductImage } from "../api";
 import type { ProductImageInfo } from "../types";
 import { API_BASE_URL } from "../../../config/env";
+import { useConfirm } from "../../../hooks/useConfirm";
+import { useToast } from "../../../hooks/useToast";
 
 interface ImageGalleryPickerProps {
   isOpen: boolean;
@@ -35,6 +37,9 @@ export const ImageGalleryPicker = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedUrl, setSelectedUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [deletingImage, setDeletingImage] = useState<string | null>(null);
+  const confirm = useConfirm();
+  const { showToast } = useToast();
 
   const loadImages = async () => {
     try {
@@ -98,6 +103,46 @@ export const ImageGalleryPicker = ({
     setSelectedUrl(imageUrl);
     onSelect(imageUrl);
     onClose();
+  };
+
+  const handleDeleteImage = async (imageUrl: string, filename: string, event: React.MouseEvent) => {
+    event.stopPropagation(); // Fotoğraf seçimini engelle
+
+    const confirmed = await confirm({
+      title: "Fotoğrafı Sil",
+      description: `${filename} dosyasını kalıcı olarak silmek istediğinize emin misiniz? Bu fotoğrafı kullanan tüm ürünlerden kaldırılacaktır.`,
+      confirmLabel: "Sil",
+      cancelLabel: "Vazgeç",
+      tone: "danger",
+    });
+
+    if (!confirmed) return;
+
+    try {
+      setDeletingImage(imageUrl);
+      await deleteProductImage(imageUrl);
+      await loadImages();
+
+      // Eğer silinen fotoğraf seçili ise seçimi kaldır
+      if (selectedUrl === imageUrl) {
+        setSelectedUrl(null);
+      }
+
+      showToast({
+        type: "success",
+        title: "Fotoğraf silindi",
+        description: `${filename} başarıyla silindi.`,
+      });
+    } catch (error) {
+      console.error("Fotoğraf silinirken hata:", error);
+      showToast({
+        type: "error",
+        title: "Silme başarısız",
+        description: error instanceof Error ? error.message : "Fotoğraf silinemedi",
+      });
+    } finally {
+      setDeletingImage(null);
+    }
   };
 
   const formatFileSize = (bytes: number): string => {
@@ -171,17 +216,19 @@ export const ImageGalleryPicker = ({
               <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8">
                 {filteredImages.map((image) => {
                   const isSelected = selectedUrl === image.url;
+                  const isDeleting = deletingImage === image.url;
                   return (
                     <button
                       key={image.filename}
                       type="button"
                       onClick={() => setSelectedUrl(image.url)}
                       onDoubleClick={() => handleDoubleClick(image.url)}
+                      disabled={isDeleting}
                       className={`group relative overflow-hidden rounded-lg border-2 transition-all ${
                         isSelected
                           ? "border-primary shadow-md"
                           : "border-slate-200 hover:border-slate-300 dark:border-[#2a2a2a] dark:hover:border-[#3a3a3a]"
-                      }`}
+                      } ${isDeleting ? "opacity-50 cursor-not-allowed" : ""}`}
                     >
                       <div className="aspect-square">
                         <Image
@@ -198,6 +245,21 @@ export const ImageGalleryPicker = ({
                           </div>
                         </div>
                       )}
+                      {isDeleting && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                          <Spinner size="lg" color="danger" />
+                        </div>
+                      )}
+                      {/* Silme butonu - sağ üst köşe */}
+                      <button
+                        type="button"
+                        onClick={(e) => void handleDeleteImage(image.url, image.filename, e)}
+                        disabled={isDeleting}
+                        className="absolute right-1 top-1 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-red-500/90 text-white opacity-0 transition-opacity hover:bg-red-600 group-hover:opacity-100 disabled:cursor-not-allowed"
+                        title="Fotoğrafı kalıcı olarak sil"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-2 opacity-0 transition-opacity group-hover:opacity-100">
                         <p className="truncate text-xs text-white">
                           {image.filename}

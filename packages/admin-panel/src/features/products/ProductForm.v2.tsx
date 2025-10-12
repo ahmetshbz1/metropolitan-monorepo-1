@@ -15,7 +15,7 @@ import {
 } from "@heroui/react";
 import { Images, Save, Upload, X, Loader2 } from "lucide-react";
 
-import { deleteProductImage, uploadProductImage } from "./api";
+import { uploadProductImage } from "./api";
 import type { AdminProductPayload } from "./types";
 import { API_BASE_URL } from "../../config/env";
 import { getCategories } from "../categories/api";
@@ -186,7 +186,6 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [isDeletingImage, setIsDeletingImage] = useState(false);
   const [categories, setCategories] = useState<AdminCategory[]>([]);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -252,20 +251,9 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
     }
   };
 
-  const handleRemoveImage = async () => {
-    if (!form.imageUrl || isDeletingImage) return;
-
-    try {
-      setIsDeletingImage(true);
-      setError(null);
-      await deleteProductImage(form.imageUrl);
-      updateField("imageUrl", "");
-    } catch (error) {
-      console.error("Görsel silinirken hata oluştu:", error);
-      setError(error instanceof Error ? error.message : "Görsel silinemedi");
-    } finally {
-      setIsDeletingImage(false);
-    }
+  const handleRemoveImage = () => {
+    // Sadece formdan kaldır - fiziksel olarak silme
+    updateField("imageUrl", "");
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -466,15 +454,11 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
                 />
                 <button
                   type="button"
-                  onClick={() => void handleRemoveImage()}
-                  disabled={isDeletingImage}
-                  className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={handleRemoveImage}
+                  className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600"
+                  title="Görseli formdan kaldır"
                 >
-                  {isDeletingImage ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <X className="h-4 w-4" />
-                  )}
+                  <X className="h-4 w-4" />
                 </button>
               </div>
             ) : (

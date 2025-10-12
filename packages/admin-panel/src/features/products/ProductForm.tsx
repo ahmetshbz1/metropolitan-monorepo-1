@@ -259,6 +259,7 @@ export const ProductForm = ({ mode, onSubmit, initialProduct }: ProductFormProps
   };
 
   const handleRemoveImage = () => {
+    // Sadece formdan kaldır - fiziksel olarak silme
     updateField("imageUrl", "");
   };
 
