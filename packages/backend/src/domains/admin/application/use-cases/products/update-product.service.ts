@@ -192,7 +192,7 @@ export class AdminUpdateProductService {
         }
       }
 
-      // Fakturownia-first: Önce Fakturownia'yı güncelle, sonra database'e yaz
+      // Fakturownia sync: Sadece tax ve price senkronize edilir (stok lokal yönetilir)
       let finalTax = validateTaxRate(payload.tax);
       let finalStock = payload.stock ?? 0;
       let syncStatus: "synced" | "pending" | "error" = "pending";
@@ -201,21 +201,19 @@ export class AdminUpdateProductService {
       if (existingProduct.fakturowniaProductId) {
         try {
           console.log(
-            `🔄 Fakturownia ÖNCE güncelleniyor (ID: ${existingProduct.fakturowniaProductId})...`
+            `🔄 Fakturownia güncelleniyor (ID: ${existingProduct.fakturowniaProductId})...`
           );
 
           const fakturowniaResponse = await fakturowniaService.updateProduct(
             existingProduct.fakturowniaProductId,
             {
-              stock: finalStock,
               tax: finalTax,
               price: payload.price,
             }
           );
 
-          // Fakturownia'dan dönen değerleri kullan (source of truth)
+          // Fakturownia'dan sadece tax değerini al (price ve stock lokal yönetilir)
           finalTax = validateTaxRate(fakturowniaResponse.tax);
-          finalStock = Math.round(fakturowniaResponse.quantity ?? finalStock);
           syncStatus = "synced";
           lastSyncedAt = new Date();
         } catch (fakturowniaError) {
