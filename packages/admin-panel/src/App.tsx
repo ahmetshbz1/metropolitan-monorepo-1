@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import type { AdminLoginResponse } from "./api/auth";
 import { ADMIN_TOKEN_STORAGE_KEY } from "./config/env";
 import { AdminLayout } from "./components/AdminLayout";
@@ -11,6 +13,18 @@ import { CompanyManager } from "./features/companies/CompanyManager";
 import { AISettings } from "./features/settings/AISettings";
 import { LoginPage } from "./pages/LoginPage";
 import { StockAlertsPanel } from "./features/inventory/StockAlertsPanel";
+
+// React Query client configuration
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 dakika
+      gcTime: 1000 * 60 * 10, // 10 dakika (eski adı: cacheTime)
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 type AdminPage =
   | "dashboard"
@@ -112,8 +126,11 @@ export default function App() {
   }
 
   return (
-    <AdminLayout activeKey={activePage} onLogout={handleLogout} onNavigate={handleNavigate}>
-      {renderPage}
-    </AdminLayout>
+    <QueryClientProvider client={queryClient}>
+      <AdminLayout activeKey={activePage} onLogout={handleLogout} onNavigate={handleNavigate}>
+        {renderPage}
+      </AdminLayout>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }
