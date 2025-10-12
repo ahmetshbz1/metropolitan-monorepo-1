@@ -64,6 +64,17 @@ class FakturowniaService {
     return this.productService.getProduct(productId);
   }
 
+  async updateProduct(
+    productId: number,
+    updates: {
+      stock?: number;
+      tax?: number;
+      price?: number;
+    }
+  ): Promise<FakturowniaProduct> {
+    return this.productService.updateProduct(productId, updates);
+  }
+
   // Connection test
   async testConnection(): Promise<boolean> {
     try {

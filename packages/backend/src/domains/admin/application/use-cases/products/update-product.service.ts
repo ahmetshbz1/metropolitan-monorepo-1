@@ -18,6 +18,7 @@ import {
 } from "./product.utils";
 import { ProductTranslationService } from "../../../../../shared/infrastructure/ai/product-translation.service";
 import { ProductImageService } from "./product-image.service";
+import { fakturowniaService } from "../../../../../shared/infrastructure/external/fakturownia.service";
 
 export class AdminUpdateProductService {
   static async execute(payload: AdminUpdateProductPayload) {
@@ -234,6 +235,31 @@ export class AdminUpdateProductService {
           }))
         );
       });
+
+      // Fakturownia'ya sync et (eğer fakturowniaProductId varsa)
+      if (existingProduct.fakturowniaProductId) {
+        try {
+          console.log(
+            `🔄 Fakturownia'ya sync ediliyor (ID: ${existingProduct.fakturowniaProductId})...`
+          );
+
+          await fakturowniaService.updateProduct(
+            existingProduct.fakturowniaProductId,
+            {
+              stock: payload.stock,
+              tax: payload.tax,
+            }
+          );
+
+          console.log("✅ Fakturownia sync başarılı");
+        } catch (fakturowniaError) {
+          // Fakturownia hatası ürün güncellemesini engellemesin
+          console.error(
+            "⚠️ Fakturownia sync hatası (ürün database'de güncellendi):",
+            fakturowniaError
+          );
+        }
+      }
 
       return {
         success: true,

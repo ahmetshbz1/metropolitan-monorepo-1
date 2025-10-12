@@ -109,4 +109,42 @@ export class FakturowniaProductService {
       );
     }
   }
+
+  /**
+   * Ürün bilgilerini güncelle (stock, tax, vb)
+   */
+  async updateProduct(
+    productId: number,
+    updates: {
+      stock?: number;
+      tax?: number;
+      price?: number;
+    }
+  ): Promise<FakturowniaProduct> {
+    try {
+      console.log(`🔄 Fakturownia: Ürün güncelleniyor (ID: ${productId})...`, updates);
+
+      const response = await this.apiClient.makeRequest<FakturowniaProduct>(
+        `products/${productId}.json`,
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            product: {
+              ...(updates.stock !== undefined && { quantity: updates.stock }),
+              ...(updates.tax !== undefined && { tax: updates.tax }),
+              ...(updates.price !== undefined && { price_net: updates.price }),
+            },
+          }),
+        }
+      );
+
+      console.log(`✅ Fakturownia: Ürün güncellendi (${response.name})`);
+      return response;
+    } catch (error) {
+      console.error("❌ Fakturownia ürün güncelleme hatası:", error);
+      throw new Error(
+        `Fakturownia ürün güncelleme hatası: ${error instanceof Error ? error.message : String(error)}`
+      );
+    }
+  }
 }

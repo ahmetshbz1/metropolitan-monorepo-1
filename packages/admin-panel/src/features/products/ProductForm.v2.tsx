@@ -345,9 +345,15 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
       };
 
       setIsSubmitting(true);
-      console.log("📤 Submit öncesi form.tax:", form.tax);
       await onSubmit(payload, mode === "update" ? productId : undefined);
-      console.log("✅ Submit sonrası form.tax:", form.tax);
+
+      // Update modda form değerlerini payload'dan koru (özellikle tax)
+      if (mode === "update") {
+        if (payload.tax !== undefined && payload.tax !== null) {
+          updateField("tax", payload.tax.toString());
+        }
+      }
+
       setSuccess(
         mode === "create"
           ? form.manualTranslationMode
@@ -357,11 +363,11 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
           ? "Ürün başarıyla güncellendi"
           : "Ürün başarıyla güncellendi ve çeviriler otomatik güncellendi"
       );
-      // Update modda formu resetleme - VAT ve diğer değerler korunsun
+
+      // Create modda formu resetle
       if (mode === "create") {
         resetForm();
       }
-      console.log("🎉 Success mesajı sonrası form.tax:", form.tax);
     } catch (submitError) {
       const message =
         submitError instanceof Error
@@ -688,13 +694,9 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
             <Select
               label="VAT Oranı (%)"
               placeholder="VAT seçin"
-              selectedKeys={(() => {
-                console.log("🔍 VAT Select render - form.tax:", form.tax, "type:", typeof form.tax);
-                return form.tax ? [form.tax] : [];
-              })()}
+              selectedKeys={form.tax ? [form.tax] : []}
               onSelectionChange={(keys) => {
                 const selected = Array.from(keys)[0] as string;
-                console.log("✏️ VAT değişti:", selected);
                 updateField("tax", selected || "");
               }}
               variant="bordered"
