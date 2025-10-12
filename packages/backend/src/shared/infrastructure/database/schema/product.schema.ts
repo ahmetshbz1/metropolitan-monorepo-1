@@ -57,9 +57,10 @@ export const products = pgTable("products", {
   minQuantityIndividual: integer("min_quantity_individual").default(1), // Bireysel min adet
   minQuantityCorporate: integer("min_quantity_corporate").default(1), // Kurumsal min adet
   quantityPerBox: integer("quantity_per_box"), // Karton/koli başına adet
-  tax: decimal("tax", { precision: 5, scale: 2 }).default("23.00"), // VAT oranı (%) - Polonya PTU
-  fakturowniaProductId: bigint("fakturownia_product_id", { mode: "number" }), // Fakturownia'daki ürün ID'si (sync için)
-  fakturowniaTax: decimal("fakturownia_tax", { precision: 5, scale: 2 }), // Fakturownia'daki VAT oranı (sync için)
+  tax: integer("tax").notNull().default(23), // VAT oranı (%) - Polonya PTU: 0, 5, 7, 8, 23
+  fakturowniaProductId: bigint("fakturownia_product_id", { mode: "number" }).unique(), // Fakturownia'daki ürün ID'si (sync için)
+  lastSyncedAt: timestamp("last_synced_at"), // Son Fakturownia sync zamanı
+  syncStatus: text("sync_status").default("pending"), // 'synced', 'pending', 'error'
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
