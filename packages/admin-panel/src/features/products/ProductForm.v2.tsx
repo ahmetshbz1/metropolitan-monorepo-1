@@ -138,7 +138,7 @@ const loadProductToForm = (product: import("./types").AdminProduct): ProductForm
     price: product.price?.toString() || "",
     currency: product.currency,
     stock: product.stock.toString(),
-    tax: product.tax?.toString() || "23",
+    tax: product.tax?.toString() || "",
     netQuantity: product.netQuantity || "",
     expiryDate: product.expiryDate
       ? new Date(product.expiryDate).toISOString().slice(0, 16)
@@ -679,17 +679,18 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
               selectedKeys={form.tax ? [form.tax] : []}
               onSelectionChange={(keys) => {
                 const selected = Array.from(keys)[0] as string;
-                updateField("tax", selected || "23");
+                updateField("tax", selected || "");
               }}
               variant="bordered"
               size="lg"
               description="Polonya PTU oranı"
+              isRequired
             >
               <SelectItem key="0" value="0">0%</SelectItem>
               <SelectItem key="5" value="5">5%</SelectItem>
               <SelectItem key="7" value="7">7%</SelectItem>
               <SelectItem key="8" value="8">8%</SelectItem>
-              <SelectItem key="23" value="23">23% (Varsayılan)</SelectItem>
+              <SelectItem key="23" value="23">23%</SelectItem>
             </Select>
             <Input
               label="Bireysel Fiyat"
