@@ -367,6 +367,42 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
       }),
     }
   )
+  .delete(
+    "/delete-images",
+    async ({ body, set }) => {
+      try {
+        if (!body.imageUrls || body.imageUrls.length === 0) {
+          set.status = 400;
+          return {
+            success: false,
+            message: "En az bir görsel URL'si gerekli",
+          };
+        }
+
+        // Tüm görselleri sırayla sil
+        for (const imageUrl of body.imageUrls) {
+          await ProductImageService.deleteProductImage(imageUrl);
+        }
+
+        return {
+          success: true,
+          message: `${body.imageUrls.length} görsel silindi`,
+        };
+      } catch (error) {
+        set.status = 400;
+        return {
+          success: false,
+          message:
+            error instanceof Error ? error.message : "Görseller silinemedi",
+        };
+      }
+    },
+    {
+      body: t.Object({
+        imageUrls: t.Array(t.String(), { minItems: 1 }),
+      }),
+    }
+  )
   .put(
     "/:id",
     async ({ body, params, set }) => {

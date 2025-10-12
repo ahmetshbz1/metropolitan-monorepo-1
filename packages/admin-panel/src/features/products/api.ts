@@ -34,6 +34,10 @@ export const deleteProductImage = async (imageUrl: string): Promise<void> => {
   await apiClient.delete("/admin/products/delete-image", { data: { imageUrl } });
 };
 
+export const deleteProductImages = async (imageUrls: string[]): Promise<void> => {
+  await apiClient.delete("/admin/products/delete-images", { data: { imageUrls } });
+};
+
 export const getProductImages = async (): Promise<ProductImageInfo[]> => {
   const response = await apiClient.get<{ success: boolean; images: ProductImageInfo[] }>(
     "/admin/products/images"

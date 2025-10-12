@@ -12,7 +12,7 @@ import {
 } from "@heroui/react";
 import { Check, Trash2, Upload, X } from "lucide-react";
 
-import { getProductImages, uploadProductImage, deleteProductImage } from "../api";
+import { getProductImages, uploadProductImage, deleteProductImage, deleteProductImages } from "../api";
 import type { ProductImageInfo } from "../types";
 import { API_BASE_URL } from "../../../config/env";
 import { useConfirm } from "../../../hooks/useConfirm";
@@ -162,9 +162,9 @@ export const ImageGalleryPicker = ({
     try {
       setIsDeletingMultiple(true);
 
-      // Tüm seçili fotoğrafları paralel sil
-      const deletePromises = Array.from(selectedForDelete).map(url => deleteProductImage(url));
-      await Promise.all(deletePromises);
+      // Tek request ile tüm fotoğrafları sil
+      const imageUrls = Array.from(selectedForDelete);
+      await deleteProductImages(imageUrls);
 
       // State'ten silinen görselleri kaldır
       setImages(prev => prev.filter(img => !selectedForDelete.has(img.url)));
