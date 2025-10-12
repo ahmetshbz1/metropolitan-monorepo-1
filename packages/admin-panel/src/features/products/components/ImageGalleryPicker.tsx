@@ -7,10 +7,10 @@ import {
   ModalFooter,
   Button,
   Image,
-  Input,
   Spinner,
+  Checkbox,
 } from "@heroui/react";
-import { Check, Search, Trash2, Upload, X } from "lucide-react";
+import { Check, Trash2, Upload, X } from "lucide-react";
 
 import { getProductImages, uploadProductImage, deleteProductImage } from "../api";
 import type { ProductImageInfo } from "../types";
@@ -32,12 +32,12 @@ export const ImageGalleryPicker = ({
   currentImageUrl,
 }: ImageGalleryPickerProps) => {
   const [images, setImages] = useState<ProductImageInfo[]>([]);
-  const [filteredImages, setFilteredImages] = useState<ProductImageInfo[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [selectedUrl, setSelectedUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [deletingImage, setDeletingImage] = useState<string | null>(null);
+  const [selectedForDelete, setSelectedForDelete] = useState<Set<string>>(new Set());
+  const [isDeletingMultiple, setIsDeletingMultiple] = useState(false);
   const confirm = useConfirm();
   const { showToast } = useToast();
 
@@ -46,7 +46,6 @@ export const ImageGalleryPicker = ({
       setIsLoading(true);
       const fetchedImages = await getProductImages();
       setImages(fetchedImages);
-      setFilteredImages(fetchedImages);
     } catch (error) {
       console.error("Görseller yüklenemedi", error);
     } finally {
@@ -58,7 +57,7 @@ export const ImageGalleryPicker = ({
     if (isOpen) {
       loadImages();
       setSelectedUrl(currentImageUrl || null);
-      setSearchQuery("");
+      setSelectedForDelete(new Set());
     }
   }, [isOpen, currentImageUrl]);
 
@@ -75,19 +74,6 @@ export const ImageGalleryPicker = ({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, selectedUrl]);
-
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredImages(images);
-      return;
-    }
-
-    const query = searchQuery.toLowerCase();
-    const filtered = images.filter((img) =>
-      img.filename.toLowerCase().includes(query)
-    );
-    setFilteredImages(filtered);
-  }, [searchQuery, images]);
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -138,6 +124,75 @@ export const ImageGalleryPicker = ({
     onClose();
   };
 
+  const toggleSelectForDelete = (imageUrl: string) => {
+    setSelectedForDelete(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(imageUrl)) {
+        newSet.delete(imageUrl);
+      } else {
+        newSet.add(imageUrl);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedForDelete.size === images.length) {
+      // Tümünü kaldır
+      setSelectedForDelete(new Set());
+    } else {
+      // Tümünü seç
+      setSelectedForDelete(new Set(images.map(img => img.url)));
+    }
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedForDelete.size === 0) return;
+
+    const confirmed = await confirm({
+      title: "Fotoğrafları Sil",
+      description: `${selectedForDelete.size} fotoğrafı kalıcı olarak silmek istediğinize emin misiniz? Bu fotoğrafları kullanan tüm ürünlerden kaldırılacaktır.`,
+      confirmLabel: "Sil",
+      cancelLabel: "Vazgeç",
+      tone: "danger",
+    });
+
+    if (!confirmed) return;
+
+    try {
+      setIsDeletingMultiple(true);
+
+      // Tüm seçili fotoğrafları paralel sil
+      const deletePromises = Array.from(selectedForDelete).map(url => deleteProductImage(url));
+      await Promise.all(deletePromises);
+
+      // State'ten silinen görselleri kaldır
+      setImages(prev => prev.filter(img => !selectedForDelete.has(img.url)));
+
+      // Eğer silinen fotoğraflar arasında seçili olan varsa seçimi kaldır
+      if (selectedUrl && selectedForDelete.has(selectedUrl)) {
+        setSelectedUrl(null);
+      }
+
+      showToast({
+        type: "success",
+        title: "Fotoğraflar silindi",
+        description: `${selectedForDelete.size} fotoğraf başarıyla silindi.`,
+      });
+
+      setSelectedForDelete(new Set());
+    } catch (error) {
+      console.error("Fotoğraflar silinirken hata:", error);
+      showToast({
+        type: "error",
+        title: "Silme başarısız",
+        description: error instanceof Error ? error.message : "Fotoğraflar silinemedi",
+      });
+    } finally {
+      setIsDeletingMultiple(false);
+    }
+  };
+
   const handleDeleteImage = async (imageUrl: string, filename: string, event: React.MouseEvent) => {
     event.stopPropagation(); // Fotoğraf seçimini engelle
 
@@ -157,7 +212,6 @@ export const ImageGalleryPicker = ({
 
       // State'ten silinen görseli kaldır (API'ye yeniden istek atmadan)
       setImages(prev => prev.filter(img => img.url !== imageUrl));
-      setFilteredImages(prev => prev.filter(img => img.url !== imageUrl));
 
       // Eğer silinen fotoğraf seçili ise seçimi kaldır
       if (selectedUrl === imageUrl) {
@@ -228,32 +282,48 @@ export const ImageGalleryPicker = ({
               </span>
             </div>
 
-            {/* Search */}
-            <Input
-              placeholder="Fotoğraf ara..."
-              value={searchQuery}
-              onValueChange={setSearchQuery}
-              startContent={<Search className="h-4 w-4 text-slate-400" />}
-              variant="bordered"
-              size="sm"
-            />
+            {/* Bulk Actions */}
+            {images.length > 0 && (
+              <div className="flex justify-end items-center gap-2">
+                <Button
+                  variant="flat"
+                  onPress={toggleSelectAll}
+                  size="sm"
+                >
+                  {selectedForDelete.size === images.length ? "Seçimi Kaldır" : "Tümünü Seç"}
+                </Button>
+                {selectedForDelete.size > 0 && (
+                  <Button
+                    color="danger"
+                    variant="flat"
+                    onPress={handleDeleteSelected}
+                    isLoading={isDeletingMultiple}
+                    startContent={!isDeletingMultiple && <Trash2 className="h-4 w-4" />}
+                    size="sm"
+                  >
+                    Seçilenleri Sil ({selectedForDelete.size})
+                  </Button>
+                )}
+              </div>
+            )}
 
             {/* Gallery Grid */}
             {isLoading ? (
               <div className="flex items-center justify-center py-12">
                 <Spinner size="lg" />
               </div>
-            ) : filteredImages.length === 0 ? (
+            ) : images.length === 0 ? (
               <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
                 <p className="text-sm text-slate-500 dark:text-slate-400">
-                  {searchQuery ? "Arama sonucu bulunamadı" : "Henüz fotoğraf yüklenmemiş"}
+                  Henüz fotoğraf yüklenmemiş
                 </p>
               </div>
             ) : (
               <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8">
-                {filteredImages.map((image) => {
+                {images.map((image) => {
                   const isSelected = selectedUrl === image.url;
-                  const isDeleting = deletingImage === image.url;
+                  const isDeleting = deletingImage === image.url || isDeletingMultiple;
+                  const isChecked = selectedForDelete.has(image.url);
                   return (
                     <button
                       key={image.filename}
@@ -287,6 +357,19 @@ export const ImageGalleryPicker = ({
                           <Spinner size="lg" color="danger" />
                         </div>
                       )}
+                      {/* Checkbox - sol üst köşe */}
+                      <div
+                        className={`absolute left-2 top-2 z-10 transition-opacity ${isChecked ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Checkbox
+                          isSelected={isChecked}
+                          onValueChange={() => toggleSelectForDelete(image.url)}
+                          size="md"
+                          color="danger"
+                          isDisabled={isDeleting}
+                        />
+                      </div>
                       {/* Silme butonu - sağ üst köşe */}
                       <button
                         type="button"
