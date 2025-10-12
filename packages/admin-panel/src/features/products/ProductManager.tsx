@@ -55,9 +55,9 @@ export const ProductManager = () => {
       throw new Error("Ürün ID zorunludur");
     }
     await updateProduct(productId, payload);
-    setIsDrawerOpen(false);
-    setEditingProduct(null);
     setRefreshTrigger((prev) => prev + 1);
+    // editingProduct'ı drawer kapanana kadar tutmaya devam et
+    setIsDrawerOpen(false);
   };
 
   const handleDelete = async (productId: string, product?: AdminProduct) => {
