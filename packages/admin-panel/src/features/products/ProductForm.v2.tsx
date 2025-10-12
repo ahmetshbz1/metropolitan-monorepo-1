@@ -129,6 +129,12 @@ const normalizeDate = (value: string): string | undefined => {
 };
 
 const loadProductToForm = (product: import("./types").AdminProduct): ProductFormState => {
+  // Parse tax to integer string (5.00 -> 5) to match Select keys
+  const parseTax = (tax: number | null | undefined): string => {
+    if (tax === null || tax === undefined) return "";
+    return Math.round(Number(tax)).toString();
+  };
+
   return {
     productCode: product.productCode,
     categoryId: product.categoryId || "",
@@ -138,7 +144,7 @@ const loadProductToForm = (product: import("./types").AdminProduct): ProductForm
     price: product.price?.toString() || "",
     currency: product.currency,
     stock: product.stock.toString(),
-    tax: product.tax?.toString() || "",
+    tax: parseTax(product.tax),
     netQuantity: product.netQuantity || "",
     expiryDate: product.expiryDate
       ? new Date(product.expiryDate).toISOString().slice(0, 16)
