@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+
 import { GetAISettingsService } from "./ai-settings/get-ai-settings.service";
 
 interface TranslationRequest {
@@ -20,7 +21,9 @@ export class TranslateNotificationService {
       const aiSettings = await GetAISettingsService.execute();
 
       if (!aiSettings) {
-        throw new Error("AI ayarları bulunamadı. Lütfen AI ayarlarını yapılandırın.");
+        throw new Error(
+          "AI ayarları bulunamadı. Lütfen AI ayarlarını yapılandırın."
+        );
       }
 
       if (aiSettings.provider !== "gemini") {
@@ -49,7 +52,9 @@ Turkish text: ${request.text}`;
     } catch (error) {
       console.error("Translation error:", error);
       throw new Error(
-        `Çeviri başarısız: ${error instanceof Error ? error.message : "Bilinmeyen hata"}`
+        `Çeviri başarısız: ${
+          error instanceof Error ? error.message : "Bilinmeyen hata"
+        }`
       );
     }
   }
