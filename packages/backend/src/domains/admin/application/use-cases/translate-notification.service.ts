@@ -1,6 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+import { GetAISettingsService } from "./ai-settings/get-ai-settings.service";
 
 interface TranslationRequest {
   text: string;
@@ -17,7 +16,19 @@ export class TranslateNotificationService {
     request: TranslationRequest
   ): Promise<TranslationResult> {
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+      // AI Settings'den API key al
+      const aiSettings = await GetAISettingsService.execute();
+
+      if (!aiSettings) {
+        throw new Error("AI ayarları bulunamadı. Lütfen AI ayarlarını yapılandırın.");
+      }
+
+      if (aiSettings.provider !== "gemini") {
+        throw new Error("Sadece Gemini provider desteklenmektedir");
+      }
+
+      const genAI = new GoogleGenerativeAI(aiSettings.apiKey);
+      const model = genAI.getGenerativeModel({ model: aiSettings.model });
 
       const targetLangName =
         request.targetLanguage === "en" ? "English" : "Polish";
