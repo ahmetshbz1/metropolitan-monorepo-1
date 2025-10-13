@@ -343,7 +343,7 @@ export const PushNotificationsPage = () => {
           </div>
 
           <Tabs aria-label="Diller" variant="bordered" fullWidth>
-            <Tab key="tr" title="🇹🇷 Türkçe">
+            <Tab key="tr" title="Türkçe">
               <div className="flex flex-col gap-4 pt-4">
                 <Input
                   label="Başlık"
@@ -370,7 +370,7 @@ export const PushNotificationsPage = () => {
                 />
               </div>
             </Tab>
-            <Tab key="en" title="🇬🇧 English">
+            <Tab key="en" title="English">
               <div className="flex flex-col gap-4 pt-4">
                 <Input
                   label="Title"
@@ -399,7 +399,7 @@ export const PushNotificationsPage = () => {
                 />
               </div>
             </Tab>
-            <Tab key="pl" title="🇵🇱 Polski">
+            <Tab key="pl" title="Polski">
               <div className="flex flex-col gap-4 pt-4">
                 <Input
                   label="Tytuł"
