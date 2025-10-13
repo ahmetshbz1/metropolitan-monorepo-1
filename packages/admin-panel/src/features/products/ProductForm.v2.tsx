@@ -451,6 +451,10 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
                   width={200}
                   height={200}
                   className="rounded-lg object-cover"
+                  onError={() => {
+                    // Görsel yüklenemezse (404, silinmiş vs) otomatik temizle
+                    updateField("imageUrl", "");
+                  }}
                 />
                 <button
                   type="button"
