@@ -10,12 +10,20 @@ import {
   Tab,
   Textarea,
   Chip,
+  Checkbox,
+  Spacer,
 } from "@heroui/react";
-import { Bell, Send, Users, Loader2 } from "lucide-react";
+import { Bell, Send, Users, Loader2, Sparkles, X } from "lucide-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { sendPushToUser, sendBatchPush, sendBroadcastPush } from "./api";
+import {
+  sendPushToUser,
+  sendBatchPush,
+  sendBroadcastPush,
+  translateText,
+} from "./api";
 import type { PushNotificationPayload } from "./api";
 import { getUsers } from "../../api/users";
+import type { User } from "../../api/users";
 
 type SendMode = "single" | "batch" | "broadcast";
 
@@ -25,6 +33,7 @@ export const PushNotificationsPage = () => {
   const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(
     new Set()
   );
+  const [manualTranslation, setManualTranslation] = useState(false);
 
   const [translations, setTranslations] = useState({
     tr: { title: "", body: "" },
@@ -35,13 +44,16 @@ export const PushNotificationsPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // Kullanıcıları yükle
   const { data: usersResponse } = useQuery({
     queryKey: ["users"],
     queryFn: () => getUsers({ limit: 1000 }),
   });
 
   const usersData = usersResponse?.users || [];
+
+  const selectedUsers = usersData.filter((user) =>
+    selectedUserIds.has(user.id)
+  );
 
   const updateTranslation = (
     lang: "tr" | "en" | "pl",
@@ -57,21 +69,67 @@ export const PushNotificationsPage = () => {
     }));
   };
 
+  const translateMutation = useMutation({
+    mutationFn: async () => {
+      if (!translations.tr.title || !translations.tr.body) {
+        throw new Error("Önce Türkçe başlık ve içeriği doldurun");
+      }
+
+      const titleResult = await translateText(translations.tr.title);
+      const bodyResult = await translateText(translations.tr.body);
+
+      if (!titleResult.data || !bodyResult.data) {
+        throw new Error("Çeviri başarısız");
+      }
+
+      return {
+        title: titleResult.data,
+        body: bodyResult.data,
+      };
+    },
+    onSuccess: (data) => {
+      setTranslations((prev) => ({
+        ...prev,
+        en: {
+          title: data.title.en,
+          body: data.body.en,
+        },
+        pl: {
+          title: data.title.pl,
+          body: data.body.pl,
+        },
+      }));
+      setSuccess("Çeviriler başarıyla oluşturuldu!");
+      setTimeout(() => setSuccess(null), 3000);
+    },
+    onError: (err) => {
+      setError(err instanceof Error ? err.message : "Çeviri başarısız");
+    },
+  });
+
   const sendMutation = useMutation({
     mutationFn: async () => {
       setError(null);
       setSuccess(null);
 
-      // Validasyon
+      if (!translations.tr.title || !translations.tr.body) {
+        throw new Error("Türkçe başlık ve içerik zorunludur");
+      }
+
       if (
-        !translations.tr.title ||
-        !translations.tr.body ||
-        !translations.en.title ||
-        !translations.en.body ||
-        !translations.pl.title ||
-        !translations.pl.body
+        manualTranslation &&
+        (!translations.en.title ||
+          !translations.en.body ||
+          !translations.pl.title ||
+          !translations.pl.body)
       ) {
-        throw new Error("Tüm dillerde başlık ve içerik zorunludur");
+        throw new Error("Manuel çeviri modunda tüm diller zorunludur");
+      }
+
+      if (!manualTranslation && (!translations.en.title || !translations.en.body)) {
+        throw new Error(
+          "Lütfen önce 'AI Çeviri Yap' butonuna basın veya manuel çeviri moduna geçin"
+        );
       }
 
       const payload: PushNotificationPayload = {
@@ -102,7 +160,6 @@ export const PushNotificationsPage = () => {
     },
     onSuccess: (data) => {
       setSuccess(data.message);
-      // Formu temizle
       setTranslations({
         tr: { title: "", body: "" },
         en: { title: "", body: "" },
@@ -115,6 +172,14 @@ export const PushNotificationsPage = () => {
       setError(err instanceof Error ? err.message : "Gönderim başarısız");
     },
   });
+
+  const removeSelectedUser = (userId: string) => {
+    setSelectedUserIds((prev) => {
+      const next = new Set(prev);
+      next.delete(userId);
+      return next;
+    });
+  };
 
   return (
     <div className="flex flex-col gap-6 p-6">
@@ -186,23 +251,74 @@ export const PushNotificationsPage = () => {
             )}
 
             {mode === "batch" && (
-              <Select
-                label="Kullanıcılar Seçin"
-                placeholder="Kullanıcıları seçin"
-                selectionMode="multiple"
-                selectedKeys={selectedUserIds}
-                onSelectionChange={(keys) =>
-                  setSelectedUserIds(keys as Set<string>)
+              <>
+                <Select
+                  label="Kullanıcılar Seçin"
+                  placeholder="Kullanıcıları seçin"
+                  selectionMode="multiple"
+                  selectedKeys={selectedUserIds}
+                  onSelectionChange={(keys) =>
+                    setSelectedUserIds(keys as Set<string>)
+                  }
+                  variant="bordered"
+                  size="lg"
+                >
+                  {usersData.map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.phoneNumber} - {user.firstName || "İsimsiz"}
+                    </SelectItem>
+                  ))}
+                </Select>
+
+                {selectedUsers.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedUsers.map((user) => (
+                      <Chip
+                        key={user.id}
+                        onClose={() => removeSelectedUser(user.id)}
+                        variant="flat"
+                        color="primary"
+                      >
+                        {user.firstName || user.phoneNumber}
+                      </Chip>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Checkbox
+              isSelected={manualTranslation}
+              onValueChange={setManualTranslation}
+            >
+              <span className="text-sm text-slate-700 dark:text-slate-300">
+                Manuel Çeviri Modu
+              </span>
+            </Checkbox>
+
+            {!manualTranslation && (
+              <Button
+                color="secondary"
+                variant="flat"
+                size="sm"
+                startContent={
+                  translateMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-4 w-4" />
+                  )
                 }
-                variant="bordered"
-                size="lg"
+                onPress={() => translateMutation.mutate()}
+                isDisabled={
+                  translateMutation.isPending ||
+                  !translations.tr.title ||
+                  !translations.tr.body
+                }
               >
-                {usersData.map((user) => (
-                  <SelectItem key={user.id} value={user.id}>
-                    {user.phoneNumber} - {user.firstName || "İsimsiz"}
-                  </SelectItem>
-                ))}
-              </Select>
+                {translateMutation.isPending ? "Çevriliyor..." : "AI Çeviri Yap"}
+              </Button>
             )}
           </div>
 
@@ -245,7 +361,8 @@ export const PushNotificationsPage = () => {
                   }
                   variant="bordered"
                   size="lg"
-                  isRequired
+                  isRequired={manualTranslation}
+                  isDisabled={!manualTranslation && translateMutation.isPending}
                 />
                 <Textarea
                   label="Body"
@@ -257,7 +374,8 @@ export const PushNotificationsPage = () => {
                   variant="bordered"
                   minRows={4}
                   size="lg"
-                  isRequired
+                  isRequired={manualTranslation}
+                  isDisabled={!manualTranslation && translateMutation.isPending}
                 />
               </div>
             </Tab>
@@ -272,7 +390,8 @@ export const PushNotificationsPage = () => {
                   }
                   variant="bordered"
                   size="lg"
-                  isRequired
+                  isRequired={manualTranslation}
+                  isDisabled={!manualTranslation && translateMutation.isPending}
                 />
                 <Textarea
                   label="Treść"
@@ -284,7 +403,8 @@ export const PushNotificationsPage = () => {
                   variant="bordered"
                   minRows={4}
                   size="lg"
-                  isRequired
+                  isRequired={manualTranslation}
+                  isDisabled={!manualTranslation && translateMutation.isPending}
                 />
               </div>
             </Tab>
@@ -332,7 +452,7 @@ export const PushNotificationsPage = () => {
 
       <Card className="dark:bg-[#1a1a1a]">
         <CardBody>
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3">
+          <h3 className="mb-3 text-sm font-semibold text-slate-900 dark:text-white">
             Önizleme (Türkçe)
           </h3>
           <div className="rounded-lg bg-slate-100 p-4 dark:bg-slate-800">

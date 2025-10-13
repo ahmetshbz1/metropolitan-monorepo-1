@@ -56,3 +56,20 @@ export const sendBroadcastPush = async (
   );
   return response.data;
 };
+
+export interface TranslateResponse {
+  success: boolean;
+  data?: {
+    en: string;
+    pl: string;
+  };
+  message?: string;
+}
+
+export const translateText = async (text: string): Promise<TranslateResponse> => {
+  const response = await apiClient.post<TranslateResponse>(
+    "/admin/push/translate",
+    { text }
+  );
+  return response.data;
+};

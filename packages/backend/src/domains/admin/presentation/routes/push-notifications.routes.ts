@@ -1,6 +1,7 @@
 import { t } from "elysia";
 
 import { PushNotificationService } from "../../../../shared/application/services/push-notification.service";
+import { TranslateNotificationService } from "../../application/use-cases/translate-notification.service";
 
 import { createAdminRouter } from "./admin-router.factory";
 
@@ -168,5 +169,34 @@ export const adminPushNotificationsRoutes = createAdminRouter("/admin/push")
     },
     {
       body: pushNotificationSchema,
+    }
+  )
+  // Çeviri yap
+  .post(
+    "/translate",
+    async ({ body, set }) => {
+      try {
+        const result = await TranslateNotificationService.translateBoth(
+          body.text
+        );
+
+        return {
+          success: true,
+          data: result,
+        };
+      } catch (error) {
+        console.error("Translation error:", error);
+        set.status = 500;
+        return {
+          success: false,
+          message:
+            error instanceof Error ? error.message : "Çeviri başarısız",
+        };
+      }
+    },
+    {
+      body: t.Object({
+        text: t.String(),
+      }),
     }
   );
