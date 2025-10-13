@@ -459,10 +459,10 @@ export const ProductFormV2 = ({ mode, onSubmit, initialProduct }: ProductFormPro
                 <button
                   type="button"
                   onClick={handleRemoveImage}
-                  className="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600"
+                  className="absolute -right-2 -top-2 z-20 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-red-500 text-white shadow-lg transition-all hover:scale-110 hover:bg-red-600 hover:shadow-xl active:scale-95"
                   title="Görseli formdan kaldır"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-4 w-4 pointer-events-none" />
                 </button>
               </div>
             ) : (

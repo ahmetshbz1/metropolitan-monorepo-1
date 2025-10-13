@@ -2,24 +2,28 @@
   "folders": [
     {
       "name": "Workspace Root",
-      "path": ".",
+      "path": "."
     },
     {
       "name": "Mobile App",
-      "path": "./packages/mobile-app",
+      "path": "./packages/mobile-app"
     },
     {
       "name": "Web App",
-      "path": "./packages/web-app",
+      "path": "./packages/web-app"
     },
     {
       "name": "Backend",
-      "path": "./packages/backend",
+      "path": "./packages/backend"
     },
     {
       "name": "Shared",
-      "path": "./packages/shared",
+      "path": "./packages/shared"
     },
+    {
+      "name": "Admin Panel",
+      "path": "./packages/admin-panel"
+    }
   ],
   "settings": {
     "typescript.preferences.includePackageJsonAutoImports": "on",
@@ -27,7 +31,7 @@
     "typescript.updateImportsOnFileMove.enabled": "always",
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": "explicit",
-      "source.organizeImports": "explicit",
+      "source.organizeImports": "explicit"
     },
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -35,7 +39,7 @@
       "packages/mobile-app",
       "packages/web-app",
       "packages/backend",
-      "packages/shared",
+      "packages/shared"
     ],
     "search.exclude": {
       "**/node_modules": true,
@@ -45,24 +49,24 @@
       "**/.git": true,
       "**/.DS_Store": true,
       "**/bun.lockb": true,
-      "**/package-lock.json": true,
+      "**/package-lock.json": true
     },
     "files.watcherExclude": {
       "**/node_modules/**": true,
       "**/.git/**": true,
       "**/dist/**": true,
       "**/build/**": true,
-      "**/.expo/**": true,
+      "**/.expo/**": true
     },
     "typescript.preferences.importModuleSpecifier": "relative",
     "javascript.preferences.importModuleSpecifier": "relative",
     "emmet.includeLanguages": {
       "typescript": "typescriptreact",
-      "javascript": "javascriptreact",
+      "javascript": "javascriptreact"
     },
     "files.associations": {
       "*.tsx": "typescriptreact",
-      "*.ts": "typescript",
+      "*.ts": "typescript"
     },
     "files.exclude": {
       "**/.git": true,
@@ -70,8 +74,8 @@
       "**/.hg": true,
       "**/.DS_Store": true,
       "**/Thumbs.db": true,
-      ".yoyo": true,
-    },
+      ".yoyo": true
+    }
   },
   "extensions": {
     "recommendations": [
@@ -84,8 +88,8 @@
       "ms-vscode.vscode-react-native",
       "formulahendry.auto-rename-tag",
       "christian-kohler.path-intellisense",
-      "streetsidesoftware.code-spell-checker",
-    ],
+      "streetsidesoftware.code-spell-checker"
+    ]
   },
   "tasks": {
     "version": "2.0.0",
@@ -99,8 +103,8 @@
           "echo": true,
           "reveal": "always",
           "focus": false,
-          "panel": "shared",
-        },
+          "panel": "shared"
+        }
       },
       {
         "label": "Start Development (All)",
@@ -111,8 +115,8 @@
           "echo": true,
           "reveal": "always",
           "focus": false,
-          "panel": "shared",
-        },
+          "panel": "shared"
+        }
       },
       {
         "label": "Start Mobile App",
@@ -123,8 +127,8 @@
           "echo": true,
           "reveal": "always",
           "focus": false,
-          "panel": "shared",
-        },
+          "panel": "shared"
+        }
       },
       {
         "label": "Start Backend",
@@ -135,9 +139,9 @@
           "echo": true,
           "reveal": "always",
           "focus": false,
-          "panel": "shared",
-        },
-      },
-    ],
-  },
+          "panel": "shared"
+        }
+      }
+    ]
+  }
 }
