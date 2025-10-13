@@ -231,23 +231,43 @@ export const PushNotificationsPage = () => {
             </div>
 
             {mode === "single" && (
-              <Select
-                label="Kullanıcı Seçin"
-                placeholder="Kullanıcı seçin"
-                selectedKeys={selectedUserId ? [selectedUserId] : []}
-                onSelectionChange={(keys) => {
-                  const selected = Array.from(keys)[0] as string;
-                  setSelectedUserId(selected || "");
-                }}
-                variant="bordered"
-                size="lg"
-              >
-                {usersData.map((user) => (
-                  <SelectItem key={user.id} value={user.id}>
-                    {user.phoneNumber} - {user.firstName || "İsimsiz"}
-                  </SelectItem>
-                ))}
-              </Select>
+              <>
+                <Select
+                  label="Kullanıcı Seçin"
+                  placeholder="Kullanıcı seçin"
+                  selectedKeys={selectedUserId ? [selectedUserId] : []}
+                  onSelectionChange={(keys) => {
+                    const selected = Array.from(keys)[0] as string;
+                    setSelectedUserId(selected || "");
+                  }}
+                  variant="bordered"
+                  size="lg"
+                >
+                  {usersData.map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.phoneNumber} - {user.firstName || "İsimsiz"}
+                    </SelectItem>
+                  ))}
+                </Select>
+
+                {selectedUserId && (
+                  <div className="flex flex-wrap gap-2">
+                    {(() => {
+                      const user = usersData.find((u) => u.id === selectedUserId);
+                      return user ? (
+                        <Chip
+                          key={user.id}
+                          onClose={() => setSelectedUserId("")}
+                          variant="flat"
+                          color="primary"
+                        >
+                          {user.firstName || user.phoneNumber}
+                        </Chip>
+                      ) : null;
+                    })()}
+                  </div>
+                )}
+              </>
             )}
 
             {mode === "batch" && (
