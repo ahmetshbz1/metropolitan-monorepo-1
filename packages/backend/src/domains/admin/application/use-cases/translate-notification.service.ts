@@ -1,4 +1,4 @@
-import { GeminiTranslationService } from "../../../../shared/infrastructure/ai/gemini.service";
+import { TranslationProviderFactory } from "../../../../shared/infrastructure/ai/translation-provider.factory";
 
 interface TranslationResult {
   en: string;
@@ -8,14 +8,16 @@ interface TranslationResult {
 export class TranslateNotificationService {
   static async translateBoth(turkishText: string): Promise<TranslationResult> {
     try {
+      const provider = await TranslationProviderFactory.getProvider();
+
       const [enTranslation, plTranslation] = await Promise.all([
-        GeminiTranslationService.translateText({
+        provider.translateText({
           text: turkishText,
           fromLanguage: "Turkish",
           toLanguage: "English",
           context: "push notification text",
         }),
-        GeminiTranslationService.translateText({
+        provider.translateText({
           text: turkishText,
           fromLanguage: "Turkish",
           toLanguage: "Polish",
