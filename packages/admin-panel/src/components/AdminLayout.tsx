@@ -30,6 +30,7 @@ import {
   Layers,
   Building2,
   AlertTriangle,
+  Bell,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
@@ -89,6 +90,12 @@ const NAV_ITEMS: Array<{
     label: "Kullanıcılar",
     description: "Müşteri & admin",
     icon: Users,
+  },
+  {
+    key: "notifications",
+    label: "Push Bildirimleri",
+    description: "Mobil bildirimler",
+    icon: Bell,
   },
   {
     key: "settings",

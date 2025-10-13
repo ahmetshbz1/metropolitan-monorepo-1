@@ -15,6 +15,7 @@ import { CompanyManager } from "./features/companies/CompanyManager";
 import { AISettings } from "./features/settings/AISettings";
 import { LoginPage } from "./pages/LoginPage";
 import { StockAlertsPanel } from "./features/inventory/StockAlertsPanel";
+import { PushNotificationsPage } from "./features/push-notifications/PushNotificationsPage";
 
 // React Query client configuration
 const queryClient = new QueryClient({
@@ -36,6 +37,7 @@ type AdminPage =
   | "orders"
   | "companies"
   | "users"
+  | "notifications"
   | "settings";
 
 const storeToken = (token: string) => {
@@ -54,6 +56,7 @@ const isAdminPage = (value: string | null | undefined): value is AdminPage =>
   value === "orders" ||
   value === "companies" ||
   value === "users" ||
+  value === "notifications" ||
   value === "settings";
 
 const getInitialActivePage = (): AdminPage => {
@@ -135,6 +138,8 @@ export default function App() {
         return <CompanyManager />;
       case "users":
         return <UserManager />;
+      case "notifications":
+        return <PushNotificationsPage />;
       case "settings":
         return <AISettings />;
       default:

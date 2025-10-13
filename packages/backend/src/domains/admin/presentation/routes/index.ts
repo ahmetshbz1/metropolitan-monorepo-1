@@ -7,6 +7,7 @@ import { adminCompaniesRoutes } from "./companies.routes";
 import { adminDashboardRoutes } from "./dashboard.routes";
 import { adminOrdersRoutes } from "./orders.routes";
 import { adminProductsRoutes } from "./products.routes";
+import { adminPushNotificationsRoutes } from "./push-notifications.routes";
 import { adminUsersRoutes } from "./users.routes";
 
 export const adminRoutes = new Elysia()
@@ -17,4 +18,5 @@ export const adminRoutes = new Elysia()
   .use(adminDashboardRoutes)
   .use(adminOrdersRoutes)
   .use(adminProductsRoutes)
+  .use(adminPushNotificationsRoutes)
   .use(adminUsersRoutes);
