@@ -67,11 +67,7 @@ export class TranslationProviderFactory {
         return new OpenAITranslationService(apiKey, model);
       case "gemini":
       default:
-        return {
-          translateText: (params) => GeminiTranslationService.translateText(params),
-          translateBatch: (params) => GeminiTranslationService.translateBatch(params),
-          translateObject: (obj, from, to) => GeminiTranslationService.translateObject(obj, from, to),
-        };
+        return new GeminiTranslationService(apiKey, model);
     }
   }
 

@@ -1,10 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const GEMINI_API_KEY = "AIzaSyBfC4-CKPrrgNrvmIiebBjZLhkuIFIsR0Q";
-
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
 interface TranslationRequest {
   text: string;
   fromLanguage: string;
@@ -20,7 +15,15 @@ interface BatchTranslationRequest {
 }
 
 export class GeminiTranslationService {
-  static async translateText({
+  private genAI: GoogleGenerativeAI;
+  private model: any;
+
+  constructor(apiKey: string, modelName: string = "gemini-2.0-flash") {
+    this.genAI = new GoogleGenerativeAI(apiKey);
+    this.model = this.genAI.getGenerativeModel({ model: modelName });
+  }
+
+  async translateText({
     text,
     fromLanguage,
     toLanguage,
@@ -50,7 +53,7 @@ Return ONLY the translated text in ${toLanguage}.
     const prompt = `${contextInstruction}${culturalRules}Translate the following text from ${fromLanguage} to ${toLanguage}. Return ONLY the translated text, no explanations or extra text.\n\nText to translate:\n${text}`;
 
     try {
-      const result = await model.generateContent(prompt);
+      const result = await this.model.generateContent(prompt);
       const translatedText = result.response.text().trim();
       return translatedText;
     } catch (error) {
@@ -63,7 +66,7 @@ Return ONLY the translated text in ${toLanguage}.
     }
   }
 
-  static async translateBatch({
+  async translateBatch({
     texts,
     fromLanguage,
     toLanguage,
@@ -97,7 +100,7 @@ Return ONLY the translated text in ${toLanguage}.
     const prompt = `${contextInstruction}${culturalRules}Translate the following texts from ${fromLanguage} to ${toLanguage}. Return ONLY the translations in the same numbered format, no explanations.\n\n${numberedTexts}`;
 
     try {
-      const result = await model.generateContent(prompt);
+      const result = await this.model.generateContent(prompt);
       const responseText = result.response.text().trim();
 
       const translations = responseText
@@ -124,7 +127,7 @@ Return ONLY the translated text in ${toLanguage}.
     }
   }
 
-  static async translateObject(
+  async translateObject(
     obj: Record<string, unknown>,
     fromLanguage: string,
     toLanguage: string
