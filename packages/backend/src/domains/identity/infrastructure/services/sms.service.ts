@@ -3,6 +3,8 @@
 //  Twilio SMS service with custom OTP generation and multi-language support
 
 import twilio from "twilio";
+
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { formatSmsMessage, getLanguageFromHeader, SmsAction } from "../templates/sms-templates";
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID?.trim();
@@ -20,17 +22,17 @@ const TEST_OTP_CODE = process.env.TEST_OTP_CODE || '555555';
 // Initialize Twilio client only if credentials are available
 const client = accountSid && authToken ? twilio(accountSid, authToken) : null;
 
-console.log("=== Twilio Configuration ===");
-console.log(`Environment: ${IS_DEVELOPMENT ? 'DEVELOPMENT' : 'PRODUCTION'}`);
-console.log(`Real SMS Enabled: ${ENABLE_REAL_SMS}`);
-console.log(`Account SID: ${accountSid ? accountSid.substring(0, 10) + '...' : 'NOT SET'}`);
-console.log(`Auth Token: ${authToken ? 'SET (hidden)' : 'NOT SET'}`);
-console.log(`Phone Number: ${twilioPhoneNumber}`);
-console.log(`Client Initialized: ${client ? 'YES' : 'NO'}`);
-console.log("========================");
+logger.info({
+  environment: IS_DEVELOPMENT ? 'DEVELOPMENT' : 'PRODUCTION',
+  realSmsEnabled: ENABLE_REAL_SMS,
+  accountSidSet: !!accountSid,
+  authTokenSet: !!authToken,
+  phoneNumber: twilioPhoneNumber,
+  clientInitialized: !!client
+}, "Twilio configuration loaded");
 
 if (!client && ENABLE_REAL_SMS) {
-  console.error("Twilio client could not be initialized. Check your credentials.");
+  logger.error("Twilio client could not be initialized. Check your credentials.");
 }
 
 /**
@@ -48,13 +50,11 @@ export function generateOtpCode(): string {
 async function sendTwilioSms(phoneNumber: string, message: string): Promise<void> {
   // Development modda SMS gönderimi kapalıysa mock yap
   if (IS_DEVELOPMENT && !ENABLE_REAL_SMS) {
-    console.log(`📱 [MOCK SMS] To: ${phoneNumber}`);
-    console.log(`📱 [MOCK SMS] Message: ${message}`);
-    console.log(`📱 [MOCK SMS] Development mode - SMS not sent`);
+    logger.info({ phoneNumber, messageLength: message.length, mode: 'MOCK' }, "Mock SMS in development mode");
 
     // Test phone numbers için özel log
     if (TEST_PHONE_NUMBERS.includes(phoneNumber)) {
-      console.log(`🧪 [TEST MODE] Use OTP: ${TEST_OTP_CODE} for phone: ${phoneNumber}`);
+      logger.info({ phoneNumber, testOtp: TEST_OTP_CODE }, "Test mode OTP code");
     }
     return;
   }
@@ -70,18 +70,18 @@ async function sendTwilioSms(phoneNumber: string, message: string): Promise<void
       to: phoneNumber
     });
 
-    console.log(`✅ SMS sent successfully to ${phoneNumber}. Message SID: ${result.sid}`);
+    logger.info({ phoneNumber, messageSid: result.sid }, "SMS sent successfully");
   } catch (error: any) {
-    console.error(`Failed to send SMS to ${phoneNumber}:`, error);
-    console.error(`Twilio Error Code: ${error.code}, Status: ${error.status}`);
-    console.error(`Using credentials: Account SID: ${accountSid?.substring(0, 10)}...`);
+    logger.error({
+      phoneNumber,
+      errorCode: error.code,
+      errorStatus: error.status,
+      errorMessage: error.message
+    }, "Failed to send SMS");
 
     // Handle common Twilio errors
     if (error.code === 20003) {
-      console.error("Twilio Authentication failed. Please check:");
-      console.error("1. TWILIO_ACCOUNT_SID is correct");
-      console.error("2. TWILIO_AUTH_TOKEN is correct");
-      console.error("3. Your Twilio account is active");
+      logger.error("Twilio authentication failed - check credentials");
       throw new Error("Twilio authentication failed. Please check your credentials.");
     }
     if (error.code === 21211) {

@@ -4,12 +4,14 @@
 
 import { and, eq } from "drizzle-orm";
 import { t } from "elysia";
+import { logger } from "@bogeychan/elysia-logger";
 
 import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
 import * as schema from "../../../../shared/infrastructure/database/schema";
 import { createApp } from "../../../../shared/infrastructure/web/app";
 
 export const addressRoutes = createApp()
+  .use(logger({ level: "info" }))
   .use(isAuthenticated)
   .group("/me/addresses", (app) =>
     app
@@ -197,7 +199,7 @@ export const addressRoutes = createApp()
               return error(404, caughtError.message);
             }
             const message = caughtError instanceof Error ? caughtError.message : "Unknown error";
-            console.error("Failed to set default address:", message);
+            logger.error({ addressId, userId: profile!.userId, error: message }, "Failed to set default address");
             return error(500, "An internal server error occurred.");
           }
         },

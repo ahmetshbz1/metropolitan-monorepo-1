@@ -7,6 +7,7 @@ import type {
   CompleteProfilePayload as CompleteProfileRequest,
   NipVerificationResult,
 } from "@metropolitan/shared/types/user";
+import { logger } from "@bogeychan/elysia-logger";
 
 import { AddressManagementService } from "./address-management.service";
 import { CompanyManagementService } from "./company-management.service";
@@ -168,7 +169,7 @@ export class ProfileCompletionService {
       exp: Math.floor(Date.now() / 1000) + 15 * 60, // 15 minutes
     };
 
-    console.log("Creating access token with payload:", { userId: updatedUser.id, type: "access" });
+    logger.info({ userId: updatedUser.id, sessionId, deviceId }, "Creating access token for profile completion");
     const accessToken = await jwt.sign(accessTokenPayload);
 
     // Refresh token (30 days)

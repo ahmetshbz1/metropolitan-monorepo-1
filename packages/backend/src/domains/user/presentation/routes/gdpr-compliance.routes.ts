@@ -31,10 +31,10 @@ interface GDPRAction {
 // GDPR audit logger
 async function logGDPRAction(action: GDPRAction): Promise<void> {
   // Store in a secure audit log (could be a separate database)
-  console.log("[GDPR AUDIT]", {
+  logger.info({
     ...action,
     timestamp: action.timestamp.toISOString(),
-  });
+  }, "GDPR audit log");
 
   // In production, this should write to a secure, tamper-proof audit log
   // Consider using append-only storage or blockchain for compliance

@@ -7,6 +7,7 @@ import type {
   UpdateProfileRequest,
 } from "@metropolitan/shared/types/user";
 import { t } from "elysia";
+import { logger } from "@bogeychan/elysia-logger";
 
 import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
 import { createApp } from "../../../../shared/infrastructure/web/app";
@@ -28,7 +29,9 @@ export interface RegistrationTokenPayload {
 }
 
 // Açık rotalar - Kayıt token'ı gerekli
-const publicProfileRoutes = createApp().post(
+const publicProfileRoutes = createApp()
+  .use(logger({ level: "info" }))
+  .post(
   "/complete-profile",
   async ({ jwt, body, headers, set }) => {
     try {
@@ -92,6 +95,7 @@ const publicProfileRoutes = createApp().post(
 
 // Korumalı rotalar - Login token'ı gerekli
 const protectedProfileRoutes = createApp()
+  .use(logger({ level: "info" }))
   .use(isAuthenticated)
 
   // Kullanıcı profilini getir
@@ -183,7 +187,7 @@ const protectedProfileRoutes = createApp()
             })
             .where(eq(deviceTokens.id, existingToken[0].id));
 
-          console.log(`Device token updated for user ${userId}`);
+          logger.info({ userId, tokenId: existingToken[0].id }, "Device token updated");
         } else {
           // Yeni token ekle
           await db.insert(deviceTokens).values({
@@ -197,7 +201,7 @@ const protectedProfileRoutes = createApp()
             failureCount: "0",
           });
 
-          console.log(`New device token saved for user ${userId}`);
+          logger.info({ userId, platform: body.platform }, "New device token saved");
 
           // Sadece yeni token için hoş geldiniz bildirimi gönder
           try {
@@ -224,7 +228,7 @@ const protectedProfileRoutes = createApp()
             });
 
             const result = await response.json();
-            console.log('Welcome notification sent:', result);
+            logger.info({ userId, pushResult: result.data?.status }, "Welcome notification sent");
 
             // Bildirimi veritabanına da kaydet
             if (result.data && result.data.status === 'ok') {
@@ -238,7 +242,7 @@ const protectedProfileRoutes = createApp()
               });
             }
           } catch (error) {
-            console.error('Welcome notification error:', error);
+            logger.error({ userId, error: error instanceof Error ? error.message : String(error) }, "Welcome notification error");
           }
         }
 
@@ -280,10 +284,13 @@ const protectedProfileRoutes = createApp()
           return { success: false, message: "No photo uploaded." };
         }
 
-        // CRITICAL DEBUG
-        console.log('🚨 PHOTO MIME TYPE:', body.photo.type);
-        console.log('🚨 PHOTO SIZE:', body.photo.size);
-        console.log('🚨 PHOTO NAME:', body.photo.name);
+        // Photo file validation logging
+        logger.info({
+          userId,
+          mimeType: body.photo.type,
+          size: body.photo.size,
+          fileName: body.photo.name
+        }, "Profile photo upload initiated");
 
         const photoUrl = await ProfilePhotoService.uploadProfilePhoto(
           userId,
@@ -529,7 +536,7 @@ const protectedProfileRoutes = createApp()
           return { success: false, message: "Unauthorized" };
         }
 
-        console.log(`Sending test push to token: ${body.token}`);
+        logger.info({ userId, tokenPreview: body.token.substring(0, 20) }, "Sending test push notification");
 
         const response = await fetch('https://exp.host/--/api/v2/push/send', {
           method: 'POST',

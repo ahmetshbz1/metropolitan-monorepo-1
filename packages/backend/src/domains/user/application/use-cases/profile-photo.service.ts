@@ -5,6 +5,7 @@
 import { randomBytes } from "crypto";
 import fs from "fs/promises";
 import path from "path";
+import { logger } from "@bogeychan/elysia-logger";
 
 import { eq } from "drizzle-orm";
 
@@ -98,7 +99,7 @@ export class ProfilePhotoService {
       await fs
         .unlink(filePath)
         .catch((err) =>
-          console.error("Failed to clean up orphaned photo:", err)
+          logger.error({ userId, filePath, error: err instanceof Error ? err.message : String(err) }, "Failed to clean up orphaned photo")
         );
       throw new Error("Failed to update user profile with new photo.");
     }

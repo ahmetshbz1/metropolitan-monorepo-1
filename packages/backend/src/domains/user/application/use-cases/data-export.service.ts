@@ -8,6 +8,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { promisify } from "util";
 import { v4 as uuidv4 } from "uuid";
+import { logger } from "@bogeychan/elysia-logger";
 import { db } from "../../../../shared/infrastructure/database/connection";
 import {
   addresses,
@@ -142,13 +143,13 @@ export class DataExportService {
       // Sistem zip komutu ile şifreli ZIP oluştur
       // Parametreleri ayrı ayrı escape ediyoruz
       const command = `zip -P ${password} -j "${zipFilePath}" "${tempJsonPath}"`;
-      console.log("Creating encrypted ZIP with password:", password);
+      logger.info({ zipFilePath, hasPassword: !!password }, "Creating encrypted ZIP");
 
       await execAsync(command);
-      console.log("Encrypted ZIP created successfully");
+      logger.info({ zipFilePath }, "Encrypted ZIP created successfully");
     } catch (error) {
-      console.error("ZIP creation failed:", error);
-      throw new Error(`Failed to create encrypted ZIP: ${error.message}`);
+      logger.error({ zipFilePath, error: error instanceof Error ? error.message : String(error) }, "ZIP creation failed");
+      throw new Error(`Failed to create encrypted ZIP: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       // Geçici dosyayı sil
       if (fs.existsSync(tempJsonPath)) {
@@ -265,7 +266,7 @@ export class DataExportService {
   ): Promise<void> {
     // TODO: Implement email sending
     // This would integrate with your email service (SendGrid, SES, etc.)
-    console.log(`Sending export email to ${email} with file ${fileName}`);
+    logger.info({ email, fileName, exportId }, "Sending export email");
 
     // For now, just log the action
     // In production, you'd send an email with a secure download link

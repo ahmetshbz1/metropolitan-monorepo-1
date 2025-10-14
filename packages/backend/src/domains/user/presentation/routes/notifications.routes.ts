@@ -4,6 +4,7 @@
 
 import { t } from "elysia";
 import { and, eq, desc, sql, isNull } from "drizzle-orm";
+import { logger } from "@bogeychan/elysia-logger";
 
 import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
 import { createApp } from "../../../../shared/infrastructure/web/app";
@@ -11,6 +12,7 @@ import { db } from "../../../../shared/infrastructure/database/connection";
 import { notifications } from "../../../../shared/infrastructure/database/schema";
 
 export const notificationsRoutes = createApp()
+  .use(logger({ level: "info" }))
   .use(isAuthenticated)
 
   // Kullanıcının bildirimlerini getir
@@ -62,7 +64,7 @@ export const notificationsRoutes = createApp()
           limit: Number(limit),
         };
       } catch (error) {
-        console.error("Notifications fetch error:", error);
+        logger.error({ userId, error: error instanceof Error ? error.message : String(error) }, "Notifications fetch error");
         return { success: false, notifications: [], unreadCount: 0 };
       }
     },
@@ -107,7 +109,7 @@ export const notificationsRoutes = createApp()
 
         return { success: true };
       } catch (error) {
-        console.error("Mark as read error:", error);
+        logger.error({ userId, notificationId: params.id, error: error instanceof Error ? error.message : String(error) }, "Mark as read error");
         set.status = 500;
         return { success: false, message: "Failed to update notification" };
       }
@@ -145,7 +147,7 @@ export const notificationsRoutes = createApp()
 
         return { success: true };
       } catch (error) {
-        console.error("Mark all as read error:", error);
+        logger.error({ userId, error: error instanceof Error ? error.message : String(error) }, "Mark all as read error");
         set.status = 500;
         return { success: false, message: "Failed to update notifications" };
       }
@@ -180,7 +182,7 @@ export const notificationsRoutes = createApp()
 
         return { success: true };
       } catch (error) {
-        console.error("Delete notification error:", error);
+        logger.error({ userId, notificationId: params.id, error: error instanceof Error ? error.message : String(error) }, "Delete notification error");
         set.status = 500;
         return { success: false, message: "Failed to delete notification" };
       }
@@ -209,7 +211,7 @@ export const notificationsRoutes = createApp()
 
         return { success: true };
       } catch (error) {
-        console.error("Delete all notifications error:", error);
+        logger.error({ userId, error: error instanceof Error ? error.message : String(error) }, "Delete all notifications error");
         set.status = 500;
         return { success: false, message: "Failed to delete notifications" };
       }
@@ -241,7 +243,7 @@ export const createNotification = async (
 
     return created;
   } catch (error) {
-    console.error("Create notification error:", error);
+    logger.error({ userId, error: error instanceof Error ? error.message : String(error) }, "Create notification error");
     return null;
   }
 };

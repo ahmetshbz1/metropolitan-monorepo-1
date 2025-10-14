@@ -3,6 +3,7 @@
 //  Created by Ahmet on 11.01.2025.
 
 import Stripe from "stripe";
+import { logger } from "@bogeychan/elysia-logger";
 
 class StripeService {
   private stripe: Stripe;
@@ -58,7 +59,7 @@ class StripeService {
 
       return paymentIntent;
     } catch (error) {
-      console.error("Stripe PaymentIntent creation error:", error);
+      logger.error({ error: error instanceof Error ? error.message : String(error) }, "Stripe PaymentIntent creation error");
       throw new Error("Payment intent creation failed");
     }
   }
@@ -106,14 +107,15 @@ class StripeService {
         },
       });
 
-      console.log(
-        `✅ Stripe Checkout Session created: ${
-          session.id
-        } (${paymentMethodTypes.join(", ")})`
-      );
+      logger.info({
+        sessionId: session.id,
+        orderId,
+        userId,
+        paymentMethodTypes: paymentMethodTypes.join(", ")
+      }, "Stripe Checkout Session created");
       return session;
     } catch (error) {
-      console.error("Stripe Checkout Session creation error:", error);
+      logger.error({ error: error instanceof Error ? error.message : String(error), orderId }, "Stripe Checkout Session creation error");
       throw new Error("Checkout session creation failed");
     }
   }
@@ -127,7 +129,7 @@ class StripeService {
       );
       return paymentIntent;
     } catch (error) {
-      console.error("Stripe PaymentIntent retrieval error:", error);
+      logger.error({ error: error instanceof Error ? error.message : String(error), paymentIntentId }, "Stripe PaymentIntent retrieval error");
       throw new Error("Payment intent retrieval failed");
     }
   }
@@ -143,7 +145,7 @@ class StripeService {
       );
       return paymentIntent;
     } catch (error) {
-      console.error("Stripe PaymentIntent update error:", error);
+      logger.error({ error: error instanceof Error ? error.message : String(error), paymentIntentId }, "Stripe PaymentIntent update error");
       throw new Error("Payment intent update failed");
     }
   }
@@ -157,7 +159,7 @@ class StripeService {
       );
       return paymentIntent;
     } catch (error) {
-      console.error("Stripe PaymentIntent cancellation error:", error);
+      logger.error({ error: error instanceof Error ? error.message : String(error), paymentIntentId }, "Stripe PaymentIntent cancellation error");
       throw new Error("Payment intent cancellation failed");
     }
   }
@@ -180,7 +182,7 @@ class StripeService {
 
       return refund;
     } catch (error) {
-      console.error("Stripe Refund creation error:", error);
+      logger.error({ error: error instanceof Error ? error.message : String(error), paymentIntentId }, "Stripe Refund creation error");
       throw new Error("Refund creation failed");
     }
   }
@@ -190,7 +192,7 @@ class StripeService {
       const refund = await this.stripe.refunds.retrieve(refundId);
       return refund;
     } catch (error) {
-      console.error("Stripe Refund retrieval error:", error);
+      logger.error({ error: error instanceof Error ? error.message : String(error), refundId }, "Stripe Refund retrieval error");
       throw new Error("Refund retrieval failed");
     }
   }
@@ -207,7 +209,7 @@ class StripeService {
 
       return refunds;
     } catch (error) {
-      console.error("Stripe Refund listing error:", error);
+      logger.error({ error: error instanceof Error ? error.message : String(error), paymentIntentId }, "Stripe Refund listing error");
       throw new Error("Refund listing failed");
     }
   }
@@ -225,7 +227,7 @@ class StripeService {
       );
       return event;
     } catch (error) {
-      console.error("Stripe webhook signature verification failed:", error);
+      logger.error({ error: error instanceof Error ? error.message : String(error) }, "Stripe webhook signature verification failed");
       throw new Error("Webhook signature verification failed");
     }
   }
@@ -249,7 +251,7 @@ class StripeService {
 
       return customer;
     } catch (error) {
-      console.error("Stripe Customer creation error:", error);
+      logger.error({ error: error instanceof Error ? error.message : String(error), email }, "Stripe Customer creation error");
       throw new Error("Customer creation failed");
     }
   }
@@ -259,7 +261,7 @@ class StripeService {
       const customer = await this.stripe.customers.retrieve(customerId);
       return customer as Stripe.Customer;
     } catch (error) {
-      console.error("Stripe Customer retrieval error:", error);
+      logger.error({ error: error instanceof Error ? error.message : String(error), customerId }, "Stripe Customer retrieval error");
       throw new Error("Customer retrieval failed");
     }
   }
@@ -272,7 +274,7 @@ class StripeService {
       const customer = await this.stripe.customers.update(customerId, data);
       return customer;
     } catch (error) {
-      console.error("Stripe Customer update error:", error);
+      logger.error({ error: error instanceof Error ? error.message : String(error), customerId }, "Stripe Customer update error");
       throw new Error("Customer update failed");
     }
   }
@@ -282,7 +284,7 @@ class StripeService {
       const deletedCustomer = await this.stripe.customers.del(customerId);
       return deletedCustomer;
     } catch (error) {
-      console.error("Stripe Customer deletion error:", error);
+      logger.error({ error: error instanceof Error ? error.message : String(error), customerId }, "Stripe Customer deletion error");
       throw new Error("Customer deletion failed");
     }
   }
