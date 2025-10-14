@@ -267,7 +267,7 @@ const protectedProfileRoutes = createApp()
   // Profil fotoğrafı yükle
   .post(
     "/me/profile-photo",
-    async ({ profile, body, set, request }) => {
+    async ({ profile, body, set }) => {
       try {
         const userId = profile?.sub || profile?.userId;
         if (!userId) {
@@ -275,20 +275,10 @@ const protectedProfileRoutes = createApp()
           return { success: false, message: "Unauthorized" };
         }
 
-        // Debug: Request'in tamamını logla
-        console.log('🔍 DEBUG - Upload request headers:', Object.fromEntries(request.headers.entries()));
-
         if (!body.photo) {
           set.status = 400;
           return { success: false, message: "No photo uploaded." };
         }
-
-        // Debug: Photo details
-        console.log('🔍 DEBUG - Photo object:', {
-          type: body.photo.type,
-          size: body.photo.size,
-          name: body.photo.name,
-        });
 
         const photoUrl = await ProfilePhotoService.uploadProfilePhoto(
           userId,
@@ -310,8 +300,9 @@ const protectedProfileRoutes = createApp()
     {
       body: t.Object({
         photo: t.File({
-          // DEBUG: Accept all file types temporarily
-          maxSize: 10 * 1024 * 1024, // 10MB
+          type: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif', 'image/heic', 'image/heif'],
+          maxSize: 5 * 1024 * 1024, // 5MB
+          error: 'Invalid file. Must be an image file under 5MB.'
         }),
       }),
     }

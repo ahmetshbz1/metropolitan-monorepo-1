@@ -19,14 +19,17 @@ const UPLOAD_DIR = path.join(
 );
 
 // Güvenlik konfigürasyonu
-const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_MIME_TYPES = [
   'image/jpeg',
-  'image/jpg', 
+  'image/jpg',
   'image/png',
-  'image/webp'
+  'image/webp',
+  'image/gif',
+  'image/heic',
+  'image/heif'
 ];
-const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
+const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.heic', '.heif'];
 
 export class ProfilePhotoService {
   /**
@@ -104,23 +107,33 @@ export class ProfilePhotoService {
    */
   private static async validateImageMagicNumbers(buffer: ArrayBuffer): Promise<void> {
     const bytes = new Uint8Array(buffer.slice(0, 12));
-    
+
     // JPEG magic numbers
     if (bytes[0] === 0xFF && bytes[1] === 0xD8 && bytes[2] === 0xFF) {
       return; // Valid JPEG
     }
-    
-    // PNG magic numbers  
+
+    // PNG magic numbers
     if (bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47) {
       return; // Valid PNG
     }
-    
+
     // WebP magic numbers
     if (bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x46 &&
         bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50) {
       return; // Valid WebP
     }
-    
+
+    // GIF magic numbers
+    if (bytes[0] === 0x47 && bytes[1] === 0x49 && bytes[2] === 0x46) {
+      return; // Valid GIF
+    }
+
+    // HEIC/HEIF magic numbers (ftyp box)
+    if (bytes[4] === 0x66 && bytes[5] === 0x74 && bytes[6] === 0x79 && bytes[7] === 0x70) {
+      return; // Valid HEIC/HEIF
+    }
+
     throw new Error("Invalid image file. File content does not match allowed image formats.");
   }
 }
