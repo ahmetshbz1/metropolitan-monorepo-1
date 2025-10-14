@@ -7,6 +7,26 @@ import { Elysia } from "elysia";
 
 import { isTokenBlacklisted } from "../../infrastructure/database/redis";
 
+interface JWTPayload {
+  sub?: string;
+  userId?: string;
+  exp: number;
+  type: string;
+  userType?: "individual" | "corporate";
+  sessionId?: string;
+  deviceId?: string;
+}
+
+interface UserProfile {
+  userId: string;
+  sub?: string;
+  exp: number;
+  type: string;
+  userType: "individual" | "corporate";
+  sessionId?: string;
+  deviceId?: string;
+}
+
 export const isAuthenticated = (app: Elysia) =>
   app
     .use(jwt({ name: "jwt", secret: process.env.JWT_SECRET! }))
@@ -23,7 +43,7 @@ export const isAuthenticated = (app: Elysia) =>
           return { profile: null };
         }
 
-        const decoded = (await jwt.verify(token)) as any;
+        const decoded = (await jwt.verify(token)) as JWTPayload | false;
         if (!decoded) {
           return { profile: null };
         }
@@ -35,9 +55,9 @@ export const isAuthenticated = (app: Elysia) =>
           return { profile: null };
         }
 
-        const profile = {
+        const profile: UserProfile = {
           userId,
-          sub: decoded.sub, // Include original sub field for compatibility
+          sub: decoded.sub,
           exp: decoded.exp,
           type: decoded.type,
           userType: decoded.userType || "individual",

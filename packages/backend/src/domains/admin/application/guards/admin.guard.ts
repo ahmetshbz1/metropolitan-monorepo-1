@@ -11,6 +11,18 @@ interface AdminProfilePayload {
   type?: string;
 }
 
+interface AdminProfile {
+  id: string;
+  email?: string;
+}
+
+interface GuardContext {
+  admin: AdminProfile | null;
+  set: {
+    status: number;
+  };
+}
+
 const isAdminPayload = (payload: unknown): payload is AdminProfilePayload => {
   if (!payload || typeof payload !== "object") {
     return false;
@@ -56,7 +68,7 @@ export const isAdminAuthenticated = (app: Elysia) =>
       }
     })
     .guard({
-      beforeHandle: (context: any) => {
+      beforeHandle: (context: GuardContext) => {
         if (!context.admin) {
           context.set.status = 401;
           return {

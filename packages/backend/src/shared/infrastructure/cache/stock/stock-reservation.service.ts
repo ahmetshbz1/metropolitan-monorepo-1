@@ -1,9 +1,10 @@
 //  "stock-reservation.service.ts"
-//  metropolitan backend  
+//  metropolitan backend
 //  Focused service for atomic stock reservation operations
 //  Extracted from redis-stock.service.ts (lines 28-214)
 
 import { redis } from "../../database/redis";
+import { logger } from "../../monitoring/logger.config";
 
 import { REDIS_STOCK_CONFIG, type ReservationResult, type StockReservation } from "./stock-config";
 
@@ -46,8 +47,8 @@ export class StockReservationService {
       // 2. Get current stock from Redis, if not exists load from database
       const availableStock = await this.getCurrentAvailableStock(productId, stockKey);
 
-      console.log(`🔒 Lock acquired by ${userId} for product ${productId}`);
-      console.log(`📦 Current stock: ${availableStock}, Requested: ${quantity}`);
+      logger.debug("Lock acquired for product", { userId, productId });
+      logger.debug("Stock check", { productId, availableStock, requestedQuantity: quantity });
 
       // 3. Check if sufficient stock available
       if (availableStock < quantity) {
@@ -63,7 +64,7 @@ export class StockReservationService {
       // 5. Store reservation info (for rollback)
       await this.storeReservationInfo(reservationKey, productId, userId, quantity);
 
-      console.log(`✅ Stock reserved: ${quantity} items, Remaining: ${newStock}`);
+      logger.info("Stock reserved successfully", { productId, userId, quantity, remainingStock: newStock });
 
       return {
         success: true,
@@ -72,7 +73,7 @@ export class StockReservationService {
     } finally {
       // 6. Always release the lock
       await redis.del(lockKey);
-      console.log(`🔓 Lock released for product ${productId}`);
+      logger.debug("Lock released for product", { productId });
     }
   }
 
@@ -90,7 +91,7 @@ export class StockReservationService {
       // Get reservation details
       const reservationData = await redis.get(reservationKey);
       if (!reservationData) {
-        console.warn(`No reservation found for ${userId}:${productId}`);
+        logger.warn("No reservation found for rollback", { userId, productId });
         return;
       }
 
@@ -110,14 +111,18 @@ export class StockReservationService {
         })
       );
 
-      console.log(
-        `🔄 Stock rolled back: +${reservation.quantity} items, New stock: ${newStock}`
-      );
+      logger.info("Stock rolled back successfully", {
+        userId,
+        productId,
+        quantity: reservation.quantity,
+        newStock
+      });
     } catch (error) {
-      console.error(
-        `Failed to rollback reservation for ${userId}:${productId}`,
-        error
-      );
+      logger.error("Failed to rollback reservation", {
+        userId,
+        productId,
+        error: error instanceof Error ? error.message : String(error)
+      });
     }
   }
 
@@ -133,7 +138,7 @@ export class StockReservationService {
     try {
       const reservationData = await redis.get(reservationKey);
       if (!reservationData) {
-        console.warn(`No reservation found for ${userId}:${productId}`);
+        logger.warn("No reservation found for confirmation", { userId, productId });
         return;
       }
 
@@ -150,12 +155,13 @@ export class StockReservationService {
         })
       );
 
-      console.log(`✅ Reservation confirmed for ${userId}:${productId}`);
+      logger.info("Reservation confirmed successfully", { userId, productId });
     } catch (error) {
-      console.error(
-        `Failed to confirm reservation for ${userId}:${productId}`,
-        error
-      );
+      logger.error("Failed to confirm reservation", {
+        userId,
+        productId,
+        error: error instanceof Error ? error.message : String(error)
+      });
     }
   }
 
@@ -168,32 +174,35 @@ export class StockReservationService {
   ): Promise<number> {
     const currentStock = await redis.get(stockKey);
     let availableStock = currentStock ? parseInt(currentStock) : null;
-    
+
     // If stock not in Redis, load from database
     if (availableStock === null) {
-      console.log(`🔍 Stock not found in Redis for ${productId}, loading from database...`);
-      
+      logger.debug("Stock not found in Redis, loading from database", { productId });
+
       try {
         const { db } = await import("../../database/connection");
         const { products } = await import("../../database/schema");
         const { eq } = await import("drizzle-orm");
-        
+
         const product = await db.query.products.findFirst({
           where: eq(products.id, productId),
           columns: { stock: true }
         });
-        
+
         if (product) {
           availableStock = product.stock || 0;
           // Set stock in Redis for future use
           await redis.set(stockKey, availableStock.toString());
-          console.log(`📊 Stock loaded from database: ${productId} = ${availableStock}`);
+          logger.info("Stock loaded from database", { productId, availableStock });
         } else {
-          console.log(`❌ Product not found in database: ${productId}`);
+          logger.warn("Product not found in database", { productId });
           availableStock = 0;
         }
       } catch (dbError) {
-        console.error(`❌ Database error loading stock for ${productId}:`, dbError);
+        logger.error("Database error loading stock", {
+          productId,
+          error: dbError instanceof Error ? dbError.message : String(dbError)
+        });
         availableStock = 0;
       }
     }

@@ -3,7 +3,10 @@
 //  Created by Ahmet on 20.06.2025.
 
 import "dotenv/config";
+
 import Redis from "ioredis";
+
+import { logger } from "../monitoring/logger.config";
 
 // Yeni Redis istemcisi oluşturuluyor
 // Bağlantı detayları .env üzerinden alınır, eksikse varsayılanlar kullanılır
@@ -34,11 +37,11 @@ const redisClient = new Redis({
 });
 
 redisClient.on("connect", () => {
-  console.log("Redis bağlantısı başarılı!");
+  logger.info("Redis connection established successfully");
 });
 // TODO: Bu error'u kullanıcıya özel yapıp, kullanıcının token'larının sadece o kullanıcı için geçerli olmasını sağlamak gerekiyor.
 redisClient.on("error", (err) => {
-  console.error("Redis bağlantı hatası.", err);
+  logger.error({ error: err.message, stack: err.stack }, "Redis connection error");
 });
 
 const BLACKLIST_PREFIX = "blacklist:";

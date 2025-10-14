@@ -1,5 +1,5 @@
 //  "order-creation.service.ts"
-//  metropolitan backend  
+//  metropolitan backend
 //  Refactored: Main orchestration service for order creation
 //  Now coordinates between specialized services for better modularity
 
@@ -16,6 +16,7 @@ import {
   orders,
   users,
 } from "../../../../shared/infrastructure/database/schema";
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { PushNotificationService } from "../../../../shared/application/services/push-notification.service";
 
 // Refactored modular services
@@ -69,7 +70,7 @@ export class OrderCreationService {
         isStripePayment
       );
 
-      console.log("📦 Creating order with payload:", orderPayload);
+      logger.info("Creating order", { userId, totalAmount, paymentMethodId: request.paymentMethodId });
       const [order] = await tx.insert(orders).values(orderPayload).returning();
       if (!order) throw new Error("Sipariş oluşturulamadı");
 
@@ -107,11 +108,11 @@ export class OrderCreationService {
 
       // DON'T clear cart here - wait for payment success
       // Cart will be cleared in webhook after payment confirmation
-      console.log("🛒 Cart will be cleared after payment confirmation via webhook");
+      logger.debug("Cart will be cleared after payment confirmation via webhook", { orderId: order.id });
 
       // NOT SENDING PUSH HERE: User hasn't even started payment process yet
       // Push will be sent only after successful payment via webhook
-      console.log("🔕 Not sending 'payment pending' push - user hasn't started payment yet");
+      logger.debug("Not sending payment pending push - user hasn't started payment yet", { orderId: order.id });
 
         return {
           ...order,
@@ -130,13 +131,19 @@ export class OrderCreationService {
       return this.formatOrderCreationResult(result);
     } catch (error) {
       // Database transaction failed - rollback Redis reservations
-      console.error("Order creation failed, rolling back Redis reservations:", error);
+      logger.error("Order creation failed, rolling back Redis reservations", {
+        error: error instanceof Error ? error.message : String(error),
+        userId
+      });
 
       try {
         await StockManagementService.rollbackOrderItemsFromData(orderItemsData, userId);
-        console.log("✅ Redis reservations rolled back successfully");
+        logger.info("Redis reservations rolled back successfully", { userId });
       } catch (rollbackError) {
-        console.error("❌ Redis rollback failed:", rollbackError);
+        logger.error("Redis rollback failed", {
+          error: rollbackError instanceof Error ? rollbackError.message : String(rollbackError),
+          userId
+        });
       }
 
       throw error;
@@ -151,7 +158,7 @@ export class OrderCreationService {
     await CartManagementService.finalizeOrderAfterPayment(orderId);
 
     // Push notification is now sent from webhook handler
-    console.log(`🔄 Push notification will be sent from webhook handler for order ${orderId}`);
+    logger.debug("Push notification will be sent from webhook handler", { orderId });
   }
 
   /**
@@ -164,9 +171,7 @@ export class OrderCreationService {
     cartItemsData: CartItemData[],
     totalAmount: number
   ): Promise<OrderCreationResult> {
-    console.warn(
-      "Legacy order creation method used - consider using createOrderWithStripe"
-    );
+    logger.warn("Legacy order creation method used - consider using createOrderWithStripe", { userId });
 
     const result = await db.transaction(async (tx) => {
       // Create order using modular service
@@ -184,7 +189,7 @@ export class OrderCreationService {
       await CartManagementService.createOrderItems(tx, order.id, orderItemsData);
       await StockManagementService.fallbackDatabaseStockReservation?.(tx, orderItemsData);
       // DON'T clear cart for legacy orders either - depends on payment method
-      console.log("🛒 Legacy order created, cart clearing depends on payment method");
+      logger.debug("Legacy order created, cart clearing depends on payment method", { orderId: order.id, userId });
 
       return order;
     });
