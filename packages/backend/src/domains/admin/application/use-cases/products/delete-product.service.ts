@@ -4,6 +4,7 @@
 
 import { eq } from "drizzle-orm";
 
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 import { RedisStockService } from "../../../../../shared/infrastructure/cache/redis-stock.service";
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import { products } from "../../../../../shared/infrastructure/database/schema";
@@ -25,9 +26,9 @@ export class AdminDeleteProductService {
         await RedisStockService.cleanupProductReservations(productId);
         // Stok seviyesini 0'a çekerek temizle
         await RedisStockService.setStockLevel(productId, 0);
-        console.log(`✅ Redis temizlendi: ${productId}`);
+        logger.info({ productId, context: "AdminDeleteProductService" }, "Redis temizlendi");
       } catch (error) {
-        console.warn(`⚠️ Redis temizlenemedi (${productId}):`, error);
+        logger.warn({ productId, error, context: "AdminDeleteProductService" }, "Redis temizlenemedi");
         // Redis hatası ürün silmeyi engellemez
       }
 
@@ -37,7 +38,7 @@ export class AdminDeleteProductService {
         message: "Ürün silindi",
       };
     } catch (error) {
-      console.error("Admin ürün silme hatası", error);
+      logger.error({ error, context: "AdminDeleteProductService" }, "Admin ürün silme hatası");
 
       const postgresError = (() => {
         if (error && typeof error === "object") {

@@ -1,4 +1,5 @@
 import { getDashboardStatsService } from "../../application/use-cases/dashboard/get-dashboard-stats.service";
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 
 import { createAdminRouter } from "./admin-router.factory";
 
@@ -9,7 +10,7 @@ export const adminDashboardRoutes = createAdminRouter("/admin/dashboard").get(
       const stats = await getDashboardStatsService();
       return stats;
     } catch (error) {
-      console.error("Dashboard stats error:", error);
+      logger.error({ error, context: "AdminDashboardRoutes" }, "Dashboard stats error");
       set.status = 500;
       return {
         success: false,

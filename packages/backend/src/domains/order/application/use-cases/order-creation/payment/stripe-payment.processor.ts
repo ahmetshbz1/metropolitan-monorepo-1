@@ -5,6 +5,7 @@
 import type { CartItem as CartItemData } from "@metropolitan/shared/types/cart";
 import type { OrderCreationRequest } from "@metropolitan/shared/types/order";
 
+import { logger } from "../../../../../../shared/infrastructure/monitoring/logger.config";
 import StripeService from "../../../../../../shared/infrastructure/external/stripe.service";
 
 import { PaymentCalculatorService } from "./payment-calculator.service";
@@ -102,21 +103,21 @@ export class StripePaymentProcessor {
     };
 
     // Configure payment method types based on selection
-    console.log("🔧 Payment method ID:", paymentMethodId);
+    logger.info({ paymentMethodId, context: "StripePaymentProcessor" }, "Payment method ID");
 
     if (paymentMethodId === "card") {
       params.paymentMethodTypes = ["card"];
-      console.log("💳 Using card payment methods only");
+      logger.info({ context: "StripePaymentProcessor" }, "Using card payment methods only");
     } else if (paymentMethodId === "blik") {
       params.paymentMethodTypes = ["blik"];
       // BLIK is Poland-specific, currency must be PLN
       if (params.currency !== "pln") {
-        console.warn("⚠️ BLIK requires PLN currency, forcing to pln");
+        logger.warn({ context: "StripePaymentProcessor" }, "BLIK requires PLN currency, forcing to pln");
         params.currency = "pln";
       }
-      console.log("📱 Using BLIK payment methods only");
+      logger.info({ context: "StripePaymentProcessor" }, "Using BLIK payment methods only");
     } else {
-      console.log("🔄 Using automatic payment methods");
+      logger.info({ context: "StripePaymentProcessor" }, "Using automatic payment methods");
     }
 
     return params;

@@ -3,6 +3,7 @@
 //  Admin JWT doğrulaması
 
 import { Elysia } from "elysia";
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 
 interface AdminProfilePayload {
   sub: string;
@@ -63,7 +64,7 @@ export const isAdminAuthenticated = (app: Elysia) =>
           },
         };
       } catch (error) {
-        console.error("Admin token doğrulaması başarısız", error);
+        logger.error({ error, context: "AdminGuard" }, "Admin token doğrulaması başarısız");
         return { admin: null };
       }
     })

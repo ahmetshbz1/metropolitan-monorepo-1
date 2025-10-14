@@ -5,6 +5,7 @@
 import type { OrderItem as OrderItemData } from "@metropolitan/shared/types/order";
 import { eq, sql } from "drizzle-orm";
 
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 import { products } from "../../../../../shared/infrastructure/database/schema";
 
 import type { RedisReservation } from "./stock-redis-operations.service";
@@ -33,8 +34,9 @@ export class StockDatabaseSyncService {
           })
           .where(eq(products.id, item.product.id));
 
-        console.log(
-          `🔄 Database synced with Redis for product ${item.product.id}`
+        logger.info(
+          { productId: item.product.id, context: "StockDatabaseSyncService" },
+          "Database synced with Redis for product"
         );
       }
     }
@@ -87,8 +89,9 @@ export class StockDatabaseSyncService {
         );
       }
 
-      console.log(
-        `✅ Database stock reserved: ${result.name} - Quantity: ${requestedQuantity}, Remaining: ${result.newStock}`
+      logger.info(
+        { productName: result.name, requestedQuantity, remainingStock: result.newStock, context: "StockDatabaseSyncService" },
+        "Database stock reserved"
       );
     }
   }

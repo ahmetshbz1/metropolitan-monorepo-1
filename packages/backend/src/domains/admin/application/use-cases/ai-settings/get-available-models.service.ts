@@ -1,3 +1,4 @@
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import { aiSettings } from "../../../../../shared/infrastructure/database/schema";
 
@@ -75,7 +76,7 @@ export class GetAvailableModelsService {
 
       return models.length > 0 ? models : this.getFallbackGeminiModels();
     } catch (error) {
-      console.error("Gemini models fetch failed:", error);
+      logger.error({ error, context: "GetAvailableModelsService" }, "Gemini models fetch failed");
       return this.getFallbackGeminiModels();
     }
   }
@@ -118,7 +119,7 @@ export class GetAvailableModelsService {
 
       return models.length > 0 ? models : this.getFallbackOpenAIModels();
     } catch (error) {
-      console.error("OpenAI models fetch failed:", error);
+      logger.error({ error, context: "GetAvailableModelsService" }, "OpenAI models fetch failed");
       return this.getFallbackOpenAIModels();
     }
   }

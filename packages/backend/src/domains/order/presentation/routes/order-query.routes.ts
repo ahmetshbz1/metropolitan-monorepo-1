@@ -5,6 +5,7 @@
 import { eq } from "drizzle-orm";
 import { Elysia, t } from "elysia";
 
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
 import { db } from "../../../../shared/infrastructure/database/connection";
 import { users } from "../../../../shared/infrastructure/database/schema";
@@ -56,8 +57,9 @@ export const orderQueryRoutes = new Elysia()
       const validLanguage = ["tr", "en", "pl"].includes(language) ? language : "en";
 
       try {
-        console.log(
-          `📦 Fetching order details for orderId: ${orderId}, userId: ${user.id}, language: ${validLanguage}`
+        logger.info(
+          { orderId, userId: user.id, language: validLanguage, context: "OrderQueryRoutes" },
+          "Fetching order details"
         );
 
         const [order, items, trackingEvents] = await Promise.all([
@@ -66,8 +68,9 @@ export const orderQueryRoutes = new Elysia()
           OrderTrackingService.getTrackingEvents(orderId),
         ]);
 
-        console.log(
-          `✅ Successfully fetched order details for orderId: ${orderId}`
+        logger.info(
+          { orderId, context: "OrderQueryRoutes" },
+          "Successfully fetched order details"
         );
 
         return {
@@ -76,9 +79,9 @@ export const orderQueryRoutes = new Elysia()
           trackingEvents,
         };
       } catch (error) {
-        console.error(
-          `❌ Failed to fetch order details for orderId: ${orderId}`,
-          error
+        logger.error(
+          { orderId, error, context: "OrderQueryRoutes" },
+          "Failed to fetch order details"
         );
         throw error;
       }

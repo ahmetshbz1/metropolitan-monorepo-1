@@ -2,6 +2,7 @@ import { desc } from "drizzle-orm";
 
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import { companies } from "../../../../../shared/infrastructure/database/schema";
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 
 export interface Company {
   id: string;
@@ -27,7 +28,7 @@ export class GetCompaniesService {
 
       return companiesData;
     } catch (error) {
-      console.error("GetCompaniesService error:", error);
+      logger.error({ error, context: "GetCompaniesService" }, "GetCompaniesService error");
       throw error;
     }
   }

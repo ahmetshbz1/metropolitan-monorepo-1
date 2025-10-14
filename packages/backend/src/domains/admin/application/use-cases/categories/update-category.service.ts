@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import { ProductTranslationService } from "../../../../../shared/infrastructure/ai/product-translation.service";
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import {
   categories,
@@ -43,7 +44,7 @@ export class AdminUpdateCategoryService {
 
     if (!finalSlug || finalSlug.trim().length === 0) {
       finalSlug = generateSlug(turkishTranslation.name);
-      console.log(`Generated slug from Turkish name: ${finalSlug}`);
+      logger.info({ slug: finalSlug, context: "AdminUpdateCategoryService" }, "Generated slug from Turkish name");
     }
 
     const existingTranslations = await db
@@ -54,28 +55,28 @@ export class AdminUpdateCategoryService {
     const manualTranslationsProvided = payload.translations.length === 3;
 
     if (manualTranslationsProvided) {
-      console.log("Using manual category translations (skipping Gemini)...");
+      logger.info({ context: "AdminUpdateCategoryService" }, "Using manual category translations (skipping Gemini)");
       finalTranslations = payload.translations;
     } else {
       const existingTurkish = existingTranslations.find(t => t.languageCode === "tr");
       const nameChanged = existingTurkish?.name !== turkishTranslation.name;
 
       if (nameChanged || existingTranslations.length < 3) {
-        console.log("Generating category translations with Gemini...");
+        logger.info({ context: "AdminUpdateCategoryService" }, "Generating category translations with Gemini");
         const generatedTranslations = await ProductTranslationService.generateCategoryTranslations(
           turkishTranslation.name
         );
 
-        console.log("Generated translations:", generatedTranslations);
+        logger.info({ translations: generatedTranslations, context: "AdminUpdateCategoryService" }, "Generated translations");
 
         finalTranslations = [
           { languageCode: "tr" as const, name: generatedTranslations.tr },
           { languageCode: "en" as const, name: generatedTranslations.en },
           { languageCode: "pl" as const, name: generatedTranslations.pl },
         ];
-        console.log("Category translations generated successfully");
+        logger.info({ context: "AdminUpdateCategoryService" }, "Category translations generated successfully");
       } else {
-        console.log("Reusing existing translations (no changes detected)...");
+        logger.info({ context: "AdminUpdateCategoryService" }, "Reusing existing translations (no changes detected)");
         finalTranslations = existingTranslations.map(t => ({
           languageCode: t.languageCode as "tr" | "en" | "pl",
           name: t.name,

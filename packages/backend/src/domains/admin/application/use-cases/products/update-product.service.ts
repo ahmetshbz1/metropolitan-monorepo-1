@@ -4,6 +4,7 @@
 
 import { eq } from "drizzle-orm";
 
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 import { ProductTranslationService } from "../../../../../shared/infrastructure/ai/product-translation.service";
 import { RedisStockService } from "../../../../../shared/infrastructure/cache/redis-stock.service";
 import { db } from "../../../../../shared/infrastructure/database/connection";
@@ -81,7 +82,7 @@ export class AdminUpdateProductService {
       }> = [];
 
       if (manualTranslationsProvided) {
-        console.log("Using manual translations (skipping Gemini)...");
+        logger.info({ context: "AdminUpdateProductService" }, "Using manual translations (skipping Gemini)");
         finalTranslations = SUPPORTED_LANGUAGES.map((languageCode) => {
           const translation = payload.translations.find(
             (item) => item.languageCode === languageCode
@@ -120,7 +121,7 @@ export class AdminUpdateProductService {
           missingLanguages.length > 0;
 
         if (shouldRegenerateTranslations) {
-          console.log("Generating translations with Gemini...");
+          logger.info({ context: "AdminUpdateProductService" }, "Generating translations with Gemini");
           const generatedTranslations =
             await ProductTranslationService.generateTranslations({
               name: turkishTranslation.name,
@@ -149,9 +150,9 @@ export class AdminUpdateProductService {
               description: generatedTranslations.pl.description,
             },
           ];
-          console.log("Translations generated successfully");
+          logger.info({ context: "AdminUpdateProductService" }, "Translations generated successfully");
         } else {
-          console.log("Reusing existing translations (no changes detected)...");
+          logger.info({ context: "AdminUpdateProductService" }, "Reusing existing translations (no changes detected)");
           finalTranslations = SUPPORTED_LANGUAGES.map((languageCode) => {
             if (languageCode === "tr") {
               return {
@@ -204,8 +205,9 @@ export class AdminUpdateProductService {
 
       if (existingProduct.fakturowniaProductId) {
         try {
-          console.log(
-            `🔄 Fakturownia güncelleniyor (ID: ${existingProduct.fakturowniaProductId})...`
+          logger.info(
+            { fakturowniaProductId: existingProduct.fakturowniaProductId, context: "AdminUpdateProductService" },
+            "Fakturownia güncelleniyor"
           );
 
           const fakturowniaResponse = await fakturowniaService.updateProduct(
@@ -221,7 +223,7 @@ export class AdminUpdateProductService {
           syncStatus = "synced";
           lastSyncedAt = new Date();
         } catch (fakturowniaError) {
-          console.error("❌ Fakturownia güncelleme hatası:", fakturowniaError);
+          logger.error({ error: fakturowniaError, context: "AdminUpdateProductService" }, "Fakturownia güncelleme hatası");
           syncStatus = "error";
           // Fakturownia fail olursa devam et ama sync status error olarak işaretle
         }
@@ -277,13 +279,14 @@ export class AdminUpdateProductService {
       // Redis'e stok değerini sync et
       try {
         await RedisStockService.setStockLevel(payload.productId, finalStock);
-        console.log(
-          `✅ Redis stok güncellendi: ${payload.productId} -> ${finalStock}`
+        logger.info(
+          { productId: payload.productId, stock: finalStock, context: "AdminUpdateProductService" },
+          "Redis stok güncellendi"
         );
       } catch (error) {
-        console.warn(
-          `⚠️ Redis stok güncellenemedi (${payload.productId}):`,
-          error
+        logger.warn(
+          { productId: payload.productId, error, context: "AdminUpdateProductService" },
+          "Redis stok güncellenemedi"
         );
         // Redis hatası ürün güncellemeyi engellemez
       }
@@ -294,7 +297,7 @@ export class AdminUpdateProductService {
         message: "Ürün güncellendi",
       };
     } catch (error) {
-      console.error("Admin ürün güncelleme hatası", error);
+      logger.error({ error, context: "AdminUpdateProductService" }, "Admin ürün güncelleme hatası");
       throw new Error(
         error instanceof Error ? error.message : "Ürün güncellenemedi"
       );

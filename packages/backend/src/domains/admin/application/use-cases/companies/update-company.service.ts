@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import { companies } from "../../../../../shared/infrastructure/database/schema";
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 
 export interface UpdateCompanyInput {
   companyId: string;
@@ -38,7 +39,7 @@ export class UpdateCompanyService {
         message: "Şirket başarıyla güncellendi",
       };
     } catch (error) {
-      console.error("UpdateCompanyService error:", error);
+      logger.error({ error, context: "UpdateCompanyService" }, "UpdateCompanyService error");
       throw error;
     }
   }

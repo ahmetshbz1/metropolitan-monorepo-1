@@ -2,6 +2,8 @@
 //  metropolitan backend
 //  Service for background invoice generation
 
+import { logger } from "../../../../../../shared/infrastructure/monitoring/logger.config";
+
 export class BackgroundInvoiceService {
   /**
    * Schedule invoice generation in background
@@ -11,7 +13,7 @@ export class BackgroundInvoiceService {
     // Async operation - doesn't block order creation
     setImmediate(async () => {
       try {
-        console.log(`Background fatura oluşturuluyor: ${orderId}`);
+        logger.info({ orderId, context: "BackgroundInvoiceService" }, "Background fatura oluşturuluyor");
         const startTime = performance.now();
 
         // Generate invoice and cache it
@@ -20,12 +22,13 @@ export class BackgroundInvoiceService {
 
         const endTime = performance.now();
         const duration = (endTime - startTime).toFixed(2);
-        console.log(
-          `Background fatura oluşturuldu: ${orderId} (${duration}ms)`
+        logger.info(
+          { orderId, duration, context: "BackgroundInvoiceService" },
+          "Background fatura oluşturuldu"
         );
       } catch (error) {
         // Log error but don't affect order
-        console.error(`Background fatura oluşturma hatası: ${orderId}`, error);
+        logger.error({ orderId, error, context: "BackgroundInvoiceService" }, "Background fatura oluşturma hatası");
       }
     });
   }

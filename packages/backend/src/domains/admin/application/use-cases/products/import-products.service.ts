@@ -359,7 +359,8 @@ export class AdminImportProductsService {
     } finally {
       // Release global import lock
       await redis.del(this.IMPORT_LOCK_KEY);
-      console.log("✅ Import lock released");
+      const { logger } = await import("../../../../../shared/infrastructure/monitoring/logger.config");
+      logger.info({ context: "AdminImportProductsService" }, "Import lock released");
     }
   }
 }

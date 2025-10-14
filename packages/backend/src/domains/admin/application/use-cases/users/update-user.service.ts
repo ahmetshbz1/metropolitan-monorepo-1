@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import { users } from "../../../../../shared/infrastructure/database/schema";
 
@@ -45,7 +46,7 @@ export class UpdateUserService {
         message: "Kullanıcı başarıyla güncellendi",
       };
     } catch (error) {
-      console.error("UpdateUserService error:", error);
+      logger.error({ error, context: "UpdateUserService" }, "UpdateUserService error");
       throw error;
     }
   }

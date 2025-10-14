@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 import { RedisStockService } from "../../../../../shared/infrastructure/cache/redis-stock.service";
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import { products } from "../../../../../shared/infrastructure/database/schema";
@@ -118,14 +119,15 @@ export class AdminUpdateProductQuickSettingsService {
         );
 
         if (redisResult.success) {
-          console.log(
-            `✅ Redis stok güncellendi: ${productId} -> ${result.stock}`
+          logger.info(
+            { productId, stock: result.stock, context: "AdminUpdateProductQuickSettingsService" },
+            "Redis stok güncellendi"
           );
         } else {
-          console.warn(`⚠️ Redis lock alınamadı (${productId}): ${redisResult.error}`);
+          logger.warn({ productId, error: redisResult.error, context: "AdminUpdateProductQuickSettingsService" }, "Redis lock alınamadı");
         }
       } catch (error) {
-        console.warn(`⚠️ Redis stok güncellenemedi (${productId}):`, error);
+        logger.warn({ productId, error, context: "AdminUpdateProductQuickSettingsService" }, "Redis stok güncellenemedi");
         // Redis hatası database işlemini etkilememeli
       }
     }

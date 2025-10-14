@@ -4,6 +4,7 @@
 
 import { RedisStockService } from "../../../../../shared/infrastructure/cache/redis-stock.service";
 import { ProductTranslationService } from "../../../../../shared/infrastructure/ai/product-translation.service";
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import {
   productTranslations,
@@ -30,7 +31,7 @@ export class AdminCreateProductService {
       let finalTranslations;
 
       if (payload.translations.length === 3) {
-        console.log("Using manual translations (skipping Gemini)...");
+        logger.info({ context: "AdminCreateProductService" }, "Using manual translations (skipping Gemini)");
         finalTranslations = payload.translations.map((t) => ({
           languageCode: t.languageCode as "tr" | "en" | "pl",
           name: t.name,
@@ -38,7 +39,7 @@ export class AdminCreateProductService {
           description: t.description ?? null,
         }));
       } else {
-        console.log("Generating translations with Gemini...");
+        logger.info({ context: "AdminCreateProductService" }, "Generating translations with Gemini");
         const generatedTranslations =
           await ProductTranslationService.generateTranslations({
             name: turkishTranslation.name,
@@ -67,7 +68,7 @@ export class AdminCreateProductService {
             description: generatedTranslations.pl.description,
           },
         ];
-        console.log("Translations generated successfully");
+        logger.info({ context: "AdminCreateProductService" }, "Translations generated successfully");
       }
 
       const initialStock = payload.stock ?? 0;
@@ -119,9 +120,9 @@ export class AdminCreateProductService {
       // Redis'e initial stok değerini sync et
       try {
         await RedisStockService.syncStockFromDB(result, initialStock);
-        console.log(`✅ Redis stok senkronize edildi: ${result} -> ${initialStock}`);
+        logger.info({ productId: result, stock: initialStock, context: "AdminCreateProductService" }, "Redis stok senkronize edildi");
       } catch (error) {
-        console.warn(`⚠️ Redis stok senkronize edilemedi (${result}):`, error);
+        logger.warn({ productId: result, error, context: "AdminCreateProductService" }, "Redis stok senkronize edilemedi");
         // Redis hatası ürün oluşturmayı engellemez
       }
 
@@ -131,7 +132,7 @@ export class AdminCreateProductService {
         message: "Ürün başarıyla oluşturuldu",
       };
     } catch (error) {
-      console.error("Admin ürün oluşturma hatası", error);
+      logger.error({ error, context: "AdminCreateProductService" }, "Admin ürün oluşturma hatası");
       throw new Error(
         error instanceof Error ? error.message : "Ürün oluşturulamadı"
       );

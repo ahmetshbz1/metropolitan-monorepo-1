@@ -5,6 +5,8 @@
 import type { OrderItem as OrderItemData } from "@metropolitan/shared/types/order";
 import { eq } from "drizzle-orm";
 
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
+
 export class CartManagementService {
   /**
    * Clear user cart after successful order creation
@@ -17,8 +19,9 @@ export class CartManagementService {
       .where(eq(cartItems.userId, userId))
       .returning({ id: cartItems.id });
 
-    console.log(
-      `🛒 Cart cleared: ${deletedItems.length} items removed for user ${userId}`
+    logger.info(
+      { userId, itemsCount: deletedItems.length, context: "CartManagementService" },
+      "Cart cleared"
     );
   }
 
@@ -43,7 +46,7 @@ export class CartManagementService {
 
     if (orderItemsToInsert.length > 0) {
       await tx.insert(orderItems).values(orderItemsToInsert);
-      console.log(`📦 Created ${orderItemsToInsert.length} order items for order ${orderId}`);
+      logger.info({ orderId, itemsCount: orderItemsToInsert.length, context: "CartManagementService" }, "Created order items");
     }
   }
 
@@ -97,7 +100,7 @@ export class CartManagementService {
     // Generate invoice in background
     const { PaymentProcessingService } = await import("./payment-processing.service");
     PaymentProcessingService.createInvoiceInBackground?.(orderId, "system");
-    
-    console.log(`✅ Order finalized after payment: ${orderId}`);
+
+    logger.info({ orderId, context: "CartManagementService" }, "Order finalized after payment");
   }
 }

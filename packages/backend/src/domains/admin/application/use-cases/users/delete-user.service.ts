@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import { users } from "../../../../../shared/infrastructure/database/schema";
 
@@ -25,7 +26,7 @@ export class DeleteUserService {
         message: "Kullanıcı başarıyla silindi (soft delete)",
       };
     } catch (error) {
-      console.error("DeleteUserService error:", error);
+      logger.error({ error, context: "DeleteUserService" }, "DeleteUserService error");
       throw error;
     }
   }

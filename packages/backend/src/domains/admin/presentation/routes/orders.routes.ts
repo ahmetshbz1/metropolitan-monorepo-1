@@ -6,6 +6,7 @@ import { UpdateOrderStatusService } from "../../application/use-cases/orders/upd
 import { UpdateOrderPaymentStatusService } from "../../application/use-cases/orders/update-payment-status.service";
 import { AdminDeleteOrderService } from "../../application/use-cases/orders/delete-order.service";
 import { InvoiceService } from "../../../order/application/use-cases/invoice.service";
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { createAdminRouter } from "./admin-router.factory";
 
 const updateOrderStatusSchema = t.Object({
@@ -36,7 +37,7 @@ export const adminOrdersRoutes = createAdminRouter("/admin/orders")
       const result = await GetAdminOrdersService.execute(filters);
       return result;
     } catch (error) {
-      console.error("Admin orders error:", error);
+      logger.error({ error, context: "AdminOrdersRoutes" }, "Admin orders error");
       set.status = 400;
       return {
         success: false,

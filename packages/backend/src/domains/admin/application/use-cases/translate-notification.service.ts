@@ -1,3 +1,4 @@
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { TranslationProviderFactory } from "../../../../shared/infrastructure/ai/translation-provider.factory";
 
 interface TranslationResult {
@@ -30,7 +31,7 @@ export class TranslateNotificationService {
         pl: plTranslation,
       };
     } catch (error) {
-      console.error("Translation error:", error);
+      logger.error({ error, context: "TranslateNotificationService" }, "Translation error");
       throw new Error(
         `Çeviri başarısız: ${
           error instanceof Error ? error.message : "Bilinmeyen hata"

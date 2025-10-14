@@ -2,6 +2,7 @@ import { t } from "elysia";
 
 import { PushNotificationService } from "../../../../shared/application/services/push-notification.service";
 import { TranslateNotificationService } from "../../application/use-cases/translate-notification.service";
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 
 import { createAdminRouter } from "./admin-router.factory";
 
@@ -76,7 +77,7 @@ export const adminPushNotificationsRoutes = createAdminRouter("/admin/push")
           };
         }
       } catch (error) {
-        console.error("Push notification error:", error);
+        logger.error({ error, context: "AdminPushNotificationsRoutes" }, "Push notification error");
         set.status = 500;
         return {
           success: false,
@@ -118,7 +119,7 @@ export const adminPushNotificationsRoutes = createAdminRouter("/admin/push")
           data: result,
         };
       } catch (error) {
-        console.error("Batch push notification error:", error);
+        logger.error({ error, context: "AdminPushNotificationsRoutes" }, "Batch push notification error");
         set.status = 500;
         return {
           success: false,
@@ -156,7 +157,7 @@ export const adminPushNotificationsRoutes = createAdminRouter("/admin/push")
           data: result,
         };
       } catch (error) {
-        console.error("Broadcast push notification error:", error);
+        logger.error({ error, context: "AdminPushNotificationsRoutes" }, "Broadcast push notification error");
         set.status = 500;
         return {
           success: false,
@@ -185,7 +186,7 @@ export const adminPushNotificationsRoutes = createAdminRouter("/admin/push")
           data: result,
         };
       } catch (error) {
-        console.error("Translation error:", error);
+        logger.error({ error, context: "AdminPushNotificationsRoutes" }, "Translation error");
         set.status = 500;
         return {
           success: false,

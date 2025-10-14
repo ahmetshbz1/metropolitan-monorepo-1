@@ -3,6 +3,7 @@
 
 import type { InvoiceData } from "@metropolitan/shared/types/order";
 
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { InvoiceCacheService } from "./invoice-cache.service";
 import { InvoiceDataService } from "./invoice-data.service";
 import { InvoiceFileService } from "./invoice-file.service";
@@ -29,13 +30,13 @@ export class InvoiceService {
     // Check cache first
     const cachedPDF = await InvoiceCacheService.getCachedPDF(orderId);
     if (cachedPDF) {
-      console.log(`Fatura cache'den geldi: ${orderId}`);
+      logger.info({ orderId, context: "InvoiceService" }, "Fatura cache'den geldi");
       return cachedPDF;
     }
 
     // Check file system if not in cache
     if (await InvoiceFileService.pdfExists(orderId, userId)) {
-      console.log(`Fatura file system'den geldi: ${orderId}`);
+      logger.info({ orderId, context: "InvoiceService" }, "Fatura file system'den geldi");
       const pdfBuffer = await InvoiceFileService.readPdf(orderId, userId);
 
       // Cache the PDF retrieved from file system
@@ -45,7 +46,7 @@ export class InvoiceService {
     }
 
     // Generate new PDF if not found anywhere
-    console.log(`Fatura oluşturuluyor: ${orderId}`);
+    logger.info({ orderId, context: "InvoiceService" }, "Fatura oluşturuluyor");
     const invoiceData = await this.getInvoiceData(orderId, userId);
     const pdfBuffer = await PDFService.generateInvoicePDF(invoiceData, orderId);
 

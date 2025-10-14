@@ -1,6 +1,7 @@
 import { desc, eq, sql, and, or, ilike } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import { users, companies } from "../../../../../shared/infrastructure/database/schema";
 
@@ -158,7 +159,7 @@ export class GetAdminUsersService {
         total: Number(totalResult[0]?.count || 0),
       };
     } catch (error) {
-      console.error("GetAdminUsersService error:", error);
+      logger.error({ error, context: "GetAdminUsersService" }, "GetAdminUsersService error");
       throw error;
     }
   }

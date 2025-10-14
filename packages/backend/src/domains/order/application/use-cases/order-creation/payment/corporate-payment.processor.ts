@@ -5,6 +5,7 @@
 import type { CartItem as CartItemData } from "@metropolitan/shared/types/cart";
 import type { OrderCreationResult, OrderItem as OrderItemData } from "@metropolitan/shared/types/order";
 import { eq } from "drizzle-orm";
+import { logger } from "../../../../../../shared/infrastructure/monitoring/logger.config";
 import { PushNotificationService } from "../../../../../../shared/application/services/push-notification.service";
 
 export class CorporatePaymentProcessor {
@@ -20,8 +21,8 @@ export class CorporatePaymentProcessor {
   ): Promise<OrderCreationResult> {
     const { orders, orderItems } = await import("../../../../../../shared/infrastructure/database/schema");
     const { CartManagementService } = await import("../cart-management.service");
-    
-    console.log("🏦 Banka havalesi siparişi - manuel onay bekliyor");
+
+    logger.info({ orderId: order.id, context: "CorporatePaymentProcessor" }, "Banka havalesi siparişi - manuel onay bekliyor");
 
     // Keep order in pending status for manual approval
     const [updatedOrder] = await tx
@@ -43,7 +44,7 @@ export class CorporatePaymentProcessor {
     }
 
     // Note: Invoice will be generated after admin approval
-    console.log("📝 Fatura admin onayından sonra oluşturulacak");
+    logger.info({ orderId: order.id, context: "CorporatePaymentProcessor" }, "Fatura admin onayından sonra oluşturulacak");
 
     // Banka havalesi bildirimi gönder
     try {
@@ -59,7 +60,7 @@ export class CorporatePaymentProcessor {
         },
       });
     } catch (error) {
-      console.error("Failed to send bank transfer notification:", error);
+      logger.error({ error, context: "CorporatePaymentProcessor" }, "Failed to send bank transfer notification");
     }
 
     return this.buildSuccessResult(updatedOrder || order);
@@ -89,12 +90,13 @@ export class CorporatePaymentProcessor {
    * Build success result for bank transfer order
    */
   private static buildSuccessResult(order: any): OrderCreationResult {
-    console.log("📝 Building success result for order:", {
-      id: order.id,
+    logger.info({
+      orderId: order.id,
       orderNumber: order.orderNumber,
       totalAmount: order.totalAmount,
-      currency: order.currency
-    });
+      currency: order.currency,
+      context: "CorporatePaymentProcessor"
+    }, "Building success result for order");
 
     return {
       success: true,

@@ -5,6 +5,7 @@
 import type { JWTPayloadInput } from "@elysiajs/jwt";
 import { randomUUID } from "crypto";
 
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 import { AdminPasswordService } from "../../services/admin-password.service";
 import {
   AdminUserRepository,
@@ -175,7 +176,7 @@ export class AdminAuthService {
         isActive: true,
       });
     } catch (error) {
-      console.error("Admin bootstrap başarısız", error);
+      logger.error({ error, context: "AdminAuthService" }, "Admin bootstrap başarısız");
       throw error;
     }
   }

@@ -5,6 +5,7 @@
 import { eq } from "drizzle-orm";
 import { Elysia, t } from "elysia";
 
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
 import { db } from "../../../../shared/infrastructure/database/connection";
 import { orders, users } from "../../../../shared/infrastructure/database/schema";
@@ -70,7 +71,7 @@ export const orderManagementRoutes = new Elysia()
       // Invalidate invoice cache
       await InvoiceService.invalidateInvoiceCache(orderId);
 
-      console.log(`❌ Order cancelled: ${orderId}`);
+      logger.info({ orderId, context: "OrderManagementRoutes" }, "Order cancelled");
 
       return {
         message: "Sipariş başarıyla iptal edildi",
@@ -93,7 +94,7 @@ export const orderManagementRoutes = new Elysia()
     }: AuthenticatedContext & { params: { orderId: string } }) => {
       const { orderId } = params;
 
-      console.log(`🔄 Manual stock rollback requested for order ${orderId} by user ${user.id}`);
+      logger.info({ orderId, userId: user.id, context: "OrderManagementRoutes" }, "Manual stock rollback requested");
 
       try {
         // Verify order belongs to user
@@ -120,11 +121,11 @@ export const orderManagementRoutes = new Elysia()
         const rollbackResult = await WebhookStockRollbackService.rollbackOrderStock(orderId);
 
         if (!rollbackResult.success) {
-          console.error(`Stock rollback failed for order ${orderId}:`, rollbackResult.errors);
+          logger.error({ orderId, errors: rollbackResult.errors, context: "OrderManagementRoutes" }, "Stock rollback failed");
           throw new Error(`Stok geri alımı başarısız: ${rollbackResult.errors.join(", ")}`);
         }
 
-        console.log(`✅ Stock rollback successful for order ${orderId}:`, rollbackResult.message);
+        logger.info({ orderId, message: rollbackResult.message, context: "OrderManagementRoutes" }, "Stock rollback successful");
 
         return {
           success: true,
@@ -136,7 +137,7 @@ export const orderManagementRoutes = new Elysia()
           },
         };
       } catch (error: any) {
-        console.error(`❌ Stock rollback failed for order ${orderId}:`, error);
+        logger.error({ orderId, error, context: "OrderManagementRoutes" }, "Stock rollback failed");
         throw new Error(error.message || "Stok geri alımı başarısız oldu");
       }
     },

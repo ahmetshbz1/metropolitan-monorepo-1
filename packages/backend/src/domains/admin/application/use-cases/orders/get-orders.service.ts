@@ -1,6 +1,7 @@
 import type { SQL } from "drizzle-orm";
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
 
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import {
   addresses,
@@ -236,7 +237,7 @@ export class GetAdminOrdersService {
         total: Number(totalResult[0]?.count || 0),
       };
     } catch (error) {
-      console.error("GetAdminOrdersService error:", error);
+      logger.error({ error, context: "GetAdminOrdersService" }, "GetAdminOrdersService error");
       throw error;
     }
   }

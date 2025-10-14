@@ -7,6 +7,7 @@ import path from "path";
 
 import { eq } from "drizzle-orm";
 
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { db } from "../../../../shared/infrastructure/database/connection";
 import { orders } from "../../../../shared/infrastructure/database/schema";
 
@@ -79,7 +80,7 @@ export class InvoiceFileService {
       })
       .where(eq(orders.id, orderId));
 
-    console.log(`Fatura kaydedildi: ${pdfPath}`);
+    logger.info({ orderId, pdfPath, context: "InvoiceFileService" }, "Fatura kaydedildi");
   }
 
   /**
@@ -90,14 +91,14 @@ export class InvoiceFileService {
     const pdfPath = this.getPdfPath(orderId, userId);
     if (existsSync(pdfPath)) {
       await unlink(pdfPath);
-      console.log(`PDF dosyası silindi: ${pdfPath}`);
+      logger.info({ orderId, pdfPath, context: "InvoiceFileService" }, "PDF dosyası silindi");
     }
 
     // Also check legacy path for backward compatibility
     const legacyPdfPath = this.getPdfPath(orderId);
     if (existsSync(legacyPdfPath) && legacyPdfPath !== pdfPath) {
       await unlink(legacyPdfPath);
-      console.log(`Legacy PDF dosyası silindi: ${legacyPdfPath}`);
+      logger.info({ orderId, legacyPdfPath, context: "InvoiceFileService" }, "Legacy PDF dosyası silindi");
     }
   }
 

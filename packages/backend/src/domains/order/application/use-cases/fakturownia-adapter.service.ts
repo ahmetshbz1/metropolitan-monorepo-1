@@ -4,6 +4,7 @@
 
 import type { InvoiceData } from "@metropolitan/shared/types/order";
 
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import type {
   FakturowniaInvoice,
   FakturowniaInvoiceItem,
@@ -65,7 +66,7 @@ export class FakturowniaAdapterService {
       const date = new Date(isoDateString);
       return date.toISOString().split("T")[0]; // YYYY-MM-DD formatı
     } catch (error) {
-      console.error("Date formatting error:", error);
+      logger.error({ error, context: "FakturowniaAdapterService" }, "Date formatting error");
       return new Date().toISOString().split("T")[0]; // Fallback to today
     }
   }

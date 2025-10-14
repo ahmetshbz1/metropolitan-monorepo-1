@@ -2,6 +2,7 @@
 //  metropolitan backend
 //  Created by Ahmet on 10.07.2025.
 
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { redis } from "../../../../shared/infrastructure/database/redis";
 
 export class InvoiceCacheService {
@@ -38,7 +39,7 @@ export class InvoiceCacheService {
 
       return null;
     } catch (error) {
-      console.error("Cache okuma hatası:", error);
+      logger.error({ error, context: "InvoiceCacheService" }, "Cache okuma hatası");
       return null; // Cache hatası durumunda null dön, PDF yeniden oluşturulsun
     }
   }
@@ -54,9 +55,9 @@ export class InvoiceCacheService {
 
       await redis.setex(cacheKey, this.CACHE_TTL, base64Data);
 
-      console.log(`Fatura PDF cache'lendi: ${orderId}`);
+      logger.info({ orderId, context: "InvoiceCacheService" }, "Fatura PDF cache'lendi");
     } catch (error) {
-      console.error("Cache yazma hatası:", error);
+      logger.error({ error, context: "InvoiceCacheService" }, "Cache yazma hatası");
       // Cache hatası durumunda sessizce devam et, PDF oluşturma işlemini kesme
     }
   }
@@ -69,9 +70,9 @@ export class InvoiceCacheService {
       const cacheKey = this.getCacheKey(orderId);
       await redis.del(cacheKey);
 
-      console.log(`Fatura cache temizlendi: ${orderId}`);
+      logger.info({ orderId, context: "InvoiceCacheService" }, "Fatura cache temizlendi");
     } catch (error) {
-      console.error("Cache temizleme hatası:", error);
+      logger.error({ error, context: "InvoiceCacheService" }, "Cache temizleme hatası");
     }
   }
 
@@ -103,7 +104,7 @@ export class InvoiceCacheService {
         memoryUsage,
       };
     } catch (error) {
-      console.error("Cache stats hatası:", error);
+      logger.error({ error, context: "InvoiceCacheService" }, "Cache stats hatası");
       return { totalKeys: 0, memoryUsage: "N/A" };
     }
   }
@@ -116,9 +117,9 @@ export class InvoiceCacheService {
       const cacheKey = this.getFakturowniaIdCacheKey(orderId);
       await redis.setex(cacheKey, this.CACHE_TTL, fakturowniaId.toString());
 
-      console.log(`Fakturownia ID cache'lendi: ${orderId} -> ${fakturowniaId}`);
+      logger.info({ orderId, fakturowniaId, context: "InvoiceCacheService" }, "Fakturownia ID cache'lendi");
     } catch (error) {
-      console.error("Fakturownia ID cache yazma hatası:", error);
+      logger.error({ error, context: "InvoiceCacheService" }, "Fakturownia ID cache yazma hatası");
     }
   }
 
@@ -137,7 +138,7 @@ export class InvoiceCacheService {
 
       return null;
     } catch (error) {
-      console.error("Fakturownia ID cache okuma hatası:", error);
+      logger.error({ error, context: "InvoiceCacheService" }, "Fakturownia ID cache okuma hatası");
       return null;
     }
   }
@@ -152,9 +153,9 @@ export class InvoiceCacheService {
 
       await redis.del(pdfCacheKey, fakturowniaCacheKey);
 
-      console.log(`Fatura ve Fakturownia cache temizlendi: ${orderId}`);
+      logger.info({ orderId, context: "InvoiceCacheService" }, "Fatura ve Fakturownia cache temizlendi");
     } catch (error) {
-      console.error("Kombinasyon cache temizleme hatası:", error);
+      logger.error({ error, context: "InvoiceCacheService" }, "Kombinasyon cache temizleme hatası");
     }
   }
 
@@ -170,13 +171,13 @@ export class InvoiceCacheService {
       if (allKeys.length > 0) {
         const result = await redis.del(...allKeys);
         const deletedCount = typeof result === "number" ? result : 0;
-        console.log(`${deletedCount} fatura cache'i (PDF + Fakturownia ID) temizlendi`);
+        logger.info({ deletedCount, context: "InvoiceCacheService" }, "Fatura cache'leri (PDF + Fakturownia ID) temizlendi");
         return deletedCount;
       }
 
       return 0;
     } catch (error) {
-      console.error("Tüm cache temizleme hatası:", error);
+      logger.error({ error, context: "InvoiceCacheService" }, "Tüm cache temizleme hatası");
       return 0;
     }
   }

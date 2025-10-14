@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import { orders } from "../../../../../shared/infrastructure/database/schema";
 import { WebhookStockRollbackService } from "../../../../payment/application/webhook/stock-rollback.service";
@@ -98,17 +99,17 @@ export class UpdateOrderStatusService {
     // Sipariş iptal ediliyorsa stokları geri ekle
     if (status === "cancelled") {
       try {
-        console.log(`🔄 Sipariş iptal edildi, stoklar geri ekleniyor: ${orderId}`);
+        logger.info({ orderId, context: "UpdateOrderStatusService" }, "Sipariş iptal edildi, stoklar geri ekleniyor");
         const rollbackResult = await WebhookStockRollbackService.rollbackOrderStock(orderId);
 
         if (rollbackResult.success) {
-          console.log(`✅ Stok rollback başarılı: ${rollbackResult.message}`);
+          logger.info({ orderId, message: rollbackResult.message, context: "UpdateOrderStatusService" }, "Stok rollback başarılı");
         } else {
-          console.warn(`⚠️ Stok rollback kısmen başarısız: ${rollbackResult.errors.join(", ")}`);
+          logger.warn({ orderId, errors: rollbackResult.errors, context: "UpdateOrderStatusService" }, "Stok rollback kısmen başarısız");
           // Stok rollback hatası sipariş iptal işlemini engellemez
         }
       } catch (rollbackError) {
-        console.error(`❌ Stok rollback hatası (${orderId}):`, rollbackError);
+        logger.error({ orderId, error: rollbackError, context: "UpdateOrderStatusService" }, "Stok rollback hatası");
         // Stok rollback hatası sipariş iptal işlemini engellemez
       }
     }

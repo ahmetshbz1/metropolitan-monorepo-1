@@ -8,6 +8,7 @@ import {
   AdminAuthError,
   AdminAuthService,
 } from "../../application/use-cases/auth/admin-auth.service";
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 
 import { createAdminRouter } from "./admin-router.factory";
 
@@ -32,7 +33,7 @@ export const adminAuthRoutes = createAdminRouter("/admin", {
         return { success: false, message: error.message };
       }
 
-      console.error("Admin giriş hatası", error);
+      logger.error({ error, context: "AdminAuthRoutes" }, "Admin giriş hatası");
       set.status = 500;
       return {
         success: false,

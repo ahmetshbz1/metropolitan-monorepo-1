@@ -2,6 +2,7 @@ import { t } from "elysia";
 
 import { GetCompaniesService } from "../../application/use-cases/companies/get-companies.service";
 import { UpdateCompanyService } from "../../application/use-cases/companies/update-company.service";
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { createAdminRouter } from "./admin-router.factory";
 
 const updateCompanySchema = t.Object({
@@ -15,7 +16,7 @@ export const adminCompaniesRoutes = createAdminRouter("/admin/companies")
       const companies = await GetCompaniesService.execute();
       return { companies };
     } catch (error) {
-      console.error("Admin companies error:", error);
+      logger.error({ error, context: "AdminCompaniesRoutes" }, "Admin companies error");
       set.status = 400;
       return {
         success: false,
