@@ -132,6 +132,9 @@
         "measurementId": ""
       }
     },
-    "owner": "metropolitanfg"
+    "owner": "metropolitanfg",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
   }
 }
