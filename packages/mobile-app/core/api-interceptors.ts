@@ -139,8 +139,10 @@ export function setupResponseInterceptor(api: AxiosInstance) {
       }
 
       // Check for user not found scenarios (session invalid but token still valid)
-      const isUserNotFound = 
-        error.response?.status === 401 ||
+      // NOT: 401 status code tek başına "user not found" anlamına gelmez!
+      // Token expire olduğunda da 401 döner, o durumda refresh denemesi gerekir.
+      // Sadece backend'den explicit "user not found" mesajı gelirse logout yap.
+      const isUserNotFound =
         error.response?.data?.code === "USER_NOT_FOUND" ||
         error.response?.data?.message === "User not found";
 
