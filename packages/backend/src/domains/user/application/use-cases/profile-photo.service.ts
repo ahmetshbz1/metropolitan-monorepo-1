@@ -13,6 +13,8 @@ import { users } from "../../../../shared/infrastructure/database/schema";
 
 const UPLOAD_DIR = path.join(
   process.cwd(),
+  "packages",
+  "backend",
   "public",
   "uploads",
   "profile-photos"
