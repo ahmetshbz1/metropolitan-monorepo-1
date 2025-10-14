@@ -16,7 +16,7 @@ export const uploadProfilePhoto = async (
     const filename = imageUri.split("/").pop() || "photo.jpg";
     const match = /\.(\w+)$/.exec(filename);
     let type = "image/jpeg"; // Varsayılan tip
-    
+
     if (match) {
       const ext = match[1].toLowerCase();
       if (ext === "png") {
@@ -25,6 +25,12 @@ export const uploadProfilePhoto = async (
         type = "image/jpeg";
       } else if (ext === "gif") {
         type = "image/gif";
+      } else if (ext === "heic") {
+        type = "image/heic";
+      } else if (ext === "heif") {
+        type = "image/heif";
+      } else if (ext === "webp") {
+        type = "image/webp";
       }
     }
     
