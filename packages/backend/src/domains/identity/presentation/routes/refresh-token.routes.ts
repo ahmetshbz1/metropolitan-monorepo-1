@@ -10,6 +10,7 @@ import {
   createRateLimiter,
   rateLimitConfigs,
 } from "../../../../shared/infrastructure/middleware/rate-limit";
+import { redis } from "../../../../shared/infrastructure/database/redis";
 import {
   generateDeviceFingerprint,
   extractDeviceInfo,
@@ -68,18 +69,53 @@ export const refreshTokenRoutes = createApp()
         const deviceFingerprintChanged = payload.deviceId !== currentDeviceId;
 
         if (deviceFingerprintChanged) {
-          // Device fingerprint changed - graceful migration to new fingerprint
+          // SECURITY: Device fingerprint changed - create NEW session with NEW createdAt
+          // Bu sayede session extension attack önlenir
+
+          // Calculate changed fields for logging
+          const changedFields: string[] = [];
+          const oldDeviceInfo = extractDeviceInfo({
+            "user-agent": headers["user-agent"],
+            "x-platform": headers["x-platform"],
+            "x-device-model": headers["x-device-model"],
+            "x-timezone": headers["x-timezone"],
+            "accept-language": headers["accept-language"],
+          });
+
+          if (oldDeviceInfo.timezone !== deviceInfo.timezone) changedFields.push("timezone");
+          if (oldDeviceInfo.userAgent !== deviceInfo.userAgent) changedFields.push("userAgent");
+          if (oldDeviceInfo.platform !== deviceInfo.platform) changedFields.push("platform");
+          if (oldDeviceInfo.deviceModel !== deviceInfo.deviceModel) changedFields.push("deviceModel");
+          if (oldDeviceInfo.language !== deviceInfo.language) changedFields.push("language");
+
+          // Get old session info for logging
+          const oldSessionKey = `device_session:${payload.sub}:${payload.deviceId}`;
+          const oldSessionData = await redis.get(oldSessionKey);
+          let oldSessionAge = 0;
+
+          if (oldSessionData) {
+            try {
+              const oldSession = JSON.parse(oldSessionData as string);
+              oldSessionAge = Math.floor((Date.now() - oldSession.createdAt) / (24 * 60 * 60 * 1000)); // days
+            } catch {
+              // Ignore parse errors
+            }
+          }
+
           log.warn({
             userId: payload.sub,
             oldDeviceId: payload.deviceId,
             newDeviceId: currentDeviceId,
-            message: "Device fingerprint changed - creating new session with new fingerprint",
+            changedFields,
+            oldSessionAgeDays: oldSessionAge,
+            message: "Device fingerprint changed - creating NEW session (createdAt reset for security)",
           });
 
           // Invalidate old session
           await invalidateSession(payload.sessionId);
 
-          // Create new session with new device fingerprint
+          // Create NEW session with CURRENT timestamp (createdAt = now)
+          // SECURITY: Bu sayede saldırgan fingerprint değiştirerek session'ı uzatamaz
           const newSessionId = generateSessionId();
           await storeDeviceSession(
             payload.sub,
@@ -88,6 +124,9 @@ export const refreshTokenRoutes = createApp()
             deviceInfo,
             headers["x-forwarded-for"] || headers["x-real-ip"]
           );
+
+          // NOT: Artık createdAt'ı eski session'dan kopyalamıyoruz
+          // Yeni session her zaman Date.now() ile başlıyor
 
           // Generate new access token with new device fingerprint
           const newAccessJTI = generateJTI();

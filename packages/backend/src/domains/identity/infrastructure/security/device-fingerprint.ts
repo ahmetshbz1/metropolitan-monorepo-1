@@ -6,6 +6,10 @@ import { createHash, randomBytes } from "crypto";
 
 import { redis } from "../../../../shared/infrastructure/database/redis";
 
+// Session security constants
+export const SESSION_IDLE_TIMEOUT = 30 * 24 * 60 * 60 * 1000; // 30 days idle timeout (milliseconds)
+export const SESSION_MAX_LIFETIME = 90 * 24 * 60 * 60 * 1000; // 90 days maximum session lifetime (milliseconds)
+
 // Device info interface
 export interface DeviceInfo {
   userAgent?: string;
@@ -213,7 +217,11 @@ export async function verifyDeviceSession(
 }
 
 /**
- * Update session activity
+ * Update session activity with throttling for performance
+ * Uses sliding window with maximum lifetime for security
+ *
+ * Throttling: Session TTL yenileme sadece 5 dakikada bir yapılır
+ * Bu sayede her request'te Redis write overhead'i azalır
  */
 export async function updateSessionActivity(
   userId: string,
@@ -225,15 +233,72 @@ export async function updateSessionActivity(
   if (sessionData) {
     try {
       const session: SessionInfo = JSON.parse(sessionData as string);
-      session.lastActivity = Date.now();
+      const now = Date.now();
 
-      // Update with remaining TTL
-      const ttl = await redis.ttl(key);
-      if (ttl > 0) {
-        await redis.setex(key, ttl, JSON.stringify(session));
+      // Clock skew protection: Gelecekteki timestamp'leri reddet
+      if (session.createdAt > now + 60000) {
+        console.error(`[SECURITY] Invalid session timestamp detected (clock skew) for user: ${userId}`);
+        await redis.del(key);
+        const sessionKey = `session:${session.sessionId}`;
+        await redis.del(sessionKey);
+        return;
       }
-    } catch {
-      // Session corrupted, ignore
+
+      // Check if session has exceeded maximum lifetime
+      const sessionAge = Math.max(0, now - session.createdAt);
+      if (sessionAge >= SESSION_MAX_LIFETIME) {
+        console.warn(`[SECURITY] Session exceeded max lifetime for user: ${userId}, age: ${Math.floor(sessionAge / (24 * 60 * 60 * 1000))} days`);
+        await redis.del(key);
+
+        const sessionKey = `session:${session.sessionId}`;
+        await redis.del(sessionKey);
+        return;
+      }
+
+      // Throttling: Sadece son activity'den 5 dakika geçtiyse TTL yenile
+      const REFRESH_THRESHOLD = 5 * 60 * 1000; // 5 dakika
+      const timeSinceLastActivity = now - session.lastActivity;
+
+      if (timeSinceLastActivity < REFRESH_THRESHOLD) {
+        // TTL yenilemeye gerek yok, Redis write overhead'inden kaçın
+        return;
+      }
+
+      // Update last activity
+      session.lastActivity = now;
+
+      // Calculate remaining lifetime
+      const remainingLifetime = SESSION_MAX_LIFETIME - sessionAge;
+      const remainingLifetimeSeconds = Math.floor(remainingLifetime / 1000);
+
+      // Use the smaller of: idle timeout or remaining lifetime
+      const IDLE_TIMEOUT_SECONDS = Math.floor(SESSION_IDLE_TIMEOUT / 1000);
+      const ttl = Math.min(IDLE_TIMEOUT_SECONDS, remainingLifetimeSeconds);
+
+      // Safety check: TTL must be positive
+      if (ttl <= 0) {
+        console.warn(`[SECURITY] Session TTL calculated as ${ttl}, deleting session for user: ${userId}`);
+        await redis.del(key);
+        const sessionKey = `session:${session.sessionId}`;
+        await redis.del(sessionKey);
+        return;
+      }
+
+      // Store with calculated TTL
+      await redis.setex(key, ttl, JSON.stringify(session));
+
+      // Also update session lookup key TTL
+      const sessionKey = `session:${session.sessionId}`;
+      const sessionLookupData = await redis.get(sessionKey);
+      if (sessionLookupData) {
+        await redis.setex(sessionKey, ttl, sessionLookupData as string);
+      }
+    } catch (error) {
+      // JSON parse error veya corrupt session
+      if (error instanceof SyntaxError) {
+        console.error(`[SECURITY] Corrupt session data detected for user: ${userId}, deleting`);
+        await redis.del(key);
+      }
     }
   }
 }
@@ -331,6 +396,7 @@ export async function getUserSessions(userId: string): Promise<SessionInfo[]> {
 
 /**
  * Store refresh token with device binding
+ * Respects session maximum lifetime for security
  */
 export async function storeRefreshToken(
   userId: string,
@@ -339,6 +405,36 @@ export async function storeRefreshToken(
   sessionId: string,
   jti: string
 ): Promise<void> {
+  // Get session to check its creation time
+  const sessionKey = `device_session:${userId}:${deviceId}`;
+  const sessionData = await redis.get(sessionKey);
+
+  let sessionCreatedAt = Date.now(); // Default to now if session not found
+  if (sessionData) {
+    try {
+      const session: SessionInfo = JSON.parse(sessionData as string);
+      sessionCreatedAt = session.createdAt;
+    } catch {
+      // Session corrupted, use current time
+      console.warn(`[SECURITY] Could not parse session for refresh token TTL calculation, using current time`);
+    }
+  }
+
+  // Calculate TTL based on session lifetime
+  const sessionAge = Date.now() - sessionCreatedAt;
+  const remainingLifetime = SESSION_MAX_LIFETIME - sessionAge;
+  const remainingLifetimeSeconds = Math.floor(remainingLifetime / 1000);
+
+  // Refresh token should not outlive the session
+  const REFRESH_TOKEN_TTL = 30 * 24 * 60 * 60; // 30 days
+  const ttl = Math.min(REFRESH_TOKEN_TTL, remainingLifetimeSeconds);
+
+  // Safety check: TTL must be positive
+  if (ttl <= 0) {
+    console.warn(`[SECURITY] Refresh token TTL calculated as ${ttl}, not storing for user: ${userId}`);
+    return;
+  }
+
   // Clean up old refresh tokens for this device
   const pattern = `refresh_token:${userId}:*`;
   const existingKeys = await redis.keys(pattern);
@@ -371,8 +467,8 @@ export async function storeRefreshToken(
     createdAt: Date.now(),
   };
 
-  // Store with 30-day TTL
-  await redis.setex(key, 30 * 24 * 60 * 60, JSON.stringify(data));
+  // Store with calculated TTL (respects session max lifetime)
+  await redis.setex(key, ttl, JSON.stringify(data));
 }
 
 /**
