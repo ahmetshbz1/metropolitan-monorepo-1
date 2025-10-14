@@ -198,48 +198,48 @@ const protectedProfileRoutes = createApp()
           });
 
           console.log(`New device token saved for user ${userId}`);
-        }
 
-        // Test bildirimi gönder
-        try {
-          const welcomeNotification = getNotificationTranslation(
-            'welcome',
-            body.language || 'en'
-          );
+          // Sadece yeni token için hoş geldiniz bildirimi gönder
+          try {
+            const welcomeNotification = getNotificationTranslation(
+              'welcome',
+              body.language || 'en'
+            );
 
-          const response = await fetch('https://exp.host/--/api/v2/push/send', {
-            method: 'POST',
-            headers: {
-              Accept: 'application/json',
-              'Accept-encoding': 'gzip, deflate',
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              to: body.token,
-              title: welcomeNotification.title,
-              body: welcomeNotification.body,
-              data: { screen: '/(tabs)' },
-              sound: 'default',
-              badge: 1,
-            }),
-          });
-
-          const result = await response.json();
-          console.log('Test notification sent:', result);
-
-          // Bildirimi veritabanına da kaydet
-          if (result.data && result.data.status === 'ok') {
-            await createNotification(userId, {
-              title: welcomeNotification.title,
-              body: welcomeNotification.body,
-              type: 'system',
-              data: { screen: '/(tabs)' },
-              source: 'push',
-              pushId: result.data.id,
+            const response = await fetch('https://exp.host/--/api/v2/push/send', {
+              method: 'POST',
+              headers: {
+                Accept: 'application/json',
+                'Accept-encoding': 'gzip, deflate',
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                to: body.token,
+                title: welcomeNotification.title,
+                body: welcomeNotification.body,
+                data: { screen: '/(tabs)' },
+                sound: 'default',
+                badge: 1,
+              }),
             });
+
+            const result = await response.json();
+            console.log('Welcome notification sent:', result);
+
+            // Bildirimi veritabanına da kaydet
+            if (result.data && result.data.status === 'ok') {
+              await createNotification(userId, {
+                title: welcomeNotification.title,
+                body: welcomeNotification.body,
+                type: 'system',
+                data: { screen: '/(tabs)' },
+                source: 'push',
+                pushId: result.data.id,
+              });
+            }
+          } catch (error) {
+            console.error('Welcome notification error:', error);
           }
-        } catch (error) {
-          console.error('Test notification error:', error);
         }
 
         return {
