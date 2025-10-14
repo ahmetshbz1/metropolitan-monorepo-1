@@ -234,6 +234,29 @@ export const app = new Elysia()
       set.status = 500;
       return "Internal Server Error";
     }
+  })
+  .get("/uploads/profile-photos/:filename", async ({ params, set }) => {
+    const uploadDir =
+      envConfig.NODE_ENV === "production"
+        ? "/app/packages/backend/public/uploads/profile-photos"
+        : "packages/backend/public/uploads/profile-photos";
+
+    const filePath = `${uploadDir}/${params.filename}`;
+
+    try {
+      const file = Bun.file(filePath);
+      const exists = await file.exists();
+
+      if (!exists) {
+        set.status = 404;
+        return "Not Found";
+      }
+
+      return file;
+    } catch (error) {
+      set.status = 500;
+      return "Internal Server Error";
+    }
   });
 
 if (process.env.NODE_ENV !== "test") {
