@@ -17,6 +17,7 @@ interface GetProductsParams {
   limit?: number;
   offset?: number;
   search?: string;
+  categoryId?: string;
 }
 
 interface AdminProductListItem {
@@ -129,7 +130,7 @@ const toInt = (value: number | string | null | undefined, fallback = 0): number 
 };
 
 export class AdminGetProductsService {
-  static async execute({ limit = 50, offset = 0, search }: GetProductsParams) {
+  static async execute({ limit = 50, offset = 0, search, categoryId }: GetProductsParams) {
     const safeLimit = Math.min(Math.max(limit, 1), 100);
     const safeOffset = Math.max(offset, 0);
 
@@ -158,6 +159,11 @@ export class AdminGetProductsService {
           matchingProductIds.length > 0 ? inArray(products.id, matchingProductIds) : sql`false`
         )
       );
+    }
+
+    // Kategoriye göre filtreleme
+    if (categoryId) {
+      whereConditions.push(eq(products.categoryId, categoryId));
     }
 
     const whereClause = whereConditions.length > 0 ? and(...whereConditions) : undefined;

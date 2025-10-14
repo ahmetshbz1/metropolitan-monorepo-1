@@ -91,6 +91,7 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
       const limit = query.limit ? Number(query.limit) : undefined;
       const offset = query.offset ? Number(query.offset) : undefined;
       const search = query.search || undefined;
+      const categoryId = query.categoryId || undefined;
 
       if (
         (limit !== undefined && Number.isNaN(limit)) ||
@@ -108,6 +109,7 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
           limit,
           offset,
           search,
+          categoryId,
         });
         return result;
       } catch (error) {
@@ -124,6 +126,7 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
         limit: t.Optional(t.String()),
         offset: t.Optional(t.String()),
         search: t.Optional(t.String()),
+        categoryId: t.Optional(t.String()),
       }),
     }
   )

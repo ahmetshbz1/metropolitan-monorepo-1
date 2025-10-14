@@ -74,6 +74,7 @@ export const getProducts = async (params?: {
   limit?: number;
   offset?: number;
   search?: string;
+  categoryId?: string;
 }): Promise<ProductsListResponse> => {
   const searchParams = new URLSearchParams();
   if (params?.limit !== undefined) {
@@ -84,6 +85,9 @@ export const getProducts = async (params?: {
   }
   if (params?.search) {
     searchParams.append("search", params.search);
+  }
+  if (params?.categoryId) {
+    searchParams.append("categoryId", params.categoryId);
   }
 
   const query = searchParams.toString();

@@ -16,12 +16,16 @@ import {
   Image,
   Pagination,
   Input,
+  Select,
+  SelectItem,
   type Selection,
 } from "@heroui/react";
 import { MoreVertical, ImageOff, Search } from "lucide-react";
 import { getProducts } from "./api";
 import type { AdminProduct } from "./types";
 import { API_BASE_URL } from "../../config/env";
+import { getCategories } from "../categories/api";
+import type { AdminCategory } from "../categories/types";
 
 interface ProductListProps {
   onEdit: (product: AdminProduct) => void;
@@ -60,6 +64,8 @@ export const ProductList = ({
   const [offset, setOffset] = useState(0);
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set<string>());
   const [searchQuery, setSearchQuery] = useState("");
+  const [categories, setCategories] = useState<AdminCategory[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
 
   const emitSelection = useCallback(
     (keys: Set<string>) => {
@@ -83,7 +89,8 @@ export const ProductList = ({
       const response = await getProducts({
         limit,
         offset,
-        search: searchQuery || undefined
+        search: searchQuery || undefined,
+        categoryId: selectedCategoryId || undefined,
       });
       setProducts(response.items);
       setTotal(response.total);
@@ -92,11 +99,23 @@ export const ProductList = ({
     } finally {
       setIsLoading(false);
     }
-  }, [limit, offset, searchQuery]);
+  }, [limit, offset, searchQuery, selectedCategoryId]);
 
   useEffect(() => {
     void loadProducts();
   }, [loadProducts, refreshTrigger]);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const response = await getCategories();
+        setCategories(response.items);
+      } catch (err) {
+        console.error("Kategoriler yüklenemedi:", err);
+      }
+    };
+    void loadCategories();
+  }, []);
 
   useEffect(() => {
     const availableIds = new Set(products.map((product) => product.productId));
@@ -134,12 +153,17 @@ export const ProductList = ({
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
-    setOffset(0); // Search değiştiğinde ilk sayfaya dön
+    setOffset(0);
   };
 
   const handleSearchClear = () => {
     setSearchQuery("");
-    setOffset(0); // Search temizlendiğinde ilk sayfaya dön
+    setOffset(0);
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setSelectedCategoryId(value);
+    setOffset(0);
   };
 
   const formatPrice = (price: number | null, currency: string) => {
@@ -182,21 +206,43 @@ export const ProductList = ({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3">
-        <Input
-          size="sm"
-          value={searchQuery}
-          onValueChange={handleSearchChange}
-          placeholder="Ürün adı, kodu veya marka"
-          startContent={<Search className="h-4 w-4 text-slate-400" />}
-          onClear={handleSearchClear}
-          isClearable
-          aria-label="Ürün arama"
-          className="max-w-sm"
-        />
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <Input
+            size="sm"
+            value={searchQuery}
+            onValueChange={handleSearchChange}
+            placeholder="Ürün adı, kodu veya marka"
+            startContent={<Search className="h-4 w-4 text-slate-400" />}
+            onClear={handleSearchClear}
+            isClearable
+            aria-label="Ürün arama"
+            className="max-w-sm"
+          />
+          <Select
+            size="sm"
+            placeholder="Tüm kategoriler"
+            aria-label="Kategori filtrele"
+            className="max-w-xs"
+            selectedKeys={selectedCategoryId ? [selectedCategoryId] : []}
+            onSelectionChange={(keys) => {
+              const selectedKey = Array.from(keys)[0] as string | undefined;
+              handleCategoryChange(selectedKey || "");
+            }}
+          >
+            <SelectItem key="" value="">
+              Tüm kategoriler
+            </SelectItem>
+            {categories.map((category) => (
+              <SelectItem key={category.id} value={category.id}>
+                {category.translations.tr?.name || category.slug}
+              </SelectItem>
+            ))}
+          </Select>
+        </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <span className="text-sm text-slate-600 dark:text-slate-400">
-              {searchQuery ? "Filtrelenmiş: " : "Toplam: "}
+              {searchQuery || selectedCategoryId ? "Filtrelenmiş: " : "Toplam: "}
             </span>
             <Chip size="sm" variant="flat" color="primary">
               {total}
