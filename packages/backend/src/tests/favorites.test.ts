@@ -13,9 +13,9 @@ import {
 import { eq } from "drizzle-orm";
 import { sign } from "jsonwebtoken";
 import { app } from "../..";
-import { db } from "../db/connection";
-import { favorites, users } from "../db/schema";
-import { seedDatabase } from "../db/seed";
+import { db } from "../shared/infrastructure/database/connection";
+import { favorites, users } from "../shared/infrastructure/database/schema";
+import { seedDatabase } from "../shared/infrastructure/database/seed";
 
 describe("Favorites API", () => {
   let authToken: string;

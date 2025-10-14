@@ -2,7 +2,7 @@
 //  metropolitan backend
 //  Created by Ahmet on 15.01.2025.
 
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { db as sharedDb } from "../connection";
 import { storageConditionTranslations } from "../schema";
 
@@ -38,6 +38,32 @@ export class StorageConditionTranslationService {
     const translations: Record<string, string> = {};
     for (const result of results) {
       translations[result.languageCode] = result.translation;
+    }
+
+    return translations;
+  }
+
+  async getBatchTranslations(
+    conditionKeys: string[],
+    languageCode: string
+  ): Promise<Record<string, string>> {
+    if (conditionKeys.length === 0) {
+      return {};
+    }
+
+    const results = await this.db
+      .select()
+      .from(storageConditionTranslations)
+      .where(
+        and(
+          inArray(storageConditionTranslations.conditionKey, conditionKeys),
+          eq(storageConditionTranslations.languageCode, languageCode)
+        )
+      );
+
+    const translations: Record<string, string> = {};
+    for (const result of results) {
+      translations[result.conditionKey] = result.translation;
     }
 
     return translations;

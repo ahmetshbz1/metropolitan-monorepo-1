@@ -16,15 +16,18 @@ import {
 } from "../../../../shared/infrastructure/database/schema";
 import { PushNotificationService } from "../../../../shared/application/services/push-notification.service";
 import { getOrderStatusNotificationWithNumber } from "../../../../shared/application/services/notification-translations";
+import type { OrderQueryResult, OrderWithItems } from "../types/order-tracking.types";
 
 export class OrderTrackingService {
   /**
    * Kullanıcının tüm siparişlerini getirir
+   * Tek query ile tüm ilişkili verileri JOIN ile alır (N+1 query önlenir)
    */
   static async getUserOrders(userId: string) {
-    return await db
+    const results = await db
       .select({
-        id: orders.id,
+        // Order fields
+        orderId: orders.id,
         orderNumber: orders.orderNumber,
         status: orders.status,
         totalAmount: orders.totalAmount,
@@ -37,18 +40,93 @@ export class OrderTrackingService {
         updatedAt: orders.updatedAt,
         paymentStatus: orders.paymentStatus,
         paymentMethodType: orders.paymentMethodType,
-        shippingAddress: {
-          addressTitle: addresses.addressTitle,
-          street: addresses.street,
-          city: addresses.city,
-          postalCode: addresses.postalCode,
-          country: addresses.country,
-        },
+
+        // Address fields
+        addressTitle: addresses.addressTitle,
+        addressStreet: addresses.street,
+        addressCity: addresses.city,
+        addressPostalCode: addresses.postalCode,
+        addressCountry: addresses.country,
+
+        // Order item fields (nullable - LEFT JOIN)
+        itemId: orderItems.id,
+        itemQuantity: orderItems.quantity,
+        itemUnitPrice: orderItems.unitPrice,
+        itemTotalPrice: orderItems.totalPrice,
+
+        // Product fields (nullable - LEFT JOIN)
+        productId: products.id,
+        productCode: products.productCode,
+        productBrand: products.brand,
+        productSize: products.size,
+        productImageUrl: products.imageUrl,
       })
       .from(orders)
       .innerJoin(addresses, eq(orders.shippingAddressId, addresses.id))
+      .leftJoin(orderItems, eq(orders.id, orderItems.orderId))
+      .leftJoin(products, eq(orderItems.productId, products.id))
       .where(eq(orders.userId, userId))
       .orderBy(desc(orders.createdAt));
+
+    return this.transformToNestedOrders(results);
+  }
+
+  /**
+   * Flat query sonuçlarını nested order yapısına dönüştürür
+   */
+  private static transformToNestedOrders(results: OrderQueryResult[]): OrderWithItems[] {
+    const ordersMap = new Map<string, OrderWithItems>();
+
+    for (const row of results) {
+      // Order henüz map'te yoksa ekle
+      if (!ordersMap.has(row.orderId)) {
+        ordersMap.set(row.orderId, {
+          id: row.orderId,
+          orderNumber: row.orderNumber,
+          status: row.status,
+          totalAmount: row.totalAmount,
+          currency: row.currency,
+          trackingNumber: row.trackingNumber,
+          shippingCompany: row.shippingCompany,
+          estimatedDelivery: row.estimatedDelivery,
+          notes: row.notes,
+          createdAt: row.createdAt,
+          updatedAt: row.updatedAt,
+          paymentStatus: row.paymentStatus,
+          paymentMethodType: row.paymentMethodType,
+          shippingAddress: {
+            addressTitle: row.addressTitle,
+            street: row.addressStreet,
+            city: row.addressCity,
+            postalCode: row.addressPostalCode,
+            country: row.addressCountry,
+          },
+          items: [],
+        });
+      }
+
+      // Order item varsa items array'ine ekle
+      if (row.itemId) {
+        const order = ordersMap.get(row.orderId);
+        if (order) {
+          order.items.push({
+            id: row.itemId,
+            quantity: row.itemQuantity!,
+            unitPrice: row.itemUnitPrice!,
+            totalPrice: row.itemTotalPrice!,
+            product: row.productId ? {
+              id: row.productId,
+              productCode: row.productCode!,
+              brand: row.productBrand!,
+              size: row.productSize!,
+              imageUrl: row.productImageUrl!,
+            } : null,
+          });
+        }
+      }
+    }
+
+    return Array.from(ordersMap.values());
   }
 
   /**

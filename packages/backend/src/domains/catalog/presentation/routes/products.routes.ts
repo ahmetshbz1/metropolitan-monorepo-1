@@ -243,57 +243,71 @@ export const productRoutes = createApp()
         const baseUrl = xfProto && host
           ? `${xfProto}://${host}`
           : new URL(request.url).origin;
+
+        // Batch loading için tüm unique storage conditions topla
         const storageConditionService =
           new StorageConditionTranslationService();
+        const uniqueStorageConditions = new Set<string>();
+        for (const p of allProducts) {
+          if (p.storageConditions) {
+            uniqueStorageConditions.add(p.storageConditions);
+          }
+        }
 
-        const formattedProducts = await Promise.all(
-          allProducts.map(async (p) => {
-            let translatedStorageConditions = p.storageConditions;
-            if (p.storageConditions) {
-              const storageConditionTranslation =
-                await storageConditionService.getTranslation(
-                  p.storageConditions,
-                  lang
-                );
-              translatedStorageConditions =
-                storageConditionTranslation || p.storageConditions;
-            }
+        // Tek query ile tüm translations çek
+        const storageTranslationsMap = new Map<string, string>();
+        if (uniqueStorageConditions.size > 0) {
+          const storageTranslations = await storageConditionService.getBatchTranslations(
+            Array.from(uniqueStorageConditions),
+            lang
+          );
+          for (const [key, translation] of Object.entries(storageTranslations)) {
+            storageTranslationsMap.set(key, translation);
+          }
+        }
 
-            const finalPrice = userType === "corporate"
-              ? (p.corporatePrice ? Number(p.corporatePrice) : Number(p.price) || 0)
-              : (p.individualPrice ? Number(p.individualPrice) : Number(p.price) || 0);
+        // Memory'de map et (N+1 yok artık)
+        const formattedProducts = allProducts.map((p) => {
+          let translatedStorageConditions = p.storageConditions;
+          if (p.storageConditions) {
+            translatedStorageConditions =
+              storageTranslationsMap.get(p.storageConditions) || p.storageConditions;
+          }
 
-            return {
-              id: p.id,
-              name: p.name,
-              description: p.description,
-              image: p.imageUrl ? `${baseUrl}${p.imageUrl}` : "",
-              price: finalPrice,
-              individualPrice: p.individualPrice ? Number(p.individualPrice) : undefined,
-              corporatePrice: p.corporatePrice ? Number(p.corporatePrice) : undefined,
-              minQuantityIndividual: p.minQuantityIndividual ?? 1,
-              minQuantityCorporate: p.minQuantityCorporate ?? 1,
-              quantityPerBox: p.quantityPerBox ?? undefined,
-              currency: p.currency,
-              stock: p.stock ?? 0,
-              category: p.categorySlug,
-              brand: p.brand || "Yayla",
-              size: p.size || undefined,
-              allergens: safeParseAllergens(p.allergens),
-              nutritionalValues: p.nutritionalValues
-                ? JSON.parse(p.nutritionalValues)
-                : undefined,
-              netQuantity: p.netQuantity || undefined,
-              expiryDate: p.expiryDate || undefined,
-              storageConditions: translatedStorageConditions || undefined,
-              manufacturerInfo: p.manufacturerInfo
-                ? JSON.parse(p.manufacturerInfo)
-                : undefined,
-              originCountry: p.originCountry || undefined,
-              badges: p.badges ? JSON.parse(p.badges) : undefined,
-            };
-          })
-        );
+          const finalPrice = userType === "corporate"
+            ? (p.corporatePrice ? Number(p.corporatePrice) : Number(p.price) || 0)
+            : (p.individualPrice ? Number(p.individualPrice) : Number(p.price) || 0);
+
+          return {
+            id: p.id,
+            name: p.name,
+            description: p.description,
+            image: p.imageUrl ? `${baseUrl}${p.imageUrl}` : "",
+            price: finalPrice,
+            individualPrice: p.individualPrice ? Number(p.individualPrice) : undefined,
+            corporatePrice: p.corporatePrice ? Number(p.corporatePrice) : undefined,
+            minQuantityIndividual: p.minQuantityIndividual ?? 1,
+            minQuantityCorporate: p.minQuantityCorporate ?? 1,
+            quantityPerBox: p.quantityPerBox ?? undefined,
+            currency: p.currency,
+            stock: p.stock ?? 0,
+            category: p.categorySlug,
+            brand: p.brand || "Yayla",
+            size: p.size || undefined,
+            allergens: safeParseAllergens(p.allergens),
+            nutritionalValues: p.nutritionalValues
+              ? JSON.parse(p.nutritionalValues)
+              : undefined,
+            netQuantity: p.netQuantity || undefined,
+            expiryDate: p.expiryDate || undefined,
+            storageConditions: translatedStorageConditions || undefined,
+            manufacturerInfo: p.manufacturerInfo
+              ? JSON.parse(p.manufacturerInfo)
+              : undefined,
+            originCountry: p.originCountry || undefined,
+            badges: p.badges ? JSON.parse(p.badges) : undefined,
+          };
+        });
 
         return { success: true, data: formattedProducts };
       },
@@ -364,6 +378,7 @@ export const productRoutes = createApp()
           ? `${xfProto}://${host}`
           : new URL(request.url).origin;
 
+        // Tek ürün için direkt getTranslation kullan (zaten 1 query)
         const storageConditionService = new StorageConditionTranslationService();
 
         let translatedStorageConditions = p.storageConditions;

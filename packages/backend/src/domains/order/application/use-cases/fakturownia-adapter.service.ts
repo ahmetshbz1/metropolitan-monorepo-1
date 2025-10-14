@@ -20,7 +20,7 @@ export class FakturowniaAdapterService {
     const positions: FakturowniaInvoiceItem[] = invoiceData.items.map(
       (item) => {
         const position: FakturowniaInvoiceItem = {
-          name: item.description,
+          name: item.productCode ? `${item.description} (${item.productCode})` : item.description,
           tax: item.vatRate, // Fakturownia'dan sync edilmiş VAT oranı
           total_price_gross: item.totalPrice,
           quantity: item.quantity,

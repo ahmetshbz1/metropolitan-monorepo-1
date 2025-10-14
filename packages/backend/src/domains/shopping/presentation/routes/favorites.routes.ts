@@ -69,13 +69,14 @@ export const favoritesRoutes = createApp()
       )
       .post(
         "/",
-        async ({ db, profile, body, error, log }) => {
+        async ({ db, profile, body, set, log }) => {
           const userId = profile?.sub || profile?.userId;
           const { productId } = body;
 
           if (!userId) {
             log.error({ profile }, "No userId found in profile");
-            return error(401, "Unauthorized - No user ID found");
+            set.status = 401;
+            return { success: false, error: "Unauthorized - No user ID found" };
           }
 
           // Ürün mevcut mu kontrol et
@@ -85,7 +86,8 @@ export const favoritesRoutes = createApp()
 
           if (!productExists) {
             log.error({ productId }, "Product not found");
-            return error(404, "Product not found.");
+            set.status = 404;
+            return { success: false, error: "Product not found." };
           }
 
           // Zaten favorilerde mi kontrol et
@@ -98,7 +100,8 @@ export const favoritesRoutes = createApp()
 
           if (alreadyFavorite) {
             log.info({ userId, productId }, "Product already in favorites");
-            return error(409, "Product is already in favorites.");
+            set.status = 409;
+            return { success: false, error: "Product is already in favorites." };
           }
 
           try {
@@ -111,7 +114,8 @@ export const favoritesRoutes = createApp()
             return { success: true, message: "Product added to favorites." };
           } catch (err) {
             log.error({ err, userId, productId }, "Failed to insert favorite");
-            return error(500, "Failed to add product to favorites");
+            set.status = 500;
+            return { success: false, error: "Failed to add product to favorites" };
           }
         },
         {
@@ -122,7 +126,7 @@ export const favoritesRoutes = createApp()
       )
       .delete(
         "/:productId",
-        async ({ db, profile, params, error }) => {
+        async ({ db, profile, params, set }) => {
           const userId = profile?.sub || profile?.userId;
           const { productId } = params;
 
@@ -137,7 +141,8 @@ export const favoritesRoutes = createApp()
             .returning();
 
           if (deletedFavorite.length === 0) {
-            return error(404, "Favorite not found.");
+            set.status = 404;
+            return { success: false, error: "Favorite not found." };
           }
 
           return { success: true, message: "Product removed from favorites." };
