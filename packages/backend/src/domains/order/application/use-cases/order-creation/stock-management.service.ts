@@ -4,6 +4,7 @@
 
 import type { OrderItem as OrderItemData } from "@metropolitan/shared/types/order";
 
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 import { StockDatabaseSyncService } from "./stock-database-sync.service";
 import { StockRedisOperationsService } from "./stock-redis-operations.service";
 import { StockValidationService } from "./stock-validation.service";
@@ -40,13 +41,14 @@ export class StockManagementService {
         reservations
       );
     } catch (redisError) {
-      console.warn(
-        "Redis stock reservation failed, falling back to database:",
-        redisError
-      );
+      logger.warn({
+        error: redisError instanceof Error ? redisError.message : String(redisError),
+        stack: redisError instanceof Error ? redisError.stack : undefined
+      }, "Redis stock reservation failed, falling back to database");
 
       // Check if this is an insufficient stock error that should be rethrown
       if (
+        redisError instanceof Error &&
         redisError.message &&
         redisError.message.includes("INSUFFICIENT_STOCK")
       ) {
@@ -59,9 +61,11 @@ export class StockManagementService {
       // Sync Redis with database fallback results
       try {
         await StockRedisOperationsService.syncRedisWithDatabaseFallback(orderItemsData);
-        console.log("✅ Redis synced with database fallback");
+        logger.info("Redis synced with database fallback");
       } catch (syncError) {
-        console.warn("⚠️ Failed to sync Redis with database fallback:", syncError);
+        logger.warn({
+          error: syncError instanceof Error ? syncError.message : String(syncError)
+        }, "Failed to sync Redis with database fallback");
       }
     }
   }

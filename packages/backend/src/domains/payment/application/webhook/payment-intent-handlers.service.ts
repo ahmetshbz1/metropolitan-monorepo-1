@@ -3,6 +3,7 @@
 
 import type Stripe from "stripe";
 
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { PaymentIntentValidatorService } from "./payment-intent-validator.service";
 import { PaymentStateHandlersService } from "./payment-state-handlers.service";
 import type { WebhookProcessingResult, WebhookHandler } from "./webhook-types";
@@ -27,7 +28,10 @@ export class PaymentIntentHandlersService {
         paymentIntent.id
       );
     } catch (error) {
-      console.error("Error handling payment_intent.succeeded:", error);
+      logger.error({
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      }, "Error handling payment_intent.succeeded");
       return {
         success: false,
         message: 'Error processing successful payment',
@@ -51,7 +55,10 @@ export class PaymentIntentHandlersService {
 
       return await PaymentStateHandlersService.handleFailure(validation.orderId!);
     } catch (error) {
-      console.error("Error handling payment_intent.payment_failed:", error);
+      logger.error({
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      }, "Error handling payment_intent.payment_failed");
       return {
         success: false,
         message: 'Error processing failed payment',
@@ -68,14 +75,17 @@ export class PaymentIntentHandlersService {
   ): Promise<WebhookProcessingResult> {
     try {
       const validation = PaymentIntentValidatorService.validate(paymentIntent);
-      
+
       if (!validation.isValid) {
         return PaymentIntentValidatorService.createValidationErrorResponse(validation);
       }
 
       return await PaymentStateHandlersService.handleRequiresAction(validation.orderId!);
     } catch (error) {
-      console.error("Error handling payment_intent.requires_action:", error);
+      logger.error({
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      }, "Error handling payment_intent.requires_action");
       return {
         success: false,
         message: 'Error processing payment requiring action',
@@ -92,14 +102,17 @@ export class PaymentIntentHandlersService {
   ): Promise<WebhookProcessingResult> {
     try {
       const validation = PaymentIntentValidatorService.validate(paymentIntent);
-      
+
       if (!validation.isValid) {
         return PaymentIntentValidatorService.createValidationErrorResponse(validation);
       }
 
       return await PaymentStateHandlersService.handleCancellation(validation.orderId!);
     } catch (error) {
-      console.error("Error handling payment_intent.canceled:", error);
+      logger.error({
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      }, "Error handling payment_intent.canceled");
       return {
         success: false,
         message: 'Error processing canceled payment',
@@ -116,14 +129,17 @@ export class PaymentIntentHandlersService {
   ): Promise<WebhookProcessingResult> {
     try {
       const validation = PaymentIntentValidatorService.validate(paymentIntent);
-      
+
       if (!validation.isValid) {
         return PaymentIntentValidatorService.createValidationErrorResponse(validation);
       }
 
       return await PaymentStateHandlersService.handleProcessing(validation.orderId!);
     } catch (error) {
-      console.error("Error handling payment_intent.processing:", error);
+      logger.error({
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined
+      }, "Error handling payment_intent.processing");
       return {
         success: false,
         message: 'Error processing payment in progress',

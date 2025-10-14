@@ -4,6 +4,7 @@
 
 import { eq, sql } from "drizzle-orm";
 
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 import type { RollbackStrategy, RollbackResult } from "../rollback-types";
 
 export class DatabaseRollbackStrategy implements RollbackStrategy {
@@ -39,15 +40,13 @@ export class DatabaseRollbackStrategy implements RollbackStrategy {
               .where(eq(products.id, item.productId));
 
             itemsRolledBack++;
-            console.log(
-              `🔄 Stock rolled back: Product ${item.productId} + ${item.quantity}`
-            );
+            logger.info({ productId: item.productId, quantity: item.quantity }, "Stock rolled back in database");
           } catch (error) {
-            errors.push(
-              `Database rollback failed for ${item.productId}: ${
-                error instanceof Error ? error.message : "Unknown error"
-              }`
-            );
+            const errorMessage = `Database rollback failed for ${item.productId}: ${
+              error instanceof Error ? error.message : "Unknown error"
+            }`;
+            errors.push(errorMessage);
+            logger.error({ productId: item.productId, error: error instanceof Error ? error.message : String(error) }, "Database rollback failed for product");
           }
         }
 
@@ -62,9 +61,7 @@ export class DatabaseRollbackStrategy implements RollbackStrategy {
             })
             .where(eq(orders.id, orderId));
 
-          console.log(
-            `❌ Order cancelled and stock rolled back: ${orderId}`
-          );
+          logger.warn({ orderId, itemsRolledBack }, "Order cancelled and stock rolled back");
         }
       });
 

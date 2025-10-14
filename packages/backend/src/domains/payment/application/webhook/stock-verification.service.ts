@@ -2,6 +2,7 @@
 //  metropolitan backend
 //  Stock verification operations separated from rollback service
 
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { WebhookOrderManagementService } from "./order-management.service";
 import { RedisRollbackStrategy } from "./rollback-strategies/redis-rollback.strategy";
 import type { StockVerificationResult } from "./rollback-types";
@@ -76,15 +77,13 @@ export class StockVerificationService {
         try {
           await RedisStockService.setStockLevel(productId, stockLevel);
           resetProducts.push(productId);
-          console.log(
-            `🔄 Emergency stock reset: ${productId} = ${stockLevel}`
-          );
+          logger.info({ productId, stockLevel }, "Emergency stock reset completed");
         } catch (error) {
-          errors.push(
-            `Failed to reset ${productId}: ${
-              error instanceof Error ? error.message : "Unknown error"
-            }`
-          );
+          const errorMessage = `Failed to reset ${productId}: ${
+            error instanceof Error ? error.message : "Unknown error"
+          }`;
+          errors.push(errorMessage);
+          logger.error({ productId, error: error instanceof Error ? error.message : String(error) }, "Emergency stock reset failed");
         }
       }
 

@@ -1,8 +1,9 @@
 //  "stock-rollback.service.ts"
-//  metropolitan backend  
+//  metropolitan backend
 //  Orchestrates stock rollback operations using strategy pattern
 //  Refactored to use modular rollback strategies
 
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { WebhookOrderManagementService } from "./order-management.service";
 import { DatabaseRollbackStrategy } from "./rollback-strategies/database-rollback.strategy";
 import { RedisRollbackStrategy } from "./rollback-strategies/redis-rollback.strategy";
@@ -22,7 +23,7 @@ export class WebhookStockRollbackService {
     errors: string[];
     message: string;
   }> {
-    console.log(`🔄 Starting stock rollback for order ${orderId}`);
+    logger.info({ orderId }, "Starting stock rollback for order");
 
     // Get order details for rollback
     const orderDetailsResult = await WebhookOrderManagementService

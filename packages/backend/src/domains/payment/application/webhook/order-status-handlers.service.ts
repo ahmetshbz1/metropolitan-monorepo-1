@@ -1,7 +1,8 @@
 // "order-status-handlers.service.ts"
-// metropolitan backend  
+// metropolitan backend
 // Status-specific handler methods for orders
 
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { OrderStatusUpdateService } from "./order-status-update.service";
 import type { OrderStatusUpdate, WebhookProcessingResult } from "./webhook-types";
 
@@ -40,7 +41,7 @@ export class OrderStatusHandlersService {
     if (updateResult.success) {
       const { WebhookOrderManagementService } = await import('./order-management.service');
       const restoreResult = await WebhookOrderManagementService.restoreCartFromOrder(orderId);
-      console.log(`🛒 Cart restore after payment failure: ${restoreResult.message}`);
+      logger.info({ orderId, message: restoreResult.message }, "Cart restored after payment failure");
     }
 
     return updateResult;
@@ -64,7 +65,7 @@ export class OrderStatusHandlersService {
     if (updateResult.success) {
       const { WebhookOrderManagementService } = await import('./order-management.service');
       const restoreResult = await WebhookOrderManagementService.restoreCartFromOrder(orderId);
-      console.log(`🛒 Cart restore after payment cancellation: ${restoreResult.message}`);
+      logger.info({ orderId, message: restoreResult.message }, "Cart restored after payment cancellation");
     }
 
     return updateResult;

@@ -4,6 +4,7 @@
 
 import type Stripe from "stripe";
 
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { PaymentIntentHandlersService } from "./payment-intent-handlers.service";
 import type { SupportedWebhookEvent } from "./webhook-types";
 
@@ -23,9 +24,9 @@ export class WebhookRouterService {
 
     // Get handler for this event type
     const handler = PaymentIntentHandlersService.getHandler(eventType);
-    
+
     if (!handler) {
-      console.log(`Unhandled webhook event type: ${event.type}`);
+      logger.info({ eventType: event.type }, "Unhandled webhook event type");
       return {
         success: true,
         message: `Event type ${event.type} ignored (not implemented)`,
@@ -36,25 +37,25 @@ export class WebhookRouterService {
     try {
       const paymentIntent = event.data.object as Stripe.PaymentIntent;
       const result = await handler.handle(paymentIntent);
-      
+
       if (result.success) {
-        console.log(
-          `✅ Successfully processed ${event.type} for order ${result.orderId}`
-        );
+        logger.info({ eventType: event.type, orderId: result.orderId }, "Successfully processed webhook event");
       } else {
-        console.error(
-          `❌ Failed to process ${event.type}: ${result.message}`
-        );
+        logger.error({ eventType: event.type, message: result.message }, "Failed to process webhook event");
       }
-      
+
       return result;
     } catch (handlerError) {
-      console.error(`Handler error for ${event.type}:`, handlerError);
+      logger.error({
+        eventType: event.type,
+        error: handlerError instanceof Error ? handlerError.message : String(handlerError),
+        stack: handlerError instanceof Error ? handlerError.stack : undefined
+      }, "Handler error for webhook event");
       return {
         success: false,
         message: `Handler error for ${event.type}`,
-        error: handlerError instanceof Error 
-          ? handlerError.message 
+        error: handlerError instanceof Error
+          ? handlerError.message
           : 'Unknown handler error',
       };
     }

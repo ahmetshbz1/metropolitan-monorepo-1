@@ -3,6 +3,7 @@
 
 import { RedisStockService } from "../../../../shared/infrastructure/cache/redis-stock.service";
 import { PushNotificationService } from "../../../../shared/application/services/push-notification.service";
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 
 import { WebhookOrderManagementService } from "./order-management.service";
 import { PaymentIntentActionsService } from "./payment-intent-actions.service";
@@ -25,7 +26,7 @@ export class PaymentStateHandlersService {
     );
 
     if (!idempotencyCheck.shouldProcess) {
-      console.log(`Order ${orderId} already completed, skipping...`);
+      logger.info({ orderId, reason: idempotencyCheck.reason }, "Order already completed, skipping");
       return {
         success: true,
         message: idempotencyCheck.reason,
@@ -43,7 +44,7 @@ export class PaymentStateHandlersService {
       return orderUpdateResult;
     }
 
-    console.log(`✅ Order ${orderId} payment completed successfully`);
+    logger.info({ orderId, paymentIntentId }, "Order payment completed successfully");
 
     // Confirm Redis reservations
     try {
@@ -62,13 +63,13 @@ export class PaymentStateHandlersService {
       for (const item of items) {
         try {
           await RedisStockService.confirmReservation(item.productId, item.quantity);
-          console.log(`✅ Redis reservation confirmed: ${item.productId} x ${item.quantity}`);
+          logger.info({ productId: item.productId, quantity: item.quantity }, "Redis reservation confirmed");
         } catch (redisError) {
-          console.warn(`⚠️ Redis reservation confirmation failed for ${item.productId}:`, redisError);
+          logger.warn({ productId: item.productId, error: redisError instanceof Error ? redisError.message : String(redisError) }, "Redis reservation confirmation failed");
         }
       }
     } catch (error) {
-      console.error(`❌ Redis reservation confirmation error for order ${orderId}:`, error);
+      logger.error({ orderId, error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined }, "Redis reservation confirmation error");
     }
 
     // Clear user's cart
@@ -115,10 +116,10 @@ export class PaymentStateHandlersService {
             type: "payment_success",
           },
         });
-        console.log(`📱 Payment success push sent for order ${order.orderNumber}`);
+        logger.info({ orderId: order.id, orderNumber: order.orderNumber }, "Payment success push notification sent");
       }
     } catch (error) {
-      console.error("Failed to send payment success notification:", error);
+      logger.error({ error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined }, "Failed to send payment success notification");
     }
 
     // Generate invoice asynchronously
@@ -142,7 +143,7 @@ export class PaymentStateHandlersService {
       return orderUpdateResult;
     }
 
-    console.log(`❌ Order ${orderId} payment failed`);
+    logger.warn({ orderId }, "Order payment failed");
 
     // Get order info for notification
     try {
@@ -187,14 +188,14 @@ export class PaymentStateHandlersService {
         });
       }
     } catch (error) {
-      console.error("Failed to send payment failed notification:", error);
+      logger.error({ error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined }, "Failed to send payment failed notification");
     }
 
     // Rollback stock
     const rollbackResult = await WebhookStockRollbackService.rollbackOrderStock(orderId);
 
     if (!rollbackResult.success) {
-      console.error(`Stock rollback failed for order ${orderId}:`, rollbackResult.errors);
+      logger.error({ orderId, errors: rollbackResult.errors }, "Stock rollback failed for order");
     }
 
     return {
@@ -214,7 +215,7 @@ export class PaymentStateHandlersService {
       return orderUpdateResult;
     }
 
-    console.log(`🔐 Order ${orderId} requires additional authentication`);
+    logger.info({ orderId }, "Order requires additional authentication");
 
     return {
       success: true,
@@ -234,7 +235,7 @@ export class PaymentStateHandlersService {
     );
 
     if (!idempotencyCheck.shouldProcess) {
-      console.log(`Order ${orderId} already canceled, skipping...`);
+      logger.info({ orderId, reason: idempotencyCheck.reason }, "Order already canceled, skipping");
       return {
         success: true,
         message: idempotencyCheck.reason,
@@ -249,7 +250,7 @@ export class PaymentStateHandlersService {
       return orderUpdateResult;
     }
 
-    console.log(`🚫 Order ${orderId} payment canceled`);
+    logger.warn({ orderId }, "Order payment canceled");
 
     // Get order info for notification
     try {
@@ -294,14 +295,14 @@ export class PaymentStateHandlersService {
         });
       }
     } catch (error) {
-      console.error("Failed to send payment canceled notification:", error);
+      logger.error({ error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined }, "Failed to send payment canceled notification");
     }
 
     // Rollback stock
     const rollbackResult = await WebhookStockRollbackService.rollbackOrderStock(orderId);
 
     if (!rollbackResult.success) {
-      console.error(`Stock rollback failed for canceled order ${orderId}:`, rollbackResult.errors);
+      logger.error({ orderId, errors: rollbackResult.errors }, "Stock rollback failed for canceled order");
     }
 
     return {
@@ -321,7 +322,7 @@ export class PaymentStateHandlersService {
       return orderUpdateResult;
     }
 
-    console.log(`⏳ Order ${orderId} payment is processing`);
+    logger.info({ orderId }, "Order payment is processing");
 
     return {
       success: true,

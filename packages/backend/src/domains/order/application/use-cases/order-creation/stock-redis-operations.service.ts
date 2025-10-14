@@ -4,6 +4,8 @@
 
 import type { OrderItem as OrderItemData } from "@metropolitan/shared/types/order";
 
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
+
 export interface RedisReservation {
   productId: string;
   userId: string;
@@ -31,7 +33,7 @@ export class StockRedisOperationsService {
       const productId = item.product.id;
       const requestedQuantity = item.quantity;
 
-      console.log(`🔄 Attempting Redis stock reservation for ${productId}`);
+      logger.info({ productId, userId, quantity: requestedQuantity }, "Attempting Redis stock reservation");
 
       const reservation = await RedisStockService.reserveStockAtomic(
         productId,
@@ -46,15 +48,11 @@ export class StockRedisOperationsService {
       });
 
       if (!reservation.success) {
-        console.log(
-          `❌ Redis reservation failed for ${productId}: ${reservation.error}`
-        );
+        logger.warn({ productId, error: reservation.error }, "Redis reservation failed");
         break; // Stop attempting further reservations
       }
 
-      console.log(
-        `✅ Redis stock reserved: ${productId} - Remaining: ${reservation.remainingStock}`
-      );
+      logger.info({ productId, remainingStock: reservation.remainingStock }, "Redis stock reserved successfully");
     }
 
     return {
@@ -81,12 +79,10 @@ export class StockRedisOperationsService {
           reservation.userId,
           reservation.productId
         );
-        console.log(
-          `🔄 Redis reservation rolled back: ${reservation.productId}`
-        );
+        logger.info({ productId: reservation.productId, userId: reservation.userId }, "Redis reservation rolled back");
       }
     } catch (error) {
-      console.error("Failed to rollback Redis reservations:", error);
+      logger.error({ error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined }, "Failed to rollback Redis reservations");
     }
   }
 
@@ -106,13 +102,13 @@ export class StockRedisOperationsService {
       for (const item of orderItemsData) {
         try {
           await RedisStockService.rollbackReservation(userId, item.product.id);
-          console.log(`🔄 Redis reservation rolled back: ${item.product.id}`);
+          logger.info({ productId: item.product.id, userId }, "Redis reservation rolled back from data");
         } catch (error) {
-          console.error(`Failed to rollback Redis reservation for ${item.product.id}:`, error);
+          logger.error({ productId: item.product.id, userId, error: error instanceof Error ? error.message : String(error) }, "Failed to rollback Redis reservation for product");
         }
       }
     } catch (error) {
-      console.error("Failed to rollback Redis reservations from data:", error);
+      logger.error({ error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined }, "Failed to rollback Redis reservations from data");
     }
   }
 
@@ -141,14 +137,14 @@ export class StockRedisOperationsService {
 
           if (product) {
             await RedisStockService.setStockLevel(item.product.id, product.stock);
-            console.log(`🔄 Redis synced with database: ${item.product.id} = ${product.stock}`);
+            logger.info({ productId: item.product.id, stock: product.stock }, "Redis synced with database");
           }
         } catch (error) {
-          console.error(`Failed to sync Redis for ${item.product.id}:`, error);
+          logger.error({ productId: item.product.id, error: error instanceof Error ? error.message : String(error) }, "Failed to sync Redis for product");
         }
       }
     } catch (error) {
-      console.error("Failed to sync Redis with database fallback:", error);
+      logger.error({ error: error instanceof Error ? error.message : String(error), stack: error instanceof Error ? error.stack : undefined }, "Failed to sync Redis with database fallback");
     }
   }
 }
