@@ -11,14 +11,17 @@ import { eq } from "drizzle-orm";
 import { db } from "../../../../shared/infrastructure/database/connection";
 import { users } from "../../../../shared/infrastructure/database/schema";
 
-const UPLOAD_DIR = path.join(
-  process.cwd(),
-  "packages",
-  "backend",
-  "public",
-  "uploads",
-  "profile-photos"
-);
+const UPLOAD_DIR =
+  process.env.NODE_ENV === "production"
+    ? "/app/uploads/profile-photos"
+    : path.join(
+        process.cwd(),
+        "packages",
+        "backend",
+        "public",
+        "uploads",
+        "profile-photos"
+      );
 
 // Güvenlik konfigürasyonu
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB

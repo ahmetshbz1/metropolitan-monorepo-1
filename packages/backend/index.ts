@@ -238,7 +238,7 @@ export const app = new Elysia()
   .get("/uploads/profile-photos/:filename", async ({ params, set }) => {
     const uploadDir =
       envConfig.NODE_ENV === "production"
-        ? "/app/packages/backend/public/uploads/profile-photos"
+        ? "/app/uploads/profile-photos"
         : "packages/backend/public/uploads/profile-photos";
 
     const filePath = `${uploadDir}/${params.filename}`;

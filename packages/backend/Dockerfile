@@ -29,7 +29,7 @@ RUN bun install
 # and /opt/metropolitan/.env copied by deploy script.
 
 # Create uploads directory with proper permissions
-RUN mkdir -p /app/uploads/product-images && chmod -R 755 /app/uploads
+RUN mkdir -p /app/uploads/product-images /app/uploads/profile-photos && chmod -R 755 /app/uploads
 
 EXPOSE 3000
 
