@@ -11,6 +11,7 @@ import { StockSyncService } from "./stock/stock-sync.service";
 
 // Re-export types for backward compatibility
 export type { ReservationResult, StockReservation, StockActivity } from "./stock/stock-config";
+export type { SetStockResult } from "./stock/stock-sync.service";
 
 /**
  * Main Redis Stock Service - Now acts as orchestrator for modular services
@@ -144,6 +145,17 @@ export class RedisStockService {
     stockLevel: number
   ): Promise<void> {
     return StockSyncService.setStockLevel(productId, stockLevel);
+  }
+
+  /**
+   * Set stock level with distributed locking (admin use - race condition safe)
+   */
+  static async setStockLevelWithLock(
+    productId: string,
+    stockLevel: number,
+    adminUserId: string
+  ) {
+    return StockSyncService.setStockLevelWithLock(productId, stockLevel, adminUserId);
   }
 
   /**

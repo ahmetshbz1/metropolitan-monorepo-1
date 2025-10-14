@@ -39,26 +39,27 @@ export class OrderCreationService {
     cartItemsData: CartItemData[],
     totalAmount: number
   ): Promise<OrderCreationResult> {
-    const result = await db.transaction(async (tx) => {
-      // 1. CRITICAL: Stock validation and reservation (delegated)
-      await StockManagementService.validateAndReserveStock(tx, orderItemsData, userId);
+    try {
+      const result = await db.transaction(async (tx) => {
+        // 1. CRITICAL: Stock validation and reservation (delegated)
+        await StockManagementService.validateAndReserveStock(tx, orderItemsData, userId);
 
-      const isStripePayment = PaymentProcessingService.isStripePayment(request.paymentMethodId);
-      const isBankTransfer = request.paymentMethodId === "bank_transfer";
+        const isStripePayment = PaymentProcessingService.isStripePayment(request.paymentMethodId);
+        const isBankTransfer = request.paymentMethodId === "bank_transfer";
 
-      // Get user info for corporate customer check
-      const [user] = await tx
-        .select({
-          id: users.id,
-          userType: users.userType,
-        })
-        .from(users)
-        .where(eq(users.id, userId))
-        .limit(1);
+        // Get user info for corporate customer check
+        const [user] = await tx
+          .select({
+            id: users.id,
+            userType: users.userType,
+          })
+          .from(users)
+          .where(eq(users.id, userId))
+          .limit(1);
 
-      if (!user) {
-        throw new Error("Kullanıcı bulunamadı");
-      }
+        if (!user) {
+          throw new Error("Kullanıcı bulunamadı");
+        }
 
       // Create order (delegated)
       const orderPayload = PaymentProcessingService.createOrderPayload(
@@ -112,21 +113,34 @@ export class OrderCreationService {
       // Push will be sent only after successful payment via webhook
       console.log("🔕 Not sending 'payment pending' push - user hasn't started payment yet");
 
-      return {
-        ...order,
-        stripePaymentIntentId: stripeInfo.paymentIntentId,
-        stripeClientSecret: stripeInfo.clientSecret,
-        stripeCheckoutUrl: stripeInfo.checkoutUrl, // Web için Stripe Checkout URL
-      };
-    });
+        return {
+          ...order,
+          stripePaymentIntentId: stripeInfo.paymentIntentId,
+          stripeClientSecret: stripeInfo.clientSecret,
+          stripeCheckoutUrl: stripeInfo.checkoutUrl, // Web için Stripe Checkout URL
+        };
+      });
 
-    // Check if result is already formatted (bank transfer case)
-    if (result && typeof result === 'object' && 'success' in result && 'order' in result) {
-      return result as OrderCreationResult;
+      // Check if result is already formatted (bank transfer case)
+      if (result && typeof result === 'object' && 'success' in result && 'order' in result) {
+        return result as OrderCreationResult;
+      }
+
+      // Format result for Stripe payment cases
+      return this.formatOrderCreationResult(result);
+    } catch (error) {
+      // Database transaction failed - rollback Redis reservations
+      console.error("Order creation failed, rolling back Redis reservations:", error);
+
+      try {
+        await StockManagementService.rollbackOrderItemsFromData(orderItemsData, userId);
+        console.log("✅ Redis reservations rolled back successfully");
+      } catch (rollbackError) {
+        console.error("❌ Redis rollback failed:", rollbackError);
+      }
+
+      throw error;
     }
-
-    // Format result for Stripe payment cases
-    return this.formatOrderCreationResult(result);
   }
 
   /**

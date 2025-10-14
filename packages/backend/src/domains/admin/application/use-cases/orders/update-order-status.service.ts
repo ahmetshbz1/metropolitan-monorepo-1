@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import { orders } from "../../../../../shared/infrastructure/database/schema";
+import { WebhookStockRollbackService } from "../../../../payment/application/webhook/stock-rollback.service";
 
 export interface UpdateOrderStatusInput {
   orderId: string;
@@ -93,6 +94,24 @@ export class UpdateOrderStatusService {
     }
 
     await db.update(orders).set(updateData).where(eq(orders.id, orderId));
+
+    // Sipariş iptal ediliyorsa stokları geri ekle
+    if (status === "cancelled") {
+      try {
+        console.log(`🔄 Sipariş iptal edildi, stoklar geri ekleniyor: ${orderId}`);
+        const rollbackResult = await WebhookStockRollbackService.rollbackOrderStock(orderId);
+
+        if (rollbackResult.success) {
+          console.log(`✅ Stok rollback başarılı: ${rollbackResult.message}`);
+        } else {
+          console.warn(`⚠️ Stok rollback kısmen başarısız: ${rollbackResult.errors.join(", ")}`);
+          // Stok rollback hatası sipariş iptal işlemini engellemez
+        }
+      } catch (rollbackError) {
+        console.error(`❌ Stok rollback hatası (${orderId}):`, rollbackError);
+        // Stok rollback hatası sipariş iptal işlemini engellemez
+      }
+    }
 
     return {
       success: true,

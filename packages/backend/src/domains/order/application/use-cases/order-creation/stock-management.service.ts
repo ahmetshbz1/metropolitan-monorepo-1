@@ -55,6 +55,14 @@ export class StockManagementService {
 
       // Fallback to database-only reservation for other errors
       await StockDatabaseSyncService.reserveStockInDatabase(tx, orderItemsData);
+
+      // Sync Redis with database fallback results
+      try {
+        await StockRedisOperationsService.syncRedisWithDatabaseFallback(orderItemsData);
+        console.log("✅ Redis synced with database fallback");
+      } catch (syncError) {
+        console.warn("⚠️ Failed to sync Redis with database fallback:", syncError);
+      }
     }
   }
 
@@ -68,11 +76,22 @@ export class StockManagementService {
     const { WebhookStockRollbackService } = await import(
       "../../../../payment/application/webhook/stock-rollback.service"
     );
-    
+
     const result = await WebhookStockRollbackService.rollbackOrderStock(orderId);
-    
+
     if (!result.success) {
       throw new Error(`Stock rollback failed: ${result.errors.join(", ")}`);
     }
+  }
+
+  /**
+   * Rollback Redis reservations using order items data (database transaction failed)
+   * Used when transaction fails before order is persisted to database
+   */
+  static async rollbackOrderItemsFromData(
+    orderItemsData: OrderItemData[],
+    userId: string
+  ): Promise<void> {
+    await StockRedisOperationsService.rollbackReservationsFromData(orderItemsData, userId);
   }
 }

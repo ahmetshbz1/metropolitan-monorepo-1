@@ -1,5 +1,5 @@
 //  "stock-sync.service.ts"
-//  metropolitan backend  
+//  metropolitan backend
 //  Focused service for stock synchronization and bulk operations
 //  Extracted from redis-stock.service.ts (lines 219-252)
 
@@ -7,8 +7,16 @@ import { redis } from "../../database/redis";
 
 import { REDIS_STOCK_CONFIG } from "./stock-config";
 
+export interface SetStockResult {
+  success: boolean;
+  newStock?: number;
+  error?: string;
+}
+
 export class StockSyncService {
   private static readonly STOCK_PREFIX = REDIS_STOCK_CONFIG.KEY_PREFIXES.STOCK;
+  private static readonly LOCK_PREFIX = REDIS_STOCK_CONFIG.KEY_PREFIXES.LOCK;
+  private static readonly LOCK_TIMEOUT = REDIS_STOCK_CONFIG.LOCK_TIMEOUT_MS;
 
   /**
    * Sync stock from database to Redis (initialization)
@@ -106,6 +114,47 @@ export class StockSyncService {
     const stockKey = `${this.STOCK_PREFIX}${productId}`;
     await redis.set(stockKey, stockLevel);
     console.log(`📊 Stock level set: ${productId} = ${stockLevel}`);
+  }
+
+  /**
+   * Set stock level with distributed locking (admin use - race condition safe)
+   * Prevents race conditions when multiple admin users update stock simultaneously
+   */
+  static async setStockLevelWithLock(
+    productId: string,
+    stockLevel: number,
+    adminUserId: string
+  ): Promise<SetStockResult> {
+    const lockKey = `${this.LOCK_PREFIX}${productId}`;
+    const stockKey = `${this.STOCK_PREFIX}${productId}`;
+
+    const lockAcquired = await redis.set(
+      lockKey,
+      adminUserId,
+      "PX",
+      this.LOCK_TIMEOUT,
+      "NX"
+    );
+
+    if (!lockAcquired) {
+      return {
+        success: false,
+        error: "Another admin is currently updating this product. Please try again.",
+      };
+    }
+
+    try {
+      await redis.set(stockKey, stockLevel);
+      console.log(`📊 Stock level set with lock: ${productId} = ${stockLevel} (by ${adminUserId})`);
+
+      return {
+        success: true,
+        newStock: stockLevel,
+      };
+    } finally {
+      await redis.del(lockKey);
+      console.log(`🔓 Lock released for product ${productId}`);
+    }
   }
 
   /**

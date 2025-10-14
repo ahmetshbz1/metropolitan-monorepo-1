@@ -89,4 +89,66 @@ export class StockRedisOperationsService {
       console.error("Failed to rollback Redis reservations:", error);
     }
   }
+
+  /**
+   * Rollback Redis reservations from order items data (database transaction failed)
+   * Used when we need to rollback without having reservation objects
+   */
+  static async rollbackReservationsFromData(
+    orderItemsData: OrderItemData[],
+    userId: string
+  ): Promise<void> {
+    try {
+      const { RedisStockService } = await import(
+        "../../../../../shared/infrastructure/cache/redis-stock.service"
+      );
+
+      for (const item of orderItemsData) {
+        try {
+          await RedisStockService.rollbackReservation(userId, item.product.id);
+          console.log(`🔄 Redis reservation rolled back: ${item.product.id}`);
+        } catch (error) {
+          console.error(`Failed to rollback Redis reservation for ${item.product.id}:`, error);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to rollback Redis reservations from data:", error);
+    }
+  }
+
+  /**
+   * Sync Redis with database fallback (when Redis fails, database succeeds)
+   * Decrements Redis stock to match database state
+   */
+  static async syncRedisWithDatabaseFallback(
+    orderItemsData: OrderItemData[]
+  ): Promise<void> {
+    try {
+      const { db } = await import("../../../../../shared/infrastructure/database/connection");
+      const { products } = await import("../../../../../shared/infrastructure/database/schema");
+      const { eq } = await import("drizzle-orm");
+      const { RedisStockService } = await import(
+        "../../../../../shared/infrastructure/cache/redis-stock.service"
+      );
+
+      for (const item of orderItemsData) {
+        try {
+          const [product] = await db
+            .select({ stock: products.stock })
+            .from(products)
+            .where(eq(products.id, item.product.id))
+            .limit(1);
+
+          if (product) {
+            await RedisStockService.setStockLevel(item.product.id, product.stock);
+            console.log(`🔄 Redis synced with database: ${item.product.id} = ${product.stock}`);
+          }
+        } catch (error) {
+          console.error(`Failed to sync Redis for ${item.product.id}:`, error);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to sync Redis with database fallback:", error);
+    }
+  }
 }

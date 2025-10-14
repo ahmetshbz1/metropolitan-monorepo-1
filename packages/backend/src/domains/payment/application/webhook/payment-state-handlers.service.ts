@@ -1,11 +1,13 @@
 // payment-state-handlers.service.ts
 // Individual handlers for each payment intent state
 
+import { RedisStockService } from "../../../../shared/infrastructure/cache/redis-stock.service";
+import { PushNotificationService } from "../../../../shared/application/services/push-notification.service";
+
 import { WebhookOrderManagementService } from "./order-management.service";
 import { PaymentIntentActionsService } from "./payment-intent-actions.service";
 import { WebhookStockRollbackService } from "./stock-rollback.service";
 import type { WebhookProcessingResult } from "./webhook-types";
-import { PushNotificationService } from "../../../../shared/application/services/push-notification.service";
 
 export class PaymentStateHandlersService {
   /**
@@ -42,6 +44,32 @@ export class PaymentStateHandlersService {
     }
 
     console.log(`✅ Order ${orderId} payment completed successfully`);
+
+    // Confirm Redis reservations
+    try {
+      const { db } = await import("../../../../shared/infrastructure/database/connection");
+      const { orderItems } = await import("../../../../shared/infrastructure/database/schema");
+      const { eq } = await import("drizzle-orm");
+
+      const items = await db
+        .select({
+          productId: orderItems.productId,
+          quantity: orderItems.quantity,
+        })
+        .from(orderItems)
+        .where(eq(orderItems.orderId, orderId));
+
+      for (const item of items) {
+        try {
+          await RedisStockService.confirmReservation(item.productId, item.quantity);
+          console.log(`✅ Redis reservation confirmed: ${item.productId} x ${item.quantity}`);
+        } catch (redisError) {
+          console.warn(`⚠️ Redis reservation confirmation failed for ${item.productId}:`, redisError);
+        }
+      }
+    } catch (error) {
+      console.error(`❌ Redis reservation confirmation error for order ${orderId}:`, error);
+    }
 
     // Clear user's cart
     await PaymentIntentActionsService.clearCartSafely(userId, orderId);

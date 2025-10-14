@@ -4,22 +4,27 @@
 
 import { eq } from "drizzle-orm";
 
+import { ProductTranslationService } from "../../../../../shared/infrastructure/ai/product-translation.service";
+import { RedisStockService } from "../../../../../shared/infrastructure/cache/redis-stock.service";
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import {
   productTranslations,
   products,
 } from "../../../../../shared/infrastructure/database/schema";
-import type { AdminUpdateProductPayload, SupportedLanguage } from "./product.types";
+import { fakturowniaService } from "../../../../../shared/infrastructure/external/fakturownia.service";
+import { validateTaxRate } from "../../../../../shared/types/product.types";
+
+import { ProductImageService } from "./product-image.service";
+import type {
+  AdminUpdateProductPayload,
+  SupportedLanguage,
+} from "./product.types";
 import { SUPPORTED_LANGUAGES } from "./product.types";
 import {
   serializeNullableJson,
   toDateOrNull,
   toDecimalString,
 } from "./product.utils";
-import { ProductTranslationService } from "../../../../../shared/infrastructure/ai/product-translation.service";
-import { ProductImageService } from "./product-image.service";
-import { fakturowniaService } from "../../../../../shared/infrastructure/external/fakturownia.service";
-import { validateTaxRate } from "../../../../../shared/types/product.types";
 
 export class AdminUpdateProductService {
   static async execute(payload: AdminUpdateProductPayload) {
@@ -64,9 +69,8 @@ export class AdminUpdateProductService {
         Record<SupportedLanguage, (typeof existingTranslations)[number]>
       > = {};
       for (const translation of existingTranslations) {
-        existingTranslationsMap[
-          translation.languageCode as SupportedLanguage
-        ] = translation;
+        existingTranslationsMap[translation.languageCode as SupportedLanguage] =
+          translation;
       }
 
       let finalTranslations: Array<{
@@ -83,9 +87,7 @@ export class AdminUpdateProductService {
             (item) => item.languageCode === languageCode
           );
           if (!translation) {
-            throw new Error(
-              `${languageCode} çevirisi manuel modda zorunludur`
-            );
+            throw new Error(`${languageCode} çevirisi manuel modda zorunludur`);
           }
           return {
             languageCode,
@@ -188,13 +190,15 @@ export class AdminUpdateProductService {
           anotherProduct.length > 0 &&
           anotherProduct[0].id !== payload.productId
         ) {
-          throw new Error("Bu ürün kodu başka bir ürün tarafından kullanılıyor");
+          throw new Error(
+            "Bu ürün kodu başka bir ürün tarafından kullanılıyor"
+          );
         }
       }
 
       // Fakturownia sync: Sadece tax ve price senkronize edilir (stok lokal yönetilir)
       let finalTax = validateTaxRate(payload.tax);
-      let finalStock = payload.stock ?? 0;
+      const finalStock = payload.stock ?? 0;
       let syncStatus: "synced" | "pending" | "error" = "pending";
       let lastSyncedAt: Date | null = null;
 
@@ -217,10 +221,7 @@ export class AdminUpdateProductService {
           syncStatus = "synced";
           lastSyncedAt = new Date();
         } catch (fakturowniaError) {
-          console.error(
-            "❌ Fakturownia güncelleme hatası:",
-            fakturowniaError
-          );
+          console.error("❌ Fakturownia güncelleme hatası:", fakturowniaError);
           syncStatus = "error";
           // Fakturownia fail olursa devam et ama sync status error olarak işaretle
         }
@@ -272,6 +273,20 @@ export class AdminUpdateProductService {
           }))
         );
       });
+
+      // Redis'e stok değerini sync et
+      try {
+        await RedisStockService.setStockLevel(payload.productId, finalStock);
+        console.log(
+          `✅ Redis stok güncellendi: ${payload.productId} -> ${finalStock}`
+        );
+      } catch (error) {
+        console.warn(
+          `⚠️ Redis stok güncellenemedi (${payload.productId}):`,
+          error
+        );
+        // Redis hatası ürün güncellemeyi engellemez
+      }
 
       return {
         success: true,

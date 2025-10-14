@@ -253,7 +253,7 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
   )
   .post(
     "/import",
-    async ({ body, set }) => {
+    async ({ body, set, admin }) => {
       if (!body.file) {
         set.status = 400;
         return {
@@ -263,7 +263,7 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
       }
 
       try {
-        const summary = await AdminImportProductsService.execute(body.file);
+        const summary = await AdminImportProductsService.execute(body.file, admin.id);
         return {
           success: true,
           summary,
@@ -492,7 +492,7 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
   )
   .patch(
     "/:id/quick-settings",
-    async ({ params, body, set }) => {
+    async ({ params, body, set, admin }) => {
       try {
         const result = await AdminUpdateProductQuickSettingsService.execute({
           productId: params.id,
@@ -502,6 +502,7 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
           minQuantityIndividual: body.minQuantityIndividual,
           minQuantityCorporate: body.minQuantityCorporate,
           quantityPerBox: body.quantityPerBox,
+          adminUserId: admin.id,
         });
         return result;
       } catch (error) {
@@ -535,11 +536,12 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
   )
   .patch(
     "/:id/stock",
-    async ({ params, body, set }) => {
+    async ({ params, body, set, admin }) => {
       try {
         const result = await AdminUpdateProductStockService.execute({
           productId: params.id,
           stock: body.stock,
+          adminUserId: admin.id,
         });
         return result;
       } catch (error) {

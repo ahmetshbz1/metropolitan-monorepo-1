@@ -2,6 +2,7 @@
 //  metropolitan backend
 //  Admin ürün oluşturma servisi
 
+import { RedisStockService } from "../../../../../shared/infrastructure/cache/redis-stock.service";
 import { ProductTranslationService } from "../../../../../shared/infrastructure/ai/product-translation.service";
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import {
@@ -69,6 +70,8 @@ export class AdminCreateProductService {
         console.log("Translations generated successfully");
       }
 
+      const initialStock = payload.stock ?? 0;
+
       const result = await db.transaction(async (tx) => {
         const [createdProduct] = await tx
           .insert(products)
@@ -80,7 +83,7 @@ export class AdminCreateProductService {
             imageUrl: payload.imageUrl ?? null,
             price: toDecimalString(payload.price),
             currency: payload.currency ?? "PLN",
-            stock: payload.stock ?? 0,
+            stock: initialStock,
             tax: toDecimalString(payload.tax),
             allergens: serializeNullableJson(payload.allergens),
             nutritionalValues: serializeNullableJson(payload.nutritionalValues),
@@ -112,6 +115,15 @@ export class AdminCreateProductService {
 
         return createdProduct.id;
       });
+
+      // Redis'e initial stok değerini sync et
+      try {
+        await RedisStockService.syncStockFromDB(result, initialStock);
+        console.log(`✅ Redis stok senkronize edildi: ${result} -> ${initialStock}`);
+      } catch (error) {
+        console.warn(`⚠️ Redis stok senkronize edilemedi (${result}):`, error);
+        // Redis hatası ürün oluşturmayı engellemez
+      }
 
       return {
         success: true,

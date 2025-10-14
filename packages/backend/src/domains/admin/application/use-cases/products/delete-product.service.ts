@@ -4,6 +4,7 @@
 
 import { eq } from "drizzle-orm";
 
+import { RedisStockService } from "../../../../../shared/infrastructure/cache/redis-stock.service";
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import { products } from "../../../../../shared/infrastructure/database/schema";
 
@@ -17,6 +18,17 @@ export class AdminDeleteProductService {
 
       if (deleted.length === 0) {
         throw new Error("Ürün bulunamadı");
+      }
+
+      // Redis'ten ürün stok bilgisini ve rezervasyonlarını temizle
+      try {
+        await RedisStockService.cleanupProductReservations(productId);
+        // Stok seviyesini 0'a çekerek temizle
+        await RedisStockService.setStockLevel(productId, 0);
+        console.log(`✅ Redis temizlendi: ${productId}`);
+      } catch (error) {
+        console.warn(`⚠️ Redis temizlenemedi (${productId}):`, error);
+        // Redis hatası ürün silmeyi engellemez
       }
 
       return {

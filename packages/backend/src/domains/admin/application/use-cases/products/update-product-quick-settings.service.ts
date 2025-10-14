@@ -1,7 +1,9 @@
 import { eq } from "drizzle-orm";
 
+import { RedisStockService } from "../../../../../shared/infrastructure/cache/redis-stock.service";
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import { products } from "../../../../../shared/infrastructure/database/schema";
+
 import { toDecimalString } from "./product.utils";
 
 interface AdminQuickUpdateInput {
@@ -12,6 +14,7 @@ interface AdminQuickUpdateInput {
   minQuantityIndividual?: number;
   minQuantityCorporate?: number;
   quantityPerBox?: number | null;
+  adminUserId: string;
 }
 
 export class AdminUpdateProductQuickSettingsService {
@@ -23,6 +26,7 @@ export class AdminUpdateProductQuickSettingsService {
     minQuantityIndividual,
     minQuantityCorporate,
     quantityPerBox,
+    adminUserId,
   }: AdminQuickUpdateInput) {
     const updates: Record<string, unknown> = {};
 
@@ -54,7 +58,10 @@ export class AdminUpdateProductQuickSettingsService {
     }
 
     if (minQuantityIndividual !== undefined) {
-      if (!Number.isFinite(minQuantityIndividual) || minQuantityIndividual < 0) {
+      if (
+        !Number.isFinite(minQuantityIndividual) ||
+        minQuantityIndividual < 0
+      ) {
         throw new Error("Geçersiz bireysel minimum adet değeri");
       }
       updates.minQuantityIndividual = Math.floor(minQuantityIndividual);
@@ -99,6 +106,28 @@ export class AdminUpdateProductQuickSettingsService {
 
     if (!result) {
       throw new Error("Ürün bulunamadı");
+    }
+
+    // Stok güncelleniyorsa Redis'i distributed lock ile senkronize et
+    if (stock !== undefined && result.stock !== null) {
+      try {
+        const redisResult = await RedisStockService.setStockLevelWithLock(
+          productId,
+          result.stock,
+          adminUserId
+        );
+
+        if (redisResult.success) {
+          console.log(
+            `✅ Redis stok güncellendi: ${productId} -> ${result.stock}`
+          );
+        } else {
+          console.warn(`⚠️ Redis lock alınamadı (${productId}): ${redisResult.error}`);
+        }
+      } catch (error) {
+        console.warn(`⚠️ Redis stok güncellenemedi (${productId}):`, error);
+        // Redis hatası database işlemini etkilememeli
+      }
     }
 
     return {

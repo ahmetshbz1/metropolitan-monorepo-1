@@ -172,8 +172,27 @@ const loadExcelRows = async (file: File): Promise<string[][]> => {
 };
 
 export class AdminImportProductsService {
-  static async execute(file: File): Promise<ImportSummary> {
-    const format = detectFormat(file.name, file.type);
+  private static readonly IMPORT_LOCK_KEY = "metropolitan:import:global-lock";
+  private static readonly IMPORT_LOCK_TIMEOUT_MS = 300000; // 5 minutes
+
+  static async execute(file: File, adminUserId: string): Promise<ImportSummary> {
+    const { redis } = await import("../../../../../shared/infrastructure/database/redis");
+
+    // Acquire global import lock
+    const lockAcquired = await redis.set(
+      this.IMPORT_LOCK_KEY,
+      adminUserId,
+      "PX",
+      this.IMPORT_LOCK_TIMEOUT_MS,
+      "NX"
+    );
+
+    if (!lockAcquired) {
+      throw new Error("Başka bir import işlemi devam ediyor. Lütfen bekleyin.");
+    }
+
+    try {
+      const format = detectFormat(file.name, file.type);
     const rows = format === "xlsx" ? await loadExcelRows(file) : await loadCsvRows(file);
 
     if (rows.length === 0) {
@@ -287,6 +306,7 @@ export class AdminImportProductsService {
 
         const payload: Parameters<typeof AdminUpdateProductQuickSettingsService.execute>[0] = {
           productId,
+          adminUserId,
         };
 
         const stock = parseInteger(stockValue);
@@ -319,7 +339,7 @@ export class AdminImportProductsService {
           payload.quantityPerBox = perBox;
         }
 
-        if (Object.keys(payload).length === 1) {
+        if (Object.keys(payload).length === 2) {
           summary.skipped += 1;
           continue;
         }
@@ -335,6 +355,11 @@ export class AdminImportProductsService {
       }
     }
 
-    return summary;
+      return summary;
+    } finally {
+      // Release global import lock
+      await redis.del(this.IMPORT_LOCK_KEY);
+      console.log("✅ Import lock released");
+    }
   }
 }
