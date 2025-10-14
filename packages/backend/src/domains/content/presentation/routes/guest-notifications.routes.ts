@@ -3,6 +3,8 @@
 //  Guest kullanıcılar için bildirim sistemi
 
 import { t } from "elysia";
+
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { createApp } from "../../../../shared/infrastructure/web/app";
 
 export const guestNotificationsRoutes = createApp()
@@ -20,8 +22,7 @@ export const guestNotificationsRoutes = createApp()
       const { page = 1, limit = 20 } = query;
 
       try {
-        // TODO: İleride burada sistem bildirimleri, kampanyalar vs. gösterilebilir
-        // Örneğin: Yeni ürünler, indirimler, özel teklifler
+        // Future feature: Sistem bildirimleri, kampanyalar, yeni ürünler, indirimler eklenebilir
 
         return {
           success: true,
@@ -31,7 +32,7 @@ export const guestNotificationsRoutes = createApp()
           limit: Number(limit),
         };
       } catch (error) {
-        console.error("Guest notifications fetch error:", error);
+        logger.error({ error: error instanceof Error ? error.message : String(error), guestId }, "Guest notifications fetch error");
         return { success: false, notifications: [], unreadCount: 0 };
       }
     },
