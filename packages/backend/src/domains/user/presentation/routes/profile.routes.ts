@@ -280,6 +280,11 @@ const protectedProfileRoutes = createApp()
           return { success: false, message: "No photo uploaded." };
         }
 
+        // CRITICAL DEBUG
+        console.log('🚨 PHOTO MIME TYPE:', body.photo.type);
+        console.log('🚨 PHOTO SIZE:', body.photo.size);
+        console.log('🚨 PHOTO NAME:', body.photo.name);
+
         const photoUrl = await ProfilePhotoService.uploadProfilePhoto(
           userId,
           body.photo
