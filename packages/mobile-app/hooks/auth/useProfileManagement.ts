@@ -61,7 +61,7 @@ export const useProfileManagement = (
         if (!currentUser) return null;
         const updatedUser = {
           ...currentUser,
-          profilePhotoUrl: result.photoUrl!,
+          profilePicture: result.photoUrl!,
         };
         const processedUser = processUserData(updatedUser);
         // Storage'ı da güncelle
