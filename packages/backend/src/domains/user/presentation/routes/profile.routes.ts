@@ -280,6 +280,13 @@ const protectedProfileRoutes = createApp()
           return { success: false, message: "No photo uploaded." };
         }
 
+        // Debug: Log photo details
+        console.log('📸 Photo upload details:', {
+          type: body.photo.type,
+          size: body.photo.size,
+          name: body.photo.name,
+        });
+
         const photoUrl = await ProfilePhotoService.uploadProfilePhoto(
           userId,
           body.photo
@@ -300,9 +307,8 @@ const protectedProfileRoutes = createApp()
     {
       body: t.Object({
         photo: t.File({
-          type: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif', 'image/heic', 'image/heif'],
-          maxSize: 5 * 1024 * 1024, // 5MB
-          error: 'Invalid file. Must be an image file under 5MB.'
+          // Geçici: Tüm dosya tiplerini kabul et (debugging için)
+          maxSize: 10 * 1024 * 1024, // 10MB
         }),
       }),
     }
