@@ -4,6 +4,7 @@
 
 import { and, eq } from "drizzle-orm";
 
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { db } from "../../../../shared/infrastructure/database/connection";
 import {
   cartItems,
@@ -97,13 +98,16 @@ export class CartValidationService {
           )
         : CartValidationErrors.INSUFFICIENT_STOCK(availableStock);
 
-      console.log("🔴 [CartValidationService] Stock validation failed:", {
-        productId,
-        availableStock,
-        newTotalQuantity,
-        oldCartQuantity,
-        error,
-      });
+      logger.warn(
+        {
+          productId,
+          availableStock,
+          newTotalQuantity,
+          oldCartQuantity,
+          errorKey: error.key,
+        },
+        "CartValidationService: Stock validation failed"
+      );
 
       throw new Error(JSON.stringify(error));
     }

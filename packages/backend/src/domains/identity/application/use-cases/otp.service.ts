@@ -3,6 +3,7 @@
 //  Created by Ahmet on 21.06.2025.
 //  Updated to use custom OTP generation with multi-language support
 
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { createAndSendOtp, verifyOtpCode } from "../../infrastructure/services/otp-manager.service";
 import { SmsAction } from "../../infrastructure/templates/sms-templates";
 
@@ -34,7 +35,7 @@ export async function createOtp(
     throw new Error(result.message);
   }
 
-  console.log(`OTP sent to ${phoneNumber} for action: ${smsAction}`);
+  logger.info({ phoneNumber, action: smsAction }, "OTP sent successfully");
 }
 
 /**
@@ -54,7 +55,7 @@ export async function verifyOtp(
   const result = await verifyOtpCode(phoneNumber, providedCode, smsAction);
 
   if (!result.success) {
-    console.log(`OTP verification failed for ${phoneNumber}: ${result.message}`);
+    logger.warn({ phoneNumber, message: result.message }, "OTP verification failed");
     return false;
   }
 

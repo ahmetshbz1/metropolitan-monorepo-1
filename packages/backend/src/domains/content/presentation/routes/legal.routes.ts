@@ -5,6 +5,7 @@
 import { t } from "elysia";
 import { readFile } from "fs/promises";
 import { join } from "path";
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { createApp } from "../../../../shared/infrastructure/web/app";
 
 const LEGAL_TYPES = ["privacy-policy", "cookie-policy", "terms-of-service"] as const;
@@ -68,7 +69,7 @@ export const legalRoutes = createApp().group("/legal", (app) =>
           };
         }
 
-        console.error("Error reading legal document:", error);
+        logger.error({ error, type, lang }, "Error reading legal document");
         set.status = 500;
         return {
           success: false,

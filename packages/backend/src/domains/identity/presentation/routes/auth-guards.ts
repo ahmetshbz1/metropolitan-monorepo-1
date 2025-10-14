@@ -4,6 +4,7 @@
 
 import { Elysia } from "elysia";
 import { jwt } from "@elysiajs/jwt";
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { isTokenBlacklisted } from "../../../../shared/infrastructure/database/redis";
 
 /**
@@ -29,7 +30,7 @@ export const authTokenGuard = (app: Elysia) =>
         // Support both 'sub' (standard JWT) and 'userId' (legacy) fields
         const userId = decoded.sub || decoded.userId;
         if (!userId) {
-          console.log("Auth guard - Token missing userId/sub field:", decoded);
+          logger.warn({ decoded }, "Auth guard - Token missing userId/sub field");
           return { profile: null };
         }
 

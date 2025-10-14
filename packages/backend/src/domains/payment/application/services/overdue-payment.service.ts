@@ -3,6 +3,7 @@
 //  Vadesi geçmiş ödemeler için bildirim servisi
 
 import { and, eq, lt, isNotNull } from "drizzle-orm";
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { db } from "../../../../shared/infrastructure/database/connection";
 import { orders } from "../../../../shared/infrastructure/database/schema";
 import { PushNotificationService } from "../../../../shared/application/services/push-notification.service";
@@ -38,7 +39,10 @@ export class OverduePaymentService {
           )
         );
 
-      console.log(`📊 ${overdueOrders.length} adet bank transfer siparişi kontrol ediliyor...`);
+      logger.info(
+        { orderCount: overdueOrders.length },
+        "Checking bank transfer orders for overdue payments"
+      );
 
       for (const order of overdueOrders) {
         try {
@@ -65,12 +69,15 @@ export class OverduePaymentService {
               },
             });
 
-            console.log(`✅ Bildirim gönderildi: ${order.orderNumber} (${daysOverdue} gün gecikmiş)`);
+            logger.info(
+              { orderNumber: order.orderNumber, daysOverdue },
+              "Overdue payment notification sent"
+            );
             notified++;
           }
         } catch (error) {
-          const errorMsg = `Sipariş ${order.orderNumber} için bildirim gönderilemedi: ${error}`;
-          console.error(errorMsg);
+          const errorMsg = `Failed to send notification for order ${order.orderNumber}: ${error}`;
+          logger.error({ orderNumber: order.orderNumber, error }, errorMsg);
           errors.push(errorMsg);
         }
       }
@@ -81,7 +88,7 @@ export class OverduePaymentService {
         errors,
       };
     } catch (error) {
-      console.error("Vadesi geçmiş ödeme kontrolü hatası:", error);
+      logger.error({ error }, "Error checking overdue payments");
       return {
         checked: 0,
         notified: 0,

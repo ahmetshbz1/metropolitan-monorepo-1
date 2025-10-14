@@ -10,6 +10,7 @@ import type {
 } from "@metropolitan/shared/types/cart";
 import { and, desc, eq } from "drizzle-orm";
 
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { db } from "../../../../shared/infrastructure/database/connection";
 import {
   cartItems,
@@ -150,13 +151,16 @@ export class CartItemService {
     if (existingItem) {
       // Mevcut öğeyi güncelle
       const newQuantity = existingItem.quantity + quantity;
-      console.log("🔴 [CartItemService] Adding to existing cart item:", {
-        productId,
-        existingQuantity: existingItem.quantity,
-        addingQuantity: quantity,
-        newQuantity,
-        userType,
-      });
+      logger.info(
+        {
+          productId,
+          existingQuantity: existingItem.quantity,
+          addingQuantity: quantity,
+          newQuantity,
+          userType,
+        },
+        "CartItemService: Adding to existing cart item"
+      );
 
       await CartValidationService.validateMinQuantity(productId, newQuantity, userType);
       await CartValidationService.validateStock(
@@ -331,7 +335,10 @@ export class CartItemService {
         try {
           await CartValidationService.validateMinQuantity(cartItem.productId, quantity, userType);
         } catch (error) {
-          console.error(`Min quantity kontrolü başarısız ${cartItem.productId}:`, error);
+          logger.error(
+            { productId: cartItem.productId, error },
+            "Min quantity validation failed"
+          );
           continue;
         }
 
@@ -365,7 +372,7 @@ export class CartItemService {
         updatedCount++;
       } catch (error) {
         // Hata durumunda devam et, diğer güncellemeleri yap
-        console.error(`Sepet öğesi ${itemId} güncellenemedi:`, error);
+        logger.error({ itemId, error }, "Cart item update failed");
       }
     }
 

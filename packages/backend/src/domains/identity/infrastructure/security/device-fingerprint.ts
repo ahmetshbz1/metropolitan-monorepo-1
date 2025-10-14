@@ -4,6 +4,7 @@
 
 import { createHash, randomBytes } from "crypto";
 
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { redis } from "../../../../shared/infrastructure/database/redis";
 
 // Session security constants
@@ -163,7 +164,7 @@ export async function storeDeviceSession(
       }
     } catch (error) {
       // Ignore parsing errors for corrupted sessions
-      console.error(`Failed to parse existing session for cleanup: ${error}`);
+      logger.error({ error, userId, deviceId }, "Failed to parse existing session for cleanup");
     }
   }
 
@@ -237,7 +238,10 @@ export async function updateSessionActivity(
 
       // Clock skew protection: Gelecekteki timestamp'leri reddet
       if (session.createdAt > now + 60000) {
-        console.error(`[SECURITY] Invalid session timestamp detected (clock skew) for user: ${userId}`);
+        logger.error(
+          { userId, sessionCreatedAt: session.createdAt, now },
+          "SECURITY: Invalid session timestamp detected (clock skew)"
+        );
         await redis.del(key);
         const sessionKey = `session:${session.sessionId}`;
         await redis.del(sessionKey);
@@ -247,7 +251,10 @@ export async function updateSessionActivity(
       // Check if session has exceeded maximum lifetime
       const sessionAge = Math.max(0, now - session.createdAt);
       if (sessionAge >= SESSION_MAX_LIFETIME) {
-        console.warn(`[SECURITY] Session exceeded max lifetime for user: ${userId}, age: ${Math.floor(sessionAge / (24 * 60 * 60 * 1000))} days`);
+        logger.warn(
+          { userId, sessionAgeDays: Math.floor(sessionAge / (24 * 60 * 60 * 1000)) },
+          "SECURITY: Session exceeded max lifetime"
+        );
         await redis.del(key);
 
         const sessionKey = `session:${session.sessionId}`;
@@ -277,7 +284,10 @@ export async function updateSessionActivity(
 
       // Safety check: TTL must be positive
       if (ttl <= 0) {
-        console.warn(`[SECURITY] Session TTL calculated as ${ttl}, deleting session for user: ${userId}`);
+        logger.warn(
+          { userId, ttl },
+          "SECURITY: Session TTL calculated as invalid, deleting session"
+        );
         await redis.del(key);
         const sessionKey = `session:${session.sessionId}`;
         await redis.del(sessionKey);
@@ -296,7 +306,10 @@ export async function updateSessionActivity(
     } catch (error) {
       // JSON parse error veya corrupt session
       if (error instanceof SyntaxError) {
-        console.error(`[SECURITY] Corrupt session data detected for user: ${userId}, deleting`);
+        logger.error(
+          { userId, error },
+          "SECURITY: Corrupt session data detected, deleting"
+        );
         await redis.del(key);
       }
     }
@@ -341,8 +354,9 @@ export async function invalidateAllUserSessions(userId: string): Promise<void> {
   // Delete all keys at once
   if (keysToDelete.length > 0) {
     await redis.del(...keysToDelete);
-    console.warn(
-      `[SECURITY] All sessions invalidated for user: ${userId} (${keysToDelete.length} keys deleted)`
+    logger.warn(
+      { userId, keysDeleted: keysToDelete.length },
+      "SECURITY: All sessions invalidated for user"
     );
   }
 }
@@ -414,9 +428,12 @@ export async function storeRefreshToken(
     try {
       const session: SessionInfo = JSON.parse(sessionData as string);
       sessionCreatedAt = session.createdAt;
-    } catch {
+    } catch (error) {
       // Session corrupted, use current time
-      console.warn(`[SECURITY] Could not parse session for refresh token TTL calculation, using current time`);
+      logger.warn(
+        { userId, deviceId, error },
+        "SECURITY: Could not parse session for refresh token TTL calculation, using current time"
+      );
     }
   }
 
@@ -431,7 +448,10 @@ export async function storeRefreshToken(
 
   // Safety check: TTL must be positive
   if (ttl <= 0) {
-    console.warn(`[SECURITY] Refresh token TTL calculated as ${ttl}, not storing for user: ${userId}`);
+    logger.warn(
+      { userId, ttl },
+      "SECURITY: Refresh token TTL calculated as invalid, not storing"
+    );
     return;
   }
 
@@ -455,7 +475,7 @@ export async function storeRefreshToken(
       }
     } catch (error) {
       // Ignore parsing errors
-      console.error(`Failed to parse refresh token for cleanup: ${error}`);
+      logger.error({ error, userId }, "Failed to parse refresh token for cleanup");
     }
   }
 
@@ -492,7 +512,10 @@ export async function verifyRefreshToken(
     // Verify device binding
     if (tokenData.deviceId !== deviceId) {
       // Device mismatch - potential security issue
-      console.warn(`[SECURITY] Device mismatch for refresh token: ${jti}`);
+      logger.warn(
+        { userId, jti, expectedDevice: tokenData.deviceId, receivedDevice: deviceId },
+        "SECURITY: Device mismatch for refresh token"
+      );
       await invalidateAllUserSessions(userId);
       return { valid: false };
     }
@@ -517,8 +540,9 @@ export async function removeAllUserRefreshTokens(
 
   if (keys.length > 0) {
     await redis.del(...(keys as string[]));
-    console.log(
-      `[SECURITY] Removed ${keys.length} refresh tokens for user: ${userId}`
+    logger.info(
+      { userId, tokensRemoved: keys.length },
+      "SECURITY: Removed refresh tokens for user"
     );
   }
 }

@@ -2,6 +2,7 @@
 //  metropolitan backend
 //  OTP management service with Redis storage
 
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { getRateLimitMessage } from "../../../../shared/application/services/auth-translations";
 import { redis } from "../../../../shared/infrastructure/database/redis";
 import type { SmsAction } from "../templates/sms-templates";
@@ -108,19 +109,20 @@ export async function createAndSendOtp(
     await sendOtpSms(formattedPhone, otpCode, action, detectedLanguage);
 
     // Log for monitoring
-    console.log(
-      `OTP created for ${formattedPhone}, action: ${action}, language: ${detectedLanguage}`
+    logger.info(
+      { phoneNumber: formattedPhone, action, language: detectedLanguage },
+      "OTP created and sent successfully"
     );
 
     return {
       success: true,
       message: "Verification code sent successfully.",
     };
-  } catch (error: any) {
-    console.error("Error creating OTP:", error);
+  } catch (error: unknown) {
+    logger.error({ error, phoneNumber }, "Error creating OTP");
     return {
       success: false,
-      message: error.message || "Failed to send verification code.",
+      message: error instanceof Error ? error.message : "Failed to send verification code.",
     };
   }
 }
@@ -147,8 +149,9 @@ export async function verifyOtpCode(
       TEST_PHONE_NUMBERS.includes(formattedPhone) &&
       providedCode === TEST_OTP_CODE
     ) {
-      console.log(
-        `[TEST MODE] OTP verified for test phone: ${formattedPhone}`
+      logger.info(
+        { phoneNumber: formattedPhone },
+        "TEST MODE: OTP verified for test phone"
       );
       return {
         success: true,
@@ -198,16 +201,17 @@ export async function verifyOtpCode(
     await redis.del(otpKey);
     await redis.del(getOtpRateLimitKey(formattedPhone));
 
-    console.log(
-      `OTP verified successfully for ${formattedPhone}, action: ${action}`
+    logger.info(
+      { phoneNumber: formattedPhone, action },
+      "OTP verified successfully"
     );
 
     return {
       success: true,
       message: "Verification successful.",
     };
-  } catch (error: any) {
-    console.error("Error verifying OTP:", error);
+  } catch (error: unknown) {
+    logger.error({ error, phoneNumber }, "Error verifying OTP");
     return {
       success: false,
       message: "Verification failed. Please try again.",
@@ -248,7 +252,8 @@ export async function getOtpDetails(
   action: SmsAction
 ): Promise<OtpData | null> {
   // This function is only for emergency debugging
-  console.warn(
+  logger.warn(
+    { phoneNumber, action },
     "WARNING: getOtpDetails called - this should only be used for emergency debugging"
   );
 

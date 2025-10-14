@@ -1,10 +1,11 @@
 //  "stripe-webhook.routes.ts"
-//  metropolitan backend  
+//  metropolitan backend
 //  Streamlined webhook route handler using modular services
 //  Refactored: Cleaner separation of concerns
 
 import { Elysia } from "elysia";
 
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import StripeService from "../../../../shared/infrastructure/external/stripe.service";
 import { WebhookIdempotencyService } from "../../application/webhook/idempotency.service";
 import { WebhookHealthService } from "../../application/webhook/webhook-health.service";
@@ -44,23 +45,32 @@ export const stripeWebhookRoutes = new Elysia().group("/stripe", (app) =>
           signature
         );
 
-        console.log(`Stripe webhook received: ${event.type} - ${event.id}`);
+        logger.info(
+          { eventType: event.type, eventId: event.id },
+          "Stripe webhook received"
+        );
 
         // 2. Check idempotency
         const idempotencyCheck = WebhookIdempotencyService.processEvent(
           event.id
         );
-        
+
         if (!idempotencyCheck.shouldProcess) {
-          console.log(idempotencyCheck.reason);
-          return { 
-            received: true, 
+          logger.info(
+            { eventId: event.id, reason: idempotencyCheck.reason },
+            "Webhook already processed"
+          );
+          return {
+            received: true,
             status: "already_processed",
-            eventId: event.id 
+            eventId: event.id
           };
         }
 
-        console.log(idempotencyCheck.reason);
+        logger.info(
+          { eventId: event.id, reason: idempotencyCheck.reason },
+          "Processing webhook"
+        );
 
         // 3. Validate and route event
         const validation = WebhookRouterService.validateEvent(event);
@@ -70,8 +80,8 @@ export const stripeWebhookRoutes = new Elysia().group("/stripe", (app) =>
 
         const result = await WebhookRouterService.routeEvent(event);
 
-        return { 
-          received: true, 
+        return {
+          received: true,
           status: result.success ? "processed" : "error",
           eventId: event.id,
           orderId: result.orderId,
@@ -79,7 +89,7 @@ export const stripeWebhookRoutes = new Elysia().group("/stripe", (app) =>
           error: result.error
         };
       } catch (error) {
-        console.error("Stripe webhook error:", error);
+        logger.error({ error }, "Stripe webhook error");
         throw new Error(
           `Webhook error: ${
             error instanceof Error ? error.message : "Unknown error"

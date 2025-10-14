@@ -5,6 +5,7 @@
 import { and, eq } from "drizzle-orm";
 import { t } from "elysia";
 
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import {
   guestCartItems,
   productTranslations,
@@ -235,7 +236,7 @@ export const guestCartRoutes = createApp()
 
           updatedCount++;
         } catch (err) {
-          console.error(`Failed to update cart item ${itemId}:`, err);
+          logger.error({ itemId, err }, "Failed to update guest cart item");
         }
       }
 

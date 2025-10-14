@@ -2,6 +2,7 @@
 //  metropolitan backend
 //  Created by Ahmet on 26.09.2025.
 
+import { logger } from "../../infrastructure/monitoring/logger.config";
 import { db } from "../../infrastructure/database/connection";
 import { deviceTokens, notifications } from "../../infrastructure/database/schema";
 import { eq, and, sql } from "drizzle-orm";
@@ -46,7 +47,7 @@ export class PushNotificationService {
         );
 
       if (userTokens.length === 0) {
-        console.log(`No valid tokens found for user ${userId}`);
+        logger.info({ userId }, "No valid tokens found for user");
         return false;
       }
 
@@ -106,7 +107,10 @@ export class PushNotificationService {
 
           return result;
         } catch (error) {
-          console.error(`Failed to send push to token ${tokenRecord.id}:`, error);
+          logger.error(
+            { tokenId: tokenRecord.id, userId, error },
+            "Failed to send push notification"
+          );
           return null;
         }
       });
@@ -145,10 +149,13 @@ export class PushNotificationService {
         pushId: results[0]?.data?.id, // İlk başarılı push ID'si
       });
 
-      console.log(`Push sent to ${successCount}/${userTokens.length} devices for user ${userId}`);
+      logger.info(
+        { userId, successCount, totalDevices: userTokens.length },
+        "Push notifications sent"
+      );
       return successCount > 0;
     } catch (error) {
-      console.error(`Push notification error for user ${userId}:`, error);
+      logger.error({ userId, error }, "Push notification error");
       return false;
     }
   }
@@ -187,7 +194,7 @@ export class PushNotificationService {
       const userIds = activeUsers.map(u => u.userId);
       return await this.sendToMultipleUsers(userIds, notification);
     } catch (error) {
-      console.error('Broadcast error:', error);
+      logger.error({ error }, "Broadcast error");
       return { sent: 0, failed: 0 };
     }
   }

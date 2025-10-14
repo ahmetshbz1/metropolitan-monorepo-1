@@ -4,6 +4,7 @@
 
 import { t } from "elysia";
 
+import { logger } from "../../infrastructure/monitoring/logger.config";
 import { verifyNipAndGetName } from "../../infrastructure/external/nip.service";
 import { createApp } from "../../infrastructure/web/app";
 
@@ -12,7 +13,10 @@ export const utilsRoutes = createApp().group("/utils", (app) =>
     .post(
       "/client-error-log",
       async ({ body }) => {
-        console.log("🔴 CLIENT ERROR LOG:", JSON.stringify(body, null, 2));
+        logger.error(
+          { source: body.source, clientError: body.error },
+          "CLIENT ERROR LOG"
+        );
         return { success: true };
       },
       {
