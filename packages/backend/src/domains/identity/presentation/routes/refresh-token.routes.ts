@@ -36,17 +36,26 @@ export const refreshTokenRoutes = createApp()
       try {
         const { refreshToken } = body;
 
+        log.info({ message: "[REFRESH] Token refresh request received" });
+
         // Verify refresh token
         const payload = (await jwt.verify(refreshToken)) as EnhancedRefreshTokenPayload | false;
 
         if (!payload || payload.type !== "refresh") {
-          log.warn({ message: "Invalid refresh token type" });
+          log.warn({ message: "[REFRESH] Invalid refresh token type or verification failed" });
           set.status = 401;
           return {
             success: false,
             message: "Invalid refresh token",
           };
         }
+
+        log.info({
+          userId: payload.sub,
+          deviceId: payload.deviceId,
+          sessionId: payload.sessionId,
+          message: "[REFRESH] Token verified successfully"
+        });
 
         // Check if token is expired
         if (payload.exp < Math.floor(Date.now() / 1000)) {
@@ -181,6 +190,11 @@ export const refreshTokenRoutes = createApp()
         }
 
         // Normal flow - device fingerprint hasn't changed
+        log.info({
+          userId: payload.sub,
+          message: "[REFRESH] Normal flow - no fingerprint change detected"
+        });
+
         // Verify refresh token in Redis
         const tokenValid = await verifyRefreshToken(
           payload.sub,
@@ -191,7 +205,9 @@ export const refreshTokenRoutes = createApp()
         if (!tokenValid.valid) {
           log.warn({
             userId: payload.sub,
-            message: "Refresh token not found in Redis or device mismatch",
+            jti: payload.jti,
+            deviceId: payload.deviceId,
+            message: "[REFRESH] ❌ Refresh token not found in Redis or device mismatch",
           });
           set.status = 401;
           return {
@@ -199,6 +215,11 @@ export const refreshTokenRoutes = createApp()
             message: "Invalid refresh token",
           };
         }
+
+        log.info({
+          userId: payload.sub,
+          message: "[REFRESH] ✅ Refresh token verified in Redis"
+        });
 
         // Verify device session is still active
         const sessionValid = await verifyDeviceSession(
@@ -210,7 +231,9 @@ export const refreshTokenRoutes = createApp()
         if (!sessionValid) {
           log.warn({
             userId: payload.sub,
-            message: "Device session not found or inactive",
+            deviceId: payload.deviceId,
+            sessionId: payload.sessionId,
+            message: "[REFRESH] ❌ Device session not found or inactive in Redis",
           });
           set.status = 401;
           return {
@@ -218,6 +241,11 @@ export const refreshTokenRoutes = createApp()
             message: "Session expired. Please login again.",
           };
         }
+
+        log.info({
+          userId: payload.sub,
+          message: "[REFRESH] ✅ Device session verified"
+        });
 
         // Update session activity
         await updateSessionActivity(payload.sub, payload.deviceId);
