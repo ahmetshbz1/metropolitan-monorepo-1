@@ -1,6 +1,6 @@
 //  "ProductListItem.tsx"
 //  metropolitan app
-//  Created by Ahmet on 30.09.2025.
+//  Modern, horizontal list item for products
 
 import { ThemedText } from "@/components/ThemedText";
 import { Product } from "@/context/ProductContext";
@@ -19,14 +19,13 @@ interface ProductListItemProps {
   product: Product;
 }
 
-// Helper function to ensure valid image URL
 const getValidImageUrl = (imageUrl: string): string => {
   if (!imageUrl) return "";
-  
+
   if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
     return imageUrl;
   }
-  
+
   const path = imageUrl.startsWith("/") ? imageUrl : `/${imageUrl}`;
   const baseUrl = process.env.EXPO_PUBLIC_API_BASE_URL || "https://api.metropolitanfg.pl";
   return `${baseUrl}${path}`;
@@ -41,12 +40,15 @@ export const ProductListItem = React.memo<ProductListItemProps>(function Product
     isLowStock,
     isOutOfStock,
     isProductFavorite,
+    displayPrice,
     handleAddToCart,
     handleToggleFavorite,
   } = useProductCard(product);
+
   const { t } = useTranslation();
   const router = useRouter();
   const { push: safePush } = useNavigationProtection({ debounceTime: 700 });
+  const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
   const imageUrl = useMemo(() => getValidImageUrl(product.image), [product.image]);
@@ -55,89 +57,104 @@ export const ProductListItem = React.memo<ProductListItemProps>(function Product
     safePush(`/product/${product.id}`);
   };
 
-  const handleAddToCartWithEvent = async (e: any) => {
+  const handleAddToCartWithEvent = async (e: React.BaseSyntheticEvent) => {
     e.preventDefault();
     e.stopPropagation();
     await handleAddToCart(e);
   };
 
-  const handleToggleFavoriteWithEvent = (e: any) => {
+  const handleToggleFavoriteWithEvent = (e: React.BaseSyntheticEvent) => {
     e.preventDefault();
     e.stopPropagation();
     handleToggleFavorite(e);
   };
 
-  const handleImageError = useCallback(() => {
-    setImageError(true);
-  }, []);
-
   const handleImageLoad = useCallback(() => {
+    setImageLoaded(true);
     setImageError(false);
   }, []);
 
+  const handleImageError = useCallback(() => {
+    setImageError(true);
+    setImageLoaded(false);
+  }, []);
+
+  const isDark = colorScheme === "dark";
+
   return (
-    <View className="mx-4 mb-3">
+    <View style={{ marginHorizontal: 12, marginBottom: 12 }}>
       <TouchableOpacity
         onPress={handlePress}
-        activeOpacity={0.85}
-        className="flex-row overflow-hidden border"
+        activeOpacity={0.9}
         style={{
-          backgroundColor: colors.cardBackground,
-          borderColor: colors.border,
-          shadowColor: colorScheme === "dark" ? "#000" : colors.tint,
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.08,
-          shadowRadius: 4,
-          elevation: 2,
+          backgroundColor: isDark ? "#1a1a1a" : "#ffffff",
+          borderRadius: 16,
           padding: 12,
-          borderRadius: 20,
+          flexDirection: "row",
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: isDark ? 0.3 : 0.06,
+          shadowRadius: 8,
+          elevation: 3,
         }}
       >
-        {/* Image */}
+        {/* Image Container */}
         <View
           style={{
-            width: 80,
-            height: 80,
-            backgroundColor: colorScheme === 'dark' ? '#1a1a1a' : '#ffffff',
-            borderRadius: 8,
-            position: 'relative',
-            justifyContent: 'center',
-            alignItems: 'center',
+            width: 90,
+            height: 90,
+            backgroundColor: "transparent",
+            borderRadius: 12,
             marginRight: 12,
+            justifyContent: "center",
+            alignItems: "center",
+            position: "relative",
           }}
         >
-          {!imageError && imageUrl ? (
+          {imageUrl && !imageError ? (
             <Image
               source={{ uri: imageUrl }}
               style={{
-                width: '85%',
-                height: '85%',
+                width: "90%",
+                height: "90%",
               }}
               contentFit="contain"
               transition={200}
               cachePolicy="memory-disk"
-              priority="normal"
-              placeholder="L6PZfSi_.AyE_3t7t7R**0o#DgR4"
-              placeholderContentFit="contain"
-              allowDownscaling={false}
-              contentPosition="center"
+              priority="high"
               onLoad={handleImageLoad}
               onError={handleImageError}
               recyclingKey={`product-list-${product.id}`}
             />
-          ) : (
+          ) : null}
+
+          {(!imageLoaded || imageError || !imageUrl) && (
             <Ionicons
               name="image-outline"
               size={32}
-              color={colorScheme === "dark" ? "#666" : "#ccc"}
+              color={isDark ? "#404040" : "#d4d4d4"}
             />
           )}
+
           {isOutOfStock && (
             <View
-              className="absolute inset-0 items-center justify-center"
-              style={{ backgroundColor: "rgba(0, 0, 0, 0.6)", borderRadius: 8 }}
+              style={{
+                position: "absolute",
+                inset: 0,
+                backgroundColor: "rgba(0, 0, 0, 0.7)",
+                borderRadius: 12,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
             >
-              <ThemedText className="text-xs font-bold" style={{ color: '#fff' }}>
+              <ThemedText
+                style={{
+                  fontSize: 10,
+                  fontWeight: "700",
+                  color: "#ffffff",
+                  textTransform: "uppercase",
+                }}
+              >
                 {t("product.out_of_stock")}
               </ThemedText>
             </View>
@@ -145,47 +162,82 @@ export const ProductListItem = React.memo<ProductListItemProps>(function Product
         </View>
 
         {/* Content */}
-        <View style={{ flex: 1, justifyContent: 'flex-start' }}>
+        <View style={{ flex: 1, justifyContent: "space-between" }}>
           {/* Product Name */}
           <ThemedText
-            className="text-base font-semibold mb-0.5"
             numberOfLines={2}
             style={{
-              color: colorScheme === "dark" ? "#ffffff" : "#000000",
+              fontSize: 14,
+              fontWeight: "600",
+              lineHeight: 19,
+              color: isDark ? "#ffffff" : "#1a1a1a",
+              marginBottom: 4,
             }}
           >
             {product.name}
           </ThemedText>
 
           {/* Brand and Size */}
-          <ThemedText
-            className="text-sm mb-1"
-            style={{
-              color: colors.mediumGray,
-            }}
-          >
-            {product.brand} • {product.size}
-          </ThemedText>
-
-          {/* Bottom Row - Price and Stock */}
-          <View className="flex-row items-center justify-between">
-            {/* Price */}
+          {(product.brand || product.size) && (
             <ThemedText
-              className="text-base font-bold"
               style={{
-                color: colors.text,
+                fontSize: 12,
+                fontWeight: "500",
+                color: isDark ? "#737373" : "#a3a3a3",
+                marginBottom: 8,
               }}
             >
-              {formatPrice(product.price, product.currency)}
+              {[product.brand, product.size].filter(Boolean).join(" • ")}
+            </ThemedText>
+          )}
+
+          {/* Bottom Row */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <ThemedText
+              style={{
+                fontSize: 16,
+                fontWeight: "700",
+                color: colors.primary,
+                letterSpacing: -0.3,
+              }}
+            >
+              {formatPrice(displayPrice, product.currency)}
             </ThemedText>
 
-            {/* Stock Status */}
             {isLowStock && !isOutOfStock && (
-              <View className="flex-row items-center">
-                <View className="w-1.5 h-1.5 bg-amber-400 rounded-full mr-1" />
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  paddingHorizontal: 8,
+                  paddingVertical: 4,
+                  borderRadius: 8,
+                  backgroundColor: isDark
+                    ? "rgba(251, 191, 36, 0.2)"
+                    : "rgba(251, 191, 36, 0.1)",
+                  gap: 4,
+                }}
+              >
+                <View
+                  style={{
+                    width: 4,
+                    height: 4,
+                    borderRadius: 2,
+                    backgroundColor: "#fbbf24",
+                  }}
+                />
                 <ThemedText
-                  className="text-xs font-bold"
-                  style={{ color: colorScheme === "dark" ? "#fbbf24" : "#d97706" }}
+                  style={{
+                    fontSize: 10,
+                    fontWeight: "600",
+                    color: "#fbbf24",
+                  }}
                 >
                   {product.stock}
                 </ThemedText>
@@ -194,46 +246,53 @@ export const ProductListItem = React.memo<ProductListItemProps>(function Product
           </View>
         </View>
 
-        {/* Action Buttons - Add to Cart & Favorite */}
-        <View style={{ flexDirection: "column", alignItems: "center", marginLeft: 8, gap: 8 }}>
-          {/* Add to Cart Button */}
-          {!isOutOfStock && (
-            <HapticIconButton
-              onPress={handleAddToCartWithEvent}
-              className="rounded-full justify-center items-center"
-              style={{
-                backgroundColor: colors.primary,
-                width: 36,
-                height: 36,
-              }}
-            >
-              <Ionicons
-                name="add"
-                size={20}
-                color="#fff"
-                style={{ fontWeight: 'bold' }}
-              />
-            </HapticIconButton>
-          )}
-
-          {/* Favorite Toggle Button */}
+        {/* Action Buttons */}
+        <View
+          style={{
+            flexDirection: "column",
+            alignItems: "center",
+            marginLeft: 8,
+            gap: 8,
+            justifyContent: "center",
+          }}
+        >
+          {/* Favorite Button */}
           <HapticIconButton
             onPress={handleToggleFavoriteWithEvent}
-            className="rounded-full justify-center items-center"
             style={{
-              backgroundColor: isProductFavorite ? '#EF444420' : colors.cardBackground,
-              width: 36,
-              height: 36,
-              borderWidth: 1,
-              borderColor: isProductFavorite ? '#EF4444' : colors.border,
+              width: 32,
+              height: 32,
+              borderRadius: 16,
+              backgroundColor: isDark
+                ? "rgba(0, 0, 0, 0.5)"
+                : "rgba(255, 255, 255, 0.9)",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
             <Ionicons
               name={isProductFavorite ? "heart" : "heart-outline"}
-              size={18}
-              color={isProductFavorite ? "#EF4444" : colors.text}
+              size={16}
+              color={isProductFavorite ? "#ef4444" : isDark ? "#ffffff" : "#404040"}
             />
           </HapticIconButton>
+
+          {/* Add to Cart Button */}
+          {!isOutOfStock && (
+            <HapticIconButton
+              onPress={handleAddToCartWithEvent}
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 16,
+                backgroundColor: colors.primary,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Ionicons name="add" size={18} color="#ffffff" />
+            </HapticIconButton>
+          )}
         </View>
       </TouchableOpacity>
     </View>

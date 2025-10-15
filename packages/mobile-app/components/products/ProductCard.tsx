@@ -1,6 +1,6 @@
 //  "ProductCard.tsx"
 //  metropolitan app
-//  Modern, basit ve performanslı ürün kartı
+//  Modern, minimalist ve performanslı ürün kartı
 
 import { ThemedText } from "@/components/ThemedText";
 import { Product } from "@metropolitan/shared";
@@ -8,9 +8,9 @@ import { useProductCard } from "@/hooks/useProductCard";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useNavigationProtection } from "@/hooks/useNavigationProtection";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { TouchableOpacity, View, type GestureResponderEvent } from "react-native";
+import { TouchableOpacity, View, Animated } from "react-native";
 import { HapticIconButton } from "../HapticButton";
 import { MinimumQuantityDialog } from "./MinimumQuantityDialog";
 import { Image } from "expo-image";
@@ -20,7 +20,6 @@ interface ProductCardProps {
   product: Product;
   replaceNavigation?: boolean;
   index?: number;
-  isVisible?: boolean;
 }
 
 const getValidImageUrl = (imageUrl: string): string => {
@@ -39,7 +38,6 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
   product,
   replaceNavigation = false,
   index = 0,
-  isVisible = true,
 }) {
   const {
     colors,
@@ -62,40 +60,9 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
   const router = useRouter();
   const { push: safePush } = useNavigationProtection({ debounceTime: 700 });
 
+  const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const [imageLoading, setImageLoading] = useState(true);
-  const [retryCount, setRetryCount] = useState(0);
-  const retryTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-
   const imageUrl = useMemo(() => getValidImageUrl(product.image), [product.image]);
-
-  useEffect(() => {
-    return () => {
-      if (retryTimeoutRef.current) {
-        clearTimeout(retryTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  const handleImageError = useCallback(() => {
-    if (retryTimeoutRef.current) {
-      clearTimeout(retryTimeoutRef.current);
-    }
-
-    if (retryCount < 3) {
-      const delay = Math.min(1000 * Math.pow(2, retryCount), 5000);
-      retryTimeoutRef.current = setTimeout(() => {
-        setRetryCount((prev) => prev + 1);
-      }, delay);
-    } else {
-      setImageError(true);
-    }
-  }, [retryCount]);
-
-  const handleImageLoad = useCallback(() => {
-    setImageError(false);
-    setImageLoading(false);
-  }, []);
 
   const handleCardPress = () => {
     if (replaceNavigation) {
@@ -105,128 +72,145 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
     }
   };
 
-  // Tüm ürün resimlerini high priority ile yükle
-  const imagePriority = "high";
-  const cachePolicy = "memory-disk";
+  const handleImageLoad = useCallback(() => {
+    setImageLoaded(true);
+    setImageError(false);
+  }, []);
+
+  const handleImageError = useCallback(() => {
+    setImageError(true);
+    setImageLoaded(false);
+  }, []);
+
+  const isDark = colorScheme === "dark";
 
   return (
-    <View style={{ flex: 1, width: '100%' }}>
+    <View style={{ width: '100%' }}>
       <TouchableOpacity
         onPress={handleCardPress}
-        activeOpacity={0.85}
-        className="overflow-hidden rounded-2xl border"
+        activeOpacity={0.9}
         style={{
-          backgroundColor: colors.cardBackground,
-          borderColor: colors.border,
-          shadowColor: colorScheme === "dark" ? "#000" : colors.tint,
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.08,
-          shadowRadius: 4,
-          elevation: 2,
+          backgroundColor: isDark ? "#1a1a1a" : "#ffffff",
+          borderRadius: 16,
+          overflow: "hidden",
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: isDark ? 0.3 : 0.06,
+          shadowRadius: 8,
+          elevation: 3,
         }}
       >
+        {/* Resim Container */}
         <View
-          className="relative items-center justify-center overflow-hidden"
           style={{
             aspectRatio: 1,
             backgroundColor: "transparent",
+            position: "relative",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          {!imageError && imageUrl ? (
-            <>
-              <Image
-                source={{
-                  uri: retryCount > 0
-                    ? `${imageUrl}?retry=${retryCount}&t=${Date.now()}`
-                    : imageUrl,
-                }}
-                style={{
-                  width: "85%",
-                  height: "85%",
-                  backgroundColor: "transparent",
-                  opacity: imageLoading ? 0.5 : 1,
-                }}
-                contentFit="contain"
-                transition={200}
-                cachePolicy={cachePolicy}
-                priority={imagePriority}
-                placeholder="L6PZfSi_.AyE_3t7t7R**0o#DgR4"
-                placeholderContentFit="contain"
-                allowDownscaling={false}
-                contentPosition="center"
-                onLoad={handleImageLoad}
-                onError={handleImageError}
-                recyclingKey={`product-${product.id}`}
-              />
-              {imageLoading && (
-                <View
-                  className="absolute inset-0 items-center justify-center"
-                  style={{ backgroundColor: "transparent" }}
-                >
-                  <View
-                    className="w-10 h-10 rounded-full items-center justify-center"
-                    style={{
-                      backgroundColor: colorScheme === "dark" ? "#333" : "#f0f0f0",
-                    }}
-                  >
-                    <Ionicons
-                      name="image-outline"
-                      size={24}
-                      color={colorScheme === "dark" ? "#666" : "#ccc"}
-                    />
-                  </View>
-                </View>
-              )}
-            </>
-          ) : (
+          {imageUrl && !imageError ? (
+            <Image
+              source={{ uri: imageUrl }}
+              style={{
+                width: "90%",
+                height: "90%",
+              }}
+              contentFit="contain"
+              transition={200}
+              cachePolicy="memory-disk"
+              priority="high"
+              onLoad={handleImageLoad}
+              onError={handleImageError}
+              recyclingKey={`product-${product.id}`}
+            />
+          ) : null}
+
+          {(!imageLoaded || imageError || !imageUrl) && (
             <View
-              className="items-center justify-center"
-              style={{ width: "85%", height: "85%" }}
+              style={{
+                position: "absolute",
+                inset: 0,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
             >
               <Ionicons
                 name="image-outline"
-                size={48}
-                color={colorScheme === "dark" ? "#666" : "#ccc"}
+                size={32}
+                color={isDark ? "#404040" : "#d4d4d4"}
               />
             </View>
           )}
 
+          {/* Favori Button - Sol üst */}
+          <View style={{ position: "absolute", top: 8, left: 8 }}>
+            <HapticIconButton
+              onPress={handleToggleFavorite}
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 16,
+                backgroundColor: isDark
+                  ? "rgba(0, 0, 0, 0.5)"
+                  : "rgba(255, 255, 255, 0.9)",
+                alignItems: "center",
+                justifyContent: "center",
+                backdropFilter: "blur(10px)",
+              }}
+            >
+              <Ionicons
+                name={isProductFavorite ? "heart" : "heart-outline"}
+                size={18}
+                color={isProductFavorite ? "#ef4444" : isDark ? "#ffffff" : "#404040"}
+              />
+            </HapticIconButton>
+          </View>
+
+          {/* Sepete Ekle Button - Sağ üst */}
           {!isOutOfStock && (
-            <View className="absolute top-2 right-2 z-20">
+            <View style={{ position: "absolute", top: 8, right: 8 }}>
               <HapticIconButton
                 onPress={(e) => {
                   if (e) handleAddToCart(e);
                 }}
-                className="rounded-full justify-center items-center"
                 style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 16,
                   backgroundColor: colors.primary,
-                  width: 36,
-                  height: 36,
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.25,
-                  shadowRadius: 3.84,
-                  elevation: 5,
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                <Ionicons name="add" size={22} color="#fff" style={{ fontWeight: "bold" }} />
+                <Ionicons name="add" size={20} color="#ffffff" />
               </HapticIconButton>
 
               {cartQuantity > 0 && (
                 <View
-                  className="absolute -top-1 -right-1 rounded-full items-center justify-center"
                   style={{
-                    backgroundColor: colors.danger,
-                    minWidth: 20,
-                    height: 20,
+                    position: "absolute",
+                    top: -4,
+                    right: -4,
+                    minWidth: 18,
+                    height: 18,
+                    borderRadius: 9,
+                    backgroundColor: "#ef4444",
+                    alignItems: "center",
+                    justifyContent: "center",
                     paddingHorizontal: 4,
                     borderWidth: 2,
-                    borderColor: colorScheme === "dark" ? "#1a1a1a" : "#fff",
+                    borderColor: isDark ? "#1a1a1a" : "#ffffff",
                   }}
                 >
                   <ThemedText
-                    className="text-white font-bold"
-                    style={{ fontSize: 11, lineHeight: 13 }}
+                    style={{
+                      fontSize: 10,
+                      fontWeight: "700",
+                      color: "#ffffff",
+                      lineHeight: 12,
+                    }}
                   >
                     {cartQuantity}
                   </ThemedText>
@@ -235,55 +219,71 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
             </View>
           )}
 
-          <HapticIconButton
-            onPress={handleToggleFavorite}
-            className="absolute top-2 left-2 rounded-full justify-center items-center z-20"
-            style={{
-              backgroundColor: isProductFavorite
-                ? colors.danger
-                : colorScheme === "dark"
-                  ? "rgba(0, 0, 0, 0.4)"
-                  : "rgba(255, 255, 255, 0.95)",
-              width: 36,
-              height: 36,
-              borderWidth: 1,
-              borderColor: isProductFavorite
-                ? colors.danger
-                : colorScheme === "dark"
-                  ? "rgba(255, 255, 255, 0.08)"
-                  : "rgba(0, 0, 0, 0.05)",
-              shadowColor: isProductFavorite ? colors.danger : "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: isProductFavorite ? 0.25 : 0.08,
-              shadowRadius: 3.84,
-              elevation: 4,
-            }}
-          >
-            <Ionicons
-              name={isProductFavorite ? "heart" : "heart-outline"}
-              size={20}
-              color={
-                isProductFavorite
-                  ? "#fff"
-                  : colorScheme === "dark"
-                    ? "rgba(255, 255, 255, 0.85)"
-                    : colors.darkGray
-              }
-            />
-          </HapticIconButton>
-
-          {isOutOfStock && (
+          {/* Stok Durumu Badge - Sol alt */}
+          {isLowStock && !isOutOfStock && (
             <View
-              className="absolute inset-0 items-center justify-center"
-              style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+              style={{
+                position: "absolute",
+                bottom: 8,
+                left: 8,
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                borderRadius: 8,
+                backgroundColor: isDark
+                  ? "rgba(251, 191, 36, 0.2)"
+                  : "rgba(251, 191, 36, 0.1)",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 4,
+              }}
             >
               <View
-                className="px-3 py-2 rounded-lg"
-                style={{ backgroundColor: "rgba(255, 255, 255, 0.95)" }}
+                style={{
+                  width: 4,
+                  height: 4,
+                  borderRadius: 2,
+                  backgroundColor: "#fbbf24",
+                }}
+              />
+              <ThemedText
+                style={{
+                  fontSize: 10,
+                  fontWeight: "600",
+                  color: "#fbbf24",
+                }}
+              >
+                {product.stock} {t("product.left")}
+              </ThemedText>
+            </View>
+          )}
+
+          {/* Out of Stock Overlay */}
+          {isOutOfStock && (
+            <View
+              style={{
+                position: "absolute",
+                inset: 0,
+                backgroundColor: "rgba(0, 0, 0, 0.7)",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <View
+                style={{
+                  paddingHorizontal: 16,
+                  paddingVertical: 8,
+                  borderRadius: 12,
+                  backgroundColor: "rgba(255, 255, 255, 0.95)",
+                }}
               >
                 <ThemedText
-                  className="text-xs font-bold"
-                  style={{ color: "#1a1a1a" }}
+                  style={{
+                    fontSize: 11,
+                    fontWeight: "700",
+                    color: "#1a1a1a",
+                    textTransform: "uppercase",
+                    letterSpacing: 0.5,
+                  }}
                 >
                   {t("product.out_of_stock")}
                 </ThemedText>
@@ -292,54 +292,52 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
           )}
         </View>
 
-        <View className="px-3 py-3" style={{ backgroundColor: colors.cardBackground, minHeight: 85 }}>
+        {/* İçerik Container */}
+        <View style={{ padding: 12 }}>
+          {/* Ürün Adı */}
           <ThemedText
-            className="text-base font-extrabold"
-            style={{
-              color: colors.primary,
-              marginBottom: 6,
-              letterSpacing: -0.3,
-            }}
-          >
-            {formatPrice(displayPrice, product.currency)}
-          </ThemedText>
-
-          <ThemedText
-            className="text-sm font-bold"
             numberOfLines={2}
             style={{
-              lineHeight: 16,
-              color: colorScheme === "dark" ? "#ffffff" : "#000000",
-              letterSpacing: -0.2,
+              fontSize: 13,
+              fontWeight: "600",
+              lineHeight: 18,
+              color: isDark ? "#ffffff" : "#1a1a1a",
               marginBottom: 6,
-              minHeight: 32,
+              minHeight: 36,
             }}
           >
             {product.name}
           </ThemedText>
 
-          <View className="flex-row items-center justify-between" style={{ marginTop: 'auto' }}>
+          {/* Fiyat ve Boyut */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <ThemedText
+              style={{
+                fontSize: 16,
+                fontWeight: "700",
+                color: colors.primary,
+                letterSpacing: -0.3,
+              }}
+            >
+              {formatPrice(displayPrice, product.currency)}
+            </ThemedText>
+
             {product.size && (
               <ThemedText
-                className="text-xs font-semibold"
                 style={{
-                  color: colorScheme === "dark" ? "#a3a3a3" : "#737373",
+                  fontSize: 11,
+                  fontWeight: "500",
+                  color: isDark ? "#737373" : "#a3a3a3",
                 }}
               >
                 {product.size}
               </ThemedText>
-            )}
-
-            {isLowStock && !isOutOfStock && (
-              <View className="flex-row items-center">
-                <View className="w-1.5 h-1.5 bg-amber-400 rounded-full mr-1" />
-                <ThemedText
-                  className="text-xs font-bold"
-                  style={{ color: colorScheme === "dark" ? "#fbbf24" : "#d97706" }}
-                >
-                  {product.stock}
-                </ThemedText>
-              </View>
             )}
           </View>
         </View>
