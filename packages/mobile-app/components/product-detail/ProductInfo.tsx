@@ -125,7 +125,7 @@ export const ProductInfo = memo<ProductInfoProps>(function ProductInfo({
             {product.name}
           </ThemedText>
           <ThemedText className="text-sm mt-1" style={{ color: "#9E9E9E" }}>
-            {t(`brands.${product.brand.toLowerCase()}`)}
+            {product.brand}
           </ThemedText>
 
           <TouchableOpacity
