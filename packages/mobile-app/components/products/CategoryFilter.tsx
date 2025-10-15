@@ -3,16 +3,15 @@
 //  Created by Ahmet on 25.06.2025.
 
 import React, { useRef, useState, useCallback, useEffect } from "react";
-import { View, TouchableOpacity, Text, ActivityIndicator, TextInput } from "react-native";
+import { View, TouchableOpacity, Text, TextInput, ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
 import { Ionicons } from "@expo/vector-icons";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
 import { Category } from "@/context/ProductContext";
 import { useHaptics } from "@/hooks/useHaptics";
 import Colors from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { CategoryFilterBottomSheet } from "./CategoryFilterBottomSheet";
+import { zincColors } from "@/constants/colors/zincColors";
 
 interface CategoryFilterProps {
   categories: Category[];
@@ -36,8 +35,7 @@ export function CategoryFilter({
   const isDark = colorScheme === "dark";
   const { triggerHaptic } = useHaptics();
   const { t } = useTranslation();
-  const bottomSheetRef = useRef<BottomSheetModal>(null);
-  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [localSearchValue, setLocalSearchValue] = useState(searchQuery);
 
   // Cleanup debounce timer
@@ -48,11 +46,6 @@ export function CategoryFilter({
       }
     };
   }, []);
-
-  const handleOpenBottomSheet = () => {
-    triggerHaptic();
-    bottomSheetRef.current?.present();
-  };
 
   const handleSearchChange = useCallback(
     (text: string) => {
@@ -78,55 +71,54 @@ export function CategoryFilter({
     onSearchChange?.("");
   }, [onSearchChange, triggerHaptic]);
 
-  const activeCategoryName =
-    activeCategory === null
-      ? t("categories.all")
-      : categories.find((c) => c.slug === activeCategory)?.name ||
-        t("categories.all");
+  const handleCategoryPress = useCallback(
+    (slug: string | null) => {
+      triggerHaptic();
+      onCategoryPress(slug);
+    },
+    [onCategoryPress, triggerHaptic]
+  );
+
+  const allCategories = [
+    { slug: null, name: t("categories.all") },
+    ...categories,
+  ];
 
   return (
-    <>
-      <View
-        style={{
-          paddingHorizontal: 12,
-          paddingTop: 12,
-          paddingBottom: 8,
-          gap: 10,
-        }}
-      >
-        {/* Arama Input */}
+    <View
+      style={{
+        backgroundColor: colors.background,
+        borderBottomWidth: 1,
+        borderBottomColor: colors.border,
+      }}
+    >
+      {/* Arama Input */}
+      <View style={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 8 }}>
         <View
           style={{
-            backgroundColor: isDark ? "#1a1a1a" : "#ffffff",
-            borderRadius: 14,
-            borderWidth: 1,
-            borderColor: isDark ? "#2a2a2a" : "#e5e5e5",
+            backgroundColor: isDark ? zincColors[900] : zincColors[100],
+            borderRadius: 12,
             flexDirection: "row",
             alignItems: "center",
-            paddingHorizontal: 14,
-            height: 48,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: isDark ? 0.3 : 0.05,
-            shadowRadius: 4,
-            elevation: 2,
+            paddingHorizontal: 12,
+            height: 44,
           }}
         >
           <Ionicons
             name="search"
-            size={20}
-            color={colors.mediumGray}
-            style={{ marginRight: 10 }}
+            size={18}
+            color={isDark ? zincColors[500] : zincColors[400]}
           />
           <TextInput
             value={localSearchValue}
             onChangeText={handleSearchChange}
             placeholder={t("tabs.search_placeholder")}
-            placeholderTextColor={colors.mediumGray}
+            placeholderTextColor={isDark ? zincColors[500] : zincColors[400]}
             style={{
               flex: 1,
               fontSize: 15,
-              color: colors.text,
+              color: isDark ? zincColors[50] : zincColors[900],
+              paddingHorizontal: 10,
               paddingVertical: 0,
             }}
             returnKeyType="search"
@@ -134,89 +126,62 @@ export function CategoryFilter({
             autoCorrect={false}
           />
           {localSearchValue.length > 0 && (
-            <TouchableOpacity
-              onPress={handleClearSearch}
-              style={{ padding: 4 }}
-              activeOpacity={0.7}
-            >
+            <TouchableOpacity onPress={handleClearSearch} activeOpacity={0.7}>
               <Ionicons
                 name="close-circle"
                 size={18}
-                color={colors.mediumGray}
+                color={isDark ? zincColors[500] : zincColors[400]}
               />
             </TouchableOpacity>
           )}
         </View>
-
-        {/* Kategori Filtresi */}
-        <TouchableOpacity
-          onPress={handleOpenBottomSheet}
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            backgroundColor: isDark ? "#1a1a1a" : "#ffffff",
-            paddingHorizontal: 14,
-            paddingVertical: 12,
-            borderRadius: 14,
-            borderWidth: 1,
-            borderColor: isDark ? "#2a2a2a" : "#e5e5e5",
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: isDark ? 0.3 : 0.05,
-            shadowRadius: 4,
-            elevation: 2,
-          }}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center", flex: 1 }}>
-            <Ionicons
-              name="filter"
-              size={20}
-              color={colors.primary}
-              style={{ marginRight: 10 }}
-            />
-            <View style={{ flex: 1 }}>
-              <Text
-                style={{
-                  fontSize: 11,
-                  color: colors.mediumGray,
-                  marginBottom: 2,
-                }}
-              >
-                {t("categories.category")}
-              </Text>
-              <Text
-                style={{
-                  fontSize: 15,
-                  fontWeight: "600",
-                  color: colors.text,
-                }}
-                numberOfLines={1}
-              >
-                {activeCategoryName}
-              </Text>
-            </View>
-          </View>
-
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-            {isLoading && (
-              <ActivityIndicator size="small" color={colors.primary} />
-            )}
-            <Ionicons
-              name="chevron-down"
-              size={20}
-              color={colors.mediumGray}
-            />
-          </View>
-        </TouchableOpacity>
       </View>
 
-      <CategoryFilterBottomSheet
-        ref={bottomSheetRef}
-        categories={categories}
-        activeCategory={activeCategory}
-        onCategoryPress={onCategoryPress}
-      />
-    </>
+      {/* Kategori Chip'leri */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          paddingBottom: 12,
+          gap: 8,
+        }}
+      >
+        {allCategories.map((category) => {
+          const isActive = category.slug === activeCategory;
+          return (
+            <TouchableOpacity
+              key={category.slug || "all"}
+              onPress={() => handleCategoryPress(category.slug)}
+              activeOpacity={0.7}
+              style={{
+                paddingHorizontal: 16,
+                paddingVertical: 8,
+                borderRadius: 20,
+                backgroundColor: isActive
+                  ? colors.primary
+                  : isDark
+                  ? zincColors[900]
+                  : zincColors[100],
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: isActive ? "600" : "500",
+                  color: isActive
+                    ? "#ffffff"
+                    : isDark
+                    ? zincColors[300]
+                    : zincColors[700],
+                }}
+              >
+                {category.name}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+    </View>
   );
 }

@@ -134,20 +134,6 @@ export default function ProductsScreen() {
   }, [allProducts, categoryProducts, selectedCategory, searchQuery]);
 
 
-  const ListHeaderComponent = useMemo(
-    () => (
-      <CategoryFilter
-        categories={categories}
-        activeCategory={selectedCategory}
-        onCategoryPress={handleCategoryPress}
-        onSearchChange={setSearchQuery}
-        searchQuery={searchQuery}
-        isLoading={isLoading}
-      />
-    ),
-    [categories, selectedCategory, handleCategoryPress, setSearchQuery, searchQuery, isLoading]
-  );
-
   if (error && displayProducts.length === 0) {
     return (
       <View className="flex-1">
@@ -162,10 +148,18 @@ export default function ProductsScreen() {
 
   return (
     <View className="flex-1">
+      <CategoryFilter
+        categories={categories}
+        activeCategory={selectedCategory}
+        onCategoryPress={handleCategoryPress}
+        onSearchChange={setSearchQuery}
+        searchQuery={searchQuery}
+        isLoading={isLoading}
+      />
+
       <ProductGrid
         ref={gridRef}
         products={displayProducts}
-        ListHeaderComponent={ListHeaderComponent}
         onRefresh={handleRefresh}
         refreshing={isRefreshing}
         contentContainerStyle={{ paddingBottom }}
