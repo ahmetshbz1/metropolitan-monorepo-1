@@ -60,18 +60,22 @@ export default function ProductsScreen() {
 
   const fetchCategoryProducts = useCallback(
     async (categorySlug: string | null) => {
-      if (categorySlug === null) {
-        setCategoryProducts([]);
-        return;
-      }
-
       setIsLoading(true);
       setError(null);
 
       try {
-        const { data } = await api.get("/products", {
-          params: { lang, page: 1, limit: 1000, category: categorySlug },
-        });
+        const params: Record<string, string | number> = {
+          lang,
+          page: 1,
+          limit: 1000
+        };
+
+        // Kategori seçiliyse ekle
+        if (categorySlug !== null) {
+          params.category = categorySlug;
+        }
+
+        const { data } = await api.get("/products", { params });
 
         if (data.success) {
           setCategoryProducts(sortProductsByStock(data.data));
@@ -110,8 +114,14 @@ export default function ProductsScreen() {
     return () => unregisterScrollHandler("products");
   }, [registerScrollHandler, unregisterScrollHandler]);
 
+  // İlk yüklemede tüm ürünleri çek
+  useEffect(() => {
+    fetchCategoryProducts(null);
+  }, [fetchCategoryProducts]);
+
   const displayProducts = useMemo(() => {
-    const baseProducts = selectedCategory === null ? allProducts : categoryProducts;
+    // İlk yükleme veya kategori değişimi sonrası categoryProducts boşsa allProducts kullan
+    const baseProducts = categoryProducts.length > 0 ? categoryProducts : allProducts;
 
     if (!searchQuery.trim()) {
       return baseProducts;
@@ -131,7 +141,7 @@ export default function ProductsScreen() {
         normalizedCategory.includes(normalizedQuery)
       );
     });
-  }, [allProducts, categoryProducts, selectedCategory, searchQuery]);
+  }, [allProducts, categoryProducts, searchQuery]);
 
 
   if (error && displayProducts.length === 0) {
