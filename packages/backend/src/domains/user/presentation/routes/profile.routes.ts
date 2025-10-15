@@ -8,16 +8,18 @@ import type {
 } from "@metropolitan/shared/types/user";
 import { t } from "elysia";
 
+import { and, eq } from "drizzle-orm";
+
 import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
-import { createApp } from "../../../../shared/infrastructure/web/app";
 import { db } from "../../../../shared/infrastructure/database/connection";
 import { deviceTokens, notifications, users } from "../../../../shared/infrastructure/database/schema";
-import { eq, and } from "drizzle-orm";
-import { createNotification } from "./notifications.routes";
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
+import { createApp } from "../../../../shared/infrastructure/web/app";
+import { getNotificationTranslation } from "../../../../shared/application/services/notification-translations";
 import { ProfileCompletionService } from "../../application/use-cases/profile-completion.service";
 import { ProfilePhotoService } from "../../application/use-cases/profile-photo.service";
 import { ProfileUpdateService } from "../../application/use-cases/profile-update.service";
-import { getNotificationTranslation } from "../../../../shared/application/services/notification-translations";
+import { createNotification } from "./notifications.routes";
 
 // Bu tip backend'e özel kalabilir, çünkü JWT payload'u ile ilgili.
 export interface RegistrationTokenPayload {
@@ -183,7 +185,7 @@ const protectedProfileRoutes = createApp()
             })
             .where(eq(deviceTokens.id, existingToken[0].id));
 
-          console.log(`Device token updated for user ${userId}`);
+          logger.debug({ userId, platform: body.platform }, "Device token updated");
         } else {
           // Yeni token ekle
           await db.insert(deviceTokens).values({
@@ -197,7 +199,7 @@ const protectedProfileRoutes = createApp()
             failureCount: "0",
           });
 
-          console.log(`New device token saved for user ${userId}`);
+          logger.info({ userId, platform: body.platform }, "New device token saved");
 
           // Sadece yeni token için hoş geldiniz bildirimi gönder
           try {
@@ -224,7 +226,7 @@ const protectedProfileRoutes = createApp()
             });
 
             const result = await response.json();
-            console.log('Welcome notification sent:', result);
+            logger.info({ userId, status: result.data?.status }, "Welcome notification sent");
 
             // Bildirimi veritabanına da kaydet
             if (result.data && result.data.status === 'ok') {
@@ -238,7 +240,7 @@ const protectedProfileRoutes = createApp()
               });
             }
           } catch (error) {
-            console.error('Welcome notification error:', error);
+            logger.error({ userId, error: error instanceof Error ? error.message : String(error) }, "Welcome notification error");
           }
         }
 
@@ -280,10 +282,12 @@ const protectedProfileRoutes = createApp()
           return { success: false, message: "No photo uploaded." };
         }
 
-        // CRITICAL DEBUG
-        console.log('🚨 PHOTO MIME TYPE:', body.photo.type);
-        console.log('🚨 PHOTO SIZE:', body.photo.size);
-        console.log('🚨 PHOTO NAME:', body.photo.name);
+        logger.debug({
+          userId,
+          mimeType: body.photo.type,
+          size: body.photo.size,
+          name: body.photo.name
+        }, "Profile photo upload request");
 
         const photoUrl = await ProfilePhotoService.uploadProfilePhoto(
           userId,
@@ -529,7 +533,7 @@ const protectedProfileRoutes = createApp()
           return { success: false, message: "Unauthorized" };
         }
 
-        console.log(`Sending test push to token: ${body.token}`);
+        logger.info({ userId, hasToken: !!body.token }, "Sending test push notification");
 
         const response = await fetch('https://exp.host/--/api/v2/push/send', {
           method: 'POST',
