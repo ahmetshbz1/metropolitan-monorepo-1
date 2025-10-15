@@ -115,6 +115,7 @@ export const adminOrdersRoutes = createAdminRouter("/admin/orders")
     "/:id/invoice",
     async ({ params, set }) => {
       try {
+        console.log(`[Invoice] Fatura oluşturuluyor: ${params.id}`);
         const pdfBuffer = await InvoiceService.generateInvoicePDFForAdmin(params.id);
 
         set.headers["Content-Type"] = "application/pdf";
@@ -123,6 +124,8 @@ export const adminOrdersRoutes = createAdminRouter("/admin/orders")
 
         return new Response(pdfBuffer);
       } catch (error) {
+        console.error(`[Invoice] Hata:`, error);
+        console.error(`[Invoice] Stack:`, error instanceof Error ? error.stack : 'No stack');
         set.status = 404;
         return {
           success: false,
