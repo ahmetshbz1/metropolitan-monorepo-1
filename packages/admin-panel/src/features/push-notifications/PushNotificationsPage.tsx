@@ -14,7 +14,7 @@ import {
   Spacer,
   Divider,
 } from "@heroui/react";
-import { Bell, Send, Users, Loader2, Sparkles, X, Navigation } from "lucide-react";
+import { Bell, Send, Users, Loader2, Sparkles, X, Navigation, Package } from "lucide-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   sendPushToUser,
@@ -25,6 +25,8 @@ import {
 import type { PushNotificationPayload } from "./api";
 import { getUsers } from "../../api/users";
 import type { User } from "../../api/users";
+import { ProductSelector } from "../../components/ProductSelector";
+import type { Product } from "../../api/products";
 
 type SendMode = "single" | "batch" | "broadcast";
 
@@ -49,6 +51,8 @@ export const PushNotificationsPage = () => {
   const [selectedScreen, setSelectedScreen] = useState<string>("");
   const [orderId, setOrderId] = useState<string>("");
   const [productId, setProductId] = useState<string>("");
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isProductSelectorOpen, setIsProductSelectorOpen] = useState(false);
 
   const [translations, setTranslations] = useState({
     tr: { title: "", body: "" },
@@ -188,6 +192,7 @@ export const PushNotificationsPage = () => {
       setSelectedScreen("");
       setOrderId("");
       setProductId("");
+      setSelectedProduct(null);
     },
     onError: (err) => {
       setError(err instanceof Error ? err.message : "Gönderim başarısız");
@@ -382,6 +387,7 @@ export const PushNotificationsPage = () => {
                 setSelectedScreen(selected || "");
                 setOrderId("");
                 setProductId("");
+                setSelectedProduct(null);
               }}
               variant="bordered"
               size="lg"
@@ -406,15 +412,50 @@ export const PushNotificationsPage = () => {
             )}
 
             {selectedScreen === "product-detail" && (
-              <Input
-                label="Ürün ID"
-                placeholder="Örn: cm5xefgh5678"
-                value={productId}
-                onValueChange={setProductId}
-                variant="bordered"
-                size="lg"
-                description="Bildirime tıklandığında açılacak ürünün ID'si"
-              />
+              <div className="flex flex-col gap-3">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Ürün Seç
+                </label>
+                {selectedProduct ? (
+                  <Card className="border-2 border-primary">
+                    <CardBody>
+                      <div className="flex items-center gap-4">
+                        <div className="flex-1">
+                          <p className="font-semibold text-slate-900 dark:text-white">
+                            {selectedProduct.name}
+                          </p>
+                          <p className="text-sm text-slate-500 dark:text-slate-400">
+                            {selectedProduct.brand} • {selectedProduct.category}
+                          </p>
+                          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                            ID: {selectedProduct.id}
+                          </p>
+                        </div>
+                        <Button
+                          isIconOnly
+                          variant="light"
+                          size="sm"
+                          onPress={() => {
+                            setSelectedProduct(null);
+                            setProductId("");
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CardBody>
+                  </Card>
+                ) : (
+                  <Button
+                    variant="bordered"
+                    size="lg"
+                    onPress={() => setIsProductSelectorOpen(true)}
+                    startContent={<Package className="h-5 w-5" />}
+                  >
+                    Ürün Seç
+                  </Button>
+                )}
+              </div>
             )}
           </div>
 
@@ -568,6 +609,15 @@ export const PushNotificationsPage = () => {
           </div>
         </CardBody>
       </Card>
+
+      <ProductSelector
+        isOpen={isProductSelectorOpen}
+        onClose={() => setIsProductSelectorOpen(false)}
+        onSelect={(product) => {
+          setSelectedProduct(product);
+          setProductId(product.id);
+        }}
+      />
     </div>
   );
 };

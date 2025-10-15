@@ -127,7 +127,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
               priority="high"
               onLoad={handleImageLoad}
               onError={handleImageError}
-              recyclingKey={`product-${product.id}`}
+              recyclingKey={`product-${product.id}-${index}`}
             />
           ) : null}
 
