@@ -216,11 +216,11 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
             />
           ) : undefined
         }
-        // Performance optimizations - İlk 30 item HEMEN yüklenir
-        removeClippedSubviews={true}
+        // Performance optimizations - Tüm resimler yüklenir
+        removeClippedSubviews={false}
         getItemLayout={horizontal ? getItemLayout : undefined}
-        maxToRenderPerBatch={horizontal ? 6 : 12}
-        windowSize={horizontal ? 3 : 8}
+        maxToRenderPerBatch={horizontal ? 10 : 20}
+        windowSize={horizontal ? 5 : 21}
         initialNumToRender={horizontal ? 10 : 30}
         updateCellsBatchingPeriod={50}
         showsVerticalScrollIndicator={false}
