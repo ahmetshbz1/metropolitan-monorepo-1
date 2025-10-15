@@ -11,9 +11,8 @@
 
 ```
 /opt/
-├── metropolitan/              # Git repository (prod branch)
-├── metropolitan.env           # Production environment variables
-└── deploy.sh                  # Deployment script
+├── metropolitan/              # Git repository (main branch)
+└── metropolitan.env           # Production environment variables
 ```
 
 ## 🔧 Server Configuration
@@ -39,10 +38,9 @@ Host metropolitan-deploy
 
 ## 🚢 Deployment Process
 
-### Quick Deploy
+### Quick Deploy (Backend + Admin Panel)
 ```bash
-# Deploy latest prod branch
-ssh metropolitan-deploy "/opt/deploy.sh"
+ssh metropolitan-deploy "cd /opt/metropolitan && git fetch origin && git reset --hard origin/main && cp /opt/metropolitan.env .env && docker-compose down && docker-compose build --no-cache backend admin-panel && docker-compose up -d"
 ```
 
 ### Manual Deploy Steps
@@ -53,16 +51,16 @@ ssh metropolitan-deploy
 # 2. Navigate to project
 cd /opt/metropolitan
 
-# 3. Pull latest changes
+# 3. Pull latest changes from main branch
 git fetch origin
-git reset --hard origin/prod
+git reset --hard origin/main
 
 # 4. Copy production env
 cp /opt/metropolitan.env .env
 
-# 5. Rebuild and restart
+# 5. Rebuild backend and admin panel
 docker-compose down
-docker-compose build --no-cache backend
+docker-compose build --no-cache backend admin-panel
 docker-compose up -d
 ```
 
@@ -98,8 +96,7 @@ environment:
 git add docker-compose.yml
 git commit -m "temp: Enable development mode for Apple Review"
 git push origin main
-git checkout prod && git merge main && git push origin prod
-ssh metropolitan-deploy "/opt/deploy.sh"
+# Then deploy using Quick Deploy command above
 ```
 
 3. After approval, revert to production:
@@ -204,7 +201,7 @@ ssh metropolitan-deploy "docker-compose exec -T postgres psql -U metropolitan me
 ## 📝 Notes
 
 1. **Always test locally first** before deploying to production
-2. **Keep prod branch stable** - only merge tested changes
+2. **Keep main branch stable** - only push tested changes
 3. **Monitor after deployment** - Check logs for errors
 4. **Backup before major changes** - Database and .env file
 5. **Document any manual changes** made on the server
@@ -223,27 +220,36 @@ See `deployment/WEB_DEPLOYMENT_GUIDE.md` for detailed web-app deployment instruc
 ### Quick Web Deployment
 
 ```bash
-# Deploy both backend and web-app
-ssh metropolitan-deploy "/opt/deploy.sh"
-
 # Deploy only web-app
-ssh metropolitan-deploy "cd /opt/metropolitan && docker-compose build --no-cache web-app && docker-compose up -d web-app"
+ssh metropolitan-deploy "cd /opt/metropolitan && git fetch origin && git reset --hard origin/main && docker-compose build --no-cache web-app && docker-compose up -d web-app"
 ```
 
 ## 📌 Quick Commands
 
 ```bash
-# Deploy all services
-ssh metropolitan-deploy "/opt/deploy.sh"
+# Deploy all services (backend + admin-panel + web-app)
+ssh metropolitan-deploy "cd /opt/metropolitan && git fetch origin && git reset --hard origin/main && cp /opt/metropolitan.env .env && docker-compose down && docker-compose build --no-cache && docker-compose up -d"
+
+# Deploy only backend
+ssh metropolitan-deploy "cd /opt/metropolitan && git fetch origin && git reset --hard origin/main && docker-compose build --no-cache backend && docker-compose up -d backend"
+
+# Deploy only admin panel
+ssh metropolitan-deploy "cd /opt/metropolitan && git fetch origin && git reset --hard origin/main && docker-compose build --no-cache admin-panel && docker-compose up -d admin-panel"
 
 # Backend logs
 ssh metropolitan-deploy "docker-compose logs -f backend"
+
+# Admin panel logs
+ssh metropolitan-deploy "docker-compose logs -f admin-panel"
 
 # Web-app logs
 ssh metropolitan-deploy "docker-compose logs -f web-app"
 
 # Restart backend
 ssh metropolitan-deploy "docker-compose restart backend"
+
+# Restart admin panel
+ssh metropolitan-deploy "docker-compose restart admin-panel"
 
 # Restart web-app
 ssh metropolitan-deploy "docker-compose restart web-app"
