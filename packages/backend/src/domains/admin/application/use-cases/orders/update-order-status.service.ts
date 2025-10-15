@@ -85,6 +85,9 @@ export class UpdateOrderStatusService {
     if (status === "cancelled") {
       updateData.cancelledAt = new Date();
       updateData.cancelReason = sanitizedCancelReason ?? null;
+
+      // Sipariş iptal edildiğinde stok iadesi yap
+      await this.rollbackStockOnCancellation(orderId);
     } else if (sanitizedCancelReason !== undefined) {
       updateData.cancelReason = sanitizedCancelReason;
       if (sanitizedCancelReason === null) {
@@ -98,5 +101,31 @@ export class UpdateOrderStatusService {
       success: true,
       message: "Order status updated successfully",
     };
+  }
+
+  /**
+   * Sipariş iptal edildiğinde stok iadesi yap
+   */
+  private static async rollbackStockOnCancellation(orderId: string): Promise<void> {
+    try {
+      console.log(`🔄 Admin cancelled order, rolling back stock for order ${orderId}...`);
+
+      const { WebhookStockRollbackService } = await import(
+        "../../../../payment/application/webhook/stock-rollback.service"
+      );
+
+      const rollbackResult = await WebhookStockRollbackService.rollbackOrderStock(orderId);
+
+      if (rollbackResult.success) {
+        console.log(`✅ Stock rollback successful for cancelled order ${orderId}`);
+        console.log(
+          `   Redis: ${rollbackResult.redisRollback ? "✅" : "❌"}, Database: ${rollbackResult.databaseRollback ? "✅" : "❌"}`
+        );
+      } else {
+        console.error(`❌ Stock rollback failed for cancelled order ${orderId}:`, rollbackResult.errors);
+      }
+    } catch (error) {
+      console.error(`❌ Stock rollback error for cancelled order ${orderId}:`, error);
+    }
   }
 }
