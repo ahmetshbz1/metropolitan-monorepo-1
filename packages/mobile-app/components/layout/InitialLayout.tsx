@@ -89,10 +89,90 @@ export const InitialLayout: React.FC = () => {
     }
   }, [loaded]);
 
+  // Notification'dan sayfaya yönlendirme yap
+  const handleNotificationNavigation = useCallback((data: { screen?: string; orderId?: string; productId?: string }) => {
+    if (!data?.screen) return;
+
+    const now = Date.now();
+    const targetScreen = data.screen;
+
+    // Son 2 saniye içinde aynı sayfaya navigasyon yapıldıysa ignore et
+    if (lastNavigationRef.current &&
+        lastNavigationRef.current.screen === targetScreen &&
+        (now - lastNavigationRef.current.time) < 2000) {
+      return;
+    }
+
+    // Navigasyon bilgisini kaydet
+    lastNavigationRef.current = { screen: targetScreen, time: now };
+
+    // Navigasyon yap
+    try {
+      switch (data.screen) {
+        case 'orders':
+          router.push('/(tabs)/orders');
+          break;
+        case 'order-detail':
+          if (data.orderId) {
+            router.push(`/order/${data.orderId}`);
+          } else {
+            router.push('/(tabs)/orders');
+          }
+          break;
+        case 'product-detail':
+          if (data.productId) {
+            router.push(`/product/${data.productId}`);
+          } else {
+            router.push('/(tabs)/products');
+          }
+          break;
+        case 'products':
+          router.push('/(tabs)/products');
+          break;
+        case 'cart':
+          router.push('/(tabs)/cart');
+          break;
+        case 'profile':
+          router.push('/(tabs)/profile');
+          break;
+        case 'favorites':
+          router.push('/favorites');
+          break;
+        default:
+          console.log('Bilinmeyen ekran:', data.screen);
+      }
+    } catch (error) {
+      console.error('Push notification yönlendirme hatası:', error);
+    }
+  }, []);
+
   // Push notifications'ı başlat - Custom permission ekranı gösterilmişse
   useEffect(() => {
     const initializePushNotifications = async () => {
-      // Notification listener'ları kur (token zaten alınmış olabilir)
+      // App kapalıyken gelen notification'ı kontrol et (cold start)
+      const lastNotificationResponse = await Notifications.getLastNotificationResponseAsync();
+      if (lastNotificationResponse) {
+        const data = lastNotificationResponse.notification.request.content.data as {
+          screen?: string;
+          orderId?: string;
+          productId?: string;
+        };
+
+        console.log('🔔 [InitialLayout] Cold start notification:', data);
+
+        // Badge sayısını güncelle
+        refreshUnreadCount();
+
+        // Yönlendirme yap
+        if (data?.screen) {
+          // Router hazır olana kadar bekle
+          setTimeout(() => {
+            handleNotificationNavigation(data);
+          }, 500);
+        }
+      }
+
+      // Notification listener'ları kur (app açıkken gelen notification'lar için)
       NotificationService.setupNotificationListeners(
         (notification) => {
           // Bildirim alındığında - badge sayısını güncelle
@@ -100,70 +180,20 @@ export const InitialLayout: React.FC = () => {
           refreshUnreadCount();
         },
         (response) => {
-          // Bildirime tıklandığında
+          // Bildirime tıklandığında (app açıkken)
           const data = response.notification.request.content.data as {
             screen?: string;
             orderId?: string;
             productId?: string;
           };
 
+          console.log('🔔 [InitialLayout] Notification tapped while app open:', data);
+
           // Badge sayısını güncelle
           refreshUnreadCount();
 
-          // Eğer bildirimde yönlendirme bilgisi varsa
-          if (data?.screen) {
-            const now = Date.now();
-            const targetScreen = data.screen;
-
-            // Son 2 saniye içinde aynı sayfaya navigasyon yapıldıysa ignore et
-            if (lastNavigationRef.current &&
-                lastNavigationRef.current.screen === targetScreen &&
-                (now - lastNavigationRef.current.time) < 2000) {
-              return;
-            }
-
-            // Navigasyon bilgisini kaydet
-            lastNavigationRef.current = { screen: targetScreen, time: now };
-
-            // Navigasyon yap
-            try {
-              switch (data.screen) {
-                case 'orders':
-                  router.push('/(tabs)/orders');
-                  break;
-                case 'order-detail':
-                  if (data.orderId) {
-                    router.push(`/order/${data.orderId}`);
-                  } else {
-                    router.push('/(tabs)/orders');
-                  }
-                  break;
-                case 'product-detail':
-                  if (data.productId) {
-                    router.push(`/product/${data.productId}`);
-                  } else {
-                    router.push('/(tabs)/products');
-                  }
-                  break;
-                case 'products':
-                  router.push('/(tabs)/products');
-                  break;
-                case 'cart':
-                  router.push('/(tabs)/cart');
-                  break;
-                case 'profile':
-                  router.push('/(tabs)/profile');
-                  break;
-                case 'favorites':
-                  router.push('/favorites');
-                  break;
-                default:
-                  console.log('Bilinmeyen ekran:', data.screen);
-              }
-            } catch (error) {
-              console.error('Push notification yönlendirme hatası:', error);
-            }
-          }
+          // Yönlendirme yap
+          handleNotificationNavigation(data);
         }
       );
     };
@@ -177,7 +207,7 @@ export const InitialLayout: React.FC = () => {
     return () => {
       NotificationService.removeNotificationListeners();
     };
-  }, [loaded, refreshUnreadCount]);
+  }, [loaded, refreshUnreadCount, handleNotificationNavigation]);
 
   // Session expired listener
   useEffect(() => {
