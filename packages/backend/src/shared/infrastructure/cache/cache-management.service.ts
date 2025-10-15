@@ -3,6 +3,7 @@
 // Provides monitoring and management capabilities
 
 import { redis } from "../database/redis";
+import { logger } from "../monitoring/logger.config";
 
 export class CacheManagementService {
   private static readonly PRODUCT_PREFIX = "product:";
@@ -27,7 +28,8 @@ export class CacheManagementService {
         memoryUsage,
       };
     } catch (error) {
-      console.error('Error getting cache stats:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error({ error: errorMessage }, "Error getting cache stats");
       return {
         totalCachedProducts: 0,
         memoryUsage: 'unknown',
@@ -66,9 +68,10 @@ export class CacheManagementService {
   static async clearAllCaches(): Promise<void> {
     try {
       await redis.flushdb();
-      console.log('All caches cleared');
+      logger.warn("All caches cleared - admin action");
     } catch (error) {
-      console.error('Error clearing caches:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error({ error: errorMessage }, "Error clearing caches");
     }
   }
 }

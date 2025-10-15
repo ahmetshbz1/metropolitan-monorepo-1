@@ -1,10 +1,11 @@
 //  "basic-performance.middleware.ts"
-//  metropolitan backend  
+//  metropolitan backend
 //  Basic performance monitoring middleware
 
 import { Elysia } from "elysia";
 
 import { redis } from "../../database/redis";
+import { logger } from "../logger.config";
 
 import { PERFORMANCE_CONFIG } from "./performance-types";
 
@@ -21,7 +22,7 @@ export const basicPerformanceMiddleware = new Elysia()
     // Increment active connections counter
     redis.incr(PERFORMANCE_CONFIG.REDIS_KEYS.API_ACTIVE_CONNECTIONS)
       .catch(err => {
-        console.warn('Failed to increment active connections:', err);
+        logger.warn({ error: err instanceof Error ? err.message : "Unknown error" }, "Failed to increment active connections");
       });
   })
   .onAfterHandle(({ store, set }) => {
@@ -30,25 +31,25 @@ export const basicPerformanceMiddleware = new Elysia()
     
     // Store response time for metrics
     redis.lpush(
-      PERFORMANCE_CONFIG.REDIS_KEYS.API_RESPONSE_TIMES, 
+      PERFORMANCE_CONFIG.REDIS_KEYS.API_RESPONSE_TIMES,
       responseTime.toString()
     )
       .then(() => {
         // Keep only last 1000 response times
         return redis.ltrim(
-          PERFORMANCE_CONFIG.REDIS_KEYS.API_RESPONSE_TIMES, 
-          0, 
+          PERFORMANCE_CONFIG.REDIS_KEYS.API_RESPONSE_TIMES,
+          0,
           999
         );
       })
       .catch(err => {
-        console.warn('Failed to store response time:', err);
+        logger.warn({ error: err instanceof Error ? err.message : "Unknown error" }, "Failed to store response time");
       });
-    
+
     // Increment total request counter
     redis.incr(PERFORMANCE_CONFIG.REDIS_KEYS.API_TOTAL_REQUESTS)
       .catch(err => {
-        console.warn('Failed to increment total requests:', err);
+        logger.warn({ error: err instanceof Error ? err.message : "Unknown error" }, "Failed to increment total requests");
       });
     
     // Add performance headers
@@ -57,27 +58,28 @@ export const basicPerformanceMiddleware = new Elysia()
       "X-Response-Time": `${responseTime}ms`,
       "X-Performance-Tracked": "true",
     };
-    
+
+
     // Decrement active connections
     redis.decr(PERFORMANCE_CONFIG.REDIS_KEYS.API_ACTIVE_CONNECTIONS)
       .catch(err => {
-        console.warn('Failed to decrement active connections:', err);
+        logger.warn({ error: err instanceof Error ? err.message : "Unknown error" }, "Failed to decrement active connections");
       });
   })
   .onError(({ store, error }) => {
     // Increment error counter
     redis.incr(PERFORMANCE_CONFIG.REDIS_KEYS.API_ERROR_REQUESTS)
       .catch(err => {
-        console.warn('Failed to increment error requests:', err);
+        logger.warn({ error: err instanceof Error ? err.message : "Unknown error" }, "Failed to increment error requests");
       });
-    
+
     // Log performance impact of error
     const responseTime = Date.now() - (store.requestStartTime as number);
-    console.error(`Request failed after ${responseTime}ms:`, error.message);
-    
+    logger.error({ responseTime, error: error.message }, "Request failed");
+
     // Decrement active connections on error
     redis.decr(PERFORMANCE_CONFIG.REDIS_KEYS.API_ACTIVE_CONNECTIONS)
       .catch(err => {
-        console.warn('Failed to decrement active connections on error:', err);
+        logger.warn({ error: err instanceof Error ? err.message : "Unknown error" }, "Failed to decrement active connections on error");
       });
   });

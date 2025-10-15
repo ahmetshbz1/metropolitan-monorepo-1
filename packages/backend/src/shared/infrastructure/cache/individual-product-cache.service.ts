@@ -5,6 +5,7 @@
 import type { Product } from "@metropolitan/shared";
 
 import { redis } from "../database/redis";
+import { logger } from "../monitoring/logger.config";
 
 import { BaseCacheService } from "./base-cache.service";
 
@@ -45,7 +46,8 @@ export class IndividualProductCacheService extends BaseCacheService<Product> {
 
       await pipeline.exec();
     } catch (error) {
-      console.error('Error caching multiple products:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error({ error: errorMessage }, "Error caching multiple products");
     }
   }
 
@@ -63,10 +65,11 @@ export class IndividualProductCacheService extends BaseCacheService<Product> {
     if (products.length === 0) return;
 
     try {
-      console.log(`Warming up cache with ${products.length} products`);
+      logger.info({ count: products.length }, "Warming up cache with products");
       await this.cacheProducts(products);
     } catch (error) {
-      console.error('Error warming up cache:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error({ error: errorMessage }, "Error warming up cache");
     }
   }
 }

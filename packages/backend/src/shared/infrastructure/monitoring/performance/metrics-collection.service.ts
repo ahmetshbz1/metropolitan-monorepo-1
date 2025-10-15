@@ -1,5 +1,5 @@
 //  "metrics-collection.service.ts"
-//  metropolitan backend  
+//  metropolitan backend
 //  Focused service for collecting performance metrics from various sources
 //  Extracted from performance-monitor.ts (lines 113-231)
 
@@ -7,6 +7,7 @@ import { sql } from "drizzle-orm";
 
 import { db } from "../../database/connection";
 import { redis } from "../../database/redis";
+import { logger } from "../logger.config";
 
 import type {
   APIMetrics,
@@ -136,7 +137,7 @@ export class MetricsCollectionService {
         deadlocks: parseNumber(dl?.deadlocks),
       };
     } catch (error) {
-      console.error('Failed to collect database metrics:', error);
+      logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Failed to collect database metrics");
       return {
         queryTime: 0,
         connectionPoolUsage: 0,
@@ -183,10 +184,10 @@ export class MetricsCollectionService {
       const start = Date.now();
       await redis.ping();
       stats.latency = Date.now() - start;
-      
+
       return stats;
     } catch (error) {
-      console.error('Failed to collect Redis metrics:', error);
+      logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Failed to collect Redis metrics");
       return {
         hitRate: 0,
         evictionRate: 0,
@@ -211,7 +212,7 @@ export class MetricsCollectionService {
         networkIO: 0, // Would need OS-specific implementation
       };
     } catch (error) {
-      console.error('Failed to collect system metrics:', error);
+      logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Failed to collect system metrics");
       return {
         cpuUsage: 0,
         memoryUsage: 0,

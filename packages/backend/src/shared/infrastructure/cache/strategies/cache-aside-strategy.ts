@@ -3,6 +3,7 @@
 //  Cache-aside pattern with automatic refresh
 
 import { redis } from "../../database/redis";
+import { logger } from "../../monitoring/logger.config";
 import { ApiCacheService } from "../api-cache.service";
 
 import { BaseCacheStrategy, type CacheOptions } from "./base-cache-strategy";
@@ -58,7 +59,8 @@ export class CacheAsideStrategy<T> extends BaseCacheStrategy<T> {
         const fresh = await fetchFn();
         await ApiCacheService.set(key, fresh, { ttl: staleTtl });
       } catch (error) {
-        console.error(`Failed to refresh cache for ${key}:`, error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        logger.error({ key, error: errorMessage }, "Failed to refresh cache");
       }
     });
   }

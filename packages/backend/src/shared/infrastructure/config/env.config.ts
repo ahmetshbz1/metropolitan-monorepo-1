@@ -25,7 +25,7 @@ try {
     }
   });
 } catch (error) {
-  console.warn('Could not load .env file:', error);
+  // Env loading error will be caught by validation below
 }
 
 interface EnvConfig {

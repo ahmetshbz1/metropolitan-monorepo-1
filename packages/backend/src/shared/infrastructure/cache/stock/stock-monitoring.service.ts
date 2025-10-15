@@ -1,9 +1,10 @@
 //  "stock-monitoring.service.ts"
-//  metropolitan backend  
+//  metropolitan backend
 //  Focused service for stock monitoring and analytics
 //  Extracted from redis-stock.service.ts (lines 258-295)
 
 import { redis } from "../../database/redis";
+import { logger } from "../../monitoring/logger.config";
 
 import { REDIS_STOCK_CONFIG, type StockActivity } from "./stock-config";
 
@@ -36,7 +37,8 @@ export class StockMonitoringService {
                 const activity = JSON.parse(data as string);
                 activities.push(activity);
               } catch (parseError) {
-                console.warn('Failed to parse stock activity data:', parseError);
+                const errorMessage = parseError instanceof Error ? parseError.message : String(parseError);
+                logger.warn({ error: errorMessage }, "Failed to parse stock activity data");
               }
             }
           });
@@ -52,7 +54,8 @@ export class StockMonitoringService {
       });
       
       stream.on('error', (err) => {
-        console.error('Error fetching stock activity:', err);
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        logger.error({ error: errorMessage }, "Error fetching stock activity");
         reject(err);
       });
     });
@@ -83,7 +86,8 @@ export class StockMonitoringService {
                 const activity = JSON.parse(data as string);
                 activities.push(activity);
               } catch (parseError) {
-                console.warn('Failed to parse stock activity data:', parseError);
+                const errorMessage = parseError instanceof Error ? parseError.message : String(parseError);
+                logger.warn({ error: errorMessage }, "Failed to parse stock activity data");
               }
             }
           });
@@ -101,7 +105,8 @@ export class StockMonitoringService {
       });
       
       stream.on('error', (err) => {
-        console.error('Error fetching all stock activities:', err);
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        logger.error({ error: errorMessage }, "Error fetching all stock activities");
         reject(err);
       });
     });
@@ -154,7 +159,8 @@ export class StockMonitoringService {
                     break;
                 }
               } catch (parseError) {
-                console.warn('Failed to parse stock stats data:', parseError);
+                const errorMessage = parseError instanceof Error ? parseError.message : String(parseError);
+                logger.warn({ error: errorMessage }, "Failed to parse stock stats data");
               }
             }
           });
@@ -166,7 +172,8 @@ export class StockMonitoringService {
       });
       
       stream.on('error', (err) => {
-        console.error('Error fetching stock stats:', err);
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        logger.error({ error: errorMessage }, "Error fetching stock stats");
         reject(err);
       });
     });

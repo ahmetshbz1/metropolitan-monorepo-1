@@ -2,10 +2,11 @@
 // Invoice-specific operations for Fakturownia
 // Create, retrieve, and download invoices
 
+import { logger } from "../monitoring/logger.config";
 import { FakturowniaApiClientService } from "./fakturownia-api-client.service";
-import type { 
-  FakturowniaInvoice, 
-  FakturowniaInvoiceResponse 
+import type {
+  FakturowniaInvoice,
+  FakturowniaInvoiceResponse
 } from "./fakturownia-types";
 
 export class FakturowniaInvoiceService {
@@ -20,8 +21,8 @@ export class FakturowniaInvoiceService {
    */
   async createInvoice(invoice: FakturowniaInvoice): Promise<FakturowniaInvoiceResponse> {
     try {
-      console.log(`📝 Creating Fakturownia invoice for: ${invoice.buyer_name}`);
-      
+      logger.info({ buyerName: invoice.buyer_name }, "Fakturownia fatura oluşturuluyor");
+
       const response = await this.apiClient.makeRequest<FakturowniaInvoiceResponse>(
         "invoices.json",
         {
@@ -30,21 +31,27 @@ export class FakturowniaInvoiceService {
         }
       );
 
-      console.log(`✅ Fakturownia faturası oluşturuldu:`, {
-        id: response.id,
-        number: response.number,
-        buyer: response.buyer_name,
-        total: response.total_price_gross,
-        status: response.status
-      });
-      
+      logger.info(
+        {
+          invoiceId: response.id,
+          invoiceNumber: response.number,
+          buyerName: response.buyer_name,
+          totalGross: response.total_price_gross,
+          status: response.status
+        },
+        "Fakturownia faturası oluşturuldu"
+      );
+
       return response;
     } catch (error) {
-      console.error(`❌ Fakturownia fatura oluşturma hatası:`, {
-        buyer: invoice.buyer_name,
-        positions: invoice.positions.length,
-        error: error instanceof Error ? error.message : String(error)
-      });
+      logger.error(
+        {
+          buyerName: invoice.buyer_name,
+          positionsCount: invoice.positions.length,
+          error: error instanceof Error ? error.message : String(error)
+        },
+        "Fakturownia fatura oluşturma hatası"
+      );
       throw error;
     }
   }
@@ -58,7 +65,10 @@ export class FakturowniaInvoiceService {
         `invoices/${invoiceId}.json`
       );
     } catch (error) {
-      console.error(`Fakturownia fatura getirme hatası (${invoiceId}):`, error);
+      logger.error(
+        { invoiceId, error: error instanceof Error ? error.message : String(error) },
+        "Fakturownia fatura getirme hatası"
+      );
       throw error;
     }
   }

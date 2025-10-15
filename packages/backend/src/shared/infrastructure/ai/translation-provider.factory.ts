@@ -2,6 +2,7 @@ import { db } from "../database/connection";
 import { aiSettings } from "../database/schema";
 import { GeminiTranslationService } from "./gemini.service";
 import { OpenAITranslationService } from "./openai.service";
+import { logger } from "../monitoring/logger.config";
 
 export interface ITranslationService {
   translateText(params: {
@@ -42,7 +43,7 @@ export class TranslationProviderFactory {
     if (settings.length === 0) {
       const defaultApiKey = "AIzaSyBfC4-CKPrrgNrvmIiebBjZLhkuIFIsR0Q";
       const defaultModel = "gemini-2.0-flash";
-      console.log("No AI settings found, using default Gemini");
+      logger.info("No AI settings found, using default Gemini");
 
       cachedSettings = { provider: "gemini", apiKey: defaultApiKey, model: defaultModel };
       cacheTime = now;

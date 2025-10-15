@@ -44,13 +44,13 @@ export const createApp = () =>
       let structuredError = null;
       try {
         structuredError = JSON.parse(error.message);
-        console.log("🟡 [Backend Error Handler] Parsed error:", {
+        globalLogger.debug("Parsed error", {
           structuredError,
           hasKey: !!structuredError?.key,
           rawMessage: error.message,
         });
       } catch (e) {
-        console.log("🟡 [Backend Error Handler] Not a JSON error:", error.message);
+        globalLogger.debug("Not a JSON error", { message: error.message });
         // Not a structured error, continue normally
       }
 
@@ -79,7 +79,7 @@ export const createApp = () =>
 
       // Handle structured errors (from cart validation, etc.)
       if (structuredError?.key) {
-        console.log("🔴 [Backend Error Handler] Structured error detected:", {
+        globalLogger.info("Structured error detected", {
           key: structuredError.key,
           params: structuredError.params,
           message: structuredError.message,
@@ -139,7 +139,7 @@ export const createApp = () =>
 
     // Startup logging
     .onStart(async () => {
-      globalLogger.info("🚀 Metropolitan Backend starting...", {
+      globalLogger.info("Metropolitan Backend starting", {
         environment: envConfig.NODE_ENV,
         version: process.env.npm_package_version || "1.0.0",
       });
@@ -170,5 +170,5 @@ export const createApp = () =>
 
     // Shutdown logging
     .onStop(() => {
-      globalLogger.info("🛑 Metropolitan Backend shutting down...");
+      globalLogger.info("Metropolitan Backend shutting down");
     });

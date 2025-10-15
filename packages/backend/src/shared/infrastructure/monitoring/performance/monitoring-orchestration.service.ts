@@ -1,8 +1,9 @@
 // "monitoring-orchestration.service.ts"
-// metropolitan backend  
+// metropolitan backend
 // Monitoring orchestration and lifecycle management
 
 import { redis } from "../../database/redis";
+import { logger } from "../logger.config";
 
 import { AlertManagementService } from "./alert-management.service";
 import { MetricsCollectionService } from "./metrics-collection.service";
@@ -17,12 +18,12 @@ export class MonitoringOrchestrationService {
    */
   static start(intervalMs: number = PERFORMANCE_CONFIG.DEFAULT_MONITORING_INTERVAL): void {
     if (this.monitoringInterval) {
-      console.warn("Performance monitoring already started");
+      logger.warn("Performance monitoring already started");
       return;
     }
-    
-    console.log("🚀 Starting performance monitoring...");
-    
+
+    logger.info("Starting performance monitoring");
+
     this.monitoringInterval = setInterval(async () => {
       await this.performMonitoringCycle();
     }, intervalMs);
@@ -35,7 +36,7 @@ export class MonitoringOrchestrationService {
     if (this.monitoringInterval) {
       clearInterval(this.monitoringInterval);
       this.monitoringInterval = null;
-      console.log("🛑 Performance monitoring stopped");
+      logger.info("Performance monitoring stopped");
     }
   }
 
@@ -63,7 +64,7 @@ export class MonitoringOrchestrationService {
       // Store metrics in Redis for distributed monitoring
       await this.storeMetricsInRedis(metrics);
     } catch (error) {
-      console.error("Failed to collect performance metrics:", error);
+      logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Failed to collect performance metrics");
     }
   }
 

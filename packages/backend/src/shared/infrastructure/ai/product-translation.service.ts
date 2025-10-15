@@ -3,6 +3,7 @@ import type {
   AdminProductTranslationInput,
   SupportedLanguage,
 } from "../../../domains/admin/application/use-cases/products/product.types";
+import { logger } from "../monitoring/logger.config";
 
 interface ProductTranslationData {
   name: string;
@@ -42,7 +43,7 @@ export class ProductTranslationService {
         context: "category name",
       });
     } catch (error) {
-      console.error("Category translation failed:", error);
+      logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Category translation failed");
       translations.en = turkishName;
       translations.pl = turkishName;
     }
@@ -144,7 +145,7 @@ export class ProductTranslationService {
         });
       }
     } catch (error) {
-      console.error("Translation generation failed:", error);
+      logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Translation generation failed");
     }
 
     return translations;
@@ -180,7 +181,7 @@ export class ProductTranslationService {
         pl: plTranslations,
       };
     } catch (error) {
-      console.error("Allergen translation failed:", error);
+      logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Allergen translation failed");
       return { tr: allergens, en: allergens, pl: allergens };
     }
   }
@@ -215,7 +216,7 @@ export class ProductTranslationService {
         pl: plTranslations,
       };
     } catch (error) {
-      console.error("Badge translation failed:", error);
+      logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Badge translation failed");
       return { tr: badges, en: badges, pl: badges };
     }
   }
@@ -248,7 +249,7 @@ export class ProductTranslationService {
         pl: plTranslated,
       };
     } catch (error) {
-      console.error("Nutritional values translation failed:", error);
+      logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Nutritional values translation failed");
       return {
         tr: nutritionalValues,
         en: nutritionalValues,
@@ -285,7 +286,7 @@ export class ProductTranslationService {
         pl: plTranslated,
       };
     } catch (error) {
-      console.error("Manufacturer info translation failed:", error);
+      logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Manufacturer info translation failed");
       return {
         tr: manufacturerInfo,
         en: manufacturerInfo,

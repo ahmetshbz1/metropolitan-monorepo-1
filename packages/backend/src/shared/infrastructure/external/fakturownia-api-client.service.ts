@@ -2,6 +2,7 @@
 // Low-level API client for Fakturownia
 // Handles HTTP requests and error handling
 
+import { logger } from "../monitoring/logger.config";
 import type { FakturowniaError } from "./fakturownia-types";
 
 export class FakturowniaApiClientService {
@@ -34,10 +35,13 @@ export class FakturowniaApiClientService {
   ): Promise<T> {
     const url = this.getApiUrl(endpoint);
     const startTime = Date.now();
-    
+
     try {
-      console.log(`🔄 Fakturownia API Request: ${options.method || 'GET'} ${endpoint}`);
-      
+      logger.debug(
+        { method: options.method || 'GET', endpoint },
+        "Fakturownia API request"
+      );
+
       const response = await fetch(url, {
         headers: {
           "Content-Type": "application/json",
@@ -48,27 +52,32 @@ export class FakturowniaApiClientService {
       });
 
       const duration = Date.now() - startTime;
-      console.log(`⏱️ Fakturownia API Response: ${response.status} in ${duration}ms`);
+      logger.debug(
+        { status: response.status, duration },
+        "Fakturownia API response"
+      );
 
       if (!response.ok) {
         const errorText = await response.text();
         let errorData: FakturowniaError;
-        
+
         try {
           errorData = JSON.parse(errorText);
         } catch {
           errorData = { error: `HTTP ${response.status}: ${errorText}` };
         }
 
-        // Enhanced error logging
-        console.error(`❌ Fakturownia API Error:`, {
-          endpoint,
-          method: options.method || 'GET',
-          status: response.status,
-          statusText: response.statusText,
-          errorData,
-          duration
-        });
+        logger.error(
+          {
+            endpoint,
+            method: options.method || 'GET',
+            status: response.status,
+            statusText: response.statusText,
+            errorData,
+            duration
+          },
+          "Fakturownia API error"
+        );
 
         // Specific error types
         if (response.status === 401) {
@@ -89,20 +98,22 @@ export class FakturowniaApiClientService {
       return response.json() as Promise<T>;
     } catch (error) {
       const duration = Date.now() - startTime;
-      
+
       if (error instanceof Error && error.message.includes("Fakturownia API")) {
         // Re-throw our custom errors
         throw error;
       }
-      
-      // Network or other errors
-      console.error(`🔥 Fakturownia Network Error:`, {
-        endpoint,
-        method: options.method || 'GET',
-        error: error instanceof Error ? error.message : String(error),
-        duration
-      });
-      
+
+      logger.error(
+        {
+          endpoint,
+          method: options.method || 'GET',
+          error: error instanceof Error ? error.message : String(error),
+          duration
+        },
+        "Fakturownia network error"
+      );
+
       throw new Error(`Fakturownia bağlantı hatası: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
@@ -113,10 +124,10 @@ export class FakturowniaApiClientService {
   async downloadPDF(invoiceId: number): Promise<Buffer> {
     const startTime = Date.now();
     const url = this.getApiUrl(`invoices/${invoiceId}.pdf`);
-    
+
     try {
-      console.log(`📥 Downloading PDF for Fakturownia invoice: ${invoiceId}`);
-      
+      logger.info({ invoiceId }, "Fakturownia PDF indiriliyor");
+
       const response = await fetch(url, {
         headers: {
           Accept: "application/pdf",
@@ -126,19 +137,22 @@ export class FakturowniaApiClientService {
       const duration = Date.now() - startTime;
 
       if (!response.ok) {
-        console.error(`❌ Fakturownia PDF download failed:`, {
-          invoiceId,
-          status: response.status,
-          statusText: response.statusText,
-          duration
-        });
-        
+        logger.error(
+          {
+            invoiceId,
+            status: response.status,
+            statusText: response.statusText,
+            duration
+          },
+          "Fakturownia PDF indirme başarısız"
+        );
+
         if (response.status === 404) {
           throw new Error(`Fakturownia faturası bulunamadı: ${invoiceId}`);
         } else if (response.status === 401) {
           throw new Error("Fakturownia PDF indirme yetkisi yok");
         }
-        
+
         throw new Error(`PDF indirme hatası: HTTP ${response.status}`);
       }
 
@@ -146,20 +160,26 @@ export class FakturowniaApiClientService {
       const buffer = Buffer.from(arrayBuffer);
       const sizeKB = Math.round(buffer.length / 1024);
 
-      console.log(`✅ Fakturownia PDF indirildi:`, {
-        invoiceId,
-        sizeKB: `${sizeKB} KB`,
-        duration: `${duration}ms`
-      });
-      
+      logger.info(
+        {
+          invoiceId,
+          sizeKB,
+          duration
+        },
+        "Fakturownia PDF indirildi"
+      );
+
       return buffer;
     } catch (error) {
       const duration = Date.now() - startTime;
-      console.error(`❌ Fakturownia PDF indirme hatası:`, {
-        invoiceId,
-        error: error instanceof Error ? error.message : String(error),
-        duration
-      });
+      logger.error(
+        {
+          invoiceId,
+          error: error instanceof Error ? error.message : String(error),
+          duration
+        },
+        "Fakturownia PDF indirme hatası"
+      );
       throw error;
     }
   }

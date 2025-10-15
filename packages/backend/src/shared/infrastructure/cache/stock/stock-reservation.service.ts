@@ -47,8 +47,8 @@ export class StockReservationService {
       // 2. Get current stock from Redis, if not exists load from database
       const availableStock = await this.getCurrentAvailableStock(productId, stockKey);
 
-      logger.debug("Lock acquired for product", { userId, productId });
-      logger.debug("Stock check", { productId, availableStock, requestedQuantity: quantity });
+      logger.debug({ userId, productId }, "Lock acquired for product");
+      logger.debug({ availableStock, requested: quantity }, "Stock check");
 
       // 3. Check if sufficient stock available
       if (availableStock < quantity) {
@@ -64,7 +64,7 @@ export class StockReservationService {
       // 5. Store reservation info (for rollback)
       await this.storeReservationInfo(reservationKey, productId, userId, quantity);
 
-      logger.info("Stock reserved successfully", { productId, userId, quantity, remainingStock: newStock });
+      logger.info({ quantity, remainingStock: newStock }, "Stock reserved successfully");
 
       return {
         success: true,
@@ -73,7 +73,7 @@ export class StockReservationService {
     } finally {
       // 6. Always release the lock
       await redis.del(lockKey);
-      logger.debug("Lock released for product", { productId });
+      logger.debug({ productId }, "Lock released for product");
     }
   }
 
@@ -91,7 +91,7 @@ export class StockReservationService {
       // Get reservation details
       const reservationData = await redis.get(reservationKey);
       if (!reservationData) {
-        logger.warn("No reservation found for rollback", { userId, productId });
+        logger.warn({ userId, productId }, "No reservation found for rollback");
         return;
       }
 
@@ -111,18 +111,16 @@ export class StockReservationService {
         })
       );
 
-      logger.info("Stock rolled back successfully", {
-        userId,
-        productId,
-        quantity: reservation.quantity,
-        newStock
-      });
+      logger.info(
+        { userId, productId, quantity: reservation.quantity, newStock },
+        "Stock rolled back successfully"
+      );
     } catch (error) {
-      logger.error("Failed to rollback reservation", {
-        userId,
-        productId,
-        error: error instanceof Error ? error.message : String(error)
-      });
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error(
+        { userId, productId, error: errorMessage },
+        "Failed to rollback reservation"
+      );
     }
   }
 
@@ -138,7 +136,7 @@ export class StockReservationService {
     try {
       const reservationData = await redis.get(reservationKey);
       if (!reservationData) {
-        logger.warn("No reservation found for confirmation", { userId, productId });
+        logger.warn({ userId, productId }, "No reservation found for confirmation");
         return;
       }
 
@@ -155,13 +153,13 @@ export class StockReservationService {
         })
       );
 
-      logger.info("Reservation confirmed successfully", { userId, productId });
+      logger.info({ userId, productId }, "Reservation confirmed successfully");
     } catch (error) {
-      logger.error("Failed to confirm reservation", {
-        userId,
-        productId,
-        error: error instanceof Error ? error.message : String(error)
-      });
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error(
+        { userId, productId, error: errorMessage },
+        "Failed to confirm reservation"
+      );
     }
   }
 
@@ -177,7 +175,7 @@ export class StockReservationService {
 
     // If stock not in Redis, load from database
     if (availableStock === null) {
-      logger.debug("Stock not found in Redis, loading from database", { productId });
+      logger.debug({ productId }, "Stock not found in Redis, loading from database");
 
       try {
         const { db } = await import("../../database/connection");
@@ -193,16 +191,14 @@ export class StockReservationService {
           availableStock = product.stock || 0;
           // Set stock in Redis for future use
           await redis.set(stockKey, availableStock.toString());
-          logger.info("Stock loaded from database", { productId, availableStock });
+          logger.info({ productId, availableStock }, "Stock loaded from database");
         } else {
-          logger.warn("Product not found in database", { productId });
+          logger.warn({ productId }, "Product not found in database");
           availableStock = 0;
         }
       } catch (dbError) {
-        logger.error("Database error loading stock", {
-          productId,
-          error: dbError instanceof Error ? dbError.message : String(dbError)
-        });
+        const errorMessage = dbError instanceof Error ? dbError.message : String(dbError);
+        logger.error({ productId, error: errorMessage }, "Database error loading stock");
         availableStock = 0;
       }
     }

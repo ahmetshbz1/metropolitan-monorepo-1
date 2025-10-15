@@ -2,6 +2,8 @@
 //  metropolitan backend
 //  Distributed cache warming utility
 
+import { logger } from "../../monitoring/logger.config";
+
 import { ApiCacheService } from "../api-cache.service";
 
 import { expandKeyPattern } from "./key-pattern-expander";
@@ -22,18 +24,19 @@ export class CacheWarmer {
   static async warmCache(patterns: CacheWarmingPattern[]): Promise<void> {
     // Sort by priority (higher priority first)
     const sorted = patterns.sort((a, b) => (b.priority || 0) - (a.priority || 0));
-    
-    console.log("🔥 Starting cache warm-up...");
-    
+
+    logger.info({ count: patterns.length }, "Starting cache warm-up");
+
     for (const pattern of sorted) {
       try {
         await this.warmPattern(pattern);
       } catch (error) {
-        console.error(`Failed to warm cache for pattern ${pattern.keyPattern}:`, error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        logger.error({ pattern: pattern.keyPattern, error: errorMessage }, "Failed to warm cache for pattern");
       }
     }
-    
-    console.log("🎯 Cache warm-up completed");
+
+    logger.info("Cache warm-up completed");
   }
   
   private static async warmPattern(pattern: CacheWarmingPattern): Promise<void> {
@@ -49,12 +52,13 @@ export class CacheWarmer {
             const data = await pattern.fetchFn(key);
             await ApiCacheService.set(key, data, { ttl: pattern.ttl });
           } catch (error) {
-            console.error(`Failed to warm cache for ${key}:`, error);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            logger.error({ key, error: errorMessage }, "Failed to warm cache for key");
           }
         })
       );
     }
-    
-    console.log(`✅ Warmed ${keys.length} keys for pattern: ${pattern.keyPattern}`);
+
+    logger.info({ keysCount: keys.length, pattern: pattern.keyPattern }, "Warmed keys for pattern");
   }
 }

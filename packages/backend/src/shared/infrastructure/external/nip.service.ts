@@ -2,6 +2,7 @@
 //  metropolitan backend
 //  Created by Ahmet on 07.07.2025.
 
+import { logger } from "../monitoring/logger.config";
 import { NipCacheService } from "./nip-cache.service";
 
 interface NipInfo {
@@ -42,7 +43,7 @@ interface NipApiResponse {
 export async function verifyNipAndGetName(nip: string): Promise<NipInfo> {
   // Development/Test bypass
   if (process.env.NODE_ENV !== "production" && nip === "0000000000") {
-    console.log(`BYPASS: Using test NIP ${nip}`);
+    logger.warn({ nip }, "Using test NIP bypass");
     return {
       success: true,
       companyName: "Test B2B Company",
@@ -58,12 +59,12 @@ export async function verifyNipAndGetName(nip: string): Promise<NipInfo> {
   // 1. Redis cache'den kontrol et
   const cachedResult = await NipCacheService.getCachedNip(nip);
   if (cachedResult) {
-    console.log(`NIP ${nip} found in cache`);
+    logger.debug({ nip }, "NIP found in cache");
     return cachedResult;
   }
 
   // 2. Cache'de yoksa API'ye git
-  console.log(`NIP ${nip} not in cache, fetching from API`);
+  logger.debug({ nip }, "NIP not in cache, fetching from API");
   const result = await fetchNipFromApi(nip);
 
   // 3. Sonucu cache'e kaydet (başarılı veya başarısız olsun)
@@ -121,7 +122,10 @@ async function fetchNipFromApi(nip: string): Promise<NipInfo> {
     };
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
-    console.error("Error during NIP API request:", error);
+    logger.error(
+      { nip, error: message },
+      "NIP API request error"
+    );
     return {
       success: false,
       message: `An error occurred while trying to verify the NIP: ${message}`,

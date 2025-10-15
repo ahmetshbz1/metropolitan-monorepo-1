@@ -2,6 +2,8 @@
 //  metropolitan backend
 //  Write-behind (write-back) cache pattern
 
+import { logger } from "../../monitoring/logger.config";
+
 import { ApiCacheService } from "../api-cache.service";
 
 export interface WriteBehindOptions {
@@ -57,7 +59,8 @@ export class WriteBehindStrategy<T> {
     try {
       await persistFn(batch);
     } catch (error) {
-      console.error("Write-behind flush failed:", error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error({ error: errorMessage }, "Write-behind flush failed");
       // Re-add items to queue on failure
       batch.forEach((data, key) => {
         this.writeQueue.set(key, { data, timestamp: Date.now() });

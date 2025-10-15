@@ -4,6 +4,7 @@
 //  Extracted from redis-stock.service.ts (lines 219-252)
 
 import { redis } from "../../database/redis";
+import { logger } from "../../monitoring/logger.config";
 
 import { REDIS_STOCK_CONFIG } from "./stock-config";
 
@@ -27,7 +28,7 @@ export class StockSyncService {
   ): Promise<void> {
     const stockKey = `${this.STOCK_PREFIX}${productId}`;
     await redis.set(stockKey, stockAmount);
-    console.log(`📊 Stock synced to Redis: ${productId} = ${stockAmount}`);
+    logger.info({ productId, stockAmount }, "Stock synced to Redis");
   }
 
   /**
@@ -78,8 +79,8 @@ export class StockSyncService {
     });
 
     await pipeline.exec();
-    
-    console.log(`📊 Bulk synced ${productStocks.length} products to Redis`);
+
+    logger.info({ count: productStocks.length }, "Bulk synced products to Redis");
   }
 
   /**
@@ -113,7 +114,7 @@ export class StockSyncService {
   ): Promise<void> {
     const stockKey = `${this.STOCK_PREFIX}${productId}`;
     await redis.set(stockKey, stockLevel);
-    console.log(`📊 Stock level set: ${productId} = ${stockLevel}`);
+    logger.info({ productId, stockLevel }, "Stock level set");
   }
 
   /**
@@ -166,7 +167,7 @@ export class StockSyncService {
   ): Promise<number> {
     const stockKey = `${this.STOCK_PREFIX}${productId}`;
     const newStock = await redis.incrby(stockKey, amount);
-    console.log(`📈 Stock incremented: ${productId} +${amount} = ${newStock}`);
+    logger.info({ productId, amount, newStock }, "Stock incremented");
     return newStock;
   }
 
@@ -179,7 +180,7 @@ export class StockSyncService {
   ): Promise<number> {
     const stockKey = `${this.STOCK_PREFIX}${productId}`;
     const newStock = await redis.decrby(stockKey, amount);
-    console.log(`📉 Stock decremented: ${productId} -${amount} = ${newStock}`);
+    logger.info({ productId, amount, newStock }, "Stock decremented");
     return newStock;
   }
 }

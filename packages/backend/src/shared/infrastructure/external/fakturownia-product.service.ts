@@ -2,6 +2,7 @@
 // Service for managing Fakturownia products
 // Handles product listing and search operations
 
+import { logger } from "../monitoring/logger.config";
 import { FakturowniaApiClientService } from "./fakturownia-api-client.service";
 import type { FakturowniaProduct } from "./fakturownia-types";
 
@@ -17,14 +18,14 @@ export class FakturowniaProductService {
    */
   async listProducts(): Promise<FakturowniaProduct[]> {
     try {
-      console.log("📦 Fakturownia: Ürünler listeleniyor...");
+      logger.info("Fakturownia ürünleri listeleniyor");
 
       const allProducts: FakturowniaProduct[] = [];
       let page = 1;
       const perPage = 100; // Maksimum değer
 
       while (true) {
-        console.log(`  Sayfa ${page} çekiliyor...`);
+        logger.debug({ page }, "Sayfa çekiliyor");
 
         const response = await this.apiClient.makeRequest<FakturowniaProduct[]>(
           `products.json?page=${page}&per_page=${perPage}`,
@@ -38,7 +39,7 @@ export class FakturowniaProductService {
         }
 
         allProducts.push(...response);
-        console.log(`  Sayfa ${page}: ${response.length} ürün bulundu`);
+        logger.debug({ page, count: response.length }, "Sayfa ürünleri bulundu");
 
         if (response.length < perPage) {
           break;
@@ -47,10 +48,13 @@ export class FakturowniaProductService {
         page++;
       }
 
-      console.log(`✅ Fakturownia: Toplam ${allProducts.length} ürün bulundu`);
+      logger.info({ totalCount: allProducts.length }, "Fakturownia ürünleri listelendi");
       return allProducts;
     } catch (error) {
-      console.error("❌ Fakturownia ürün listeleme hatası:", error);
+      logger.error(
+        { error: error instanceof Error ? error.message : String(error) },
+        "Fakturownia ürün listeleme hatası"
+      );
       throw new Error(
         `Fakturownia ürün listeleme hatası: ${error instanceof Error ? error.message : String(error)}`
       );
@@ -62,7 +66,7 @@ export class FakturowniaProductService {
    */
   async searchProductByCode(code: string): Promise<FakturowniaProduct | null> {
     try {
-      console.log(`🔍 Fakturownia: Ürün aranıyor (code: ${code})...`);
+      logger.info({ code }, "Fakturownia ürün aranıyor");
 
       const products = await this.apiClient.makeRequest<FakturowniaProduct[]>(
         `products.json?code=${encodeURIComponent(code)}`,
@@ -72,14 +76,17 @@ export class FakturowniaProductService {
       );
 
       if (products && products.length > 0) {
-        console.log(`✅ Fakturownia: Ürün bulundu (ID: ${products[0].id})`);
+        logger.info({ code, productId: products[0].id }, "Fakturownia ürün bulundu");
         return products[0];
       }
 
-      console.log("⚠️ Fakturownia: Ürün bulunamadı");
+      logger.warn({ code }, "Fakturownia ürün bulunamadı");
       return null;
     } catch (error) {
-      console.error("❌ Fakturownia ürün arama hatası:", error);
+      logger.error(
+        { code, error: error instanceof Error ? error.message : String(error) },
+        "Fakturownia ürün arama hatası"
+      );
       throw new Error(
         `Fakturownia ürün arama hatası: ${error instanceof Error ? error.message : String(error)}`
       );
@@ -91,7 +98,7 @@ export class FakturowniaProductService {
    */
   async getProduct(productId: number): Promise<FakturowniaProduct> {
     try {
-      console.log(`📦 Fakturownia: Ürün getiriliyor (ID: ${productId})...`);
+      logger.info({ productId }, "Fakturownia ürün getiriliyor");
 
       const response = await this.apiClient.makeRequest<FakturowniaProduct>(
         `products/${productId}.json`,
@@ -100,10 +107,13 @@ export class FakturowniaProductService {
         }
       );
 
-      console.log(`✅ Fakturownia: Ürün getirildi (${response.name})`);
+      logger.info({ productId, productName: response.name }, "Fakturownia ürün getirildi");
       return response;
     } catch (error) {
-      console.error("❌ Fakturownia ürün getirme hatası:", error);
+      logger.error(
+        { productId, error: error instanceof Error ? error.message : String(error) },
+        "Fakturownia ürün getirme hatası"
+      );
       throw new Error(
         `Fakturownia ürün getirme hatası: ${error instanceof Error ? error.message : String(error)}`
       );
@@ -122,7 +132,7 @@ export class FakturowniaProductService {
     }
   ): Promise<FakturowniaProduct> {
     try {
-      console.log(`🔄 Fakturownia: Ürün güncelleniyor (ID: ${productId})...`, updates);
+      logger.info({ productId, updates }, "Fakturownia ürün güncelleniyor");
 
       const response = await this.apiClient.makeRequest<FakturowniaProduct>(
         `products/${productId}.json`,
@@ -138,10 +148,13 @@ export class FakturowniaProductService {
         }
       );
 
-      console.log(`✅ Fakturownia: Ürün güncellendi (${response.name})`);
+      logger.info({ productId, productName: response.name }, "Fakturownia ürün güncellendi");
       return response;
     } catch (error) {
-      console.error("❌ Fakturownia ürün güncelleme hatası:", error);
+      logger.error(
+        { productId, error: error instanceof Error ? error.message : String(error) },
+        "Fakturownia ürün güncelleme hatası"
+      );
       throw new Error(
         `Fakturownia ürün güncelleme hatası: ${error instanceof Error ? error.message : String(error)}`
       );

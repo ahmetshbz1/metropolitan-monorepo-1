@@ -5,6 +5,7 @@
 import "dotenv/config";
 
 import Redis from "ioredis";
+import { logger } from "../monitoring/logger.config";
 
 import { logger } from "../monitoring/logger.config";
 
@@ -37,11 +38,11 @@ const redisClient = new Redis({
 });
 
 redisClient.on("connect", () => {
-  logger.info("Redis connection established successfully");
+  logger.info("Redis connection established");
 });
 // TODO: Bu error'u kullanıcıya özel yapıp, kullanıcının token'larının sadece o kullanıcı için geçerli olmasını sağlamak gerekiyor.
 redisClient.on("error", (err) => {
-  logger.error({ error: err.message, stack: err.stack }, "Redis connection error");
+  logger.error({ error: err.message }, "Redis connection error");
 });
 
 const BLACKLIST_PREFIX = "blacklist:";

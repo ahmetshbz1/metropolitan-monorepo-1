@@ -3,6 +3,7 @@
 //  API response caching for performance optimization
 
 import { redis } from "../database/redis";
+import { logger } from "../monitoring/logger.config";
 
 export interface CacheOptions {
   ttl?: number; // Time to live in seconds
@@ -47,7 +48,8 @@ export class ApiCacheService {
       
       return data.value as T;
     } catch (error) {
-      console.error("Cache get error:", error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error({ error: errorMessage }, "Cache get error");
       return null;
     }
   }
@@ -81,7 +83,8 @@ export class ApiCacheService {
         }
       }
     } catch (error) {
-      console.error("Cache set error:", error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error({ error: errorMessage }, "Cache set error");
     }
   }
 
@@ -96,7 +99,8 @@ export class ApiCacheService {
       await redis.del(...keys);
       return keys.length;
     } catch (error) {
-      console.error("Cache invalidation error:", error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error({ error: errorMessage }, "Cache invalidation error");
       return 0;
     }
   }
@@ -111,10 +115,11 @@ export class ApiCacheService {
       
       await redis.del(...keys);
       await redis.del(`tag:${tag}`);
-      
+
       return keys.length;
     } catch (error) {
-      console.error("Cache tag invalidation error:", error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error({ error: errorMessage }, "Cache tag invalidation error");
       return 0;
     }
   }
@@ -129,20 +134,21 @@ export class ApiCacheService {
       options?: CacheOptions;
     }>
   ): Promise<void> {
-    console.log("🔥 Warming up cache...");
-    
+    logger.info({ count: fetchFunctions.length }, "Warming up cache");
+
     const promises = fetchFunctions.map(async ({ key, fetch, options }) => {
       try {
         const data = await fetch();
         await this.set(key, data, options);
-        console.log(`✅ Cached: ${key}`);
+        logger.debug({ key }, "Cached key");
       } catch (error) {
-        console.error(`❌ Failed to warm cache for ${key}:`, error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        logger.error({ key, error: errorMessage }, "Failed to warm cache for key");
       }
     });
-    
+
     await Promise.all(promises);
-    console.log("🎯 Cache warmup completed");
+    logger.info("Cache warmup completed");
   }
 
   /**
@@ -166,7 +172,8 @@ export class ApiCacheService {
         memoryUsage,
       };
     } catch (error) {
-      console.error("Failed to get cache stats:", error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error({ error: errorMessage }, "Failed to get cache stats");
       return {
         totalKeys: 0,
         memoryUsage: "Unknown",

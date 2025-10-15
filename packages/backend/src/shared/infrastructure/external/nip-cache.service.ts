@@ -2,6 +2,7 @@
 //  metropolitan backend
 //  Created by Ahmet on 16.06.2025.
 
+import { logger } from "../monitoring/logger.config";
 import redis from "../database/redis";
 
 interface CachedNipInfo {
@@ -35,7 +36,10 @@ export class NipCacheService {
 
       return JSON.parse(cachedData) as CachedNipInfo;
     } catch (error) {
-      console.error("Redis NIP cache get error:", error);
+      logger.error(
+        { nip, error: error instanceof Error ? error.message : String(error) },
+        "Redis NIP cache get error"
+      );
       return null; // Cache hatası durumunda null döner, API'ye gider
     }
   }
@@ -53,7 +57,10 @@ export class NipCacheService {
 
       await redis.setex(cacheKey, this.CACHE_TTL, dataToCache);
     } catch (error) {
-      console.error("Redis NIP cache set error:", error);
+      logger.error(
+        { nip, error: error instanceof Error ? error.message : String(error) },
+        "Redis NIP cache set error"
+      );
       // Cache hatası durumunda sessizce devam et
     }
   }
@@ -74,7 +81,10 @@ export class NipCacheService {
       const cacheKey = this.generateCacheKey(nip);
       await redis.del(cacheKey);
     } catch (error) {
-      console.error("Redis NIP cache clear error:", error);
+      logger.error(
+        { nip, error: error instanceof Error ? error.message : String(error) },
+        "Redis NIP cache clear error"
+      );
     }
   }
 
@@ -90,7 +100,10 @@ export class NipCacheService {
         await redis.del(...keys);
       }
     } catch (error) {
-      console.error("Redis NIP cache clear all error:", error);
+      logger.error(
+        { error: error instanceof Error ? error.message : String(error) },
+        "Redis NIP cache clear all error"
+      );
     }
   }
 }

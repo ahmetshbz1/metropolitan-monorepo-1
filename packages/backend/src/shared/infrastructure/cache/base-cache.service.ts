@@ -3,6 +3,7 @@
 // Provides common functionality for all cache services
 
 import { redis } from "../database/redis";
+import { logger } from "../monitoring/logger.config";
 
 export abstract class BaseCacheService<T> {
   protected abstract CACHE_PREFIX: string;
@@ -16,7 +17,8 @@ export abstract class BaseCacheService<T> {
       const cached = await redis.get(`${this.CACHE_PREFIX}${key}`);
       return cached ? JSON.parse(cached) : null;
     } catch (error) {
-      console.error(`Error fetching cached item ${key}:`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error({ key, error: errorMessage }, "Error fetching cached item");
       return null;
     }
   }
@@ -32,7 +34,8 @@ export abstract class BaseCacheService<T> {
         JSON.stringify(data)
       );
     } catch (error) {
-      console.error(`Error caching item ${key}:`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error({ key, error: errorMessage }, "Error caching item");
     }
   }
 
@@ -43,7 +46,8 @@ export abstract class BaseCacheService<T> {
     try {
       await redis.del(`${this.CACHE_PREFIX}${key}`);
     } catch (error) {
-      console.error(`Error invalidating cache ${key}:`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error({ key, error: errorMessage }, "Error invalidating cache");
     }
   }
 
@@ -75,7 +79,8 @@ export abstract class BaseCacheService<T> {
         stream.on('error', reject);
       });
     } catch (error) {
-      console.error('Error invalidating pattern:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error({ pattern, error: errorMessage }, "Error invalidating pattern");
     }
   }
 }

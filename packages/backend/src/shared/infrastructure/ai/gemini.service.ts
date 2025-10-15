@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { logger } from "../monitoring/logger.config";
 
 interface TranslationRequest {
   text: string;
@@ -57,7 +58,7 @@ Return ONLY the translated text in ${toLanguage}.
       const translatedText = result.response.text().trim();
       return translatedText;
     } catch (error) {
-      console.error("Gemini translation error:", error);
+      logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Gemini translation error");
       throw new Error(
         `Translation failed: ${
           error instanceof Error ? error.message : "Unknown error"
@@ -112,8 +113,9 @@ Return ONLY the translated text in ${toLanguage}.
         });
 
       if (translations.length !== texts.length) {
-        console.warn(
-          `Translation count mismatch: expected ${texts.length}, got ${translations.length}`
+        logger.warn(
+          { expected: texts.length, got: translations.length },
+          "Translation count mismatch"
         );
         return texts.map((_, index) =>
           translations[index] !== undefined ? translations[index] : texts[index]
@@ -122,7 +124,7 @@ Return ONLY the translated text in ${toLanguage}.
 
       return translations;
     } catch (error) {
-      console.error("Gemini batch translation error:", error);
+      logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Gemini batch translation error");
       return texts;
     }
   }
