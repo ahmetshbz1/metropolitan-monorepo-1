@@ -209,14 +209,53 @@ export const InitialLayout: React.FC = () => {
 
         console.log('🔔 [InitialLayout] Handling cold start notification:', coldStartNotificationId, data);
 
+        // Bu notification'ı işlenmiş olarak kaydet (listener duplicate yakalamaması için)
+        processedNotificationIds.current.add(coldStartNotificationId);
+
         // Badge sayısını güncelle
         refreshUnreadCount();
 
-        // Yönlendirme yap
+        // Yönlendirme yap - direkt navigate et (handleNotificationNavigation çağırma)
         if (data?.screen) {
           // Router hazır olana kadar bekle
           setTimeout(() => {
-            handleNotificationNavigation(coldStartNotificationId, data);
+            try {
+              switch (data.screen) {
+                case 'orders':
+                  router.push('/(tabs)/orders');
+                  break;
+                case 'order-detail':
+                  if (data.orderId) {
+                    router.push(`/order/${data.orderId}`);
+                  } else {
+                    router.push('/(tabs)/orders');
+                  }
+                  break;
+                case 'product-detail':
+                  if (data.productId) {
+                    router.push(`/product/${data.productId}`);
+                  } else {
+                    router.push('/(tabs)/products');
+                  }
+                  break;
+                case 'products':
+                  router.push('/(tabs)/products');
+                  break;
+                case 'cart':
+                  router.push('/(tabs)/cart');
+                  break;
+                case 'profile':
+                  router.push('/(tabs)/profile');
+                  break;
+                case 'favorites':
+                  router.push('/favorites');
+                  break;
+                default:
+                  console.log('Bilinmeyen ekran:', data.screen);
+              }
+            } catch (error) {
+              console.error('Cold start notification yönlendirme hatası:', error);
+            }
           }, 500);
         }
       }
