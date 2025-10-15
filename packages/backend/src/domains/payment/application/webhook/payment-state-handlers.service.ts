@@ -12,18 +12,18 @@ export class PaymentStateHandlersService {
    * Handle successful payment
    */
   static async handleSuccess(
-    orderId: string, 
-    userId: string, 
+    orderId: string,
+    userId: string,
     paymentIntentId: string
   ): Promise<WebhookProcessingResult> {
     // Check idempotency
     const idempotencyCheck = await WebhookOrderManagementService.checkOrderIdempotency(
-      orderId, 
-      'completed'
+      orderId,
+      'succeeded'
     );
 
     if (!idempotencyCheck.shouldProcess) {
-      console.log(`Order ${orderId} already completed, skipping...`);
+      console.log(`Order ${orderId} already succeeded, skipping...`);
       return {
         success: true,
         message: idempotencyCheck.reason,
@@ -31,7 +31,7 @@ export class PaymentStateHandlersService {
       };
     }
 
-    // Mark order as completed
+    // Mark order as succeeded
     const orderUpdateResult = await WebhookOrderManagementService.markOrderCompleted(
       orderId,
       paymentIntentId

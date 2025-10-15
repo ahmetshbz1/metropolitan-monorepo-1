@@ -65,17 +65,21 @@ export class InvoiceFormatterService {
    * Get buyer information from order
    */
   private static getBuyerInfo(order: any) {
+    if (!order || !order.user || !order.address) {
+      throw new Error("Sipariş bilgileri eksik: user veya address bulunamadı");
+    }
+
     return {
       name:
         order.company?.name ||
-        `${order.user.firstName} ${order.user.lastName}`,
-      address: order.address.street,
-      city: order.address.city,
-      postalCode: order.address.postalCode,
-      country: order.address.country,
+        `${order.user.firstName || ""} ${order.user.lastName || ""}`.trim(),
+      address: order.address.street || "",
+      city: order.address.city || "",
+      postalCode: order.address.postalCode || "",
+      country: order.address.country || "",
       nip: order.company?.nip || null,
       email: order.user.email || "",
-      phone: order.user.phoneNumber,
+      phone: order.user.phoneNumber || "",
     };
   }
   

@@ -21,10 +21,7 @@ export class OrderStatusUpdateService {
     try {
       await db
         .update(orders)
-        .set({
-          ...statusUpdate,
-          stripePaymentIntentId: statusUpdate.paymentStatus === 'completed' ? orderId : undefined,
-        })
+        .set(statusUpdate)
         .where(eq(orders.id, orderId));
 
       return {

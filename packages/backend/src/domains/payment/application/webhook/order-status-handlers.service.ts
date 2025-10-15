@@ -15,8 +15,9 @@ export class OrderStatusHandlersService {
     stripePaymentIntentId: string
   ): Promise<WebhookProcessingResult> {
     const statusUpdate: OrderStatusUpdate = {
-      paymentStatus: 'completed',
+      paymentStatus: 'succeeded',
       status: 'confirmed',
+      stripePaymentIntentId,
       paidAt: new Date(),
       updatedAt: new Date(),
     };

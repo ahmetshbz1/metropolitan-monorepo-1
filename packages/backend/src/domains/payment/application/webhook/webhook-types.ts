@@ -11,8 +11,9 @@ export interface WebhookEventMetadata {
 }
 
 export interface OrderStatusUpdate {
-  paymentStatus: 'pending' | 'processing' | 'completed' | 'failed' | 'canceled' | 'requires_action';
+  paymentStatus: 'pending' | 'processing' | 'succeeded' | 'failed' | 'canceled' | 'requires_action';
   status: 'pending' | 'processing' | 'confirmed' | 'canceled';
+  stripePaymentIntentId?: string;
   paidAt?: Date;
   cancelledAt?: Date;
   cancelReason?: string;
