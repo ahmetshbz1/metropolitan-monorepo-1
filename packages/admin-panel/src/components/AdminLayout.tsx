@@ -1,38 +1,37 @@
-import { useMemo, useState } from "react";
 import {
+  Avatar,
   Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
   Navbar,
   NavbarBrand,
   NavbarContent,
   NavbarItem,
   ScrollShadow,
-  Spacer,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-  Avatar,
+  Tooltip,
 } from "@heroui/react";
+import type { LucideIcon } from "lucide-react";
 import {
-  LayoutDashboard,
-  Package,
-  ShoppingCart,
-  Users,
-  Settings,
-  ChevronLeft,
-  ChevronRight,
-  Menu,
-  X,
-  Moon,
-  Sun,
-  LogOut,
-  User,
-  Layers,
-  Building2,
   AlertTriangle,
   Bell,
+  Building2,
+  ChevronLeft,
+  ChevronRight,
+  Layers,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  Moon,
+  Package,
+  Settings,
+  ShoppingCart,
+  Sun,
+  Users,
+  X,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { useTheme } from "../contexts/ThemeContext";
 import { Breadcrumbs } from "./Breadcrumbs";
 
@@ -119,13 +118,15 @@ const SidebarNav = ({
       {NAV_ITEMS.map((item) => {
         const isActive = item.key === activeKey;
         const Icon = item.icon;
-        return (
+        const buttonContent = (
           <button
             key={item.key}
             type="button"
             onClick={() => onItemClick(item.key)}
             className={`group relative flex w-full items-center rounded-lg transition-all duration-200 ${
-              collapsed ? "justify-center px-2 py-2" : "justify-start gap-2.5 px-2.5 py-2"
+              collapsed
+                ? "justify-center px-2 py-2"
+                : "justify-start gap-2.5 px-2.5 py-2"
             } ${
               isActive
                 ? "bg-blue-50 text-blue-600 dark:bg-[#2a2a2a] dark:text-blue-400"
@@ -141,6 +142,19 @@ const SidebarNav = ({
             )}
           </button>
         );
+
+        return collapsed ? (
+          <Tooltip
+            key={item.key}
+            content={item.label}
+            placement="right"
+            delay={300}
+          >
+            {buttonContent}
+          </Tooltip>
+        ) : (
+          buttonContent
+        );
       })}
     </div>
   </ScrollShadow>
@@ -152,9 +166,16 @@ export const AdminLayout = ({
   onLogout,
   onNavigate,
 }: AdminLayoutProps) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(() => {
+    const saved = localStorage.getItem("sidebar-collapsed");
+    return saved ? JSON.parse(saved) : false;
+  });
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+
+  useEffect(() => {
+    localStorage.setItem("sidebar-collapsed", JSON.stringify(isCollapsed));
+  }, [isCollapsed]);
 
   const sidebarWidthClass = isCollapsed ? "md:w-16" : "md:w-56";
   const sidebarHeader = useMemo(
@@ -164,7 +185,9 @@ export const AdminLayout = ({
           <h2 className="text-sm font-semibold text-slate-900 dark:text-white">
             Metropolitan
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400">Admin Panel</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            Admin Panel
+          </p>
         </div>
       ),
     [isCollapsed]
@@ -175,7 +198,9 @@ export const AdminLayout = ({
       <div className="relative flex min-h-screen">
         <aside
           className={`fixed inset-y-0 left-0 z-30 flex h-screen flex-col border-r border-slate-200 bg-white px-3 py-4 shadow-xl transition-all duration-300 dark:border-[#2a2a2a] dark:bg-[#1a1a1a] md:shadow-none ${sidebarWidthClass} ${
-            isMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+            isMobileOpen
+              ? "translate-x-0"
+              : "-translate-x-full md:translate-x-0"
           }`}
         >
           <div className="flex items-center justify-between gap-2">
@@ -229,7 +254,7 @@ export const AdminLayout = ({
                     <div className="flex flex-1 flex-col items-start">
                       <span className="text-sm font-medium">Admin</span>
                       <span className="text-xs text-slate-500 dark:text-slate-400">
-                        admin@metropolitan.com
+                        admin@metropolitanfg.pl
                       </span>
                     </div>
                   )}
@@ -262,8 +287,15 @@ export const AdminLayout = ({
           </div>
         </aside>
 
-        <div className={`flex flex-1 flex-col transition-all duration-300 ${isCollapsed ? "md:ml-16" : "md:ml-56"}`}>
-          <Navbar className="sticky top-0 z-20 bg-white/80 px-4 py-3 shadow-sm backdrop-blur transition-colors dark:bg-[#1a1a1a]/95 dark:border-b dark:border-[#2a2a2a]" maxWidth="full">
+        <div
+          className={`flex flex-1 flex-col transition-all duration-300 ${
+            isCollapsed ? "md:ml-16" : "md:ml-56"
+          }`}
+        >
+          <Navbar
+            className="sticky top-0 z-20 bg-white/80 px-4 py-3 shadow-sm backdrop-blur transition-colors dark:bg-[#1a1a1a]/95 dark:border-b dark:border-[#2a2a2a]"
+            maxWidth="full"
+          >
             <NavbarContent justify="start" className="gap-2">
               <NavbarItem className="md:hidden">
                 <button
@@ -279,7 +311,9 @@ export const AdminLayout = ({
                 <Breadcrumbs
                   items={[
                     {
-                      label: NAV_ITEMS.find((item) => item.key === activeKey)?.label ?? "Dashboard",
+                      label:
+                        NAV_ITEMS.find((item) => item.key === activeKey)
+                          ?.label ?? "Dashboard",
                       key: activeKey,
                     },
                   ]}
