@@ -16,8 +16,8 @@ export class InvoiceFormatterService {
       Number(order.totalAmount)
     );
 
-    // Vade bilgisini kullan (varsa), yoksa default 30 gün
-    const paymentTermDays = order.paymentTermDays || 30;
+    // Vade bilgisini kullan (varsa), yoksa default 7 gün
+    const paymentTermDays = order.paymentTermDays || 7;
 
     return {
       invoiceNumber,
