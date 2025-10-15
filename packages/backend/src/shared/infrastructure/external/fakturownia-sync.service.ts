@@ -2,12 +2,14 @@
 // Service for syncing products between Fakturownia and database
 // Matches products by code and updates IDs and tax rates
 
-import { eq } from "drizzle-orm";
+import { eq, isNull } from "drizzle-orm";
 
+import { validateTaxRate } from "../../types/product.types";
 import { db } from "../database/connection";
 import { products } from "../database/schema";
+import { logger } from "../monitoring/logger.config";
+
 import { fakturowniaService } from "./fakturownia.service";
-import { validateTaxRate } from "../../types/product.types";
 
 interface SyncResult {
   total: number;
@@ -31,21 +33,28 @@ export class FakturowniaSyncService {
     };
 
     try {
-      console.log("🔄 Fakturownia product sync başlatılıyor...");
+      logger.info("Fakturownia product sync başlatılıyor");
 
       // 1. Fakturownia'dan tüm ürünleri çek
       const fakturowniaProducts = await fakturowniaService.listProducts();
       result.total = fakturowniaProducts.length;
 
-      console.log(`📦 ${fakturowniaProducts.length} Fakturownia ürünü bulundu`);
+      logger.info(
+        { count: fakturowniaProducts.length },
+        "Fakturownia ürünü bulundu"
+      );
 
       // 2. Her Fakturownia ürünü için database'de eşleşme ara
       for (const fakturowniaProduct of fakturowniaProducts) {
         try {
           // Code yoksa atla
           if (!fakturowniaProduct.code) {
-            console.log(
-              `⚠️ Fakturownia ürünü code'u yok (ID: ${fakturowniaProduct.id}, Name: ${fakturowniaProduct.name})`
+            logger.warn(
+              {
+                productId: fakturowniaProduct.id,
+                name: fakturowniaProduct.name,
+              },
+              "Fakturownia ürünü code'u yok"
             );
             result.notMatched++;
             continue;
@@ -59,8 +68,9 @@ export class FakturowniaSyncService {
             .limit(1);
 
           if (!dbProduct) {
-            console.log(
-              `⚠️ Database'de eşleşme bulunamadı (code: ${fakturowniaProduct.code})`
+            logger.warn(
+              { code: fakturowniaProduct.code },
+              "Database'de eşleşme bulunamadı"
             );
             result.notMatched++;
             continue;
@@ -70,9 +80,9 @@ export class FakturowniaSyncService {
           // stock_level veya warehouse_quantity gerçek stok, quantity sadece satış birimi
           const stockQuantity = Math.round(
             fakturowniaProduct.stock_level ??
-            fakturowniaProduct.warehouse_quantity ??
-            fakturowniaProduct.quantity ??
-            0
+              fakturowniaProduct.warehouse_quantity ??
+              fakturowniaProduct.quantity ??
+              0
           );
 
           const taxValue = validateTaxRate(fakturowniaProduct.tax);
@@ -89,16 +99,25 @@ export class FakturowniaSyncService {
             })
             .where(eq(products.id, dbProduct.id));
 
-          console.log(
-            `✅ Eşleşti ve güncellendi: ${fakturowniaProduct.code} → Fakturownia ID: ${fakturowniaProduct.id}, Tax: ${fakturowniaProduct.tax}%, Stock: ${stockQuantity}`
+          logger.info(
+            {
+              code: fakturowniaProduct.code,
+              fakturowniaId: fakturowniaProduct.id,
+              tax: fakturowniaProduct.tax,
+              stock: stockQuantity,
+            },
+            "Eşleşti ve güncellendi"
           );
 
           result.matched++;
           result.updated++;
         } catch (error) {
-          console.error(
-            `❌ Ürün sync hatası (code: ${fakturowniaProduct.code}):`,
-            error
+          logger.error(
+            {
+              code: fakturowniaProduct.code,
+              error: error instanceof Error ? error.message : String(error),
+            },
+            "Ürün sync hatası"
           );
           result.errors.push({
             productCode: fakturowniaProduct.code || "unknown",
@@ -107,25 +126,31 @@ export class FakturowniaSyncService {
         }
       }
 
-      console.log("\n📊 Sync özeti:");
-      console.log(`  Toplam Fakturownia ürünleri: ${result.total}`);
-      console.log(`  Eşleşen: ${result.matched}`);
-      console.log(`  Eşleşmeyen: ${result.notMatched}`);
-      console.log(`  Güncellenen: ${result.updated}`);
-      console.log(`  Hata sayısı: ${result.errors.length}`);
+      logger.info(
+        {
+          total: result.total,
+          matched: result.matched,
+          notMatched: result.notMatched,
+          updated: result.updated,
+          errorCount: result.errors.length,
+        },
+        "Sync özeti"
+      );
 
       if (result.errors.length > 0) {
-        console.log("\n❌ Hatalar:");
-        result.errors.forEach((err) => {
-          console.log(`  - ${err.productCode}: ${err.error}`);
-        });
+        logger.error({ errors: result.errors }, "Sync hataları");
       }
 
       return result;
     } catch (error) {
-      console.error("🔥 Fakturownia sync kritik hata:", error);
+      logger.error(
+        { error: error instanceof Error ? error.message : String(error) },
+        "Fakturownia sync kritik hata"
+      );
       throw new Error(
-        `Fakturownia sync hatası: ${error instanceof Error ? error.message : String(error)}`
+        `Fakturownia sync hatası: ${
+          error instanceof Error ? error.message : String(error)
+        }`
       );
     }
   }
@@ -135,14 +160,15 @@ export class FakturowniaSyncService {
    */
   static async syncSingleProduct(productCode: string): Promise<boolean> {
     try {
-      console.log(`🔄 Tek ürün sync: ${productCode}`);
+      logger.info({ productCode }, "Tek ürün sync");
 
       // Fakturownia'da ara
-      const fakturowniaProduct =
-        await fakturowniaService.searchProductByCode(productCode);
+      const fakturowniaProduct = await fakturowniaService.searchProductByCode(
+        productCode
+      );
 
       if (!fakturowniaProduct) {
-        console.log(`⚠️ Fakturownia'da bulunamadı: ${productCode}`);
+        logger.warn({ productCode }, "Fakturownia'da bulunamadı");
         return false;
       }
 
@@ -154,7 +180,7 @@ export class FakturowniaSyncService {
         .limit(1);
 
       if (!dbProduct) {
-        console.log(`⚠️ Database'de bulunamadı: ${productCode}`);
+        logger.warn({ productCode }, "Database'de bulunamadı");
         return false;
       }
 
@@ -162,27 +188,43 @@ export class FakturowniaSyncService {
       // stock_level veya warehouse_quantity gerçek stok, quantity sadece satış birimi
       const stockQuantity = Math.round(
         fakturowniaProduct.stock_level ??
-        fakturowniaProduct.warehouse_quantity ??
-        fakturowniaProduct.quantity ??
-        0
+          fakturowniaProduct.warehouse_quantity ??
+          fakturowniaProduct.quantity ??
+          0
       );
+
+      const taxValue = validateTaxRate(fakturowniaProduct.tax);
+
       await db
         .update(products)
         .set({
           fakturowniaProductId: fakturowniaProduct.id,
-          fakturowniaTax: fakturowniaProduct.tax.toString(),
-          tax: fakturowniaProduct.tax.toString(), // Admin panel'de de doğru VAT görünsün
+          tax: taxValue, // Integer tax value
           stock: stockQuantity,
+          syncStatus: "synced",
+          lastSyncedAt: new Date(),
           updatedAt: new Date(),
         })
         .where(eq(products.id, dbProduct.id));
 
-      console.log(
-        `✅ Sync başarılı: ${productCode} → Fakturownia ID: ${fakturowniaProduct.id}, Tax: ${fakturowniaProduct.tax}%, Stock: ${stockQuantity}`
+      logger.info(
+        {
+          productCode,
+          fakturowniaId: fakturowniaProduct.id,
+          tax: fakturowniaProduct.tax,
+          stock: stockQuantity,
+        },
+        "Sync başarılı"
       );
       return true;
     } catch (error) {
-      console.error(`❌ Tek ürün sync hatası (${productCode}):`, error);
+      logger.error(
+        {
+          productCode,
+          error: error instanceof Error ? error.message : String(error),
+        },
+        "Tek ürün sync hatası"
+      );
       throw error;
     }
   }
@@ -199,9 +241,12 @@ export class FakturowniaSyncService {
         productCode: products.productCode,
       })
       .from(products)
-      .where(eq(products.fakturowniaProductId, null));
+      .where(isNull(products.fakturowniaProductId));
 
-    console.log(`📋 ${unsyncedProducts.length} sync edilmemiş ürün var`);
+    logger.info(
+      { count: unsyncedProducts.length },
+      "Sync edilmemiş ürün listesi"
+    );
     return unsyncedProducts;
   }
 }
