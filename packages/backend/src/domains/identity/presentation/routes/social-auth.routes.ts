@@ -1,28 +1,37 @@
-//  "social-auth.routes.ts"
-//  metropolitan backend
-//  Social authentication routes (Apple, Google via Firebase)
+// "social-auth.routes.ts"
+// metropolitan backend
+// Social authentication routes (Apple, Google via Firebase)
 
 import { logger } from "@bogeychan/elysia-logger";
-import { and, eq } from "drizzle-orm";
-import { t } from "elysia";
-
-import { users } from "../../../../shared/infrastructure/database/schema";
 import { createApp } from "../../../../shared/infrastructure/web/app";
 import {
-  extractDeviceInfo,
-  generateDeviceFingerprint,
-  generateJTI,
-  generateSessionId,
-  storeDeviceSession,
-  storeRefreshToken,
-} from "../../infrastructure/security/device-fingerprint";
+  socialAuthBodySchema,
+  type SocialAuthResponse,
+  type SocialAuthNewUserResponse,
+  type SocialAuthLinkingSuccessResponse,
+  type SocialAuthLoginSuccessResponse,
+} from "./social-auth-types";
+import { extractCurrentUserId } from "./social-auth-token-extractor";
+import { resolveUserByProvider } from "./social-auth-user-resolver";
+import {
+  checkLinkingConflict,
+  checkProviderSwitch,
+} from "./social-auth-conflict-checker";
+import {
+  handleSoftDeletedUser,
+  checkProfileCompleteness,
+  logProviderRelinking,
+  logPhoneVerificationStatus,
+} from "./social-auth-profile-validator";
+import { updateUserProviderInfo } from "./social-auth-user-updater";
+import { generateSocialAuthTokens } from "./social-auth-token-generator";
 
 export const socialAuthRoutes = createApp()
   .use(logger({ level: "info" }))
   .group("/auth", (app) =>
     app.post(
       "/social-signin",
-      async ({ body, headers, jwt, log, db, error }) => {
+      async ({ body, headers, jwt, log, db, error }): Promise<SocialAuthResponse> => {
         log.info(
           {
             firebaseUid: body.firebaseUid,
@@ -30,295 +39,106 @@ export const socialAuthRoutes = createApp()
             provider: body.provider,
             appleUserId: body.appleUserId,
           },
-          `Social auth attempt`
+          "Social auth attempt"
         );
 
-        // If Authorization header present, treat as LINK operation to the current authenticated user
-        // This prevents downgrading an already-logged-in user to guest during provider linking
-        let currentUserId: string | undefined;
-        try {
-          const authHeader = (headers["authorization"] || headers["Authorization"]) as string | undefined;
-          if (authHeader?.startsWith("Bearer ")) {
-            const token = authHeader.slice(7);
-            const decoded: any = await jwt.verify(token);
-            if (decoded?.sub && decoded?.type === "access") {
-              currentUserId = decoded.sub as string;
-            }
-          }
-        } catch (e) {
-          // Ignore token errors; proceed as sign-in
+        // 1. Token'dan mevcut kullanıcı ID'sini çıkar (linking flow için)
+        const currentUserId = await extractCurrentUserId(headers, jwt);
+
+        // 2. Provider identifier'a göre kullanıcıyı çöz
+        let user = await resolveUserByProvider(db, body, currentUserId);
+
+        // 3. Linking flow için session kontrolü
+        if (currentUserId && !user) {
+          return error(401, "Invalid session for social linking");
         }
 
-        // Check user based on context
-        let user;
-        if (currentUserId) {
-          // Linking flow: fetch the currently authenticated user
-          user = await db.query.users.findFirst({ where: eq(users.id, currentUserId) });
-          if (!user) {
-            return error(401, "Invalid session for social linking");
-          }
-
-          // Prevent linking if another account already uses the same social identifiers
-          if (body.provider === 'apple' && body.appleUserId) {
-            const conflict = await db.query.users.findFirst({ where: and(eq(users.appleUserId, body.appleUserId), eq(users.userType, user.userType)) });
-            if (conflict && conflict.id !== user.id) {
-              return {
-                success: false,
-                error: "PROVIDER_CONFLICT",
-                message: "This Apple account is already linked to another user.",
-              };
-            }
-          }
-          if (body.provider === 'google' && body.firebaseUid) {
-            const conflict = await db.query.users.findFirst({ where: and(eq(users.firebaseUid, body.firebaseUid), eq(users.userType, user.userType)) });
-            if (conflict && conflict.id !== user.id) {
-              return {
-                success: false,
-                error: "PROVIDER_CONFLICT",
-                message: "This Google account is already linked to another user.",
-              };
-            }
-          }
-        } else {
-          // Sign-in flow: resolve user by provider identifiers ONLY
-          // Do NOT use email for automatic linking - only use provider-specific identifiers
-          if (body.provider === 'apple' && body.appleUserId) {
-            // For Apple: ONLY try appleUserId
-            user = await db.query.users.findFirst({
-              where: eq(users.appleUserId, body.appleUserId),
-            });
-          } else if (body.provider === 'google' && body.firebaseUid) {
-            // For Google: ONLY try firebaseUid
-            user = await db.query.users.findFirst({
-              where: eq(users.firebaseUid, body.firebaseUid),
-            });
+        // 4. Linking flow: Provider çakışması kontrolü
+        if (currentUserId && user) {
+          const linkingConflict = await checkLinkingConflict(db, body, user, log);
+          if (linkingConflict) {
+            return linkingConflict;
           }
         }
 
+        // 5. Yeni kullanıcı - kayıt ekranına yönlendir
         if (!user) {
-          // New user - return indication to continue with registration
           log.info(
             { firebaseUid: body.firebaseUid, email: body.email },
             "New social auth user - needs registration"
           );
 
-          return {
+          const newUserResponse: SocialAuthNewUserResponse = {
             success: true,
             userExists: false,
             profileComplete: false,
             message: "Please complete registration",
           };
+          return newUserResponse;
         }
 
-        // Check if user is soft-deleted and reactivate if needed
-        if (user.deletedAt) {
-          log.info(
-            { userId: user.id, deletedAt: user.deletedAt },
-            "Reactivating soft-deleted user via social auth"
-          );
+        // 6. Soft-delete kontrolü ve reaktivasyon
+        user = await handleSoftDeletedUser(db, user, log);
 
-          await db
-            .update(users)
-            .set({
-              deletedAt: null,
-              updatedAt: new Date(),
-            })
-            .where(eq(users.id, user.id));
-
-          user.deletedAt = null;
-        }
-
-        // Check if user is trying to link a different social provider
-        // Allow re-linking if no provider is currently linked
-        if (!currentUserId && user.authProvider && user.authProvider !== body.provider) {
-          log.warn(
-            {
-              userId: user.id,
-              existingProvider: user.authProvider,
-              attemptedProvider: body.provider,
-            },
-            "User attempting to link different social provider"
-          );
-
-          return {
-            success: false,
-            userExists: true,
-            profileComplete: !!user.firstName,
-            error: "PROVIDER_CONFLICT",
-            message: `Bu hesap zaten ${user.authProvider === 'apple' ? 'Apple' : 'Google'} ile bağlı. ${body.provider === 'apple' ? 'Apple' : 'Google'} ile giriş yapmak için önce Ayarlar > Güvenlik > Bağlı Hesaplar'dan mevcut bağlantıyı kaldırın.`,
-            existingProvider: user.authProvider,
-            attemptedProvider: body.provider,
-            suggestedAction: "unlink_first",
-          };
-        }
-
-        // Allow re-linking if provider was previously unlinked
-        if (!user.authProvider && user.email && body.email === user.email) {
-          log.info(
-            {
-              userId: user.id,
-              provider: body.provider,
-              email: user.email,
-            },
-            "Re-linking social provider to existing account"
-          );
-        }
-
-        // Check if profile is complete
-        if (!user.firstName) {
-          // Profile incomplete - need to complete registration
-          log.info(
-            {
-              userId: user.id,
-              hasProfile: false,
-              phoneVerified: user.phoneNumberVerified
-            },
-            "Social auth user needs profile completion"
-          );
-
-          return {
-            success: true,
-            userExists: true,  // User exists in DB
-            profileComplete: false,  // But profile not complete
-            message: "Please complete your profile",
-          };
-        }
-
-        // Profile complete - allow login regardless of phone verification
-        // (Social auth already provides identity verification)
-        if (!user.phoneNumberVerified) {
-          log.info(
-            {
-              userId: user.id,
-              phoneNumber: user.phoneNumber,
-              phoneVerified: false
-            },
-            "Social auth login with unverified phone (allowed)"
-          );
-        }
-
-        // User exists with complete profile - update auth provider if needed and generate tokens
-        // Update auth provider and Apple User ID if needed
-        const updateData: any = {};
-        if (user.authProvider !== body.provider) {
-          updateData.authProvider = body.provider;
-        }
-        if (body.provider === 'apple' && body.appleUserId && user.appleUserId !== body.appleUserId) {
-          updateData.appleUserId = body.appleUserId;
-        }
-        if (body.firebaseUid && user.firebaseUid !== body.firebaseUid) {
-          updateData.firebaseUid = body.firebaseUid;
-        }
-        // In linking flow (currentUserId exists), always update email from OAuth provider
-        // In sign-in flow, only update if user has no email yet
-        if (body.email) {
-          if (currentUserId && body.email !== user.email) {
-            updateData.email = body.email;
-          } else if (!currentUserId && !user.email) {
-            updateData.email = body.email;
+        // 7. Sign-in flow: Provider değişimi kontrolü
+        if (!currentUserId) {
+          const switchConflict = await checkProviderSwitch(user, body, log);
+          if (switchConflict) {
+            return switchConflict;
           }
         }
 
-        if (Object.keys(updateData).length > 0) {
-          updateData.updatedAt = new Date();
-          await db
-            .update(users)
-            .set(updateData)
-            .where(eq(users.id, user.id));
+        // 8. Provider yeniden bağlama durumunu logla
+        logProviderRelinking(user, body, log);
+
+        // 9. Profil tamamlanma kontrolü
+        const incompleteProfile = checkProfileCompleteness(user, log);
+        if (incompleteProfile) {
+          return incompleteProfile;
         }
 
-        const deviceInfo = extractDeviceInfo(headers);
-        const deviceId = generateDeviceFingerprint(deviceInfo, headers);
-        const sessionId = generateSessionId();
-        const ipAddress = headers["x-forwarded-for"] || headers["x-real-ip"];
+        // 10. Telefon doğrulama durumunu logla (opsiyonel)
+        logPhoneVerificationStatus(user, log);
 
-        const accessJTI = generateJTI();
-        const refreshJTI = generateJTI();
+        // 11. Kullanıcı bilgilerini güncelle
+        await updateUserProviderInfo(db, user, body, currentUserId);
 
-        // Access token (15 minutes)
-        const accessToken = await jwt.sign({
-          sub: user.id,
-          type: "access",
-          userType: user.userType,
-          sessionId,
-          deviceId,
-          jti: accessJTI,
-          aud: "mobile-app",
-          iss: "metropolitan-api",
-          exp: Math.floor(Date.now() / 1000) + 60 * 60, // 1 hour (was 15 minutes)
-        });
+        // 12. Token'ları oluştur ve session kaydet
+        const tokens = await generateSocialAuthTokens(user, headers, jwt, log, body);
 
-        // Refresh token (30 days)
-        const refreshToken = await jwt.sign({
-          sub: user.id,
-          type: "refresh",
-          userType: user.userType,
-          sessionId,
-          deviceId,
-          jti: refreshJTI,
-          aud: "mobile-app",
-          iss: "metropolitan-api",
-          exp: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60, // 30 days
-        });
+        // 13. Hassas alanları çıkar
+        const { password: _, ...safeUser } = user;
 
-        // Store device session and refresh token
-        await storeDeviceSession(
-          user.id,
-          deviceId,
-          sessionId,
-          deviceInfo,
-          ipAddress
-        );
-        await storeRefreshToken(
-          user.id,
-          refreshToken,
-          deviceId,
-          sessionId,
-          refreshJTI
-        );
-
-        log.info({
-          userId: user.id,
-          deviceId,
-          sessionId,
-          provider: body.provider,
-          message: "Social auth login successful",
-        });
-
-        // Return user data without sensitive fields
-        const { password, ...safeUser } = user;
-
+        // 14. Response hazırla
         if (currentUserId) {
-          // Linking flow response: tokens still returned to keep client session fresh
-          return {
+          // Linking flow response
+          const linkingResponse: SocialAuthLinkingSuccessResponse = {
             success: true,
             linked: true,
             message: "Social account linked successfully",
-            accessToken,
-            refreshToken,
-            expiresIn: 900,
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
+            expiresIn: tokens.expiresIn,
             user: safeUser,
           };
+          return linkingResponse;
         }
 
-        return {
+        // Sign-in flow response
+        const loginResponse: SocialAuthLoginSuccessResponse = {
           success: true,
           userExists: true,
           profileComplete: true,
           message: "Login successful",
-          accessToken,
-          refreshToken,
-          expiresIn: 900, // 15 minutes in seconds
+          accessToken: tokens.accessToken,
+          refreshToken: tokens.refreshToken,
+          expiresIn: tokens.expiresIn,
           user: safeUser,
         };
+        return loginResponse;
       },
       {
-        body: t.Object({
-          firebaseUid: t.String({ minLength: 1 }),
-          email: t.Optional(t.String({ format: "email" })),
-          provider: t.String({ enum: ["apple", "google"] }),
-          appleUserId: t.Optional(t.String({ minLength: 1 })), // Apple's unique user identifier
-        }),
+        body: socialAuthBodySchema,
       }
     )
   );
