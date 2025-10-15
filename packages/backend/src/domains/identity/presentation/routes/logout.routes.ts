@@ -10,6 +10,7 @@ import {
   invalidateSession,
   removeAllUserRefreshTokens
 } from "../../infrastructure/security/device-fingerprint";
+import { blacklistUserTokens } from "../../infrastructure/security/jwt-blacklist-manager";
 
 import { authTokenGuard, extractToken } from "./auth-guards";
 
@@ -53,13 +54,16 @@ export const logoutRoutes = createApp()
           // 2. Remove all user refresh tokens
           await removeAllUserRefreshTokens(userId);
 
-          // 3. Calculate remaining TTL and blacklist current access token
+          // 3. Blacklist all user tokens (logout from all devices)
+          await blacklistUserTokens(userId);
+
+          // 4. Calculate remaining TTL and blacklist current access token (fallback)
           const expiresIn = profile.exp - Math.floor(Date.now() / 1000);
           if (expiresIn > 0) {
             await blacklistToken(token, expiresIn);
           }
 
-          log.info({ userId }, `User logged out and all sessions cleared successfully`);
+          log.info({ userId }, `User logged out from all devices and all tokens invalidated successfully`);
         } catch (error) {
           log.error({ userId, error }, `Failed to clear Redis data during logout`);
           // Don't fail the logout if Redis cleanup partially fails

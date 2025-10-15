@@ -7,6 +7,7 @@ import { jwt } from "@elysiajs/jwt";
 import { Elysia } from "elysia";
 
 import { isTokenBlacklisted } from "../../infrastructure/database/redis";
+import { isUserBlacklisted } from "../../../domains/identity/infrastructure/security/jwt-blacklist-manager";
 
 interface JWTPayload {
   sub?: string;
@@ -53,6 +54,13 @@ export const isAuthenticated = (app: Elysia) =>
         const userId = decoded.sub || decoded.userId;
         if (!userId) {
           logger.warn({ decodedFields: Object.keys(decoded) }, "Token missing userId/sub field");
+          return { profile: null };
+        }
+
+        // Check if all user tokens are blacklisted (logout all devices, account deletion, etc.)
+        const isUserTokensBlacklisted = await isUserBlacklisted(userId);
+        if (isUserTokensBlacklisted) {
+          logger.info({ userId }, "User tokens are blacklisted");
           return { profile: null };
         }
 

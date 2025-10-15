@@ -40,13 +40,12 @@ const redisClient = new Redis({
 redisClient.on("connect", () => {
   logger.info("Redis connection established");
 });
-// TODO: Bu error'u kullanıcıya özel yapıp, kullanıcının token'larının sadece o kullanıcı için geçerli olmasını sağlamak gerekiyor.
+
 redisClient.on("error", (err) => {
   logger.error({ error: err.message }, "Redis connection error");
 });
 
 const BLACKLIST_PREFIX = "blacklist:";
-// TODO: Bu prefix'i kullanıcıya özel yapıp, kullanıcının token'larının sadece o kullanıcı için geçerli olmasını sağlamak gerekiyor.
 /**
  * Bir JWT'yi kara listeye ekler. Token, JWT süresi dolunca Redis'ten otomatik silinir.
  * @param token Kara listeye eklenecek JWT

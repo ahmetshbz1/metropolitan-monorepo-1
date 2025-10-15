@@ -14,6 +14,7 @@ import {
   invalidateAllUserSessions,
   removeAllUserRefreshTokens
 } from "../../infrastructure/security/device-fingerprint";
+import { blacklistUserTokens } from "../../infrastructure/security/jwt-blacklist-manager";
 import { getLanguageFromHeader } from "../../infrastructure/templates/sms-templates";
 
 import { authTokenGuard, phoneNumberSchema, extractToken } from "./auth-guards";
@@ -119,7 +120,10 @@ export const deleteAccountRoutes = createApp()
             // 2. Remove all refresh tokens
             await removeAllUserRefreshTokens(user.id);
 
-            // 3. Blacklist current access token
+            // 3. Blacklist all user tokens (prevents any existing token from being used)
+            await blacklistUserTokens(user.id);
+
+            // 4. Blacklist current access token (fallback for immediate invalidation)
             const token = extractToken(headers.authorization);
             if (token && profile.exp) {
               const expiresIn = profile.exp - Math.floor(Date.now() / 1000);
@@ -130,7 +134,7 @@ export const deleteAccountRoutes = createApp()
 
             log.info(
               { userId: user.id },
-              `Account soft deleted and all sessions cleared successfully`
+              `Account soft deleted and all user tokens invalidated successfully`
             );
           } catch (error) {
             log.error(
