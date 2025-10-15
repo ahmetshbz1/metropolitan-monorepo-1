@@ -6,7 +6,7 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import * as Updates from "expo-updates";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 import NotificationService from "@/core/firebase/notifications/notificationService";
