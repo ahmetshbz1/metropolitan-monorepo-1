@@ -97,6 +97,11 @@ export const getProducts = async (params?: {
   return response.data;
 };
 
+export const getProduct = async (productId: string) => {
+  const response = await apiClient.get(`/admin/products/${productId}`);
+  return response.data;
+};
+
 export const createProduct = async (payload: AdminProductPayload) => {
   await apiClient.post("/admin/products", payload);
 };

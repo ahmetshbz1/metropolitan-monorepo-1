@@ -10,6 +10,7 @@ import { categories } from "../../../../shared/infrastructure/database/schema";
 import { AdminCreateProductService } from "../../application/use-cases/products/create-product.service";
 import { AdminDeleteProductService } from "../../application/use-cases/products/delete-product.service";
 import { AdminGetProductsService } from "../../application/use-cases/products/get-products.service";
+import { AdminGetProductService } from "../../application/use-cases/products/get-product.service";
 import {
   AdminGetStockAlertsService,
   type StockAlertLevel,
@@ -445,6 +446,37 @@ export const adminProductsRoutes = createAdminRouter("/admin/products")
       body: t.Object({
         imageUrls: t.Array(t.String(), { minItems: 1 }),
       }),
+    }
+  )
+  .get(
+    "/:id",
+    async ({ params, set }) => {
+      try {
+        const result = await AdminGetProductService.execute(params.id);
+
+        if (!result.success) {
+          set.status = 404;
+          return {
+            success: false,
+            message: result.message || "Ürün bulunamadı",
+          };
+        }
+
+        return {
+          success: true,
+          product: result.product,
+        };
+      } catch (error) {
+        set.status = 400;
+        return {
+          success: false,
+          message:
+            error instanceof Error ? error.message : "Ürün getirilemedi",
+        };
+      }
+    },
+    {
+      params: t.Object({ id: t.String({ format: "uuid" }) }),
     }
   )
   .put(

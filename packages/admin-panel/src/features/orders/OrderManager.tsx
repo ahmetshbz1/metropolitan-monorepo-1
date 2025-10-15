@@ -41,6 +41,9 @@ import {
 import type { Order, OrderFilters, OrdersResponse, UpdateOrderStatusInput } from "../../api/orders";
 import { API_BASE_URL } from "../../config/env";
 import { useToast } from "../../hooks/useToast";
+import { getProduct, updateProduct } from "../products/api";
+import { ProductFormV2 } from "../products/ProductForm.v2";
+import type { AdminProduct, AdminProductPayload } from "../products/types";
 
 const ORDER_STATUSES = [
   { value: "pending", label: "Beklemede", color: "warning" },
@@ -217,6 +220,9 @@ export const OrderManager = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deletingOrderId, setDeletingOrderId] = useState<string | null>(null);
   const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<AdminProduct | null>(null);
+  const [isProductDrawerOpen, setIsProductDrawerOpen] = useState(false);
+  const [loadingProduct, setLoadingProduct] = useState(false);
   const { showToast } = useToast();
 
   const loadOrders = useCallback(async (): Promise<OrdersResponse | undefined> => {
@@ -663,6 +669,65 @@ export const OrderManager = () => {
     }
   };
 
+  const handleProductClick = async (productId: string) => {
+    try {
+      setLoadingProduct(true);
+      const response = await getProduct(productId);
+      if (response.success && response.product) {
+        setEditingProduct(response.product);
+        setIsProductDrawerOpen(true);
+      } else {
+        showToast({
+          type: "error",
+          title: "Ürün bulunamadı",
+          description: response.message,
+        });
+      }
+    } catch (error) {
+      console.error("Ürün yüklenemedi:", error);
+      showToast({
+        type: "error",
+        title: "Ürün yüklenemedi",
+        description: error instanceof Error ? error.message : undefined,
+      });
+    } finally {
+      setLoadingProduct(false);
+    }
+  };
+
+  const handleProductUpdate = async (payload: AdminProductPayload, productId?: string) => {
+    if (!productId) {
+      showToast({
+        type: "error",
+        title: "Ürün ID'si bulunamadı",
+      });
+      return;
+    }
+
+    try {
+      await updateProduct(productId, payload);
+      showToast({
+        type: "success",
+        title: "Ürün güncellendi",
+        duration: 3000,
+      });
+      setIsProductDrawerOpen(false);
+      setEditingProduct(null);
+    } catch (error) {
+      console.error("Ürün güncellenemedi:", error);
+      showToast({
+        type: "error",
+        title: "Ürün güncelleme başarısız",
+        description: error instanceof Error ? error.message : undefined,
+      });
+    }
+  };
+
+  const handleProductDrawerClose = () => {
+    setIsProductDrawerOpen(false);
+    setEditingProduct(null);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -995,7 +1060,22 @@ export const OrderManager = () => {
                   <h4 className="mb-3 text-sm font-semibold">Ürünler</h4>
                   <div className="space-y-3">
                     {selectedOrder.items.map((item) => (
-                      <div key={item.id} className="flex items-center gap-3 rounded-lg border border-slate-200 p-3 dark:border-[#2a2a2a]">
+                      <div
+                        key={item.id}
+                        className="flex items-center gap-3 rounded-lg border border-slate-200 p-3 dark:border-[#2a2a2a] cursor-pointer transition-all hover:border-blue-400 hover:shadow-md dark:hover:border-blue-500"
+                        onClick={() => {
+                          if (item.productId) {
+                            void handleProductClick(item.productId);
+                          }
+                        }}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if ((e.key === "Enter" || e.key === " ") && item.productId) {
+                            void handleProductClick(item.productId);
+                          }
+                        }}
+                      >
                         {item.productImage && (
                           <img
                             src={resolveResourceUrl(item.productImage)}
@@ -1372,6 +1452,34 @@ export const OrderManager = () => {
           )}
         </ModalContent>
       </Modal>
+
+      <Drawer
+        isOpen={isProductDrawerOpen}
+        onClose={handleProductDrawerClose}
+        size="5xl"
+        className="max-sm:!w-full"
+      >
+        <DrawerContent className="dark:bg-[#1a1a1a]">
+          <DrawerHeader className="dark:border-b dark:border-[#2a2a2a]">
+            <h2 className="text-lg font-semibold dark:text-white">
+              Ürün Düzenle
+            </h2>
+          </DrawerHeader>
+          <DrawerBody>
+            {loadingProduct ? (
+              <div className="flex items-center justify-center py-20">
+                <Spinner size="lg" color="primary" />
+              </div>
+            ) : editingProduct ? (
+              <ProductFormV2
+                mode="update"
+                onSubmit={handleProductUpdate}
+                initialProduct={editingProduct}
+              />
+            ) : null}
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 };
