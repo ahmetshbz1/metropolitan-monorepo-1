@@ -101,15 +101,19 @@ export const InitialLayout: React.FC = () => {
         },
         (response) => {
           // Bildirime tıklandığında
-          const data = response.notification.request.content.data;
+          const data = response.notification.request.content.data as {
+            screen?: string;
+            orderId?: string;
+            productId?: string;
+          };
 
           // Badge sayısını güncelle
           refreshUnreadCount();
 
           // Eğer bildirimde yönlendirme bilgisi varsa
           if (data?.screen) {
-            const targetScreen = data.screen;
             const now = Date.now();
+            const targetScreen = data.screen;
 
             // Son 2 saniye içinde aynı sayfaya navigasyon yapıldıysa ignore et
             if (lastNavigationRef.current &&
@@ -122,7 +126,43 @@ export const InitialLayout: React.FC = () => {
             lastNavigationRef.current = { screen: targetScreen, time: now };
 
             // Navigasyon yap
-            router.push(targetScreen);
+            try {
+              switch (data.screen) {
+                case 'orders':
+                  router.push('/(tabs)/orders');
+                  break;
+                case 'order-detail':
+                  if (data.orderId) {
+                    router.push(`/order/${data.orderId}`);
+                  } else {
+                    router.push('/(tabs)/orders');
+                  }
+                  break;
+                case 'product-detail':
+                  if (data.productId) {
+                    router.push(`/product/${data.productId}`);
+                  } else {
+                    router.push('/(tabs)/products');
+                  }
+                  break;
+                case 'products':
+                  router.push('/(tabs)/products');
+                  break;
+                case 'cart':
+                  router.push('/(tabs)/cart');
+                  break;
+                case 'profile':
+                  router.push('/(tabs)/profile');
+                  break;
+                case 'favorites':
+                  router.push('/favorites');
+                  break;
+                default:
+                  console.log('Bilinmeyen ekran:', data.screen);
+              }
+            } catch (error) {
+              console.error('Push notification yönlendirme hatası:', error);
+            }
           }
         }
       );
