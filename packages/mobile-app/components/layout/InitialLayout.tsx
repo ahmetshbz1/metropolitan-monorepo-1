@@ -34,6 +34,7 @@ export const InitialLayout: React.FC = () => {
 
   // Push notification navigasyon kontrolü için
   const lastNavigationRef = React.useRef<{ screen: string; time: number } | null>(null);
+  const processedNotificationIds = React.useRef<Set<string>>(new Set());
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
@@ -90,8 +91,20 @@ export const InitialLayout: React.FC = () => {
   }, [loaded]);
 
   // Notification'dan sayfaya yönlendirme yap
-  const handleNotificationNavigation = useCallback((data: { screen?: string; orderId?: string; productId?: string }) => {
+  const handleNotificationNavigation = useCallback((
+    notificationId: string,
+    data: { screen?: string; orderId?: string; productId?: string }
+  ) => {
     if (!data?.screen) return;
+
+    // Bu notification'ı daha önce işledik mi?
+    if (processedNotificationIds.current.has(notificationId)) {
+      console.log('🔔 [InitialLayout] Duplicate notification ignored:', notificationId);
+      return;
+    }
+
+    // Notification'ı işlenmiş olarak kaydet
+    processedNotificationIds.current.add(notificationId);
 
     const now = Date.now();
     const targetScreen = data.screen;
@@ -152,13 +165,14 @@ export const InitialLayout: React.FC = () => {
       // App kapalıyken gelen notification'ı kontrol et (cold start)
       const lastNotificationResponse = await Notifications.getLastNotificationResponseAsync();
       if (lastNotificationResponse) {
+        const notificationId = lastNotificationResponse.notification.request.identifier;
         const data = lastNotificationResponse.notification.request.content.data as {
           screen?: string;
           orderId?: string;
           productId?: string;
         };
 
-        console.log('🔔 [InitialLayout] Cold start notification:', data);
+        console.log('🔔 [InitialLayout] Cold start notification:', notificationId, data);
 
         // Badge sayısını güncelle
         refreshUnreadCount();
@@ -167,7 +181,7 @@ export const InitialLayout: React.FC = () => {
         if (data?.screen) {
           // Router hazır olana kadar bekle
           setTimeout(() => {
-            handleNotificationNavigation(data);
+            handleNotificationNavigation(notificationId, data);
           }, 500);
         }
       }
@@ -181,19 +195,20 @@ export const InitialLayout: React.FC = () => {
         },
         (response) => {
           // Bildirime tıklandığında (app açıkken)
+          const notificationId = response.notification.request.identifier;
           const data = response.notification.request.content.data as {
             screen?: string;
             orderId?: string;
             productId?: string;
           };
 
-          console.log('🔔 [InitialLayout] Notification tapped while app open:', data);
+          console.log('🔔 [InitialLayout] Notification tapped while app open:', notificationId, data);
 
           // Badge sayısını güncelle
           refreshUnreadCount();
 
           // Yönlendirme yap
-          handleNotificationNavigation(data);
+          handleNotificationNavigation(notificationId, data);
         }
       );
     };
