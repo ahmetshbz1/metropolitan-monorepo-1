@@ -3,6 +3,7 @@
 //  Emergency stock data reset service
 
 import { redis } from "../../database/redis";
+import { logger } from "../../monitoring/logger.config";
 
 import { REDIS_STOCK_CONFIG } from "./stock-config";
 
@@ -28,6 +29,6 @@ export class StockResetService {
       await redis.del(...allKeys);
     }
 
-    console.log(`🧹 Reset all stock data: ${allKeys.length} keys deleted`);
+    logger.warn({ keysDeleted: allKeys.length }, "Reset all stock data - emergency operation");
   }
 }

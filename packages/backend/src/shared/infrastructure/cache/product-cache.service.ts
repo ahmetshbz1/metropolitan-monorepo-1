@@ -4,6 +4,8 @@
 
 import type { Product } from "@metropolitan/shared";
 
+import { logger } from "../monitoring/logger.config";
+
 import { CacheManagementService } from "./cache-management.service";
 import { CategoryCacheService } from "./category-cache.service";
 import { IndividualProductCacheService } from "./individual-product-cache.service";
@@ -88,7 +90,7 @@ export class ProductCacheService {
       this.categoryCache.invalidateAllCategories(),
       this.specialCache.invalidateAllSpecialCollections(),
     ]);
-    console.log('Category caches invalidated');
+    logger.info("Category caches invalidated");
   }
 
   static async warmupCache(products: Product[]): Promise<void> {

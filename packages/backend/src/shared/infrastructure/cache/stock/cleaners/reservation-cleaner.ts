@@ -3,6 +3,7 @@
 //  Service for cleaning up expired stock reservations
 
 import { redis } from "../../../database/redis";
+import { logger } from "../../../monitoring/logger.config";
 import { REDIS_STOCK_CONFIG, type StockReservation } from "../stock-config";
 
 export class ReservationCleaner {
@@ -39,12 +40,13 @@ export class ReservationCleaner {
         if (cleanedCount > 0) {
           await pipeline.exec();
         }
-        console.log(`🧹 Cleaned up ${cleanedCount} expired reservations`);
+        logger.info({ cleanedCount }, "Cleaned up expired reservations");
         resolve(cleanedCount);
       });
-      
+
       stream.on('error', (err) => {
-        console.error('Error during reservation cleanup:', err);
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        logger.error({ error: errorMessage }, "Error during reservation cleanup");
         reject(err);
       });
     });
@@ -65,7 +67,8 @@ export class ReservationCleaner {
       
       return hoursSinceReservation > this.MAX_RESERVATION_AGE_HOURS;
     } catch (parseError) {
-      console.warn(`Failed to parse reservation data for cleanup: ${key}`, parseError);
+      const errorMessage = parseError instanceof Error ? parseError.message : String(parseError);
+      logger.warn({ key, error: errorMessage }, "Failed to parse reservation data for cleanup");
       // Delete invalid data
       return true;
     }

@@ -3,6 +3,7 @@
 //  Distributed locking service extracted from RedisStockService
 
 import { redis } from "../../database/redis";
+import { logger } from "../../monitoring/logger.config";
 
 // Redis key prefixes for locking
 const LOCK_CONFIG = {
@@ -42,13 +43,14 @@ export class DistributedLockingService {
         };
       }
 
-      console.log(`🔒 Lock acquired by ${userId} for product ${productId}`);
+      logger.debug({ userId, productId }, "Lock acquired for product");
       return {
         success: true,
         lockKey,
       };
     } catch (error) {
-      console.error(`Failed to acquire lock for ${productId}:`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error({ productId, error: errorMessage }, "Failed to acquire lock");
       return {
         success: false,
         lockKey,
@@ -65,10 +67,11 @@ export class DistributedLockingService {
     try {
       const result = await redis.del(lockKey);
       if (result > 0) {
-        console.log(`🔓 Lock released for product ${productId}`);
+        logger.debug({ productId }, "Lock released for product");
       }
     } catch (error) {
-      console.error(`Failed to release lock ${lockKey}:`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error({ lockKey, error: errorMessage }, "Failed to release lock");
       // Don't throw - this is cleanup code
     }
   }
@@ -83,7 +86,8 @@ export class DistributedLockingService {
       const exists = await redis.exists(lockKey);
       return exists === 1;
     } catch (error) {
-      console.error(`Failed to check lock status for ${productId}:`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error({ productId, error: errorMessage }, "Failed to check lock status");
       return false; // Assume not locked on error
     }
   }
@@ -98,7 +102,8 @@ export class DistributedLockingService {
       const owner = await redis.get(lockKey);
       return owner;
     } catch (error) {
-      console.error(`Failed to get lock owner for ${productId}:`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error({ productId, error: errorMessage }, "Failed to get lock owner");
       return null;
     }
   }
@@ -112,12 +117,13 @@ export class DistributedLockingService {
     try {
       const result = await redis.del(lockKey);
       if (result > 0) {
-        console.log(`⚠️ Force released lock for product ${productId}`);
+        logger.warn({ productId }, "Force released lock for product - admin action");
         return true;
       }
       return false;
     } catch (error) {
-      console.error(`Failed to force release lock for ${productId}:`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      logger.error({ productId, error: errorMessage }, "Failed to force release lock");
       return false;
     }
   }

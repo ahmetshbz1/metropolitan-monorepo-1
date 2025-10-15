@@ -3,6 +3,7 @@
 //  Service for cleaning product-specific reservations
 
 import { redis } from "../../../database/redis";
+import { logger } from "../../../monitoring/logger.config";
 import { REDIS_STOCK_CONFIG } from "../stock-config";
 
 export class ProductReservationCleaner {
@@ -20,7 +21,7 @@ export class ProductReservationCleaner {
     }
 
     await redis.del(...keys);
-    console.log(`🧹 Cleaned up ${keys.length} reservations for product ${productId}`);
+    logger.info({ productId, count: keys.length }, "Cleaned up reservations for product");
     return keys.length;
   }
   
@@ -36,7 +37,7 @@ export class ProductReservationCleaner {
     }
 
     await redis.del(...keys);
-    console.log(`🧹 Cleaned up ${keys.length} reservations for user ${userId}`);
+    logger.info({ userId, count: keys.length }, "Cleaned up reservations for user");
     return keys.length;
   }
 }
