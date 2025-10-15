@@ -3,7 +3,7 @@
 //  Created by Ahmet on 01.07.2025.
 //  Rebuilt from scratch for stability
 
-import { useNavigation } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -27,6 +27,7 @@ export default function NotificationsScreen() {
   const { colors } = useTheme();
   const { isGuest, guestId } = useAuth();
   const navigation = useNavigation();
+  const router = useRouter();
   const { refreshUnreadCount } = useNotifications();
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -76,20 +77,64 @@ export default function NotificationsScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Bildirimi okundu işaretle
-  const markAsRead = async (notificationId: string) => {
-    // Guest kullanıcılar bildirim okuyamaz (sadece görüntüler)
-    if (isGuest) return;
+  // Bildirime tıklandığında çalışır
+  const handleNotificationPress = async (notification: Notification) => {
+    // Önce okundu işaretle
+    if (!isGuest) {
+      try {
+        await api.put(`/users/notifications/${notification.id}/read`);
+        setNotifications((prev) =>
+          prev.map((n) => (n.id === notification.id ? { ...n, isRead: true } : n))
+        );
+        refreshUnreadCount();
+      } catch (error) {
+        console.error("Bildirim okundu işaretlenemedi:", error);
+      }
+    }
 
-    try {
-      await api.put(`/users/notifications/${notificationId}/read`);
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === notificationId ? { ...n, isRead: true } : n))
-      );
-      // Badge sayısını güncelle
-      refreshUnreadCount();
-    } catch (error) {
-      console.error("Bildirim okundu işaretlenemedi:", error);
+    // Yönlendirme yap (eğer data.screen varsa)
+    if (notification.data && typeof notification.data === 'object') {
+      const data = notification.data as { screen?: string; orderId?: string; productId?: string };
+
+      if (data.screen) {
+        try {
+          switch (data.screen) {
+            case 'orders':
+              router.push('/(tabs)/orders');
+              break;
+            case 'order-detail':
+              if (data.orderId) {
+                router.push(`/order/${data.orderId}`);
+              } else {
+                router.push('/(tabs)/orders');
+              }
+              break;
+            case 'product-detail':
+              if (data.productId) {
+                router.push(`/product/${data.productId}`);
+              } else {
+                router.push('/(tabs)/products');
+              }
+              break;
+            case 'products':
+              router.push('/(tabs)/products');
+              break;
+            case 'cart':
+              router.push('/(tabs)/cart');
+              break;
+            case 'profile':
+              router.push('/(tabs)/profile');
+              break;
+            case 'favorites':
+              router.push('/favorites');
+              break;
+            default:
+              console.log('Bilinmeyen ekran:', data.screen);
+          }
+        } catch (error) {
+          console.error('Yönlendirme hatası:', error);
+        }
+      }
     }
   };
 
@@ -112,7 +157,7 @@ export default function NotificationsScreen() {
   const renderItem = ({ item }: { item: Notification }) => (
     <NotificationItem
       item={item}
-      onPress={() => markAsRead(item.id)}
+      onPress={() => handleNotificationPress(item)}
       onDelete={() => deleteNotification(item.id)}
     />
   );

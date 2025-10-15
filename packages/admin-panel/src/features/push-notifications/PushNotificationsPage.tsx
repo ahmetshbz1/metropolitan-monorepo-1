@@ -12,8 +12,9 @@ import {
   Chip,
   Checkbox,
   Spacer,
+  Divider,
 } from "@heroui/react";
-import { Bell, Send, Users, Loader2, Sparkles, X } from "lucide-react";
+import { Bell, Send, Users, Loader2, Sparkles, X, Navigation } from "lucide-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   sendPushToUser,
@@ -27,6 +28,17 @@ import type { User } from "../../api/users";
 
 type SendMode = "single" | "batch" | "broadcast";
 
+const SCREEN_OPTIONS = [
+  { value: "", label: "Yönlendirme Yok" },
+  { value: "orders", label: "Siparişlerim" },
+  { value: "order-detail", label: "Sipariş Detayı (orderId gerekli)" },
+  { value: "products", label: "Ürünler" },
+  { value: "product-detail", label: "Ürün Detayı (productId gerekli)" },
+  { value: "cart", label: "Sepetim" },
+  { value: "profile", label: "Profil" },
+  { value: "favorites", label: "Favorilerim" },
+];
+
 export const PushNotificationsPage = () => {
   const [mode, setMode] = useState<SendMode>("broadcast");
   const [selectedUserId, setSelectedUserId] = useState<string>("");
@@ -34,6 +46,9 @@ export const PushNotificationsPage = () => {
     new Set()
   );
   const [manualTranslation, setManualTranslation] = useState(false);
+  const [selectedScreen, setSelectedScreen] = useState<string>("");
+  const [orderId, setOrderId] = useState<string>("");
+  const [productId, setProductId] = useState<string>("");
 
   const [translations, setTranslations] = useState({
     tr: { title: "", body: "" },
@@ -138,6 +153,9 @@ export const PushNotificationsPage = () => {
         data: {
           sentAt: new Date().toISOString(),
           source: "admin-panel",
+          ...(selectedScreen && { screen: selectedScreen }),
+          ...(orderId && { orderId }),
+          ...(productId && { productId }),
         },
       };
 
@@ -167,6 +185,9 @@ export const PushNotificationsPage = () => {
       });
       setSelectedUserId("");
       setSelectedUserIds(new Set());
+      setSelectedScreen("");
+      setOrderId("");
+      setProductId("");
     },
     onError: (err) => {
       setError(err instanceof Error ? err.message : "Gönderim başarısız");
@@ -339,6 +360,61 @@ export const PushNotificationsPage = () => {
               >
                 {translateMutation.isPending ? "Çevriliyor..." : "AI Çeviri Yap"}
               </Button>
+            )}
+          </div>
+
+          <Divider className="my-2" />
+
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-2">
+              <Navigation className="h-5 w-5 text-primary" />
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                Yönlendirme Ayarları (Opsiyonel)
+              </label>
+            </div>
+
+            <Select
+              label="Hedef Ekran"
+              placeholder="Bildirime tıklandığında açılacak sayfa"
+              selectedKeys={selectedScreen ? [selectedScreen] : []}
+              onSelectionChange={(keys) => {
+                const selected = Array.from(keys)[0] as string;
+                setSelectedScreen(selected || "");
+                setOrderId("");
+                setProductId("");
+              }}
+              variant="bordered"
+              size="lg"
+            >
+              {SCREEN_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </Select>
+
+            {selectedScreen === "order-detail" && (
+              <Input
+                label="Sipariş ID"
+                placeholder="Örn: cm5xabcd1234"
+                value={orderId}
+                onValueChange={setOrderId}
+                variant="bordered"
+                size="lg"
+                description="Bildirime tıklandığında açılacak siparişin ID'si"
+              />
+            )}
+
+            {selectedScreen === "product-detail" && (
+              <Input
+                label="Ürün ID"
+                placeholder="Örn: cm5xefgh5678"
+                value={productId}
+                onValueChange={setProductId}
+                variant="bordered"
+                size="lg"
+                description="Bildirime tıklandığında açılacak ürünün ID'si"
+              />
             )}
           </div>
 
