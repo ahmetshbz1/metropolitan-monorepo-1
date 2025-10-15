@@ -2,6 +2,7 @@
 // Client management operations for Fakturownia
 // Create and retrieve client information
 
+import { logger } from "../monitoring/logger.config";
 import { FakturowniaApiClientService } from "./fakturownia-api-client.service";
 import type { FakturowniaClient } from "./fakturownia-types";
 
@@ -25,10 +26,13 @@ export class FakturowniaClientService {
         }
       );
 
-      console.log(`Fakturownia müşterisi oluşturuldu: ${response.name}`);
+      logger.info({ clientName: response.name, clientId: response.id }, "Fakturownia müşterisi oluşturuldu");
       return response;
     } catch (error) {
-      console.error("Fakturownia müşteri oluşturma hatası:", error);
+      logger.error(
+        { clientName: client.name, error: error instanceof Error ? error.message : String(error) },
+        "Fakturownia müşteri oluşturma hatası"
+      );
       throw error;
     }
   }
@@ -42,7 +46,10 @@ export class FakturowniaClientService {
         "clients.json"
       );
     } catch (error) {
-      console.error("Fakturownia müşteri listesi hatası:", error);
+      logger.error(
+        { error: error instanceof Error ? error.message : String(error) },
+        "Fakturownia müşteri listesi hatası"
+      );
       throw error;
     }
   }

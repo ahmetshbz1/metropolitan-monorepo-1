@@ -2,6 +2,7 @@
 // Orchestrator service for Fakturownia integration
 // Delegates to specialized services for better modularity
 
+import { logger } from "../monitoring/logger.config";
 import { FakturowniaApiClientService } from "./fakturownia-api-client.service";
 import { FakturowniaClientService } from "./fakturownia-client.service";
 import { FakturowniaInvoiceService } from "./fakturownia-invoice.service";
@@ -81,7 +82,10 @@ class FakturowniaService {
       await this.apiClient.makeRequest<any>("invoices.json");
       return true;
     } catch (error) {
-      console.error("Fakturownia bağlantı testi başarısız:", error);
+      logger.error(
+        { error: error instanceof Error ? error.message : String(error) },
+        "Fakturownia bağlantı testi başarısız"
+      );
       return false;
     }
   }
