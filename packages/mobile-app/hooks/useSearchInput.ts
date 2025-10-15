@@ -12,6 +12,8 @@ interface UseSearchInputProps {
   initialValue?: string;
 }
 
+const DEBOUNCE_DELAY = 300;
+
 export const useSearchInput = ({
   onSearchChange,
   initialValue = "",
@@ -21,6 +23,7 @@ export const useSearchInput = ({
   const [localValue, setLocalValue] = useState(initialValue);
   const [isSearchMode, setIsSearchMode] = useState(false);
   const animatedWidth = useRef(new Animated.Value(0)).current;
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
   // Ekran genişliğini al ve arama input'u için maksimum genişlik hesapla
   const screenWidth = Dimensions.get("window").width;
@@ -31,15 +34,33 @@ export const useSearchInput = ({
       setIsSearchMode(true);
       Animated.timing(animatedWidth, {
         toValue: 1,
-        duration: 300,
+        duration: 250,
         useNativeDriver: false,
       }).start();
     }
   }, [initialValue, animatedWidth]);
 
+  // Debounce cleanup
+  useEffect(() => {
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, []);
+
   const handleChangeText = (text: string) => {
     setLocalValue(text);
-    onSearchChange(text);
+
+    // Önceki timer'ı iptal et
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+
+    // Yeni timer başlat
+    debounceTimer.current = setTimeout(() => {
+      onSearchChange(text);
+    }, DEBOUNCE_DELAY);
   };
 
   const handleSearchPress = () => {
@@ -47,7 +68,7 @@ export const useSearchInput = ({
     setIsSearchMode(true);
     Animated.timing(animatedWidth, {
       toValue: 1,
-      duration: 300,
+      duration: 250,
       useNativeDriver: false,
     }).start(() => {
       inputRef.current?.focus();
@@ -56,18 +77,30 @@ export const useSearchInput = ({
 
   const handleCancel = () => {
     triggerHaptic();
+
+    // Timer'ı iptal et
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+
     setLocalValue("");
     onSearchChange("");
     setIsSearchMode(false);
     Animated.timing(animatedWidth, {
       toValue: 0,
-      duration: 300,
+      duration: 250,
       useNativeDriver: false,
     }).start();
   };
 
   const handleInputClear = () => {
     triggerHaptic();
+
+    // Timer'ı iptal et
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+
     setLocalValue("");
     onSearchChange("");
   };

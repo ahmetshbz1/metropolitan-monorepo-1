@@ -37,10 +37,15 @@ export const SearchField: React.FC<SearchFieldProps> = ({
   return (
     <View className="flex-row items-center">
       <Animated.View
-        className="flex-row items-center rounded-xl px-3 py-2 mr-2"
         style={[
           {
             backgroundColor: colors.card,
+            borderRadius: SEARCH_INPUT_CONFIG.border.radius,
+            paddingHorizontal: SEARCH_INPUT_CONFIG.spacing.containerPadding,
+            paddingVertical: SEARCH_INPUT_CONFIG.spacing.verticalPadding,
+            marginRight: SEARCH_INPUT_CONFIG.spacing.containerMargin,
+            flexDirection: "row",
+            alignItems: "center",
             ...shadowStyle,
           },
           animatedStyle,
@@ -50,7 +55,7 @@ export const SearchField: React.FC<SearchFieldProps> = ({
           name="search"
           size={SEARCH_INPUT_CONFIG.sizes.searchIconSmall}
           color={colors.mediumGray}
-          className="mr-2"
+          style={{ marginRight: SEARCH_INPUT_CONFIG.spacing.iconMargin }}
         />
         <TextInput
           ref={inputRef}
@@ -58,10 +63,11 @@ export const SearchField: React.FC<SearchFieldProps> = ({
           onChangeText={onChangeText}
           placeholder={placeholder || t("tabs.search_placeholder")}
           placeholderTextColor={colors.mediumGray}
-          className="flex-1 text-base"
           style={[
             textInputStyle,
             {
+              flex: 1,
+              fontSize: SEARCH_INPUT_CONFIG.text.fontSize,
               textAlignVertical: "center",
               paddingVertical: 0,
               includeFontPadding: false,
@@ -76,7 +82,10 @@ export const SearchField: React.FC<SearchFieldProps> = ({
         {value.length > 0 && (
           <TouchableOpacity
             onPress={onClear}
-            className="p-0.5 ml-1"
+            style={{
+              padding: SEARCH_INPUT_CONFIG.spacing.clearPadding,
+              marginLeft: SEARCH_INPUT_CONFIG.spacing.clearMargin,
+            }}
             activeOpacity={0.7}
           >
             <Ionicons
@@ -87,7 +96,11 @@ export const SearchField: React.FC<SearchFieldProps> = ({
           </TouchableOpacity>
         )}
       </Animated.View>
-      <TouchableOpacity onPress={onCancel} className="p-2" activeOpacity={0.7}>
+      <TouchableOpacity
+        onPress={onCancel}
+        style={{ padding: SEARCH_INPUT_CONFIG.spacing.buttonPadding }}
+        activeOpacity={0.7}
+      >
         <Ionicons
           name="close"
           size={SEARCH_INPUT_CONFIG.sizes.closeIcon}
