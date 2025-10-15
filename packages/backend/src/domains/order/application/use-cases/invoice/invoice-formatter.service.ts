@@ -11,56 +11,66 @@ export class InvoiceFormatterService {
   /**
    * Format the final invoice data structure
    */
-  static format(
-    order: any,
-    items: any[],
-    invoiceNumber: string
-  ): InvoiceData {
-    const { netAmount, vatAmount } = VatCalculatorService.calculate(Number(order.totalAmount));
-    
+  static format(order: any, items: any[], invoiceNumber: string): InvoiceData {
+    const { netAmount, vatAmount } = VatCalculatorService.calculate(
+      Number(order.totalAmount)
+    );
+
+    // Vade bilgisini kullan (varsa), yoksa default 30 gün
+    const paymentTermDays = order.paymentTermDays || 30;
+
     return {
       invoiceNumber,
       orderNumber: order.orderNumber,
       issueDate: order.createdAt.toISOString(),
-      dueDate: this.calculateDueDate(order.createdAt).toISOString(),
-      
+      dueDate: this.calculateDueDate(
+        order.createdAt,
+        paymentTermDays
+      ).toISOString(),
+      paymentTermDays,
+
       seller: this.getSellerInfo(),
       buyer: this.getBuyerInfo(order),
       items: this.formatItems(items),
-      
+
       netAmount,
       vatAmount,
       totalAmount: Number(order.totalAmount),
       currency: order.currency,
-      
+
       notes: order.notes || undefined,
       totalAmountInWords: "TODO", // This should be implemented with a number-to-words library
       paymentMethod: order.paymentMethodType || "transfer",
       accountNumber: "TODO", // This should come from configuration
     };
   }
-  
+
   /**
    * Generate invoice number from order number
    */
   static generateInvoiceNumber(orderNumber: string): string {
     return `FAT-${orderNumber}`;
   }
-  
+
   /**
-   * Calculate due date (30 days from issue date)
+   * Calculate due date based on payment terms
    */
-  private static calculateDueDate(issueDate: Date): Date {
-    return new Date(issueDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+  private static calculateDueDate(
+    issueDate: Date,
+    paymentTermDays: number
+  ): Date {
+    return new Date(
+      issueDate.getTime() + paymentTermDays * 24 * 60 * 60 * 1000
+    );
   }
-  
+
   /**
    * Get seller (company) information from configuration
    */
   private static getSellerInfo() {
     return SELLER_CONFIG;
   }
-  
+
   /**
    * Get buyer information from order
    */
@@ -82,7 +92,7 @@ export class InvoiceFormatterService {
       phone: order.user.phoneNumber || "",
     };
   }
-  
+
   /**
    * Format order items for invoice
    */
@@ -100,8 +110,8 @@ export class InvoiceFormatterService {
       vatRate: item.product.fakturowniaTax
         ? Number(item.product.fakturowniaTax)
         : item.product.tax
-          ? Number(item.product.tax)
-          : defaultVatRate,
+        ? Number(item.product.tax)
+        : defaultVatRate,
       // Fakturownia product ID varsa ekle
       fakturowniaProductId: item.product.fakturowniaProductId || null,
     }));

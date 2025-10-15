@@ -30,6 +30,7 @@ export class InvoiceDataRepository {
         notes: orders.notes,
         createdAt: orders.createdAt,
         paymentMethodType: orders.paymentMethodType,
+        paymentTermDays: orders.paymentTermDays,
         // User fields (flat)
         userId: users.id,
         userFirstName: users.firstName,
@@ -68,6 +69,7 @@ export class InvoiceDataRepository {
       notes: result.notes,
       createdAt: result.createdAt,
       paymentMethodType: result.paymentMethodType,
+      paymentTermDays: result.paymentTermDays,
       user: {
         id: result.userId,
         firstName: result.userFirstName,
@@ -75,11 +77,13 @@ export class InvoiceDataRepository {
         email: result.userEmail,
         phoneNumber: result.userPhoneNumber,
       },
-      company: result.companyId ? {
-        id: result.companyId,
-        name: result.companyName,
-        nip: result.companyNip,
-      } : null,
+      company: result.companyId
+        ? {
+            id: result.companyId,
+            name: result.companyName,
+            nip: result.companyNip,
+          }
+        : null,
       address: {
         addressTitle: result.addressTitle,
         street: result.addressStreet,
@@ -126,7 +130,7 @@ export class InvoiceDataRepository {
     }
 
     // Manuel olarak nested format'a dönüştür
-    return results.map(result => ({
+    return results.map((result) => ({
       id: result.id,
       quantity: result.quantity,
       unitPrice: result.unitPrice,
