@@ -343,14 +343,6 @@ export const setupInputValidation = (app: Elysia) => {
   // Apply global validation middleware
   app.use(createValidationMiddleware());
 
-  // Log validation errors in development
-  if (process.env.NODE_ENV === 'development') {
-    app.onError(({ error, code }) => {
-      if (code === 'VALIDATION') {
-        console.error('Validation error:', error);
-      }
-    });
-  }
-
+  // Note: Validation errors are already logged by global error handler in app.ts
   return app;
 };

@@ -3,11 +3,11 @@
 //  Created by Ahmet on 05.06.2025.
 
 import * as Sentry from "@sentry/node";
+import { logger } from "./logger.config";
+
 export function initializeSentry() {
   if (!process.env.SENTRY_DSN) {
-    console.warn(
-      "⚠️  SENTRY_DSN environment variable not set. Sentry monitoring disabled."
-    );
+    logger.warn("SENTRY_DSN environment variable not set. Sentry monitoring disabled");
     return;
   }
 
@@ -46,7 +46,7 @@ export function initializeSentry() {
     },
   });
 
-  console.log("✅ Sentry monitoring initialized");
+  logger.info("Sentry monitoring initialized");
 }
 
 // Error helper functions

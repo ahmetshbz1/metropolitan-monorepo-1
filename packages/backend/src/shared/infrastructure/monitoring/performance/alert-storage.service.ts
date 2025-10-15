@@ -3,6 +3,7 @@
 //  Alert storage and retrieval service
 
 import { redis } from "../../database/redis";
+import { logger } from "../logger.config";
 
 import type { PerformanceAlert } from "./performance-types";
 import { PERFORMANCE_CONFIG } from "./performance-types";
@@ -74,19 +75,28 @@ export class AlertStorageService {
   }
   
   private static logAlerts(alerts: PerformanceAlert[]): void {
-    const formattedAlerts = alerts.map(alert => {
-      const icon = alert.severity === 'error' ? '🚨' : '⚠️';
-      return `${icon} ${alert.alert}`;
+    alerts.forEach(alert => {
+      const logData = {
+        category: alert.category,
+        severity: alert.severity,
+        metric: alert.metric,
+        value: alert.value,
+        threshold: alert.threshold,
+      };
+
+      if (alert.severity === 'error') {
+        logger.error(logData, alert.alert);
+      } else {
+        logger.warn(logData, alert.alert);
+      }
     });
-    
-    console.error("Performance alerts:", formattedAlerts);
   }
   
   private static parseAlert(alertString: string): PerformanceAlert | null {
     try {
       return JSON.parse(alertString) as PerformanceAlert;
     } catch (error) {
-      console.warn('Failed to parse alert:', alertString);
+      logger.warn({ alertString }, "Failed to parse alert");
       return null;
     }
   }

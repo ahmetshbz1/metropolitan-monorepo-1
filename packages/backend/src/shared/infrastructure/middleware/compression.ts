@@ -5,6 +5,7 @@
 import { gzipSync, deflateSync } from "node:zlib";
 
 import { Elysia } from "elysia";
+import { logger } from "../monitoring/logger.config";
 
 export const compressionPlugin = new Elysia()
   .onBeforeHandle(({ request, set }) => {
@@ -73,8 +74,8 @@ export const compressionPlugin = new Elysia()
         return compressed;
       }
     } catch (error) {
-      console.error("Compression error:", error);
+      logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Compression error");
     }
-    
+
     return response;
   });

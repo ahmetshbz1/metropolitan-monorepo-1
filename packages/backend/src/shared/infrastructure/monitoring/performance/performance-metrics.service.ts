@@ -1,8 +1,9 @@
 //  "performance-metrics.service.ts"
-//  metropolitan backend  
+//  metropolitan backend
 //  Performance metrics collection and analysis
 
 import { redis } from "../../database/redis";
+import { logger } from "../logger.config";
 
 export interface EndpointMetrics {
   requests: number;
@@ -49,7 +50,7 @@ export class PerformanceMetricsService {
         errorRate,
       };
     } catch (error) {
-      console.error('Failed to get endpoint metrics:', error);
+      logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Failed to get endpoint metrics");
       return {
         requests: 0,
         errors: 0,
@@ -74,9 +75,9 @@ export class PerformanceMetricsService {
         `${endpointKey}:errors`,
         `${endpointKey}:response_times`
       );
-      console.log(`Cleared metrics for ${method} ${path}`);
+      logger.info({ method, path }, "Cleared metrics for endpoint");
     } catch (error) {
-      console.error('Failed to clear endpoint metrics:', error);
+      logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Failed to clear endpoint metrics");
     }
   }
 
@@ -95,7 +96,7 @@ export class PerformanceMetricsService {
         return key;
       });
     } catch (error) {
-      console.error('Failed to get tracked endpoints:', error);
+      logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Failed to get tracked endpoints");
       return [];
     }
   }
@@ -125,7 +126,7 @@ export class PerformanceMetricsService {
         .sort((a, b) => b.avgResponseTime - a.avgResponseTime)
         .slice(0, limit);
     } catch (error) {
-      console.error('Failed to get slowest endpoints:', error);
+      logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Failed to get slowest endpoints");
       return [];
     }
   }
@@ -160,7 +161,7 @@ export class PerformanceMetricsService {
         .sort((a, b) => b.errorRate - a.errorRate)
         .slice(0, limit);
     } catch (error) {
-      console.error('Failed to get error-prone endpoints:', error);
+      logger.error({ error: error instanceof Error ? error.message : "Unknown error" }, "Failed to get error-prone endpoints");
       return [];
     }
   }
