@@ -21,7 +21,6 @@ interface ProductCardProps {
   replaceNavigation?: boolean;
   index?: number;
   isVisible?: boolean;
-  isHighPriority?: boolean;
 }
 
 const getValidImageUrl = (imageUrl: string): string => {
@@ -41,7 +40,6 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
   replaceNavigation = false,
   index = 0,
   isVisible = true,
-  isHighPriority = false,
 }) {
   const {
     colors,
@@ -107,7 +105,8 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
     }
   };
 
-  const imagePriority = isHighPriority ? "high" : "normal";
+  // Tüm ürün resimlerini high priority ile yükle
+  const imagePriority = "high";
   const cachePolicy = "memory-disk";
 
   return (

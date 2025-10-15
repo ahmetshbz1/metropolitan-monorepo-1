@@ -154,7 +154,6 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
       ({ item, index }) => {
         const itemKey = `product-${item.id}`;
         const isVisible = viewableItemsRef.current.has(itemKey);
-        const isHighPriority = index < 30; // İlk 30 item yüksek öncelik
 
         return (
           <View style={{ width: finalCardWidth }}>
@@ -163,7 +162,6 @@ export const ProductGrid = forwardRef<ProductGridRef, ProductGridProps>(
               replaceNavigation={replaceNavigation}
               index={index}
               isVisible={isVisible}
-              isHighPriority={isHighPriority}
             />
           </View>
         );
