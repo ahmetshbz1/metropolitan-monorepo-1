@@ -35,6 +35,7 @@ export const InitialLayout: React.FC = () => {
   // Push notification navigasyon kontrolü için
   const lastNavigationRef = React.useRef<{ screen: string; time: number } | null>(null);
   const processedNotificationIds = React.useRef<Set<string>>(new Set());
+  const notificationInitializedRef = React.useRef(false);
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
@@ -99,7 +100,6 @@ export const InitialLayout: React.FC = () => {
 
     // Bu notification'ı daha önce işledik mi?
     if (processedNotificationIds.current.has(notificationId)) {
-      console.log('🔔 [InitialLayout] Duplicate notification ignored:', notificationId);
       return;
     }
 
@@ -152,7 +152,7 @@ export const InitialLayout: React.FC = () => {
           router.push('/favorites');
           break;
         default:
-          console.log('Bilinmeyen ekran:', data.screen);
+          break;
       }
     } catch (error) {
       console.error('Push notification yönlendirme hatası:', error);
@@ -161,6 +161,11 @@ export const InitialLayout: React.FC = () => {
 
   // Push notifications'ı başlat - Custom permission ekranı gösterilmişse
   useEffect(() => {
+    // Eğer zaten başlatıldıysa, tekrar çalıştırma
+    if (notificationInitializedRef.current) {
+      return;
+    }
+
     const initializePushNotifications = async () => {
       // App kapalıyken gelen notification'ı kontrol et (cold start)
       const lastNotificationResponse = await Notifications.getLastNotificationResponseAsync();
@@ -170,14 +175,12 @@ export const InitialLayout: React.FC = () => {
       // Cold start notification varsa, ID'sini kaydet
       if (lastNotificationResponse) {
         coldStartNotificationId = lastNotificationResponse.notification.request.identifier;
-        console.log('🔔 [InitialLayout] Cold start notification detected:', coldStartNotificationId);
       }
 
       // Listener'ları kur
       NotificationService.setupNotificationListeners(
         (notification) => {
           // Bildirim alındığında - badge sayısını güncelle
-          console.log("🔔 [InitialLayout] Notification received, refreshing count");
           refreshUnreadCount();
         },
         (response) => {
@@ -188,8 +191,6 @@ export const InitialLayout: React.FC = () => {
             orderId?: string;
             productId?: string;
           };
-
-          console.log('🔔 [InitialLayout] Notification tapped while app open:', notificationId, data);
 
           // Badge sayısını güncelle
           refreshUnreadCount();
@@ -207,8 +208,6 @@ export const InitialLayout: React.FC = () => {
           productId?: string;
         };
 
-        console.log('🔔 [InitialLayout] Handling cold start notification:', coldStartNotificationId, data);
-
         // Bu notification'ı işlenmiş olarak kaydet (listener duplicate yakalamaması için)
         processedNotificationIds.current.add(coldStartNotificationId);
 
@@ -219,6 +218,19 @@ export const InitialLayout: React.FC = () => {
         if (data?.screen) {
           // Router hazır olana kadar bekle
           setTimeout(() => {
+            const now = Date.now();
+            const targetScreen = data.screen;
+
+            // Son 2 saniye içinde aynı sayfaya navigasyon yapıldıysa ignore et
+            if (lastNavigationRef.current &&
+                lastNavigationRef.current.screen === targetScreen &&
+                (now - lastNavigationRef.current.time) < 2000) {
+              return;
+            }
+
+            // Navigasyon bilgisini kaydet
+            lastNavigationRef.current = { screen: targetScreen, time: now };
+
             try {
               switch (data.screen) {
                 case 'orders':
@@ -251,7 +263,7 @@ export const InitialLayout: React.FC = () => {
                   router.push('/favorites');
                   break;
                 default:
-                  console.log('Bilinmeyen ekran:', data.screen);
+                  break;
               }
             } catch (error) {
               console.error('Cold start notification yönlendirme hatası:', error);
@@ -263,6 +275,7 @@ export const InitialLayout: React.FC = () => {
 
     // Uygulama başladığında notification'ları başlat
     if (loaded) {
+      notificationInitializedRef.current = true;
       initializePushNotifications();
     }
 
