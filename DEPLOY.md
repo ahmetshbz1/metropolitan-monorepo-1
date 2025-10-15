@@ -137,6 +137,59 @@ ssh metropolitan-deploy "docker-compose restart backend"
 ssh metropolitan-deploy "docker-compose restart"
 ```
 
+## 💡 Common Operations
+
+### Quick Rebuild After Code Changes
+```bash
+# Fast rebuild (only rebuild TypeScript inside running container)
+ssh metropolitan-deploy "cd /opt/metropolitan && git fetch origin && git reset --hard origin/main && docker exec metropolitan_backend bun run build && docker restart metropolitan_backend"
+
+# Full rebuild (slower, rebuilds Docker image)
+ssh metropolitan-deploy "cd /opt/metropolitan && git fetch origin && git reset --hard origin/main && docker-compose build --no-cache backend && docker-compose up -d backend"
+```
+
+### Important Notes
+- **Always use `cd /opt/metropolitan`** before docker-compose commands
+- **Container names**: Use `metropolitan_backend`, `metropolitan_postgres`, etc. (NOT service names like `backend`, `postgres`)
+- **Service names**: Use `backend`, `postgres`, etc. in `docker-compose` commands
+- **Environment file**: Copy `/opt/metropolitan.env` to `.env` when needed
+- **Rebuild vs Restart**:
+  - `docker exec ... bun run build && docker restart`: Fast, only recompiles code
+  - `docker-compose build --no-cache`: Slow, rebuilds entire Docker image
+
+### Check Container Status
+```bash
+# List all containers
+ssh metropolitan-deploy "cd /opt/metropolitan && docker-compose ps"
+
+# Check specific container logs
+ssh metropolitan-deploy "docker logs --tail 50 metropolitan_backend"
+ssh metropolitan-deploy "docker logs --tail 50 metropolitan_admin"
+ssh metropolitan-deploy "docker logs --tail 50 metropolitan_postgres"
+
+# Follow logs in real-time
+ssh metropolitan-deploy "docker logs -f metropolitan_backend"
+
+# Filter logs for specific keywords
+ssh metropolitan-deploy "docker logs --tail 100 metropolitan_backend 2>&1 | grep -i error"
+ssh metropolitan-deploy "docker logs --tail 100 metropolitan_backend 2>&1 | grep -i 'stock rollback'"
+```
+
+### Access Services
+```bash
+# Backend shell
+ssh metropolitan-deploy "docker exec -it metropolitan_backend sh"
+
+# PostgreSQL shell
+ssh metropolitan-deploy "docker exec -it metropolitan_postgres psql -U postgres -d metropolitan"
+
+# Redis CLI
+ssh metropolitan-deploy "docker exec -it metropolitan_redis redis-cli"
+
+# Check Redis stock data
+ssh metropolitan-deploy "docker exec -it metropolitan_redis redis-cli --scan --pattern 'product:*:stock'"
+```
+
 ## 🐛 Troubleshooting
 
 ### Database Issues
