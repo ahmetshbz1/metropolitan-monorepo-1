@@ -57,6 +57,10 @@ export class InvoiceDataRepository {
       .where(eq(orders.id, orderId))
       .limit(1);
 
+    if (!order) {
+      throw new Error(`Sipariş bulunamadı: ${orderId}`);
+    }
+
     return order;
   }
 
@@ -64,7 +68,7 @@ export class InvoiceDataRepository {
    * Fetch order items with Polish translations
    */
   static async fetchOrderItems(orderId: string) {
-    return db
+    const items = await db
       .select({
         id: orderItems.id,
         quantity: orderItems.quantity,
@@ -91,5 +95,11 @@ export class InvoiceDataRepository {
         )
       )
       .where(eq(orderItems.orderId, orderId));
+
+    if (!items || items.length === 0) {
+      throw new Error(`Sipariş kalemleri bulunamadı: ${orderId}`);
+    }
+
+    return items;
   }
 }
