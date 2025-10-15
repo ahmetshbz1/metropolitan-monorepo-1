@@ -31,6 +31,7 @@ export const useProductCard = (product: Product) => {
   const [minQuantityError, setMinQuantityError] = useState<number | null>(null);
   const [isAddingMinQuantity, setIsAddingMinQuantity] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [optimisticCartCount, setOptimisticCartCount] = useState<number | null>(null);
 
   // Computed values
   const userType = user?.userType || "individual";
@@ -54,24 +55,34 @@ export const useProductCard = (product: Product) => {
     (item) => item.product.id === product.id
   );
 
-  const cartQuantity = cartItems.find(
+  const actualCartQuantity = cartItems.find(
     (item) => item.product.id === product.id
   )?.quantity || 0;
 
+  const cartQuantity = optimisticCartCount ?? actualCartQuantity;
+
   // Actions
   const handleAddToCart = async (e: GestureResponderEvent) => {
-    // Race condition koruması: Eğer zaten ekleme işlemi devam ediyorsa, yeni request gönderme
+    // Race condition koruması
     if (isAddingToCart) return;
 
     e.preventDefault();
     e.stopPropagation();
 
+    // Optimistic update - hemen UI'ı güncelle
+    const currentCount = actualCartQuantity;
+    setOptimisticCartCount(currentCount + 1);
     triggerHaptic();
     setIsAddingToCart(true);
 
     try {
       await addToCart(product.id, 1);
+      // Başarılı olduysa optimistic state'i temizle
+      setOptimisticCartCount(null);
     } catch (error) {
+      // Hata durumunda optimistic update'i geri al
+      setOptimisticCartCount(null);
+
       const errorMessage = getErrorMessage(error);
       const structuredError = error as StructuredError;
 
@@ -92,13 +103,20 @@ export const useProductCard = (product: Product) => {
   const handleAddMinQuantity = async () => {
     if (!minQuantityError) return;
 
+    // Optimistic update
+    const currentCount = actualCartQuantity;
+    setOptimisticCartCount(currentCount + minQuantityError);
     setIsAddingMinQuantity(true);
+
     try {
       await addToCart(product.id, minQuantityError);
       showToast(t("cart.item_added"), "success", 3000);
       setShowMinQuantityDialog(false);
       setMinQuantityError(null);
+      setOptimisticCartCount(null);
     } catch (addError) {
+      // Hata durumunda geri al
+      setOptimisticCartCount(null);
       const addErrorMessage = getErrorMessage(addError);
       showToast(addErrorMessage || t("errors.CART_ADD_ERROR"), "error", 3000);
     } finally {

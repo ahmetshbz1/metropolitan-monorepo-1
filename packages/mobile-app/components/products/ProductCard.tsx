@@ -174,23 +174,36 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
             </HapticIconButton>
           </View>
 
-          {/* Sepete Ekle Button - Sağ üst */}
+          {/* Sepete Ekle / Detaya Git Button - Sağ üst */}
           {!isOutOfStock && (
             <View style={{ position: "absolute", top: 8, right: 8 }}>
               <HapticIconButton
                 onPress={(e) => {
-                  if (e) handleAddToCart(e);
+                  if (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    // Eğer sepette varsa detay sayfasına git, yoksa sepete ekle
+                    if (cartQuantity > 0) {
+                      handleCardPress();
+                    } else {
+                      handleAddToCart(e);
+                    }
+                  }
                 }}
                 style={{
                   width: 32,
                   height: 32,
                   borderRadius: 16,
-                  backgroundColor: colors.primary,
+                  backgroundColor: cartQuantity > 0 ? "#10b981" : colors.primary,
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <Ionicons name="add" size={20} color="#ffffff" />
+                <Ionicons
+                  name={cartQuantity > 0 ? "checkmark" : "add"}
+                  size={20}
+                  color="#ffffff"
+                />
               </HapticIconButton>
 
               {cartQuantity > 0 && (
@@ -292,30 +305,23 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
         </View>
 
         {/* İçerik Container */}
-        <View style={{ padding: 12 }}>
+        <View style={{ padding: 10 }}>
           {/* Ürün Adı */}
           <ThemedText
             numberOfLines={2}
             style={{
               fontSize: 13,
               fontWeight: "600",
-              lineHeight: 18,
+              lineHeight: 17,
               color: isDark ? "#ffffff" : "#1a1a1a",
               marginBottom: 6,
-              minHeight: 36,
             }}
           >
             {product.name}
           </ThemedText>
 
-          {/* Fiyat ve Detaylar */}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
+          {/* Fiyat ve Boyut */}
+          <View style={{ flexDirection: "row", alignItems: "baseline", gap: 6 }}>
             <ThemedText
               style={{
                 fontSize: 16,
@@ -330,12 +336,12 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
             {product.size && (
               <ThemedText
                 style={{
-                  fontSize: 11,
+                  fontSize: 10,
                   fontWeight: "500",
-                  color: isDark ? "#737373" : "#a3a3a3",
+                  color: isDark ? "#666666" : "#999999",
                 }}
               >
-                {product.size}
+                • {product.size}
               </ThemedText>
             )}
           </View>
