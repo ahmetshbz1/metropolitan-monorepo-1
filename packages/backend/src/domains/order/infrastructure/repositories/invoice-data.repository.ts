@@ -20,7 +20,7 @@ export class InvoiceDataRepository {
    * Fetch order details with related data
    */
   static async fetchOrderDetails(orderId: string) {
-    const [order] = await db
+    const [result] = await db
       .select({
         id: orders.id,
         orderNumber: orders.orderNumber,
@@ -30,25 +30,22 @@ export class InvoiceDataRepository {
         notes: orders.notes,
         createdAt: orders.createdAt,
         paymentMethodType: orders.paymentMethodType,
-        user: {
-          id: users.id,
-          firstName: users.firstName,
-          lastName: users.lastName,
-          email: users.email,
-          phoneNumber: users.phoneNumber,
-        },
-        company: {
-          id: companies.id,
-          name: companies.name,
-          nip: companies.nip,
-        },
-        address: {
-          addressTitle: addresses.addressTitle,
-          street: addresses.street,
-          city: addresses.city,
-          postalCode: addresses.postalCode,
-          country: addresses.country,
-        },
+        // User fields (flat)
+        userId: users.id,
+        userFirstName: users.firstName,
+        userLastName: users.lastName,
+        userEmail: users.email,
+        userPhoneNumber: users.phoneNumber,
+        // Company fields (flat - leftJoin null olabilir)
+        companyId: companies.id,
+        companyName: companies.name,
+        companyNip: companies.nip,
+        // Address fields (flat)
+        addressTitle: addresses.addressTitle,
+        addressStreet: addresses.street,
+        addressCity: addresses.city,
+        addressPostalCode: addresses.postalCode,
+        addressCountry: addresses.country,
       })
       .from(orders)
       .innerJoin(users, eq(orders.userId, users.id))
@@ -57,33 +54,61 @@ export class InvoiceDataRepository {
       .where(eq(orders.id, orderId))
       .limit(1);
 
-    if (!order) {
+    if (!result) {
       throw new Error(`Sipariş bulunamadı: ${orderId}`);
     }
 
-    return order;
+    // Manuel olarak nested format'a dönüştür
+    return {
+      id: result.id,
+      orderNumber: result.orderNumber,
+      status: result.status,
+      totalAmount: result.totalAmount,
+      currency: result.currency,
+      notes: result.notes,
+      createdAt: result.createdAt,
+      paymentMethodType: result.paymentMethodType,
+      user: {
+        id: result.userId,
+        firstName: result.userFirstName,
+        lastName: result.userLastName,
+        email: result.userEmail,
+        phoneNumber: result.userPhoneNumber,
+      },
+      company: result.companyId ? {
+        id: result.companyId,
+        name: result.companyName,
+        nip: result.companyNip,
+      } : null,
+      address: {
+        addressTitle: result.addressTitle,
+        street: result.addressStreet,
+        city: result.addressCity,
+        postalCode: result.addressPostalCode,
+        country: result.addressCountry,
+      },
+    };
   }
 
   /**
    * Fetch order items with Polish translations
    */
   static async fetchOrderItems(orderId: string) {
-    const items = await db
+    const results = await db
       .select({
         id: orderItems.id,
         quantity: orderItems.quantity,
         unitPrice: orderItems.unitPrice,
         totalPrice: orderItems.totalPrice,
-        product: {
-          id: products.id,
-          productCode: products.productCode,
-          brand: products.brand,
-          size: products.size,
-          tax: products.tax,
-          fakturowniaProductId: products.fakturowniaProductId,
-          fakturowniaTax: products.fakturowniaTax,
-          name: productTranslations.name,
-        },
+        // Product fields (flat)
+        productId: products.id,
+        productCode: products.productCode,
+        productBrand: products.brand,
+        productSize: products.size,
+        productTax: products.tax,
+        fakturowniaProductId: products.fakturowniaProductId,
+        // Translation name (leftJoin - null olabilir)
+        translationName: productTranslations.name,
       })
       .from(orderItems)
       .innerJoin(products, eq(orderItems.productId, products.id))
@@ -96,10 +121,25 @@ export class InvoiceDataRepository {
       )
       .where(eq(orderItems.orderId, orderId));
 
-    if (!items || items.length === 0) {
+    if (!results || results.length === 0) {
       throw new Error(`Sipariş kalemleri bulunamadı: ${orderId}`);
     }
 
-    return items;
+    // Manuel olarak nested format'a dönüştür
+    return results.map(result => ({
+      id: result.id,
+      quantity: result.quantity,
+      unitPrice: result.unitPrice,
+      totalPrice: result.totalPrice,
+      product: {
+        id: result.productId,
+        productCode: result.productCode,
+        brand: result.productBrand,
+        size: result.productSize,
+        tax: result.productTax,
+        fakturowniaProductId: result.fakturowniaProductId,
+        name: result.translationName,
+      },
+    }));
   }
 }
