@@ -56,6 +56,20 @@ export const orderManagementRoutes = new Elysia()
         throw new Error("Bu sipariş artık iptal edilemez");
       }
 
+      // Rollback stock before cancelling
+      console.log(`🔄 User cancelled order, rolling back stock for order ${orderId}...`);
+      try {
+        const rollbackResult = await WebhookStockRollbackService.rollbackOrderStock(orderId);
+        if (rollbackResult.success) {
+          console.log(`✅ Stock rollback successful for user-cancelled order ${orderId}`);
+          console.log(`   Redis: ${rollbackResult.redisRollback ? "✅" : "❌"}, Database: ${rollbackResult.databaseRollback ? "✅" : "❌"}`);
+        } else {
+          console.error(`❌ Stock rollback failed for user-cancelled order ${orderId}:`, rollbackResult.errors);
+        }
+      } catch (error) {
+        console.error(`❌ Stock rollback error for user-cancelled order ${orderId}:`, error);
+      }
+
       // Cancel the order
       await db
         .update(orders)
@@ -70,7 +84,7 @@ export const orderManagementRoutes = new Elysia()
       // Invalidate invoice cache
       await InvoiceService.invalidateInvoiceCache(orderId);
 
-      console.log(`❌ Order cancelled: ${orderId}`);
+      console.log(`❌ Order cancelled by user: ${orderId}`);
 
       return {
         message: "Sipariş başarıyla iptal edildi",
