@@ -167,13 +167,10 @@ export const InitialLayout: React.FC = () => {
 
       let coldStartNotificationId: string | null = null;
 
-      // Cold start notification varsa, ID'sini kaydet (listener kurmadan önce)
+      // Cold start notification varsa, ID'sini kaydet
       if (lastNotificationResponse) {
         coldStartNotificationId = lastNotificationResponse.notification.request.identifier;
         console.log('🔔 [InitialLayout] Cold start notification detected:', coldStartNotificationId);
-
-        // Bu notification'ı işlenmiş olarak işaretle (listener duplicate olarak yakalamaması için)
-        processedNotificationIds.current.add(coldStartNotificationId);
       }
 
       // Listener'ları kur
@@ -219,7 +216,6 @@ export const InitialLayout: React.FC = () => {
         if (data?.screen) {
           // Router hazır olana kadar bekle
           setTimeout(() => {
-            // ID zaten Set'e eklendi, handleNotificationNavigation duplicate check yapmayacak
             handleNotificationNavigation(coldStartNotificationId, data);
           }, 500);
         }
