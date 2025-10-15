@@ -45,7 +45,7 @@ export default function ProductsScreen() {
   const { i18n } = useTranslation();
   const lang = i18n.language;
   const { categories, products: allProducts } = useProducts();
-  const { searchQuery } = useProductsSearch();
+  const { searchQuery, setSearchQuery } = useProductsSearch();
   const { registerScrollHandler, unregisterScrollHandler } = useScrollToTop();
   const { paddingBottom } = useTabBarHeight();
   const colorScheme = useColorScheme() ?? "light";
@@ -140,10 +140,12 @@ export default function ProductsScreen() {
         categories={categories}
         activeCategory={selectedCategory}
         onCategoryPress={handleCategoryPress}
+        onSearchChange={setSearchQuery}
+        searchQuery={searchQuery}
         isLoading={isLoading}
       />
     ),
-    [categories, selectedCategory, handleCategoryPress, isLoading]
+    [categories, selectedCategory, handleCategoryPress, setSearchQuery, searchQuery, isLoading]
   );
 
   if (error && displayProducts.length === 0) {

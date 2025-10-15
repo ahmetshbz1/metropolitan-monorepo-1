@@ -9,9 +9,7 @@ import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, View } from "react-native";
 
 import { HapticIconButton } from "@/components/HapticButton";
-import { SearchInput } from "@/components/appbar/SearchInput";
 import { useNotifications } from "@/context/NotificationContext";
-import { useProductsSearch } from "@/context/ProductsSearchContext";
 import { useTheme } from "@/hooks/useTheme";
 
 interface TabScreensProps {
@@ -32,7 +30,6 @@ export const TabScreens = memo(
   }: TabScreensProps) => {
     const { t } = useTranslation();
     const { colors } = useTheme();
-    const { searchQuery, setSearchQuery } = useProductsSearch();
     const { unreadCount } = useNotifications();
 
     return (
@@ -98,21 +95,6 @@ export const TabScreens = memo(
             title: t("tabs.products"),
             headerShown: true,
             headerTitle: t("tabs.products"),
-            headerRight: () => (
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginRight: 4,
-                }}
-              >
-                <SearchInput
-                  onSearchChange={setSearchQuery}
-                  initialValue={searchQuery}
-                  placeholder="Ürün ara..."
-                />
-              </View>
-            ),
             tabBarIcon: ({ color, focused }) => (
               <Ionicons
                 size={24}
