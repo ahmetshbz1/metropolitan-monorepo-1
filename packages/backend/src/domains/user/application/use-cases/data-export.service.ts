@@ -3,18 +3,20 @@
 // User data export service (GDPR compliance)
 
 import { exec } from "child_process";
-import { eq } from "drizzle-orm";
 import * as fs from "fs";
 import * as path from "path";
 import { promisify } from "util";
-import { v4 as uuidv4 } from "uuid";
+
 import { logger } from "@bogeychan/elysia-logger";
+import { eq } from "drizzle-orm";
+import { v4 as uuidv4 } from "uuid";
+
 import { db } from "../../../../shared/infrastructure/database/connection";
 import {
   addresses,
+  orderItems,
   orders,
   users,
-  orderItems,
 } from "../../../../shared/infrastructure/database/schema";
 
 type ExportAddress = typeof addresses.$inferSelect;
@@ -143,13 +145,26 @@ export class DataExportService {
       // Sistem zip komutu ile şifreli ZIP oluştur
       // Parametreleri ayrı ayrı escape ediyoruz
       const command = `zip -P ${password} -j "${zipFilePath}" "${tempJsonPath}"`;
-      logger.info({ zipFilePath, hasPassword: !!password }, "Creating encrypted ZIP");
+      logger.info(
+        { zipFilePath, hasPassword: !!password },
+        "Creating encrypted ZIP"
+      );
 
       await execAsync(command);
       logger.info({ zipFilePath }, "Encrypted ZIP created successfully");
     } catch (error) {
-      logger.error({ zipFilePath, error: error instanceof Error ? error.message : String(error) }, "ZIP creation failed");
-      throw new Error(`Failed to create encrypted ZIP: ${error instanceof Error ? error.message : String(error)}`);
+      logger.error(
+        {
+          zipFilePath,
+          error: error instanceof Error ? error.message : String(error),
+        },
+        "ZIP creation failed"
+      );
+      throw new Error(
+        `Failed to create encrypted ZIP: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
     } finally {
       // Geçici dosyayı sil
       if (fs.existsSync(tempJsonPath)) {

@@ -1,9 +1,10 @@
 // cleanup-test-users.ts
 // Clean up test users for Apple Sign In testing
 
+import { or, eq, isNull } from "drizzle-orm";
+
 import { db } from "./shared/infrastructure/database/connection";
 import { users } from "./shared/infrastructure/database/schema";
-import { or, eq, isNull } from "drizzle-orm";
 
 async function cleanupTestUsers() {
   try {

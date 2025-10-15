@@ -2,8 +2,9 @@
 //  metropolitan backend
 //  Created by Ahmet on 14.06.2025.
 
-import { t } from "elysia";
 import { eq } from "drizzle-orm";
+import { t } from "elysia";
+
 import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
 import { db } from "../../../../shared/infrastructure/database/connection";
 import { users } from "../../../../shared/infrastructure/database/schema";

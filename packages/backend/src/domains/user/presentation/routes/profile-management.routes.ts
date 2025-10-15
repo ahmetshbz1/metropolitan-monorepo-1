@@ -3,6 +3,7 @@
 //  Created by Ahmet on 14.06.2025.
 
 import { t } from "elysia";
+
 import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
 import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { createApp } from "../../../../shared/infrastructure/web/app";

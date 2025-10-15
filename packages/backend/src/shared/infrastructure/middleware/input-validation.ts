@@ -1,4 +1,3 @@
-import { Elysia, t } from 'elysia';
 import {
   escapeHtml,
   sanitizeSqlInput,
@@ -12,6 +11,7 @@ import {
   validateUUID,
   validateLength,
 } from '@metropolitan/shared';
+import { Elysia, t } from 'elysia';
 
 /**
  * Input validation middleware for Elysia

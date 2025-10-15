@@ -1,6 +1,6 @@
-import { captureError } from "../monitoring/sentry.config";
 import { envConfig } from "../config/env.config";
 import { logger } from "../monitoring/logger.config";
+import { captureError } from "../monitoring/sentry.config";
 
 /**
  * Global error handlers for uncaught exceptions and unhandled rejections

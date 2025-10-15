@@ -5,8 +5,9 @@
 import type { CartItem as CartItemData } from "@metropolitan/shared/types/cart";
 import type { OrderCreationResult, OrderItem as OrderItemData } from "@metropolitan/shared/types/order";
 import { eq } from "drizzle-orm";
-import { logger } from "../../../../../../shared/infrastructure/monitoring/logger.config";
+
 import { PushNotificationService } from "../../../../../../shared/application/services/push-notification.service";
+import { logger } from "../../../../../../shared/infrastructure/monitoring/logger.config";
 
 export class CorporatePaymentProcessor {
   /**

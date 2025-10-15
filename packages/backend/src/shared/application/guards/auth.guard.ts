@@ -2,9 +2,9 @@
 //  metropolitan backend
 //  Created by Ahmet on 16.06.2025.
 
+import { logger } from "@bogeychan/elysia-logger";
 import { jwt } from "@elysiajs/jwt";
 import { Elysia } from "elysia";
-import { logger } from "@bogeychan/elysia-logger";
 
 import { isTokenBlacklisted } from "../../infrastructure/database/redis";
 

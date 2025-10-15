@@ -1,9 +1,9 @@
 import { desc, eq, sql, and, or, ilike } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 
-import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import { users, companies } from "../../../../../shared/infrastructure/database/schema";
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 
 export interface AdminUser {
   id: string;

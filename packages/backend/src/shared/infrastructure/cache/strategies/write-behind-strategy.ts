@@ -3,7 +3,6 @@
 //  Write-behind (write-back) cache pattern
 
 import { logger } from "../../monitoring/logger.config";
-
 import { ApiCacheService } from "../api-cache.service";
 
 export interface WriteBehindOptions {

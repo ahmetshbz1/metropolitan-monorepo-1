@@ -5,6 +5,7 @@
 import { gzipSync, deflateSync } from "node:zlib";
 
 import { Elysia } from "elysia";
+
 import { logger } from "../monitoring/logger.config";
 
 export const compressionPlugin = new Elysia()

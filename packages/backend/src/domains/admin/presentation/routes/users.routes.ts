@@ -1,9 +1,9 @@
 import { t } from "elysia";
 
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { DeleteUserService } from "../../application/use-cases/users/delete-user.service";
 import { GetAdminUsersService } from "../../application/use-cases/users/get-users.service";
 import { UpdateUserService } from "../../application/use-cases/users/update-user.service";
-import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 
 import { createAdminRouter } from "./admin-router.factory";
 

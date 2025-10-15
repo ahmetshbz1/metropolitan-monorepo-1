@@ -3,6 +3,7 @@
 // Cleanup routes for scheduled tasks
 
 import { logger } from "@bogeychan/elysia-logger";
+
 import { createApp } from "../../../../shared/infrastructure/web/app";
 import { cleanupDeletedAccounts } from "../../application/use-cases/cleanup-deleted-accounts";
 

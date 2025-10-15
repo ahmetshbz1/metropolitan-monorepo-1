@@ -3,6 +3,7 @@
 // Handles product listing and search operations
 
 import { logger } from "../monitoring/logger.config";
+
 import { FakturowniaApiClientService } from "./fakturownia-api-client.service";
 import type { FakturowniaProduct } from "./fakturownia-types";
 

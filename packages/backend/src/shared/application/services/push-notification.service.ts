@@ -2,10 +2,13 @@
 //  metropolitan backend
 //  Created by Ahmet on 26.09.2025.
 
-import { logger } from "../../infrastructure/monitoring/logger.config";
+import { eq, and, sql } from "drizzle-orm";
+
 import { db } from "../../infrastructure/database/connection";
 import { deviceTokens, notifications } from "../../infrastructure/database/schema";
-import { eq, and, sql } from "drizzle-orm";
+import { logger } from "../../infrastructure/monitoring/logger.config";
+
+
 import {
   getNotificationTranslation,
   getCustomNotificationTranslation,

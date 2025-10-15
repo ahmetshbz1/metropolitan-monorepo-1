@@ -5,8 +5,8 @@
 import type { OrderItem as OrderItemData } from "@metropolitan/shared/types/order";
 import { eq, sql } from "drizzle-orm";
 
-import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 import { products } from "../../../../../shared/infrastructure/database/schema";
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 
 import type { RedisReservation } from "./stock-redis-operations.service";
 

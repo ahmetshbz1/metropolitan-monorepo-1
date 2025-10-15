@@ -4,11 +4,11 @@
 
 import { t } from "elysia";
 
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import {
   AdminAuthError,
   AdminAuthService,
 } from "../../application/use-cases/auth/admin-auth.service";
-import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 
 import { createAdminRouter } from "./admin-router.factory";
 

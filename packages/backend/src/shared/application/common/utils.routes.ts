@@ -4,8 +4,8 @@
 
 import { t } from "elysia";
 
-import { logger } from "../../infrastructure/monitoring/logger.config";
 import { verifyNipAndGetName } from "../../infrastructure/external/nip.service";
+import { logger } from "../../infrastructure/monitoring/logger.config";
 import { createApp } from "../../infrastructure/web/app";
 
 export const utilsRoutes = createApp().group("/utils", (app) =>

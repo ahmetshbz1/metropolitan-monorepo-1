@@ -5,6 +5,7 @@
 import type { OrderItem as OrderItemData } from "@metropolitan/shared/types/order";
 
 import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
+
 import { StockDatabaseSyncService } from "./stock-database-sync.service";
 import { StockRedisOperationsService } from "./stock-redis-operations.service";
 import { StockValidationService } from "./stock-validation.service";

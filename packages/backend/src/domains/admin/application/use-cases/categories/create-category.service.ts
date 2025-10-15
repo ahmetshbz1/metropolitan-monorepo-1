@@ -1,10 +1,10 @@
 import { ProductTranslationService } from "../../../../../shared/infrastructure/ai/product-translation.service";
-import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import {
   categories,
   categoryTranslations,
 } from "../../../../../shared/infrastructure/database/schema";
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 
 import type { AdminCategoryPayload } from "./category.types";
 

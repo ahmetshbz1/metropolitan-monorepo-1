@@ -6,9 +6,9 @@ import {
   type AdminUpdateCategoryPayload,
 } from "../../application/use-cases/categories/category.types";
 import { AdminCreateCategoryService } from "../../application/use-cases/categories/create-category.service";
-import { AdminUpdateCategoryService } from "../../application/use-cases/categories/update-category.service";
 import { AdminDeleteCategoryService } from "../../application/use-cases/categories/delete-category.service";
 import { AdminGetCategoriesService } from "../../application/use-cases/categories/get-categories.service";
+import { AdminUpdateCategoryService } from "../../application/use-cases/categories/update-category.service";
 
 import { createAdminRouter } from "./admin-router.factory";
 

@@ -1,10 +1,11 @@
 //  "send-push-test.ts"
 //  Send real push notifications using PushNotificationService
 
+import { eq } from "drizzle-orm";
+
 import { PushNotificationService } from "./shared/application/services/push-notification.service";
 import { db } from "./shared/infrastructure/database/connection";
 import { users, deviceTokens } from "./shared/infrastructure/database/schema";
-import { eq } from "drizzle-orm";
 
 async function sendRealPushNotifications() {
   // Test user ID

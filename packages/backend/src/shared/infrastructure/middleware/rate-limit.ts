@@ -1,7 +1,9 @@
-import { redis } from "../database/redis";
-import { envConfig } from "../config/env.config";
-import { logger } from "../monitoring/logger.config";
 import { Elysia } from "elysia";
+
+import { envConfig } from "../config/env.config";
+import { redis } from "../database/redis";
+import { logger } from "../monitoring/logger.config";
+
 
 type RequestHeaders = Record<string, string | undefined>;
 

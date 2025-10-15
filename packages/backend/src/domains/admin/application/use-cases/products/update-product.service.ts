@@ -4,7 +4,6 @@
 
 import { eq } from "drizzle-orm";
 
-import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 import { ProductTranslationService } from "../../../../../shared/infrastructure/ai/product-translation.service";
 import { RedisStockService } from "../../../../../shared/infrastructure/cache/redis-stock.service";
 import { db } from "../../../../../shared/infrastructure/database/connection";
@@ -13,6 +12,7 @@ import {
   products,
 } from "../../../../../shared/infrastructure/database/schema";
 import { fakturowniaService } from "../../../../../shared/infrastructure/external/fakturownia.service";
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 import { validateTaxRate } from "../../../../../shared/types/product.types";
 
 import { ProductImageService } from "./product-image.service";

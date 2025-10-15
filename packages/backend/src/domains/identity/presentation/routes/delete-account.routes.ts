@@ -6,16 +6,17 @@ import { logger } from "@bogeychan/elysia-logger";
 import { and, eq, isNull } from "drizzle-orm";
 import { t } from "elysia";
 
+import { blacklistToken } from "../../../../shared/infrastructure/database/redis";
 import { users } from "../../../../shared/infrastructure/database/schema";
 import { createApp } from "../../../../shared/infrastructure/web/app";
 import { createDeleteAccountOtp, verifyDeleteAccountOtp } from "../../application/use-cases/otp.service";
-import { getLanguageFromHeader } from "../../infrastructure/templates/sms-templates";
-import { authTokenGuard, phoneNumberSchema, extractToken } from "./auth-guards";
-import { blacklistToken } from "../../../../shared/infrastructure/database/redis";
 import {
   invalidateAllUserSessions,
   removeAllUserRefreshTokens
 } from "../../infrastructure/security/device-fingerprint";
+import { getLanguageFromHeader } from "../../infrastructure/templates/sms-templates";
+
+import { authTokenGuard, phoneNumberSchema, extractToken } from "./auth-guards";
 
 export const deleteAccountRoutes = createApp()
   .use(logger({ level: "info" }))

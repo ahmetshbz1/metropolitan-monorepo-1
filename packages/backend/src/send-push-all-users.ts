@@ -1,10 +1,11 @@
 //  "send-push-all-users.ts"
 //  Send push to all users with the same token
 
+import { eq } from "drizzle-orm";
+
 import { PushNotificationService } from "./shared/application/services/push-notification.service";
 import { db } from "./shared/infrastructure/database/connection";
 import { deviceTokens, users } from "./shared/infrastructure/database/schema";
-import { eq } from "drizzle-orm";
 
 async function sendPushToAllTokenUsers() {
   const targetToken = "ExponentPushToken[gFM269GGghCrmZDV0RE_u2]";

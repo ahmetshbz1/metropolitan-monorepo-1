@@ -5,9 +5,9 @@
 import "dotenv/config";
 
 import Redis from "ioredis";
-import { logger } from "../monitoring/logger.config";
 
 import { logger } from "../monitoring/logger.config";
+
 
 // Yeni Redis istemcisi oluşturuluyor
 // Bağlantı detayları .env üzerinden alınır, eksikse varsayılanlar kullanılır

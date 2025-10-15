@@ -4,12 +4,12 @@
 
 import { and, eq } from "drizzle-orm";
 
-import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { db } from "../../../../shared/infrastructure/database/connection";
 import {
   cartItems,
   products,
 } from "../../../../shared/infrastructure/database/schema";
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 
 // Error types for cart validation
 const CartValidationErrors = {

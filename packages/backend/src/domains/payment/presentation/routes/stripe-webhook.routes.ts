@@ -5,8 +5,8 @@
 
 import { Elysia } from "elysia";
 
-import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import StripeService from "../../../../shared/infrastructure/external/stripe.service";
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { WebhookIdempotencyService } from "../../application/webhook/idempotency.service";
 import { WebhookHealthService } from "../../application/webhook/webhook-health.service";
 import { WebhookRouterService } from "../../application/webhook/webhook-router.service";

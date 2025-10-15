@@ -4,9 +4,10 @@
 //  Main orchestrator for all profile-related routes
 
 import { createApp } from "../../../../shared/infrastructure/web/app";
+
+import { deviceNotificationRoutes } from "./device-notification.routes";
 import { profileCompletionRoutes } from "./profile-completion.routes";
 import { profileManagementRoutes } from "./profile-management.routes";
-import { deviceNotificationRoutes } from "./device-notification.routes";
 import { profileSettingsRoutes } from "./profile-settings.routes";
 
 // Re-export RegistrationTokenPayload for backward compatibility

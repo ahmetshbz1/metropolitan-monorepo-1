@@ -1,8 +1,9 @@
 import { db } from "../database/connection";
 import { aiSettings } from "../database/schema";
+import { logger } from "../monitoring/logger.config";
+
 import { GeminiTranslationService } from "./gemini.service";
 import { OpenAITranslationService } from "./openai.service";
-import { logger } from "../monitoring/logger.config";
 
 export interface ITranslationService {
   translateText(params: {

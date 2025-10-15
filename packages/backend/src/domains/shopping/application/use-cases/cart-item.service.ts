@@ -10,13 +10,13 @@ import type {
 } from "@metropolitan/shared/types/cart";
 import { and, desc, eq } from "drizzle-orm";
 
-import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { db } from "../../../../shared/infrastructure/database/connection";
 import {
   cartItems,
   productTranslations,
   products,
 } from "../../../../shared/infrastructure/database/schema";
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 
 import { CartCalculationService } from "./cart-calculation.service";
 import { CartValidationService } from "./cart-validation.service";

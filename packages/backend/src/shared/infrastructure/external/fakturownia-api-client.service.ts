@@ -3,6 +3,7 @@
 // Handles HTTP requests and error handling
 
 import { logger } from "../monitoring/logger.config";
+
 import type { FakturowniaError } from "./fakturownia-types";
 
 export class FakturowniaApiClientService {

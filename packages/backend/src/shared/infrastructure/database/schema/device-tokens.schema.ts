@@ -9,6 +9,7 @@ import {
   uuid,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
+
 import { users } from "./user.schema";
 
 // Cihaz token'ları tablosu - Push notification için

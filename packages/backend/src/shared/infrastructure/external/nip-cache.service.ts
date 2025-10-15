@@ -2,8 +2,8 @@
 //  metropolitan backend
 //  Created by Ahmet on 16.06.2025.
 
-import { logger } from "../monitoring/logger.config";
 import redis from "../database/redis";
+import { logger } from "../monitoring/logger.config";
 
 interface CachedNipInfo {
   success: boolean;

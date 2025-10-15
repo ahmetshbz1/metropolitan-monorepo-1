@@ -4,11 +4,13 @@
 
 import { eq } from "drizzle-orm";
 import { t } from "elysia";
+
 import { db } from "../../../../shared/infrastructure/database/connection";
 import { categories } from "../../../../shared/infrastructure/database/schema";
 import { AdminCreateProductService } from "../../application/use-cases/products/create-product.service";
 import { AdminImportProductsService } from "../../application/use-cases/products/import-products.service";
 import type { AdminProductPayload } from "../../application/use-cases/products/product.types";
+
 import { createAdminRouter } from "./admin-router.factory";
 import { createProductSchema } from "./product-schemas";
 
@@ -62,7 +64,10 @@ export const productCreateRoutes = createAdminRouter()
       }
 
       try {
-        const summary = await AdminImportProductsService.execute(body.file, admin.id);
+        const summary = await AdminImportProductsService.execute(
+          body.file,
+          admin.id
+        );
         return {
           success: true,
           summary,

@@ -1,4 +1,6 @@
+import { subDays, startOfDay } from "date-fns";
 import { eq, sql, and, gte } from "drizzle-orm";
+
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import {
   products,
@@ -8,7 +10,6 @@ import {
   orders,
   orderItems,
 } from "../../../../../shared/infrastructure/database/schema";
-import { subDays, startOfDay } from "date-fns";
 
 export interface DashboardStats {
   totalProducts: number;

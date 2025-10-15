@@ -11,13 +11,13 @@ import type {
 } from "@metropolitan/shared/types/order";
 import { eq } from "drizzle-orm";
 
+import { PushNotificationService } from "../../../../shared/application/services/push-notification.service";
 import { db } from "../../../../shared/infrastructure/database/connection";
 import {
   orders,
   users,
 } from "../../../../shared/infrastructure/database/schema";
 import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
-import { PushNotificationService } from "../../../../shared/application/services/push-notification.service";
 
 // Refactored modular services
 import { CartManagementService } from "./order-creation/cart-management.service";

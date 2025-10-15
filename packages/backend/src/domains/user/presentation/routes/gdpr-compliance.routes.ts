@@ -7,16 +7,16 @@ import { and, eq } from "drizzle-orm";
 import { t } from "elysia";
 
 import { users, orders, addresses, cartItems } from "../../../../shared/infrastructure/database/schema";
-import { createApp } from "../../../../shared/infrastructure/web/app";
 import {
   createRateLimiter,
   rateLimitConfigs,
 } from "../../../../shared/infrastructure/middleware/rate-limit";
-import { authTokenGuard } from "../../../identity/presentation/routes/auth-guards";
+import { createApp } from "../../../../shared/infrastructure/web/app";
 import {
   invalidateAllUserSessions,
   getUserSessions,
 } from "../../../identity/infrastructure/security/device-fingerprint";
+import { authTokenGuard } from "../../../identity/presentation/routes/auth-guards";
 
 // Audit log interface
 interface GDPRAction {

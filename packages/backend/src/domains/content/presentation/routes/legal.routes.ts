@@ -2,9 +2,11 @@
 //  metropolitan backend
 //  Created by Ahmet on 30.09.2025.
 
-import { t } from "elysia";
 import { readFile } from "fs/promises";
 import { join } from "path";
+
+import { t } from "elysia";
+
 import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { createApp } from "../../../../shared/infrastructure/web/app";
 

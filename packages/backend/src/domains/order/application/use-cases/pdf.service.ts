@@ -5,8 +5,8 @@
 
 import type { InvoiceData } from "@metropolitan/shared/types/order";
 
-import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { fakturowniaService } from "../../../../shared/infrastructure/external/fakturownia.service";
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 
 import { FakturowniaAdapterService } from "./fakturownia-adapter.service";
 import { InvoiceCacheService } from "./invoice-cache.service";

@@ -5,12 +5,12 @@
 import { logger } from "@bogeychan/elysia-logger";
 import { t } from "elysia";
 
-import { createApp } from "../../../../shared/infrastructure/web/app";
+import { redis } from "../../../../shared/infrastructure/database/redis";
 import {
   createRateLimiter,
   rateLimitConfigs,
 } from "../../../../shared/infrastructure/middleware/rate-limit";
-import { redis } from "../../../../shared/infrastructure/database/redis";
+import { createApp } from "../../../../shared/infrastructure/web/app";
 import {
   generateDeviceFingerprint,
   extractDeviceInfo,

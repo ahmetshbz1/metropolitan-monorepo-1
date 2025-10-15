@@ -4,10 +4,10 @@
 
 import { eq } from "drizzle-orm";
 
-import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 import { RedisStockService } from "../../../../../shared/infrastructure/cache/redis-stock.service";
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import { products } from "../../../../../shared/infrastructure/database/schema";
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 
 export class AdminDeleteProductService {
   static async execute(productId: string) {

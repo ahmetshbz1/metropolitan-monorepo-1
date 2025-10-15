@@ -1,9 +1,10 @@
 //  "test-notifications.ts"
 //  Test script to add notifications to database
 
+import { sql } from "drizzle-orm";
+
 import { db } from "./shared/infrastructure/database/connection";
 import { notifications, users } from "./shared/infrastructure/database/schema";
-import { sql } from "drizzle-orm";
 
 async function addTestNotifications() {
   // Önce mevcut bir user bul

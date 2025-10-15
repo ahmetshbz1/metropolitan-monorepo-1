@@ -1,9 +1,10 @@
 //  "check-token-users.ts"
 //  Check which users have this device token
 
+import { eq } from "drizzle-orm";
+
 import { db } from "./shared/infrastructure/database/connection";
 import { deviceTokens, users } from "./shared/infrastructure/database/schema";
-import { eq } from "drizzle-orm";
 
 async function checkTokenUsers() {
   const targetToken = "ExponentPushToken[gFM269GGghCrmZDV0RE_u2]";

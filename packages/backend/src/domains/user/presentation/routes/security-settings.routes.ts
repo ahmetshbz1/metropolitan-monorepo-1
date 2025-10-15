@@ -6,9 +6,9 @@ import { logger } from "@bogeychan/elysia-logger";
 import { eq } from "drizzle-orm";
 import { t } from "elysia";
 
+import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
 import { users } from "../../../../shared/infrastructure/database/schema";
 import { createApp } from "../../../../shared/infrastructure/web/app";
-import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
 
 interface SecuritySettings {
   twoFactorEnabled: boolean;

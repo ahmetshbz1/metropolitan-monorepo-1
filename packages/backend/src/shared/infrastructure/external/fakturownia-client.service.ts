@@ -3,6 +3,7 @@
 // Create and retrieve client information
 
 import { logger } from "../monitoring/logger.config";
+
 import { FakturowniaApiClientService } from "./fakturownia-api-client.service";
 import type { FakturowniaClient } from "./fakturownia-types";
 

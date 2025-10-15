@@ -2,10 +2,11 @@
 // metropolitan backend
 // Authentication guards and utilities
 
-import { Elysia } from "elysia";
 import { jwt } from "@elysiajs/jwt";
-import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
+import { Elysia } from "elysia";
+
 import { isTokenBlacklisted } from "../../../../shared/infrastructure/database/redis";
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 
 /**
  * Auth token verification guard

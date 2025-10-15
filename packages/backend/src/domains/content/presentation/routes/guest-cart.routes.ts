@@ -5,12 +5,12 @@
 import { and, eq } from "drizzle-orm";
 import { t } from "elysia";
 
-import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import {
   guestCartItems,
   productTranslations,
   products,
 } from "../../../../shared/infrastructure/database/schema";
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { createApp } from "../../../../shared/infrastructure/web/app";
 
 export const guestCartRoutes = createApp()

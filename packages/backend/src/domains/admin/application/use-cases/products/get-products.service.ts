@@ -9,9 +9,10 @@ import {
   productTranslations,
   products,
 } from "../../../../../shared/infrastructure/database/schema";
+import type { ProductBadges, NutritionalValues } from "../../../../../shared/types/product";
+
 import type { SupportedLanguage } from "./product.types";
 import { SUPPORTED_LANGUAGES } from "./product.types";
-import type { ProductBadges, NutritionalValues } from "../../../../../shared/types/product";
 
 interface GetProductsParams {
   limit?: number;

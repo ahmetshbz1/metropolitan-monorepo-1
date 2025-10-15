@@ -2,14 +2,14 @@
 //  metropolitan backend
 //  Created by Ahmet on 26.09.2025.
 
-import { t } from "elysia";
-import { and, eq, desc, sql, isNull } from "drizzle-orm";
 import { logger } from "@bogeychan/elysia-logger";
+import { and, eq, desc, sql, isNull } from "drizzle-orm";
+import { t } from "elysia";
 
 import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
-import { createApp } from "../../../../shared/infrastructure/web/app";
 import { db } from "../../../../shared/infrastructure/database/connection";
 import { notifications } from "../../../../shared/infrastructure/database/schema";
+import { createApp } from "../../../../shared/infrastructure/web/app";
 
 export const notificationsRoutes = createApp()
   .use(logger({ level: "info" }))

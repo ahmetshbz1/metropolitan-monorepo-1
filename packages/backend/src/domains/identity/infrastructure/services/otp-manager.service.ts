@@ -2,9 +2,9 @@
 //  metropolitan backend
 //  OTP management service with Redis storage
 
-import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { getRateLimitMessage } from "../../../../shared/application/services/auth-translations";
 import { redis } from "../../../../shared/infrastructure/database/redis";
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import type { SmsAction } from "../templates/sms-templates";
 
 import {

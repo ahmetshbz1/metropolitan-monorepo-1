@@ -4,15 +4,17 @@
 
 import { eq } from "drizzle-orm";
 import { t } from "elysia";
+
 import { db } from "../../../../shared/infrastructure/database/connection";
 import { categories } from "../../../../shared/infrastructure/database/schema";
 import {
   type AdminProductPayload,
   type AdminUpdateProductPayload,
 } from "../../application/use-cases/products/product.types";
-import { AdminUpdateProductService } from "../../application/use-cases/products/update-product.service";
-import { AdminUpdateProductStockService } from "../../application/use-cases/products/update-product-stock.service";
 import { AdminUpdateProductQuickSettingsService } from "../../application/use-cases/products/update-product-quick-settings.service";
+import { AdminUpdateProductStockService } from "../../application/use-cases/products/update-product-stock.service";
+import { AdminUpdateProductService } from "../../application/use-cases/products/update-product.service";
+
 import { createAdminRouter } from "./admin-router.factory";
 import { createProductSchema } from "./product-schemas";
 

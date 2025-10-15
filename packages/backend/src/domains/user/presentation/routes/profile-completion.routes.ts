@@ -3,6 +3,7 @@
 //  Created by Ahmet on 14.06.2025.
 
 import { t } from "elysia";
+
 import { createApp } from "../../../../shared/infrastructure/web/app";
 import { ProfileCompletionService } from "../../application/use-cases/profile-completion.service";
 

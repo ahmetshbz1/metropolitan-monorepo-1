@@ -5,8 +5,8 @@
 import type { CartItem as CartItemData } from "@metropolitan/shared/types/cart";
 import type { OrderCreationRequest } from "@metropolitan/shared/types/order";
 
-import { logger } from "../../../../../../shared/infrastructure/monitoring/logger.config";
 import StripeService from "../../../../../../shared/infrastructure/external/stripe.service";
+import { logger } from "../../../../../../shared/infrastructure/monitoring/logger.config";
 
 import { PaymentCalculatorService } from "./payment-calculator.service";
 

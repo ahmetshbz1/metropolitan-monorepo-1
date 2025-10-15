@@ -11,6 +11,7 @@ import {
   uuid,
   index,
 } from "drizzle-orm/pg-core";
+
 import { users } from "./user.schema";
 
 // Bildirimler tablosu - Push notification geçmişi

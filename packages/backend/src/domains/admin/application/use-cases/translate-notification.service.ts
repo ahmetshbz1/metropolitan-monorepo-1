@@ -1,5 +1,5 @@
-import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { TranslationProviderFactory } from "../../../../shared/infrastructure/ai/translation-provider.factory";
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 
 interface TranslationResult {
   en: string;

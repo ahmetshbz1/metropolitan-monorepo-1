@@ -1,8 +1,8 @@
 import { eq } from "drizzle-orm";
 
+import { TranslationProviderFactory } from "../../../../../shared/infrastructure/ai/translation-provider.factory";
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import { aiSettings } from "../../../../../shared/infrastructure/database/schema";
-import { TranslationProviderFactory } from "../../../../../shared/infrastructure/ai/translation-provider.factory";
 
 export interface UpdateAISettingsInput {
   provider: string;

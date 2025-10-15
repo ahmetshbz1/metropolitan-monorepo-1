@@ -1,8 +1,10 @@
 import "dotenv/config";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
 import { randomBytes, scrypt } from "crypto";
 import { promisify } from "util";
+
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
+
 import * as schema from "./schema";
 
 console.log("👤 Creating admin users...");

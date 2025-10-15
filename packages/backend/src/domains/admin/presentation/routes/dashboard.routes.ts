@@ -1,5 +1,5 @@
-import { getDashboardStatsService } from "../../application/use-cases/dashboard/get-dashboard-stats.service";
 import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
+import { getDashboardStatsService } from "../../application/use-cases/dashboard/get-dashboard-stats.service";
 
 import { createAdminRouter } from "./admin-router.factory";
 

@@ -3,16 +3,12 @@
 //  Created by Ahmet on 14.06.2025.
 //  Refactored to use modular services
 
+import { logger } from "@bogeychan/elysia-logger";
 import type {
   CompleteProfilePayload as CompleteProfileRequest,
   NipVerificationResult,
 } from "@metropolitan/shared/types/user";
-import { logger } from "@bogeychan/elysia-logger";
 
-import { AddressManagementService } from "./address-management.service";
-import { CompanyManagementService } from "./company-management.service";
-import { NipVerificationService } from "./nip-verification.service";
-import { UserProfileOperationsService } from "./user-profile-operations.service";
 import {
   generateDeviceFingerprint,
   generateSessionId,
@@ -22,6 +18,11 @@ import {
   storeRefreshToken,
   type DeviceInfo,
 } from "../../../identity/infrastructure/security/device-fingerprint";
+
+import { AddressManagementService } from "./address-management.service";
+import { CompanyManagementService } from "./company-management.service";
+import { NipVerificationService } from "./nip-verification.service";
+import { UserProfileOperationsService } from "./user-profile-operations.service";
 
 interface JwtSigner {
   sign: (payload: Record<string, unknown>) => Promise<string>;
@@ -144,7 +145,7 @@ export class ProfileCompletionService {
     // 5. Generate enhanced tokens with device fingerprinting
     let deviceInfo: DeviceInfo = {};
     let deviceId = "unknown";
-    let sessionId = generateSessionId();
+    const sessionId = generateSessionId();
     let ipAddress = "unknown";
 
     if (headers) {

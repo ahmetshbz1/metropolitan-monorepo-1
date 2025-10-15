@@ -2,14 +2,16 @@
 //  metropolitan backend
 //  Created by Ahmet on 14.06.2025.
 
-import { t } from "elysia";
 import { and, eq } from "drizzle-orm";
+import { t } from "elysia";
+
 import { isAuthenticated } from "../../../../shared/application/guards/auth.guard";
+import { getNotificationTranslation } from "../../../../shared/application/services/notification-translations";
 import { db } from "../../../../shared/infrastructure/database/connection";
 import { deviceTokens } from "../../../../shared/infrastructure/database/schema";
 import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import { createApp } from "../../../../shared/infrastructure/web/app";
-import { getNotificationTranslation } from "../../../../shared/application/services/notification-translations";
+
 import { createNotification } from "./notifications.routes";
 
 // Protected routes - Login token required

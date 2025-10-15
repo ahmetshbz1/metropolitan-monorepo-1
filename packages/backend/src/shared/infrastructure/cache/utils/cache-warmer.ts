@@ -3,7 +3,6 @@
 //  Distributed cache warming utility
 
 import { logger } from "../../monitoring/logger.config";
-
 import { ApiCacheService } from "../api-cache.service";
 
 import { expandKeyPattern } from "./key-pattern-expander";

@@ -4,6 +4,8 @@
 
 import { and, desc, eq } from "drizzle-orm";
 
+import { getOrderStatusNotificationWithNumber } from "../../../../shared/application/services/notification-translations";
+import { PushNotificationService } from "../../../../shared/application/services/push-notification.service";
 import { db } from "../../../../shared/infrastructure/database/connection";
 import {
   addresses,
@@ -14,8 +16,6 @@ import {
   trackingEvents,
   users,
 } from "../../../../shared/infrastructure/database/schema";
-import { PushNotificationService } from "../../../../shared/application/services/push-notification.service";
-import { getOrderStatusNotificationWithNumber } from "../../../../shared/application/services/notification-translations";
 import type { OrderQueryResult, OrderWithItems } from "../types/order-tracking.types";
 
 export class OrderTrackingService {

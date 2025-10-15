@@ -1,9 +1,10 @@
-import { TranslationProviderFactory } from "./translation-provider.factory";
 import type {
   AdminProductTranslationInput,
   SupportedLanguage,
 } from "../../../domains/admin/application/use-cases/products/product.types";
 import { logger } from "../monitoring/logger.config";
+
+import { TranslationProviderFactory } from "./translation-provider.factory";
 
 interface ProductTranslationData {
   name: string;

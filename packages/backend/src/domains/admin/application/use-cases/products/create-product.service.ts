@@ -2,14 +2,14 @@
 //  metropolitan backend
 //  Admin ürün oluşturma servisi
 
-import { RedisStockService } from "../../../../../shared/infrastructure/cache/redis-stock.service";
 import { ProductTranslationService } from "../../../../../shared/infrastructure/ai/product-translation.service";
-import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
+import { RedisStockService } from "../../../../../shared/infrastructure/cache/redis-stock.service";
 import { db } from "../../../../../shared/infrastructure/database/connection";
 import {
   productTranslations,
   products,
 } from "../../../../../shared/infrastructure/database/schema";
+import { logger } from "../../../../../shared/infrastructure/monitoring/logger.config";
 
 import type { AdminProductPayload } from "./product.types";
 import {

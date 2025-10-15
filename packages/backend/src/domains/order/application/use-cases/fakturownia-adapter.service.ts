@@ -4,11 +4,11 @@
 
 import type { InvoiceData } from "@metropolitan/shared/types/order";
 
-import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 import type {
   FakturowniaInvoice,
   FakturowniaInvoiceItem,
 } from "../../../../shared/infrastructure/external/fakturownia.service";
+import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
 
 export class FakturowniaAdapterService {
   /**

@@ -5,6 +5,7 @@
 import type Stripe from "stripe";
 
 import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
+
 import { PaymentIntentHandlersService } from "./payment-intent-handlers.service";
 import type { SupportedWebhookEvent } from "./webhook-types";
 

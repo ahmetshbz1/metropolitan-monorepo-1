@@ -5,8 +5,8 @@
 import { randomBytes } from "crypto";
 import fs from "fs/promises";
 import path from "path";
-import { logger } from "@bogeychan/elysia-logger";
 
+import { logger } from "@bogeychan/elysia-logger";
 import { eq } from "drizzle-orm";
 
 import { db } from "../../../../shared/infrastructure/database/connection";

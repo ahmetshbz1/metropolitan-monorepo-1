@@ -3,6 +3,7 @@
 //  Stock verification operations separated from rollback service
 
 import { logger } from "../../../../shared/infrastructure/monitoring/logger.config";
+
 import { WebhookOrderManagementService } from "./order-management.service";
 import { RedisRollbackStrategy } from "./rollback-strategies/redis-rollback.strategy";
 import type { StockVerificationResult } from "./rollback-types";

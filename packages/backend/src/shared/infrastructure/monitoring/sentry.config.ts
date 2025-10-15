@@ -3,6 +3,7 @@
 //  Created by Ahmet on 05.06.2025.
 
 import * as Sentry from "@sentry/node";
+
 import { logger } from "./logger.config";
 
 export function initializeSentry() {
