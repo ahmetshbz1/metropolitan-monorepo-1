@@ -41,9 +41,9 @@ export function ProductSelector({
     const query = searchQuery.toLowerCase();
     return data.data.filter(
       (product) =>
-        product.name.toLowerCase().includes(query) ||
-        product.brand.toLowerCase().includes(query) ||
-        product.category.toLowerCase().includes(query)
+        product.name?.toLowerCase().includes(query) ||
+        product.brand?.toLowerCase().includes(query) ||
+        product.category?.toLowerCase().includes(query)
     );
   }, [data?.data, searchQuery]);
 
