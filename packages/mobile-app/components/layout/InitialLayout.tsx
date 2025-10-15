@@ -164,29 +164,19 @@ export const InitialLayout: React.FC = () => {
     const initializePushNotifications = async () => {
       // App kapalıyken gelen notification'ı kontrol et (cold start)
       const lastNotificationResponse = await Notifications.getLastNotificationResponseAsync();
+
+      let coldStartNotificationId: string | null = null;
+
+      // Cold start notification varsa, ID'sini kaydet (listener kurmadan önce)
       if (lastNotificationResponse) {
-        const notificationId = lastNotificationResponse.notification.request.identifier;
-        const data = lastNotificationResponse.notification.request.content.data as {
-          screen?: string;
-          orderId?: string;
-          productId?: string;
-        };
+        coldStartNotificationId = lastNotificationResponse.notification.request.identifier;
+        console.log('🔔 [InitialLayout] Cold start notification detected:', coldStartNotificationId);
 
-        console.log('🔔 [InitialLayout] Cold start notification:', notificationId, data);
-
-        // Badge sayısını güncelle
-        refreshUnreadCount();
-
-        // Yönlendirme yap
-        if (data?.screen) {
-          // Router hazır olana kadar bekle
-          setTimeout(() => {
-            handleNotificationNavigation(notificationId, data);
-          }, 500);
-        }
+        // Bu notification'ı işlenmiş olarak işaretle (listener duplicate olarak yakalamaması için)
+        processedNotificationIds.current.add(coldStartNotificationId);
       }
 
-      // Notification listener'ları kur (app açıkken gelen notification'lar için)
+      // Listener'ları kur
       NotificationService.setupNotificationListeners(
         (notification) => {
           // Bildirim alındığında - badge sayısını güncelle
@@ -211,6 +201,29 @@ export const InitialLayout: React.FC = () => {
           handleNotificationNavigation(notificationId, data);
         }
       );
+
+      // Cold start notification'ı handle et
+      if (lastNotificationResponse && coldStartNotificationId) {
+        const data = lastNotificationResponse.notification.request.content.data as {
+          screen?: string;
+          orderId?: string;
+          productId?: string;
+        };
+
+        console.log('🔔 [InitialLayout] Handling cold start notification:', coldStartNotificationId, data);
+
+        // Badge sayısını güncelle
+        refreshUnreadCount();
+
+        // Yönlendirme yap
+        if (data?.screen) {
+          // Router hazır olana kadar bekle
+          setTimeout(() => {
+            // ID zaten Set'e eklendi, handleNotificationNavigation duplicate check yapmayacak
+            handleNotificationNavigation(coldStartNotificationId, data);
+          }, 500);
+        }
+      }
     };
 
     // Uygulama başladığında notification'ları başlat
