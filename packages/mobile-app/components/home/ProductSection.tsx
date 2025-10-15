@@ -18,7 +18,7 @@ function ProductSectionComponent({ title, products }: ProductSectionProps) {
   const { width } = useWindowDimensions();
   const isTablet = width >= 768;
   const horizontalPadding = isTablet ? 12 : 10;
-  const cardWidth = isTablet ? 180 : 110;
+  const cardWidth = isTablet ? 180 : 120;
 
   return (
     <View className="mt-6">
