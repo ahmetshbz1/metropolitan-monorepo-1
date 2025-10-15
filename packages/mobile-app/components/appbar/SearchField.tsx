@@ -11,6 +11,7 @@ import {
   SEARCH_INPUT_CONFIG,
   useSearchInputStyles,
 } from "@/utils/searchInputStyles";
+import { zincColors } from "@/constants/colors/zincColors";
 
 interface SearchFieldProps {
   inputRef: React.RefObject<TextInput | null>;
@@ -32,21 +33,20 @@ export const SearchField: React.FC<SearchFieldProps> = ({
   animatedStyle,
 }) => {
   const { t } = useTranslation();
-  const { colors, textInputStyle, shadowStyle } = useSearchInputStyles();
+  const { colors, textInputStyle, isDark } = useSearchInputStyles();
 
   return (
     <View className="flex-row items-center">
       <Animated.View
         style={[
           {
-            backgroundColor: colors.card,
+            backgroundColor: isDark ? zincColors[900] : zincColors[100],
             borderRadius: SEARCH_INPUT_CONFIG.border.radius,
             paddingHorizontal: SEARCH_INPUT_CONFIG.spacing.containerPadding,
-            paddingVertical: SEARCH_INPUT_CONFIG.spacing.verticalPadding,
+            height: SEARCH_INPUT_CONFIG.sizes.height,
             marginRight: SEARCH_INPUT_CONFIG.spacing.containerMargin,
             flexDirection: "row",
             alignItems: "center",
-            ...shadowStyle,
           },
           animatedStyle,
         ]}
@@ -54,7 +54,7 @@ export const SearchField: React.FC<SearchFieldProps> = ({
         <Ionicons
           name="search"
           size={SEARCH_INPUT_CONFIG.sizes.searchIconSmall}
-          color={colors.mediumGray}
+          color={isDark ? zincColors[500] : zincColors[400]}
           style={{ marginRight: SEARCH_INPUT_CONFIG.spacing.iconMargin }}
         />
         <TextInput
@@ -62,12 +62,13 @@ export const SearchField: React.FC<SearchFieldProps> = ({
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder || t("tabs.search_placeholder")}
-          placeholderTextColor={colors.mediumGray}
+          placeholderTextColor={isDark ? zincColors[500] : zincColors[400]}
           style={[
             textInputStyle,
             {
               flex: 1,
               fontSize: SEARCH_INPUT_CONFIG.text.fontSize,
+              color: isDark ? zincColors[50] : zincColors[900],
               textAlignVertical: "center",
               paddingVertical: 0,
               includeFontPadding: false,
@@ -91,7 +92,7 @@ export const SearchField: React.FC<SearchFieldProps> = ({
             <Ionicons
               name="close-circle"
               size={SEARCH_INPUT_CONFIG.sizes.clearIcon}
-              color={colors.mediumGray}
+              color={isDark ? zincColors[500] : zincColors[400]}
             />
           </TouchableOpacity>
         )}

@@ -13,16 +13,10 @@ export const useSearchInputStyles = () => {
 
   return {
     colors,
+    isDark,
     textInputStyle: {
       color: colors.text,
       ...(Platform.OS === "ios" && { paddingVertical: 4 }),
-    },
-    shadowStyle: {
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: isDark ? 0.3 : 0.08,
-      shadowRadius: 8,
-      elevation: 3,
     },
   };
 };
@@ -33,12 +27,12 @@ export const SEARCH_INPUT_CONFIG = {
     searchIconSmall: 18,
     closeIcon: 22,
     clearIcon: 18,
+    height: 48,
   },
   spacing: {
     buttonPadding: 8,
     containerPadding: 14,
-    verticalPadding: 10,
-    iconMargin: 10,
+    iconMargin: 8,
     clearMargin: 6,
     clearPadding: 2,
     containerMargin: 10,
@@ -48,10 +42,10 @@ export const SEARCH_INPUT_CONFIG = {
     screenOffset: 100, // Cancel button ve margin için
   },
   text: {
-    fontSize: 15,
+    fontSize: 16,
     lineHeight: 20,
   },
   border: {
-    radius: 16,
+    radius: 12,
   },
 } as const;
