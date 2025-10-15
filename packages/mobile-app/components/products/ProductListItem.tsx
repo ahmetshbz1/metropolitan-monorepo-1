@@ -215,20 +215,20 @@ export const ProductListItem = React.memo<ProductListItemProps>(function Product
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  paddingHorizontal: 8,
-                  paddingVertical: 4,
-                  borderRadius: 8,
+                  paddingHorizontal: 6,
+                  paddingVertical: 2,
+                  borderRadius: 6,
                   backgroundColor: isDark
-                    ? "rgba(251, 191, 36, 0.2)"
+                    ? "rgba(251, 191, 36, 0.15)"
                     : "rgba(251, 191, 36, 0.1)",
-                  gap: 4,
+                  gap: 3,
                 }}
               >
                 <View
                   style={{
-                    width: 4,
-                    height: 4,
-                    borderRadius: 2,
+                    width: 3,
+                    height: 3,
+                    borderRadius: 1.5,
                     backgroundColor: "#fbbf24",
                   }}
                 />
@@ -236,7 +236,7 @@ export const ProductListItem = React.memo<ProductListItemProps>(function Product
                   style={{
                     fontSize: 10,
                     fontWeight: "600",
-                    color: "#fbbf24",
+                    color: "#d97706",
                   }}
                 >
                   {product.stock}

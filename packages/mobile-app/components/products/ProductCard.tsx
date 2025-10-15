@@ -3,18 +3,18 @@
 //  Modern, minimalist ve performanslı ürün kartı
 
 import { ThemedText } from "@/components/ThemedText";
-import { Product } from "@metropolitan/shared";
+import { formatPrice } from "@/core/utils";
+import { useNavigationProtection } from "@/hooks/useNavigationProtection";
 import { useProductCard } from "@/hooks/useProductCard";
 import { Ionicons } from "@expo/vector-icons";
+import { Product } from "@metropolitan/shared";
+import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { useNavigationProtection } from "@/hooks/useNavigationProtection";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { TouchableOpacity, View, Animated } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { HapticIconButton } from "../HapticButton";
 import { MinimumQuantityDialog } from "./MinimumQuantityDialog";
-import { Image } from "expo-image";
-import { formatPrice } from "@/core/utils";
 
 interface ProductCardProps {
   product: Product;
@@ -30,7 +30,8 @@ const getValidImageUrl = (imageUrl: string): string => {
   }
 
   const path = imageUrl.startsWith("/") ? imageUrl : `/${imageUrl}`;
-  const baseUrl = process.env.EXPO_PUBLIC_API_BASE_URL || "https://api.metropolitanfg.pl";
+  const baseUrl =
+    process.env.EXPO_PUBLIC_API_BASE_URL || "https://api.metropolitanfg.pl";
   return `${baseUrl}${path}`;
 };
 
@@ -62,7 +63,10 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
 
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const imageUrl = useMemo(() => getValidImageUrl(product.image), [product.image]);
+  const imageUrl = useMemo(
+    () => getValidImageUrl(product.image),
+    [product.image]
+  );
 
   const handleCardPress = () => {
     if (replaceNavigation) {
@@ -85,7 +89,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
   const isDark = colorScheme === "dark";
 
   return (
-    <View style={{ width: '100%' }}>
+    <View style={{ width: "100%" }}>
       <TouchableOpacity
         onPress={handleCardPress}
         activeOpacity={0.9}
@@ -163,7 +167,9 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
               <Ionicons
                 name={isProductFavorite ? "heart" : "heart-outline"}
                 size={18}
-                color={isProductFavorite ? "#ef4444" : isDark ? "#ffffff" : "#404040"}
+                color={
+                  isProductFavorite ? "#ef4444" : isDark ? "#ffffff" : "#404040"
+                }
               />
             </HapticIconButton>
           </View>
@@ -219,40 +225,33 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
             </View>
           )}
 
-          {/* Stok Durumu Badge - Sol alt */}
+          {/* Stok Badge - Sağ alt */}
           {isLowStock && !isOutOfStock && (
             <View
               style={{
                 position: "absolute",
-                bottom: 8,
-                left: 8,
-                paddingHorizontal: 8,
-                paddingVertical: 4,
-                borderRadius: 8,
-                backgroundColor: isDark
-                  ? "rgba(251, 191, 36, 0.2)"
-                  : "rgba(251, 191, 36, 0.1)",
+                bottom: 2,
+                right: 6,
                 flexDirection: "row",
                 alignItems: "center",
-                gap: 4,
+                paddingHorizontal: 5,
+                paddingVertical: 2,
+                borderRadius: 5,
+                backgroundColor: isDark
+                  ? "rgba(251, 191, 36, 0.9)"
+                  : "rgba(251, 191, 36, 0.95)",
+                gap: 2,
               }}
             >
-              <View
-                style={{
-                  width: 4,
-                  height: 4,
-                  borderRadius: 2,
-                  backgroundColor: "#fbbf24",
-                }}
-              />
+              <Ionicons name="alert-circle" size={8} color="#78350f" />
               <ThemedText
                 style={{
-                  fontSize: 10,
-                  fontWeight: "600",
-                  color: "#fbbf24",
+                  fontSize: 9,
+                  fontWeight: "700",
+                  color: "#78350f",
                 }}
               >
-                {product.stock} {t("product.left")}
+                {product.stock}
               </ThemedText>
             </View>
           )}
@@ -309,7 +308,7 @@ export const ProductCard = React.memo<ProductCardProps>(function ProductCard({
             {product.name}
           </ThemedText>
 
-          {/* Fiyat ve Boyut */}
+          {/* Fiyat ve Detaylar */}
           <View
             style={{
               flexDirection: "row",
