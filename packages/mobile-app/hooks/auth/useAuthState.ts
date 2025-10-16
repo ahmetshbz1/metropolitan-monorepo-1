@@ -65,13 +65,15 @@ export const useAuthState = () => {
           // Kullanıcı authenticated değil VE guest ID yok
           // Otomatik olarak yeni guest session oluştur
           const newGuestId = generateGuestId();
-          const result = await createGuestSession(newGuestId);
 
-          if (result.success) {
-            setIsGuest(true);
-            setGuestId(newGuestId);
-            await guestStorage.saveGuestId(newGuestId);
-          }
+          // Backend'e request at ama başarısız olsa bile local'e kaydet
+          // Network sorunları guest experience'ı bozmamalı
+          await createGuestSession(newGuestId);
+
+          // Backend başarısız olsa bile guest session başlat
+          setIsGuest(true);
+          setGuestId(newGuestId);
+          await guestStorage.saveGuestId(newGuestId);
         }
 
         if (authState.socialAuthData) {
@@ -81,13 +83,14 @@ export const useAuthState = () => {
         // Hata durumunda da guest session oluştur
         try {
           const newGuestId = generateGuestId();
-          const result = await createGuestSession(newGuestId);
 
-          if (result.success) {
-            setIsGuest(true);
-            setGuestId(newGuestId);
-            await guestStorage.saveGuestId(newGuestId);
-          }
+          // Backend'e request at ama başarısız olsa bile local'e kaydet
+          await createGuestSession(newGuestId);
+
+          // Backend başarısız olsa bile guest session başlat
+          setIsGuest(true);
+          setGuestId(newGuestId);
+          await guestStorage.saveGuestId(newGuestId);
         } catch (guestError) {
           // Guest session oluşturulamadıysa bile app açılsın
         }
