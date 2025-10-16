@@ -833,7 +833,11 @@
     "active": "Aktywny",
     "inactive": "Nieaktywny",
     "enabled": "Włączone",
-    "disabled": "Wyłączone"
+    "disabled": "Wyłączone",
+    "today": "Dzisiaj",
+    "yesterday": "Wczoraj",
+    "locale": "pl-PL",
+    "pull_to_refresh": "Pociągnij, aby odświeżyć"
   },
   "general": {
     "under_construction": "W budowie",
