@@ -4,6 +4,7 @@
 
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Text, View } from "react-native";
 
@@ -39,6 +40,7 @@ export function ActionsSection({
   const { cancelOrder, loading } = useOrders();
   const { dialogState, showDialog, hideDialog, handleConfirm } = useConfirmationDialog();
   const { showToast } = useToast();
+  const [repeatOrderLoading, setRepeatOrderLoading] = useState(false);
 
   const handleDownloadInvoice = () => {
     if (onDownloadInvoice) {
@@ -49,7 +51,10 @@ export function ActionsSection({
   };
 
   const handleRepeatOrder = async () => {
+    if (repeatOrderLoading) return;
+
     try {
+      setRepeatOrderLoading(true);
       triggerHaptic();
 
       for (const item of orderData.items) {
@@ -60,6 +65,8 @@ export function ActionsSection({
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || t("general.error_occurred");
       showToast(errorMessage, "error");
+    } finally {
+      setRepeatOrderLoading(false);
     }
   };
 
@@ -108,6 +115,8 @@ export function ActionsSection({
             size="small"
             title={t("order_detail.actions.repeat_order")}
             onPress={handleRepeatOrder}
+            loading={repeatOrderLoading}
+            disabled={repeatOrderLoading}
             fullWidth
             icon={<Ionicons name="repeat" size={18} color={colors.tint} />}
           />
