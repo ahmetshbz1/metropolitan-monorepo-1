@@ -4,7 +4,8 @@
 
 import { useEffect, useState } from "react";
 import { User, SocialAuthData } from "@/context/auth/types";
-import { loadAuthState } from "@/context/auth/storage";
+import { loadAuthState, guestStorage } from "@/context/auth/storage";
+import { generateGuestId, createGuestSession } from "@/context/auth/guestUtils";
 
 export interface AuthState {
   user: User | null;
@@ -60,13 +61,36 @@ export const useAuthState = () => {
         } else if (authState.token) {
           // If there's a token, user is not a guest
           setIsGuest(false);
+        } else if (!authState.token && !authState.guestId) {
+          // Kullanıcı authenticated değil VE guest ID yok
+          // Otomatik olarak yeni guest session oluştur
+          const newGuestId = generateGuestId();
+          const result = await createGuestSession(newGuestId);
+
+          if (result.success) {
+            setIsGuest(true);
+            setGuestId(newGuestId);
+            await guestStorage.saveGuestId(newGuestId);
+          }
         }
 
         if (authState.socialAuthData) {
           setSocialAuthData(authState.socialAuthData);
         }
       } catch (error) {
-        // Removed console statement
+        // Hata durumunda da guest session oluştur
+        try {
+          const newGuestId = generateGuestId();
+          const result = await createGuestSession(newGuestId);
+
+          if (result.success) {
+            setIsGuest(true);
+            setGuestId(newGuestId);
+            await guestStorage.saveGuestId(newGuestId);
+          }
+        } catch (guestError) {
+          // Guest session oluşturulamadıysa bile app açılsın
+        }
       } finally {
         // Minimum 2 saniye splash screen göster
         const elapsedTime = Date.now() - startTime;

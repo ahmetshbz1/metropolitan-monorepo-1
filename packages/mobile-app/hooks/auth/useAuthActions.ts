@@ -117,9 +117,9 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
         setRegistrationToken(result.registrationToken);
       }
 
-      // Misafir verisi varsa VE yeni kullanıcı ise sunucuya taşı
-      // Mevcut kullanıcılar için guest cart'ı migrate etmiyoruz (kendi sepetlerini koruyorlar)
-      if (guestId && result.isNewUser) {
+      // Misafir verisi varsa HER ZAMAN sunucuya taşı (yeni VE mevcut kullanıcılar için)
+      // Backend onConflictDoUpdate kullanıyor, yani mevcut cart items güncelleniyor
+      if (guestId) {
         try {
           await migrateGuestToUser(phone, guestId);
           // Misafir verisi başarıyla taşındı, artık authenticated user'ız
@@ -128,16 +128,15 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
           // Storage'dan da temizle
           await guestStorage.clearGuest();
         } catch (error) {
-          // Removed console statement
-        }
-      } else {
-        // Guest verisi yoksa bile (veya mevcut kullanıcı ise), authenticated olduk
-        setIsGuest(false);
-        setGuestId(null);
-        // Mevcut kullanıcı için guest session'ı temizle
-        if (guestId && !result.isNewUser) {
+          // Migration hatası olsa bile authenticated user olarak devam et
+          setIsGuest(false);
+          setGuestId(null);
           await guestStorage.clearGuest();
         }
+      } else {
+        // Guest verisi yoksa bile, authenticated olduk
+        setIsGuest(false);
+        setGuestId(null);
       }
 
       // Sadece mevcut kullanıcı (token dönen) için profil çek
@@ -215,7 +214,7 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
 
       setRegistrationToken(null);
 
-      // Misafir verisi varsa taşı
+      // Misafir verisi varsa HER ZAMAN taşı
       if (guestId && phoneNumber) {
         try {
           await migrateGuestToUser(phoneNumber, guestId);
@@ -225,7 +224,10 @@ export const useAuthActions = (deps: AuthActionsDeps): AuthActions => {
           // Storage'dan da temizle
           await guestStorage.clearGuest();
         } catch (error) {
-          // Removed console statement
+          // Migration hatası olsa bile authenticated user olarak devam et
+          setIsGuest(false);
+          setGuestId(null);
+          await guestStorage.clearGuest();
         }
       } else {
         // Guest verisi yoksa bile, authenticated olduk
