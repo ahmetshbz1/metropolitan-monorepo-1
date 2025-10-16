@@ -6,7 +6,7 @@ import { GetUserCartService } from "../../application/use-cases/carts/get-user-c
 import { createAdminRouter } from "./admin-router.factory";
 
 export const adminCartsRoutes = createAdminRouter("/admin/carts")
-  .get("/", async ({ query, set }) => {
+  .get("/", async ({ query, set, request }) => {
     try {
       const filters = {
         search: query?.search as string | undefined,
@@ -20,7 +20,22 @@ export const adminCartsRoutes = createAdminRouter("/admin/carts")
       };
 
       const result = await GetAllCartsService.execute(filters);
-      return result;
+
+      const xfProto = request.headers.get('x-forwarded-proto');
+      const host = request.headers.get('host');
+      const baseUrl = xfProto && host
+        ? `${xfProto}://${host}`
+        : new URL(request.url).origin;
+
+      const cartsWithFullUrls = result.carts.map(cart => ({
+        ...cart,
+        productImage: cart.productImage ? `${baseUrl}${cart.productImage}` : null,
+      }));
+
+      return {
+        carts: cartsWithFullUrls,
+        total: result.total,
+      };
     } catch (error) {
       console.error("Admin carts error:", error);
       set.status = 400;
@@ -33,10 +48,25 @@ export const adminCartsRoutes = createAdminRouter("/admin/carts")
   })
   .get(
     "/user/:userId",
-    async ({ params, set }) => {
+    async ({ params, set, request }) => {
       try {
         const result = await GetUserCartService.execute(params.userId);
-        return result;
+
+        const xfProto = request.headers.get('x-forwarded-proto');
+        const host = request.headers.get('host');
+        const baseUrl = xfProto && host
+          ? `${xfProto}://${host}`
+          : new URL(request.url).origin;
+
+        const itemsWithFullUrls = result.items.map(item => ({
+          ...item,
+          productImage: item.productImage ? `${baseUrl}${item.productImage}` : null,
+        }));
+
+        return {
+          ...result,
+          items: itemsWithFullUrls,
+        };
       } catch (error) {
         console.error("Admin user cart error:", error);
         set.status = 400;

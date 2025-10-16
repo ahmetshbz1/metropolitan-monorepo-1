@@ -60,7 +60,7 @@ export class GetAllCartsService {
       if (abandonedOnly) {
         const abandonedDate = new Date();
         abandonedDate.setDate(abandonedDate.getDate() - abandonedDays);
-        conditions.push(sql`${cartItems.updatedAt} < ${abandonedDate}`);
+        conditions.push(sql`${cartItems.updatedAt} < ${abandonedDate.toISOString()}`);
       }
 
       if (search) {
