@@ -8,6 +8,7 @@ import { Image } from "expo-image";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RefreshControl, ScrollView, View } from "react-native";
+import Constants from "expo-constants";
 
 import { HapticButton } from "@/components/HapticButton";
 import { LogoutButton } from "@/components/profile/LogoutButton";
@@ -314,7 +315,9 @@ export default function ProfileScreen() {
         {/* Version Info */}
         <View className="items-center mt-2 mb-4">
           <ThemedText className="text-xs" style={{ color: colors.mediumGray }}>
-            {t("profile.version", { version: "1.0.10" })}
+            {t("profile.version", {
+              version: Constants.expoConfig?.version || "1.0.10"
+            })}
           </ThemedText>
         </View>
       </ScrollView>
