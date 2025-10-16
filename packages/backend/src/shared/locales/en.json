@@ -64,6 +64,10 @@
       "title": "Payment Cancelled",
       "body": "Payment for your order has been cancelled.",
       "body_with_order": "Payment for order {orderNumber} was cancelled."
+    },
+    "abandoned_cart_reminder": {
+      "title": "Items in Your Cart",
+      "body": "You have products waiting in your cart! Continue shopping now."
     }
   }
 }

@@ -64,6 +64,10 @@
       "title": "Płatność Anulowana",
       "body": "Płatność za Twoje zamówienie została anulowana.",
       "body_with_order": "Płatność za zamówienie {orderNumber} została anulowana."
+    },
+    "abandoned_cart_reminder": {
+      "title": "Produkty w Twoim Koszyku",
+      "body": "Masz produkty czekające w koszyku! Kontynuuj zakupy teraz."
     }
   }
 }

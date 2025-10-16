@@ -64,6 +64,10 @@
       "title": "Ödeme İptal Edildi",
       "body": "Siparişinizin ödemesi iptal edildi.",
       "body_with_order": "{orderNumber} numaralı siparişinizin ödemesi iptal edildi."
+    },
+    "abandoned_cart_reminder": {
+      "title": "Sepetinizde Ürün Var",
+      "body": "Sepetinizde ürünler bekliyor! Hemen alışverişe devam edin."
     }
   }
 }

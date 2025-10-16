@@ -34,7 +34,8 @@
     "studio": "drizzle-kit studio",
     "sync:fakturownia": "bun src/shared/infrastructure/database/sync-fakturownia-products.ts",
     "report:fakturownia": "bun src/shared/infrastructure/database/report-fakturownia-products.ts",
-    "import:fakturownia": "bun src/shared/infrastructure/database/import-fakturownia-products.ts"
+    "import:fakturownia": "bun src/shared/infrastructure/database/import-fakturownia-products.ts",
+    "cron:abandoned-cart": "bun src/domains/shopping/infrastructure/jobs/abandoned-cart-cron.ts"
   },
   "dependencies": {
     "@bogeychan/elysia-logger": "^0.1.10",

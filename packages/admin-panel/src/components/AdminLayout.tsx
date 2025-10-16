@@ -26,6 +26,7 @@ import {
   Moon,
   Package,
   Settings,
+  ShoppingBasket,
   ShoppingCart,
   Sun,
   Users,
@@ -77,6 +78,12 @@ const NAV_ITEMS: Array<{
     label: "Siparişler",
     description: "Sipariş akışı",
     icon: ShoppingCart,
+  },
+  {
+    key: "carts",
+    label: "Sepetler",
+    description: "Kullanıcı sepetleri",
+    icon: ShoppingBasket,
   },
   {
     key: "companies",
