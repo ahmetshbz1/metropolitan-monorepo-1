@@ -34,7 +34,11 @@
       "infoPlist": {
         "LSApplicationCategoryType": "public.app-category.food-and-drink",
         "CFBundleAllowMixedLocalizations": true,
-        "CFBundleLocalizations": ["tr", "en", "pl"],
+        "CFBundleLocalizations": [
+          "tr",
+          "en",
+          "pl"
+        ],
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleURLTypes": [
           {
@@ -50,7 +54,9 @@
         "com.apple.developer.in-app-payments": [
           "merchant.com.metropolitan.food"
         ],
-        "com.apple.developer.applesignin": ["Default"],
+        "com.apple.developer.applesignin": [
+          "Default"
+        ],
         "aps-environment": "production"
       },
       "usesAppleSignIn": true,
@@ -99,13 +105,6 @@
             "deploymentTarget": "18.0"
           }
         }
-      ],
-      [
-        "@stripe/stripe-react-native",
-        {
-          "merchantIdentifier": "merchant.com.metropolitan.food",
-          "enableGooglePay": true
-        }
       ]
     ],
     "experiments": {
@@ -132,6 +131,9 @@
         "measurementId": ""
       }
     },
-    "owner": "metropolitanfg"
+    "owner": "metropolitanfg",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
   }
 }
