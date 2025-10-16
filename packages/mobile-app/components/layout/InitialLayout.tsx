@@ -167,14 +167,74 @@ export const InitialLayout: React.FC = () => {
     }
 
     const initializePushNotifications = async () => {
-      // Listener'ları kur - bu hem cold start hem app açıkken olan notification'ları handle eder
+      // Önce cold start notification'ı kontrol et
+      const lastNotificationResponse = await Notifications.getLastNotificationResponseAsync();
+
+      // Cold start notification varsa önce işle
+      if (lastNotificationResponse) {
+        const coldStartId = lastNotificationResponse.notification.request.identifier;
+        const data = lastNotificationResponse.notification.request.content.data as {
+          screen?: string;
+          orderId?: string;
+          productId?: string;
+        };
+
+        // Cold start notification'ı işlenmiş olarak işaretle
+        processedNotificationIds.current.add(coldStartId);
+
+        // Badge sayısını güncelle
+        refreshUnreadCount();
+
+        // Yönlendirme yap (router hazır olana kadar bekle)
+        if (data?.screen) {
+          setTimeout(() => {
+            // Direkt navigate et (processedIds'e zaten ekledik)
+            const now = Date.now();
+            lastNavigationRef.current = { screen: data.screen, time: now };
+
+            switch (data.screen) {
+              case 'orders':
+                router.push('/(tabs)/orders');
+                break;
+              case 'order-detail':
+                if (data.orderId) {
+                  router.push(`/order/${data.orderId}`);
+                } else {
+                  router.push('/(tabs)/orders');
+                }
+                break;
+              case 'product-detail':
+                if (data.productId) {
+                  router.push(`/product/${data.productId}`);
+                } else {
+                  router.push('/(tabs)/products');
+                }
+                break;
+              case 'products':
+                router.push('/(tabs)/products');
+                break;
+              case 'cart':
+                router.push('/(tabs)/cart');
+                break;
+              case 'profile':
+                router.push('/(tabs)/profile');
+                break;
+              case 'favorites':
+                router.push('/favorites');
+                break;
+            }
+          }, 500);
+        }
+      }
+
+      // Sonra listener'ları kur (bunlar cold start'ı yakalamayacak çünkü processedIds'e ekledik)
       NotificationService.setupNotificationListeners(
         (notification) => {
           // Bildirim alındığında - badge sayısını güncelle
           refreshUnreadCount();
         },
         (response) => {
-          // Bildirime tıklandığında (hem cold start hem app açıkken)
+          // Bildirime tıklandığında (app açıkken)
           const notificationId = response.notification.request.identifier;
           const data = response.notification.request.content.data as {
             screen?: string;
@@ -185,12 +245,10 @@ export const InitialLayout: React.FC = () => {
           // Badge sayısını güncelle
           refreshUnreadCount();
 
-          // Yönlendirme yap
+          // Yönlendirme yap (processedIds kontrolü yapacak)
           handleNotificationNavigation(notificationId, data);
         }
       );
-
-      // getLastNotificationResponseAsync kullanmıyoruz - listener zaten cold start'ı da yakalıyor
     };
 
     // Uygulama başladığında notification'ları başlat
