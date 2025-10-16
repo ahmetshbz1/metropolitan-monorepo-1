@@ -167,24 +167,14 @@ export const InitialLayout: React.FC = () => {
     }
 
     const initializePushNotifications = async () => {
-      // App kapalıyken gelen notification'ı kontrol et (cold start)
-      const lastNotificationResponse = await Notifications.getLastNotificationResponseAsync();
-
-      let coldStartNotificationId: string | null = null;
-
-      // Cold start notification varsa, ID'sini kaydet
-      if (lastNotificationResponse) {
-        coldStartNotificationId = lastNotificationResponse.notification.request.identifier;
-      }
-
-      // Listener'ları kur
+      // Listener'ları kur - bu hem cold start hem app açıkken olan notification'ları handle eder
       NotificationService.setupNotificationListeners(
         (notification) => {
           // Bildirim alındığında - badge sayısını güncelle
           refreshUnreadCount();
         },
         (response) => {
-          // Bildirime tıklandığında (app açıkken)
+          // Bildirime tıklandığında (hem cold start hem app açıkken)
           const notificationId = response.notification.request.identifier;
           const data = response.notification.request.content.data as {
             screen?: string;
@@ -200,24 +190,7 @@ export const InitialLayout: React.FC = () => {
         }
       );
 
-      // Cold start notification'ı handle et
-      if (lastNotificationResponse && coldStartNotificationId) {
-        const data = lastNotificationResponse.notification.request.content.data as {
-          screen?: string;
-          orderId?: string;
-          productId?: string;
-        };
-
-        // Badge sayısını güncelle
-        refreshUnreadCount();
-
-        // Router hazır olana kadar bekle ve handleNotificationNavigation'ı çağır
-        if (data?.screen) {
-          setTimeout(() => {
-            handleNotificationNavigation(coldStartNotificationId, data);
-          }, 500);
-        }
-      }
+      // getLastNotificationResponseAsync kullanmıyoruz - listener zaten cold start'ı da yakalıyor
     };
 
     // Uygulama başladığında notification'ları başlat
