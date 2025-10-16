@@ -17,8 +17,12 @@ Notifications.setNotificationHandler({
 export class NotificationService {
   private static instance: NotificationService;
   private expoPushToken: string | null = null;
-  private notificationListener: any = null;
-  private responseListener: any = null;
+  private notificationListener: Notifications.Subscription | null = null;
+  private responseListener: Notifications.Subscription | null = null;
+
+  // Global singleton: Cold start notification'ı işlenmiş mi?
+  private coldStartNotificationProcessed: boolean = false;
+  private processedNotificationIds: Set<string> = new Set();
 
   private constructor() {}
 
@@ -130,17 +134,73 @@ export class NotificationService {
     }
   }
 
+  /**
+   * Cold start notification'ı kontrol et ve işle
+   * Bu metod sadece bir kez çalıştırılmalı (uygulama başlangıcında)
+   */
+  async processColdStartNotification(): Promise<{
+    hasNotification: boolean;
+    notificationId?: string;
+    data?: Record<string, unknown>;
+  }> {
+    // Daha önce işlendiyse tekrar işleme
+    if (this.coldStartNotificationProcessed) {
+      return { hasNotification: false };
+    }
+
+    try {
+      const lastNotificationResponse = await Notifications.getLastNotificationResponseAsync();
+
+      if (!lastNotificationResponse) {
+        this.coldStartNotificationProcessed = true;
+        return { hasNotification: false };
+      }
+
+      const notificationId = lastNotificationResponse.notification.request.identifier;
+      const data = lastNotificationResponse.notification.request.content.data;
+
+      // Notification'ı işlenmiş olarak işaretle
+      this.coldStartNotificationProcessed = true;
+      this.processedNotificationIds.add(notificationId);
+
+      // KRITIK: Notification'ı dismiss et ki listener'a tekrar gönderilmesin
+      await Notifications.dismissNotificationAsync(lastNotificationResponse.notification.request.identifier);
+
+      return {
+        hasNotification: true,
+        notificationId,
+        data: data as Record<string, unknown>,
+      };
+    } catch (error) {
+      this.coldStartNotificationProcessed = true;
+      return { hasNotification: false };
+    }
+  }
+
   setupNotificationListeners(
     onNotificationReceived?: (notification: Notifications.Notification) => void,
     onNotificationResponse?: (response: Notifications.NotificationResponse) => void
   ): void {
+    // Listener'lar zaten kuruluysa tekrar kurma
+    if (this.notificationListener || this.responseListener) {
+      return;
+    }
+
     this.notificationListener = Notifications.addNotificationReceivedListener(notification => {
-      // Removed console statement
       onNotificationReceived?.(notification);
     });
 
     this.responseListener = Notifications.addNotificationResponseReceivedListener(response => {
-      // Removed console statement
+      const notificationId = response.notification.request.identifier;
+
+      // Bu notification daha önce işlendiyse (cold start'ta) ignore et
+      if (this.processedNotificationIds.has(notificationId)) {
+        return;
+      }
+
+      // Notification'ı işlenmiş olarak işaretle
+      this.processedNotificationIds.add(notificationId);
+
       onNotificationResponse?.(response);
     });
   }
@@ -156,10 +216,25 @@ export class NotificationService {
     }
   }
 
+  /**
+   * Notification'ın işlenip işlenmediğini kontrol et
+   */
+  isNotificationProcessed(notificationId: string): boolean {
+    return this.processedNotificationIds.has(notificationId);
+  }
+
+  /**
+   * Tüm processed notification'ları temizle (genelde sadece test için kullanılır)
+   */
+  clearProcessedNotifications(): void {
+    this.processedNotificationIds.clear();
+    this.coldStartNotificationProcessed = false;
+  }
+
   async scheduleLocalNotification(
     title: string,
     body: string,
-    data?: any,
+    data?: Record<string, unknown>,
     trigger?: Notifications.NotificationTriggerInput
   ): Promise<string> {
     const id = await Notifications.scheduleNotificationAsync({

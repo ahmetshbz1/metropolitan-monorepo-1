@@ -14,7 +14,6 @@ import { useAuth } from "@/context/AuthContext";
 import { useNotifications } from "@/context/NotificationContext";
 import { useProducts } from "@/context/ProductContext";
 import { router } from "expo-router";
-import * as Notifications from 'expo-notifications';
 import { EventEmitter, AppEvent } from "@/utils/eventEmitter";
 import { ConfirmationDialog } from "@/components/common/ConfirmationDialog";
 
@@ -32,9 +31,7 @@ export const InitialLayout: React.FC = () => {
   const [sessionExpired, setSessionExpired] = useState(false);
   const [isProductsReady, setIsProductsReady] = useState(false);
 
-  // Push notification navigasyon kontrolü için
-  const lastNavigationRef = React.useRef<{ screen: string; time: number } | null>(null);
-  const processedNotificationIds = React.useRef<Set<string>>(new Set());
+  // Push notification başlatma kontrolü - sadece bir kez çalışmalı
   const notificationInitializedRef = React.useRef(false);
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
@@ -91,35 +88,12 @@ export const InitialLayout: React.FC = () => {
     }
   }, [loaded]);
 
-  // Notification'dan sayfaya yönlendirme yap
-  const handleNotificationNavigation = useCallback((
-    notificationId: string,
+  // Notification data'sından navigasyon yap
+  const navigateFromNotification = useCallback((
     data: { screen?: string; orderId?: string; productId?: string }
   ) => {
     if (!data?.screen) return;
 
-    // Bu notification'ı daha önce işledik mi?
-    if (processedNotificationIds.current.has(notificationId)) {
-      return;
-    }
-
-    // Notification'ı işlenmiş olarak kaydet
-    processedNotificationIds.current.add(notificationId);
-
-    const now = Date.now();
-    const targetScreen = data.screen;
-
-    // Son 2 saniye içinde aynı sayfaya navigasyon yapıldıysa ignore et
-    if (lastNavigationRef.current &&
-        lastNavigationRef.current.screen === targetScreen &&
-        (now - lastNavigationRef.current.time) < 2000) {
-      return;
-    }
-
-    // Navigasyon bilgisini kaydet
-    lastNavigationRef.current = { screen: targetScreen, time: now };
-
-    // Navigasyon yap
     try {
       switch (data.screen) {
         case 'orders':
@@ -159,7 +133,7 @@ export const InitialLayout: React.FC = () => {
     }
   }, []);
 
-  // Push notifications'ı başlat - Custom permission ekranı gösterilmişse
+  // Push notifications'ı başlat
   useEffect(() => {
     // Eğer zaten başlatıldıysa, tekrar çalıştırma
     if (notificationInitializedRef.current) {
@@ -167,100 +141,49 @@ export const InitialLayout: React.FC = () => {
     }
 
     const initializePushNotifications = async () => {
-      // Önce cold start notification'ı kontrol et
-      const lastNotificationResponse = await Notifications.getLastNotificationResponseAsync();
+      // ADIM 1: Cold start notification'ı kontrol et ve işle
+      // Bu metod global singleton içinde kontrolü yapıyor, tekrar çağrılsa bile sadece bir kez işliyor
+      const coldStartResult = await NotificationService.processColdStartNotification();
 
-      let hasColdStartNotification = false;
-
-      // Cold start notification varsa önce işle
-      if (lastNotificationResponse) {
-        hasColdStartNotification = true;
-        const coldStartId = lastNotificationResponse.notification.request.identifier;
-        const data = lastNotificationResponse.notification.request.content.data as {
-          screen?: string;
-          orderId?: string;
-          productId?: string;
-        };
-
-        // Cold start notification'ı işlenmiş olarak işaretle
-        processedNotificationIds.current.add(coldStartId);
-
+      if (coldStartResult.hasNotification && coldStartResult.data) {
         // Badge sayısını güncelle
         refreshUnreadCount();
 
-        // Yönlendirme yap (router hazır olana kadar bekle)
-        if (data?.screen) {
-          setTimeout(() => {
-            // Direkt navigate et (processedIds'e zaten ekledik)
-            const now = Date.now();
-            lastNavigationRef.current = { screen: data.screen, time: now };
+        // Router hazır olana kadar bekle ve navigate et
+        setTimeout(() => {
+          navigateFromNotification(coldStartResult.data as {
+            screen?: string;
+            orderId?: string;
+            productId?: string;
+          });
+        }, 500);
+      }
 
-            switch (data.screen) {
-              case 'orders':
-                router.push('/(tabs)/orders');
-                break;
-              case 'order-detail':
-                if (data.orderId) {
-                  router.push(`/order/${data.orderId}`);
-                } else {
-                  router.push('/(tabs)/orders');
-                }
-                break;
-              case 'product-detail':
-                if (data.productId) {
-                  router.push(`/product/${data.productId}`);
-                } else {
-                  router.push('/(tabs)/products');
-                }
-                break;
-              case 'products':
-                router.push('/(tabs)/products');
-                break;
-              case 'cart':
-                router.push('/(tabs)/cart');
-                break;
-              case 'profile':
-                router.push('/(tabs)/profile');
-                break;
-              case 'favorites':
-                router.push('/favorites');
-                break;
-            }
-          }, 500);
+      // ADIM 2: Listener'ları kur
+      // NotificationService singleton içinde zaten kurulu mu kontrolü yapıyor
+      // Cold start notification zaten işlenmiş ve dismiss edilmiş olduğundan
+      // listener'a tekrar gönderilmeyecek
+      NotificationService.setupNotificationListeners(
+        () => {
+          // Bildirim alındığında - badge sayısını güncelle
+          refreshUnreadCount();
+        },
+        (response) => {
+          // Bildirime tıklandığında (app açıkken veya background'da)
+          const data = response.notification.request.content.data as {
+            screen?: string;
+            orderId?: string;
+            productId?: string;
+          };
+
+          // Badge sayısını güncelle
+          refreshUnreadCount();
+
+          // Yönlendirme yap
+          // NotificationService içinde zaten duplicate kontrolü var
+          navigateFromNotification(data);
         }
-      }
-
-      // Listener'ları kur - cold start varsa gecikmeyle kur
-      const setupListeners = () => {
-        NotificationService.setupNotificationListeners(
-          (notification) => {
-            // Bildirim alındığında - badge sayısını güncelle
-            refreshUnreadCount();
-          },
-          (response) => {
-            // Bildirime tıklandığında (app açıkken)
-            const notificationId = response.notification.request.identifier;
-            const data = response.notification.request.content.data as {
-              screen?: string;
-              orderId?: string;
-              productId?: string;
-            };
-
-            // Badge sayısını güncelle
-            refreshUnreadCount();
-
-            // Yönlendirme yap (processedIds kontrolü yapacak)
-            handleNotificationNavigation(notificationId, data);
-          }
-        );
-      };
-
-      // Cold start notification varsa listener'ı geciktir ki aynı notification'ı yakalamasın
-      if (hasColdStartNotification) {
-        setTimeout(setupListeners, 1000); // 1 saniye bekle
-      } else {
-        setupListeners(); // Hemen kur
-      }
+      );
     };
 
     // Uygulama başladığında notification'ları başlat
@@ -273,7 +196,7 @@ export const InitialLayout: React.FC = () => {
     return () => {
       NotificationService.removeNotificationListeners();
     };
-  }, [loaded, refreshUnreadCount, handleNotificationNavigation]);
+  }, [loaded, refreshUnreadCount, navigateFromNotification]);
 
   // Session expired listener
   useEffect(() => {
