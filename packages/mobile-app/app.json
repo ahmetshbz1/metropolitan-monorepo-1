@@ -2,7 +2,7 @@
   "expo": {
     "name": "metropolitan",
     "slug": "metropolitan",
-    "version": "1.0.10",
+    "version": "1.0.11",
     "hooks": {
       "postInstall": "cd ../shared && (bun run build || npm run build || yarn build) || true"
     },
@@ -24,7 +24,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.metropolitan.food",
-      "buildNumber": "55",
+      "buildNumber": "56",
       "deploymentTarget": "18.0",
       "config": {
         "googleSignIn": {
@@ -72,7 +72,7 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.metropolitan.food",
-      "versionCode": 8,
+      "versionCode": 9,
       "permissions": [
         "android.permission.RECORD_AUDIO",
         "com.google.android.c2dm.permission.RECEIVE"
