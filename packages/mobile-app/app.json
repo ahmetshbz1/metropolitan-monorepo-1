@@ -77,7 +77,10 @@
         "android.permission.RECORD_AUDIO",
         "com.google.android.c2dm.permission.RECEIVE"
       ],
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "web": {
       "bundler": "metro",
