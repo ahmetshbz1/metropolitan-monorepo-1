@@ -108,6 +108,13 @@
             "deploymentTarget": "18.0"
           }
         }
+      ],
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.metropolitan.food",
+          "enableGooglePay": true
+        }
       ]
     ],
     "experiments": {

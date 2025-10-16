@@ -19,8 +19,9 @@ export const processGooglePayPayment = async ({
   const { error } = await confirmPlatformPayPayment(clientSecret, {
     googlePay: {
       merchantCountryCode: "PL",
-      currencyCode: "PLN",
-      testEnv: __DEV__, // Development modunda test environment kullan
+      currencyCode: currency,
+      testEnv: false, // Production environment - Google Pay merchant onaylı
+      merchantName: "Metropolitan Food Group",
     },
   });
 
