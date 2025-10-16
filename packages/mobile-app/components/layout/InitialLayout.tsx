@@ -170,8 +170,11 @@ export const InitialLayout: React.FC = () => {
       // Önce cold start notification'ı kontrol et
       const lastNotificationResponse = await Notifications.getLastNotificationResponseAsync();
 
+      let hasColdStartNotification = false;
+
       // Cold start notification varsa önce işle
       if (lastNotificationResponse) {
+        hasColdStartNotification = true;
         const coldStartId = lastNotificationResponse.notification.request.identifier;
         const data = lastNotificationResponse.notification.request.content.data as {
           screen?: string;
@@ -227,28 +230,37 @@ export const InitialLayout: React.FC = () => {
         }
       }
 
-      // Sonra listener'ları kur (bunlar cold start'ı yakalamayacak çünkü processedIds'e ekledik)
-      NotificationService.setupNotificationListeners(
-        (notification) => {
-          // Bildirim alındığında - badge sayısını güncelle
-          refreshUnreadCount();
-        },
-        (response) => {
-          // Bildirime tıklandığında (app açıkken)
-          const notificationId = response.notification.request.identifier;
-          const data = response.notification.request.content.data as {
-            screen?: string;
-            orderId?: string;
-            productId?: string;
-          };
+      // Listener'ları kur - cold start varsa gecikmeyle kur
+      const setupListeners = () => {
+        NotificationService.setupNotificationListeners(
+          (notification) => {
+            // Bildirim alındığında - badge sayısını güncelle
+            refreshUnreadCount();
+          },
+          (response) => {
+            // Bildirime tıklandığında (app açıkken)
+            const notificationId = response.notification.request.identifier;
+            const data = response.notification.request.content.data as {
+              screen?: string;
+              orderId?: string;
+              productId?: string;
+            };
 
-          // Badge sayısını güncelle
-          refreshUnreadCount();
+            // Badge sayısını güncelle
+            refreshUnreadCount();
 
-          // Yönlendirme yap (processedIds kontrolü yapacak)
-          handleNotificationNavigation(notificationId, data);
-        }
-      );
+            // Yönlendirme yap (processedIds kontrolü yapacak)
+            handleNotificationNavigation(notificationId, data);
+          }
+        );
+      };
+
+      // Cold start notification varsa listener'ı geciktir ki aynı notification'ı yakalamasın
+      if (hasColdStartNotification) {
+        setTimeout(setupListeners, 1000); // 1 saniye bekle
+      } else {
+        setupListeners(); // Hemen kur
+      }
     };
 
     // Uygulama başladığında notification'ları başlat
