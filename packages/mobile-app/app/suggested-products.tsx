@@ -2,18 +2,15 @@
 //  metropolitan app
 //  Created by Ahmet on 17.10.2025.
 
-import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useNavigation } from "expo-router";
+import React, { useEffect, useState, useLayoutEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   FlatList,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ProductCard } from "@/components/products/ProductCard";
 import { ThemedView } from "@/components/ThemedView";
@@ -27,8 +24,7 @@ import { formatPrice } from "@/core/utils";
 
 export default function SuggestedProductsScreen() {
   const { t, i18n } = useTranslation();
-  const router = useRouter();
-  const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
   const colorScheme = useColorScheme() ?? "light";
   const themeColors = Colors[colorScheme];
   const { user } = useAuth();
@@ -43,11 +39,15 @@ export default function SuggestedProductsScreen() {
     : (summary?.totalAmount || 0);
   const remainingAmount = Math.max(0, MINIMUM_ORDER_AMOUNT - currentTotal);
 
-  useEffect(() => {
-    fetchSuggestedProducts();
-  }, [i18n.language]);
+  // Set header title
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: t("suggested_products.title"),
+      headerBackTitle: "",
+    } as any);
+  }, [navigation, t]);
 
-  const fetchSuggestedProducts = async () => {
+  const fetchSuggestedProducts = useCallback(async () => {
     try {
       setLoading(true);
       const response = await api.get(
@@ -62,7 +62,11 @@ export default function SuggestedProductsScreen() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [i18n.language]);
+
+  useEffect(() => {
+    fetchSuggestedProducts();
+  }, [fetchSuggestedProducts]);
 
   const renderHeader = () => (
     <View className="px-4 py-4">
@@ -126,24 +130,6 @@ export default function SuggestedProductsScreen() {
   if (loading) {
     return (
       <ThemedView className="flex-1">
-        <View
-          style={{
-            paddingTop: insets.top,
-            backgroundColor: themeColors.background,
-          }}
-          className="flex-row items-center px-4 py-3 border-b"
-        >
-          <TouchableOpacity
-            onPress={() => router.back()}
-            className="mr-3 p-2 -ml-2"
-          >
-            <Ionicons name="arrow-back" size={24} color={themeColors.text} />
-          </TouchableOpacity>
-          <Text style={{ color: themeColors.text }} className="text-lg font-semibold">
-            {t("suggested_products.title")}
-          </Text>
-        </View>
-
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color={themeColors.primary} />
         </View>
@@ -153,25 +139,6 @@ export default function SuggestedProductsScreen() {
 
   return (
     <ThemedView className="flex-1">
-      <View
-        style={{
-          paddingTop: insets.top,
-          backgroundColor: themeColors.background,
-          borderBottomColor: themeColors.border,
-        }}
-        className="flex-row items-center px-4 py-3 border-b"
-      >
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="mr-3 p-2 -ml-2"
-        >
-          <Ionicons name="arrow-back" size={24} color={themeColors.text} />
-        </TouchableOpacity>
-        <Text style={{ color: themeColors.text }} className="text-lg font-semibold">
-          {t("suggested_products.title")}
-        </Text>
-      </View>
-
       <FlatList
         data={products}
         keyExtractor={(item) => item.id}

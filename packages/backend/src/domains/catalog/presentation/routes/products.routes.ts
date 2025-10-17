@@ -217,7 +217,7 @@ export const productRoutes = createApp()
             brand: products.brand,
           })
           .from(products)
-          .leftJoin(
+          .innerJoin(
             productTranslations,
             eq(products.id, productTranslations.productId)
           )
