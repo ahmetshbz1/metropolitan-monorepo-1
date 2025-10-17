@@ -21,7 +21,7 @@ const LoginScreen = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const { from } = useLocalSearchParams();
-  const { loginAsGuest } = useAuth();
+  const { loginAsGuest, isGuest } = useAuth();
   const colorScheme = useColorScheme() ?? "light";
   const themeColors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
@@ -30,7 +30,10 @@ const LoginScreen = () => {
   const [socialSectionHeight, setSocialSectionHeight] = useState<number>(0);
 
   const handleGuestLogin = async () => {
-    await loginAsGuest();
+    // Eğer zaten guest değilse, yeni guest session oluştur
+    if (!isGuest) {
+      await loginAsGuest();
+    }
     router.replace("/(tabs)");
   };
 

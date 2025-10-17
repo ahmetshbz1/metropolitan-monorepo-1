@@ -51,8 +51,8 @@ export const useAppNavigation = () => {
       (route) => currentRoute === route || currentRoute?.startsWith(route)
     );
 
-    // Kullanıcı giriş yapmışsa ama auth grubundaysa → tabs'a git
-    if (user && inAuthGroup) {
+    // Kullanıcı giriş yapmışsa veya guest ise ama auth grubundaysa → tabs'a git
+    if ((user || isGuest) && inAuthGroup) {
       router.replace("/(tabs)");
       return;
     }
