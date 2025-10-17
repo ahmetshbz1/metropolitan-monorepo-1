@@ -7,12 +7,11 @@ import React, { useEffect, useState, useLayoutEffect, useCallback } from "react"
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  FlatList,
   Text,
   View,
 } from "react-native";
 
-import { ProductCard } from "@/components/products/ProductCard";
+import { ProductGrid } from "@/components/products/ProductGrid";
 import { ThemedView } from "@/components/ThemedView";
 import Colors from "@/constants/Colors";
 import { useAuth } from "@/context/AuthContext";
@@ -68,39 +67,54 @@ export default function SuggestedProductsScreen() {
     fetchSuggestedProducts();
   }, [fetchSuggestedProducts]);
 
-  const renderHeader = () => (
-    <View className="px-4 py-4">
+  const renderHeader = useCallback(() => (
+    <View className="px-4 pt-4 pb-2">
       <Text
         style={{ color: themeColors.text }}
-        className="text-2xl font-bold mb-2"
+        className="text-xl font-bold mb-1"
       >
         {t("suggested_products.title")}
       </Text>
       <Text
         style={{ color: themeColors.textSecondary }}
-        className="text-base mb-4"
+        className="text-sm mb-3"
       >
         {t("suggested_products.subtitle")}
       </Text>
+    </View>
+  ), [t, themeColors]);
 
+  if (loading) {
+    return (
+      <ThemedView className="flex-1">
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color={themeColors.primary} />
+        </View>
+      </ThemedView>
+    );
+  }
+
+  return (
+    <ThemedView className="flex-1">
       {user?.userType === "individual" && remainingAmount > 0 && (
         <View
           style={{
-            backgroundColor: themeColors.warning + "15",
-            borderColor: themeColors.warning,
+            backgroundColor: themeColors.cardBackground,
+            borderBottomWidth: 1,
+            borderBottomColor: themeColors.border,
           }}
-          className="p-4 rounded-xl border mb-4"
+          className="px-4 py-3"
         >
           <View className="flex-row items-center justify-between mb-2">
             <Text
               style={{ color: themeColors.text }}
-              className="text-sm font-semibold"
+              className="text-xs font-semibold"
             >
               {t("suggested_products.progress_title")}
             </Text>
             <Text
               style={{ color: themeColors.warning }}
-              className="text-sm font-bold"
+              className="text-xs font-bold"
             >
               {formatPrice(remainingAmount, summary?.currency || "PLN")} {t("suggested_products.remaining")}
             </Text>
@@ -118,36 +132,16 @@ export default function SuggestedProductsScreen() {
 
           <Text
             style={{ color: themeColors.textSecondary }}
-            className="text-xs mt-2"
+            className="text-xs mt-1.5"
           >
             {formatPrice(currentTotal, summary?.currency || "PLN")} / {formatPrice(MINIMUM_ORDER_AMOUNT, summary?.currency || "PLN")}
           </Text>
         </View>
       )}
-    </View>
-  );
 
-  if (loading) {
-    return (
-      <ThemedView className="flex-1">
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color={themeColors.primary} />
-        </View>
-      </ThemedView>
-    );
-  }
-
-  return (
-    <ThemedView className="flex-1">
-      <FlatList
-        data={products}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <ProductCard product={item} />}
-        numColumns={2}
-        contentContainerStyle={{ paddingBottom: 20 }}
-        columnWrapperStyle={{ paddingHorizontal: 16, gap: 12 }}
+      <ProductGrid
+        products={products}
         ListHeaderComponent={renderHeader}
-        showsVerticalScrollIndicator={false}
       />
     </ThemedView>
   );

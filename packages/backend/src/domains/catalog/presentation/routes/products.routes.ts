@@ -2,7 +2,7 @@
 //  metropolitan backend
 //  Created by Ahmet on 22.06.2025.
 
-import { and, asc, eq, like, or } from "drizzle-orm";
+import { and, asc, eq, gt, like, or, sql } from "drizzle-orm";
 import { jwt } from "@elysiajs/jwt";
 import { t } from "elysia";
 
@@ -12,6 +12,8 @@ import {
   productTranslations,
   products,
   users,
+  orderItems,
+  orders,
 } from "../../../../shared/infrastructure/database/schema";
 import { isTokenBlacklisted } from "../../../../shared/infrastructure/database/redis";
 import { StorageConditionTranslationService } from "../../../../shared/infrastructure/database/services/storage-condition-translation.service";
@@ -198,7 +200,7 @@ export const productRoutes = createApp()
         const userType = profile?.userType || "individual";
         const limit = query.limit ? parseInt(query.limit) : 20;
 
-        // Az satan veya düşük stoklu ürünleri getir
+        // En az satan ürünleri getir (stokta olanlar)
         const suggestedProducts = await db
           .select({
             id: products.id,
@@ -215,6 +217,7 @@ export const productRoutes = createApp()
             stock: products.stock,
             categorySlug: categories.slug,
             brand: products.brand,
+            totalSold: sql<number>`COALESCE(SUM(${orderItems.quantity}), 0)::int`,
           })
           .from(products)
           .innerJoin(
@@ -222,8 +225,27 @@ export const productRoutes = createApp()
             eq(products.id, productTranslations.productId)
           )
           .leftJoin(categories, eq(products.categoryId, categories.id))
-          .where(eq(productTranslations.languageCode, lang))
-          .orderBy(asc(products.stock)) // Düşük stoklu ürünler önce
+          .leftJoin(orderItems, eq(products.id, orderItems.productId))
+          .leftJoin(
+            orders,
+            and(
+              eq(orderItems.orderId, orders.id),
+              eq(orders.paymentStatus, "succeeded")
+            )
+          )
+          .where(
+            and(
+              eq(productTranslations.languageCode, lang),
+              gt(products.stock, 0) // Sadece stokta olanlar
+            )
+          )
+          .groupBy(
+            products.id,
+            productTranslations.name,
+            productTranslations.description,
+            categories.slug
+          )
+          .orderBy(sql`COALESCE(SUM(${orderItems.quantity}), 0) ASC`) // En az satanlar önce
           .limit(limit);
 
         const xfProto = request.headers.get('x-forwarded-proto');
