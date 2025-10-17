@@ -241,6 +241,16 @@ export const productRoutes = createApp()
           )
           .groupBy(
             products.id,
+            products.imageUrl,
+            products.price,
+            products.individualPrice,
+            products.corporatePrice,
+            products.minQuantityIndividual,
+            products.minQuantityCorporate,
+            products.quantityPerBox,
+            products.currency,
+            products.stock,
+            products.brand,
             productTranslations.name,
             productTranslations.description,
             categories.slug
