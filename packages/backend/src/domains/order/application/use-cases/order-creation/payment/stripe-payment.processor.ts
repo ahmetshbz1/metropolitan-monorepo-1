@@ -102,21 +102,39 @@ export class StripePaymentProcessor {
     };
 
     // Configure payment method types based on selection
-    console.log("🔧 Payment method ID:", paymentMethodId);
+    console.log("Payment method ID:", paymentMethodId);
 
     if (paymentMethodId === "card") {
       params.paymentMethodTypes = ["card"];
-      console.log("💳 Using card payment methods only");
+      console.log("Using card payment methods only");
     } else if (paymentMethodId === "blik") {
       params.paymentMethodTypes = ["blik"];
       // BLIK is Poland-specific, currency must be PLN
       if (params.currency !== "pln") {
-        console.warn("⚠️ BLIK requires PLN currency, forcing to pln");
+        console.warn("BLIK requires PLN currency, forcing to pln");
         params.currency = "pln";
       }
-      console.log("📱 Using BLIK payment methods only");
+      console.log("Using BLIK payment methods only");
+    } else if (paymentMethodId === "google_pay") {
+      params.paymentMethodTypes = ["card"];
+      // Google Pay merchant bilgileri - test mode destekli
+      params.payment_method_options = {
+        card: {
+          request_three_d_secure: "automatic",
+        },
+      };
+      console.log("Using Google Pay configuration");
+    } else if (paymentMethodId === "apple_pay") {
+      params.paymentMethodTypes = ["card"];
+      // Apple Pay merchant bilgileri
+      params.payment_method_options = {
+        card: {
+          request_three_d_secure: "automatic",
+        },
+      };
+      console.log("Using Apple Pay configuration");
     } else {
-      console.log("🔄 Using automatic payment methods");
+      console.log("Using automatic payment methods");
     }
 
     return params;

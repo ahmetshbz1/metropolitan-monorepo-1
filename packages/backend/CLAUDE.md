@@ -12,7 +12,7 @@ Kesinlikle mock veri kullanma.
 
 Kesinlikle any tipi kullanma; her zaman güçlü ve doğru tipleri kullan.
 
-Asla server veya app başlatma / build etme komutları çalıştırma.
+Asla server veya app başlatma / build etme komutları çalıştırma. (kullanıcı sana izin verirse yapabilirsin. )
 (örn: bun run dev, yarn dev, npm start, yarn start, vb.)
 
 Ben izin vermeden commit veya push yapma.
