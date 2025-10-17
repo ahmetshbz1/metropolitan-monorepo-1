@@ -7,7 +7,7 @@ import { useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 
 export const useAppNavigation = () => {
-  const { user, isGuest, loading, pendingCheckout } = useAuth();
+  const { user, isGuest, loading } = useAuth();
   const router = useRouter();
   const segments = useSegments();
 
@@ -51,9 +51,8 @@ export const useAppNavigation = () => {
       (route) => currentRoute === route || currentRoute?.startsWith(route)
     );
 
-    // Kullanıcı giriş yapmışsa veya guest ise ama auth grubundaysa → tabs'a git
-    // ANCAK checkout için auth'a geldiyse bu kuralı atla
-    if ((user || isGuest) && inAuthGroup && !pendingCheckout) {
+    // Gerçek kullanıcı auth grubuna girmeye çalışıyorsa tabs'a geri yönlendir
+    if (user && inAuthGroup) {
       router.replace("/(tabs)");
       return;
     }
@@ -85,7 +84,7 @@ export const useAppNavigation = () => {
       router.replace("/(auth)");
       return;
     }
-  }, [user, isGuest, loading, segments, router, pendingCheckout]);
+  }, [user, isGuest, loading, segments, router]);
 
   return {
     user,
