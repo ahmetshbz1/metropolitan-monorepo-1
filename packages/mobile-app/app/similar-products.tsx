@@ -2,19 +2,22 @@
 //  metropolitan app
 //  Created by Ahmet on 22.09.2025.
 
-import React, { useMemo, useLayoutEffect } from "react";
+import React, { useMemo, useLayoutEffect, useState, useEffect } from "react";
 import { ThemedView } from "@/components/ThemedView";
 import { useTranslation } from "react-i18next";
 import { useProducts } from "@/context/ProductContext";
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { useLocalSearchParams } from "expo-router";
 import { useNavigation } from "@react-navigation/native";
+import api from "@/core/api";
+import type { Product } from "@metropolitan/shared";
 
 export default function SimilarProductsScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { products } = useProducts();
   const { productId, category, brand } = useLocalSearchParams();
   const navigation = useNavigation();
+  const [suggestedProducts, setSuggestedProducts] = useState<Product[]>([]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -22,7 +25,25 @@ export default function SimilarProductsScreen() {
     });
   }, [navigation, t]);
 
-  // Benzer ürünleri bul
+  // Suggestions endpoint'inden en az satan ürünleri çek
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      try {
+        const response = await api.get(
+          `/products/suggestions?lang=${i18n.language}&limit=20`
+        );
+        if (response.data.success) {
+          setSuggestedProducts(response.data.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch suggested products:", error);
+      }
+    };
+
+    fetchSuggestions();
+  }, [i18n.language]);
+
+  // Benzer ürünleri bul (aynı kategori veya marka)
   const similarProducts = useMemo(() => {
     return products
       .filter(
@@ -30,25 +51,21 @@ export default function SimilarProductsScreen() {
           p.id !== productId &&
           p.stock > 0 &&
           (p.category === category || p.brand === brand)
-      );
+      )
+      .slice(0, 6); // İlk 6 ürün gerçekten benzer
   }, [products, productId, category, brand]);
 
-  // Az satılan ürünleri bul
-  const poorSellers = useMemo(() => {
-    return products
-      .filter(
-        (p) =>
-          p.stock > 0 &&
-          !similarProducts.includes(p) &&
-          p.id !== productId
-      )
-      .sort((a, b) => b.stock - a.stock);
-  }, [products, productId, similarProducts]);
-
-  // Tüm ürünleri birleştir
+  // Tüm ürünleri birleştir: İlk 6 benzer, sonrası suggestions
   const allProducts = useMemo(() => {
-    return [...similarProducts, ...poorSellers];
-  }, [similarProducts, poorSellers]);
+    // Suggestions'dan benzer ürünlerde olmayanları al
+    const additionalSuggestions = suggestedProducts
+      .filter((sp) =>
+        sp.id !== productId &&
+        !similarProducts.some((sim) => sim.id === sp.id)
+      );
+
+    return [...similarProducts, ...additionalSuggestions];
+  }, [similarProducts, suggestedProducts, productId]);
 
   return (
     <ThemedView className="flex-1">
