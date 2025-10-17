@@ -21,9 +21,9 @@ import Colors from "@/constants/Colors";
 import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { useCurrency } from "@/hooks/useCurrency";
 import { Product } from "@metropolitan/shared";
 import api from "@/core/api";
+import { formatPrice } from "@/core/utils";
 
 export default function SuggestedProductsScreen() {
   const { t, i18n } = useTranslation();
@@ -33,13 +33,15 @@ export default function SuggestedProductsScreen() {
   const themeColors = Colors[colorScheme];
   const { user } = useAuth();
   const { summary } = useCart();
-  const { formatPrice } = useCurrency();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   const MINIMUM_ORDER_AMOUNT = 200;
-  const remainingAmount = Math.max(0, MINIMUM_ORDER_AMOUNT - (summary?.total || 0));
+  const currentTotal = typeof summary?.totalAmount === "string"
+    ? parseFloat(summary.totalAmount)
+    : (summary?.totalAmount || 0);
+  const remainingAmount = Math.max(0, MINIMUM_ORDER_AMOUNT - currentTotal);
 
   useEffect(() => {
     fetchSuggestedProducts();
@@ -96,14 +98,14 @@ export default function SuggestedProductsScreen() {
               style={{ color: themeColors.warning }}
               className="text-sm font-bold"
             >
-              {formatPrice(remainingAmount)} {t("suggested_products.remaining")}
+              {formatPrice(remainingAmount, summary?.currency || "PLN")} {t("suggested_products.remaining")}
             </Text>
           </View>
 
           <View className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
             <View
               style={{
-                width: `${Math.min(((summary?.total || 0) / MINIMUM_ORDER_AMOUNT) * 100, 100)}%`,
+                width: `${Math.min((currentTotal / MINIMUM_ORDER_AMOUNT) * 100, 100)}%`,
                 backgroundColor: themeColors.warning,
               }}
               className="absolute left-0 top-0 bottom-0 rounded-full"
@@ -114,7 +116,7 @@ export default function SuggestedProductsScreen() {
             style={{ color: themeColors.textSecondary }}
             className="text-xs mt-2"
           >
-            {summary?.total || 0} zł / {MINIMUM_ORDER_AMOUNT} zł
+            {formatPrice(currentTotal, summary?.currency || "PLN")} / {formatPrice(MINIMUM_ORDER_AMOUNT, summary?.currency || "PLN")}
           </Text>
         </View>
       )}
