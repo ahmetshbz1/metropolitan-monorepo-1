@@ -13,7 +13,6 @@ const configureGoogleSignin = () => {
 
   const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
   const iosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
-  const androidClientId = process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID;
 
   if (!webClientId) {
     throw new Error("Google Web Client ID not configured");
@@ -22,7 +21,6 @@ const configureGoogleSignin = () => {
   GoogleSignin.configure({
     webClientId,
     iosClientId: iosClientId ?? undefined,
-    androidClientId: androidClientId ?? undefined,
     offlineAccess: true,
     forceCodeForRefreshToken: false,
   });
