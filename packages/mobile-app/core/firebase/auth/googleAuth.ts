@@ -1,112 +1,105 @@
-import * as AuthSession from 'expo-auth-session';
-import * as WebBrowser from 'expo-web-browser';
-import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
-import { auth } from '../firebaseConfig';
-import Constants from 'expo-constants';
+import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
+import { GoogleAuthProvider, signInWithCredential } from "firebase/auth";
+import { Platform } from "react-native";
 
-WebBrowser.maybeCompleteAuthSession();
+import { auth } from "../firebaseConfig";
 
-const useProxy = Constants.appOwnership === 'expo';
+let isConfigured = false;
+
+const configureGoogleSignin = () => {
+  if (isConfigured) {
+    return;
+  }
+
+  const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
+  const iosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
+  const androidClientId = process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID;
+
+  if (!webClientId) {
+    throw new Error("Google Web Client ID not configured");
+  }
+
+  GoogleSignin.configure({
+    webClientId,
+    iosClientId: iosClientId ?? undefined,
+    androidClientId: androidClientId ?? undefined,
+    offlineAccess: true,
+    forceCodeForRefreshToken: false,
+  });
+
+  isConfigured = true;
+};
+
+const parseDisplayName = (displayName?: string | null) => {
+  if (!displayName) {
+    return { firstName: null, lastName: null };
+  }
+
+  const parts = displayName.trim().split(" ");
+
+  if (parts.length === 1) {
+    return { firstName: parts[0], lastName: null };
+  }
+
+  return {
+    firstName: parts[0],
+    lastName: parts.slice(1).join(" ") || null,
+  };
+};
 
 export const signInWithGoogle = async () => {
   try {
-    // Development build'de native client ID, Expo Go'da web client ID
-    const isExpoGo = Constants.appOwnership === 'expo';
+    configureGoogleSignin();
 
-    // Native build'de custom scheme, Expo Go'da proxy kullan
-    const redirectUri = AuthSession.makeRedirectUri({
-      scheme: isExpoGo ? undefined : 'com.metropolitan.food',
-      useProxy: isExpoGo,
-    });
-
-    const discovery = {
-      authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
-      tokenEndpoint: 'https://oauth2.googleapis.com/token',
-      revocationEndpoint: 'https://oauth2.googleapis.com/revoke',
-    };
-
-    // Native build'de iOS client ID, Expo Go'da web client ID
-    const clientId = isExpoGo
-      ? process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
-      : process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
-
-    if (!clientId) {
-      throw new Error(`Google ${isExpoGo ? 'Web' : 'iOS'} Client ID not configured`);
+    if (Platform.OS === "android") {
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
     }
 
-    const request = new AuthSession.AuthRequest({
-      clientId,
-      scopes: ['openid', 'profile', 'email'],
-      redirectUri,
-      responseType: AuthSession.ResponseType.Code,
-      usePKCE: true,
-      extraParams: {
-        access_type: 'offline',
-        prompt: 'select_account',
-      },
-    });
+    await GoogleSignin.signOut().catch(() => {});
 
-    const result = await request.promptAsync(discovery);
+    const userInfo = await GoogleSignin.signIn();
+    const tokens = await GoogleSignin.getTokens();
 
-    if (result.type === 'success') {
-      if (!result.params.code) {
-        throw new Error('No authorization code received from Google');
-      }
+    if (!tokens.idToken) {
+      throw new Error("Google idToken alınamadı");
+    }
 
-      // Removed console statement
+    const credential = GoogleAuthProvider.credential(tokens.idToken, tokens.accessToken);
+    const userCredential = await signInWithCredential(auth, credential);
 
-      // Exchange code for tokens
-      const tokenResult = await AuthSession.exchangeCodeAsync(
-        {
-          clientId,
-          code: result.params.code,
-          redirectUri,
-          extraParams: request.codeVerifier
-            ? { code_verifier: request.codeVerifier }
-            : undefined,
-        },
-        discovery
-      );
+    const { user } = userCredential;
+    const { firstName, lastName } = parseDisplayName(user.displayName);
 
-      // Removed console statement);
-
-      // Google OAuth 2.0'da idToken farklı key'lerde olabilir
-      const id_token = tokenResult.idToken || tokenResult.id_token;
-      const access_token = tokenResult.accessToken || tokenResult.access_token;
-
-      if (!id_token) {
-        // Token result does not contain ID token
-        throw new Error('No ID token received from Google');
-      }
-
-      const credential = GoogleAuthProvider.credential(id_token, access_token);
-      const userCredential = await signInWithCredential(auth, credential);
-
-      const user = userCredential.user;
-
-      // Parse first and last name from displayName
-      const nameParts = user.displayName?.split(' ') || [];
-      const firstName = nameParts[0] || null;
-      const lastName = nameParts.slice(1).join(' ') || null;
-
-      const userData = {
+    return {
+      success: true as const,
+      user: {
         uid: user.uid,
         email: user.email,
         fullName: user.displayName,
-        firstName: firstName,
-        lastName: lastName,
+        firstName,
+        lastName,
         photoURL: user.photoURL,
-        provider: 'google',
-      };
-
-      return { success: true, user: userData };
-    } else if (result.type === 'cancel') {
-      return { success: false, error: 'Google Sign In was cancelled' };
-    } else {
-      return { success: false, error: 'Google Sign In failed' };
-    }
+        provider: "google" as const,
+      },
+    };
   } catch (error: any) {
-    // Google Sign In Error
-    return { success: false, error: error.message || 'Google Sign In failed' };
+    if (error?.code === statusCodes.SIGN_IN_CANCELLED) {
+      return { success: false as const, error: "Google Sign In was cancelled" };
+    }
+
+    if (error?.code === statusCodes.IN_PROGRESS) {
+      return { success: false as const, error: "Google Sign In is in progress" };
+    }
+
+    if (error?.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+      return { success: false as const, error: "Google Play Services not available" };
+    }
+
+    return {
+      success: false as const,
+      error: error?.message ?? "Google Sign In failed",
+    };
   }
 };

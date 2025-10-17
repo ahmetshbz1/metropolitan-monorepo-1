@@ -94,6 +94,12 @@
       "expo-image-picker",
       "expo-apple-authentication",
       [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.18493082891-0qg1bp44jncs4m7jt6426ud1cv7bil4t"
+        }
+      ],
+      [
         "expo-notifications",
         {
           "icon": "./assets/images/icooon.png",
