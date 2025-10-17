@@ -202,7 +202,8 @@ export const InitialLayout: React.FC = () => {
   useEffect(() => {
     const handleSessionExpired = () => {
       if (isGuest) {
-        logout();
+        // Guest kullanıcılar için session expiration ignore edilmeli
+        // Çünkü logout() yeni bir guest ID oluşturuyor ve mevcut session kayboluyor
         return;
       }
 
