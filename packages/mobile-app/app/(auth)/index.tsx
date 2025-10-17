@@ -33,7 +33,7 @@ const LoginScreen = () => {
     // Checkout için geldiyse ve zaten guest ise direkt git (en hızlı yol)
     if ((pendingCheckout || isFromCheckout) && isGuest) {
       setPendingCheckout(false);
-      router.replace("/checkout/address");
+      router.replace("/(tabs)/cart");
       return;
     }
 
@@ -45,7 +45,7 @@ const LoginScreen = () => {
     // Yönlendirme
     if (pendingCheckout || isFromCheckout) {
       setPendingCheckout(false);
-      router.replace("/checkout/address");
+      router.replace("/(tabs)/cart");
     } else {
       router.replace("/(tabs)");
     }
