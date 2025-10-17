@@ -251,4 +251,23 @@ export class OrderValidationService {
 
     return true;
   }
+
+  /**
+   * Minimum sipariş tutarını doğrular (sadece bireysel müşteriler için)
+   */
+  static validateMinimumOrderAmount(
+    totalAmount: number,
+    userType: "individual" | "corporate"
+  ): { isValid: boolean; error?: string } {
+    const MIN_AMOUNT_INDIVIDUAL = 200; // 200 zł
+
+    if (userType === "individual" && totalAmount < MIN_AMOUNT_INDIVIDUAL) {
+      return {
+        isValid: false,
+        error: "Bireysel müşteriler için minimum sipariş tutarı 200 zł'dir",
+      };
+    }
+
+    return { isValid: true };
+  }
 }

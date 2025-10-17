@@ -542,10 +542,13 @@
     "add_new_address": "Add New Address",
     "add_new_payment": "Add New Card",
     "stock_adjusted": "Quantities updated based on stock availability: {{products}}",
-    "pieces": "pcs"
+    "pieces": "pcs",
+    "minimum_order_warning": "Add {{amount}} more to reach the minimum order amount."
   },
   "checkout": {
     "title": "Order Summary",
+    "minimum_order_title": "Minimum Order Amount",
+    "minimum_order_message": "The minimum order amount for individual customers is 200 zł. Please add {{amount}} more products.",
     "steps": {
       "address": "Address",
       "payment": "Payment",

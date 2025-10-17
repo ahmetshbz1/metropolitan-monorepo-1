@@ -21,7 +21,7 @@ const LoginScreen = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const { from } = useLocalSearchParams();
-  const { loginAsGuest, isGuest } = useAuth();
+  const { loginAsGuest, isGuest, pendingCheckout, setPendingCheckout } = useAuth();
   const colorScheme = useColorScheme() ?? "light";
   const themeColors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
@@ -30,11 +30,25 @@ const LoginScreen = () => {
   const [socialSectionHeight, setSocialSectionHeight] = useState<number>(0);
 
   const handleGuestLogin = async () => {
-    // Eğer zaten guest değilse, yeni guest session oluştur
+    // Checkout için geldiyse ve zaten guest ise direkt git (en hızlı yol)
+    if ((pendingCheckout || isFromCheckout) && isGuest) {
+      setPendingCheckout(false);
+      router.replace("/checkout/address");
+      return;
+    }
+
+    // Eğer guest değilse, yeni guest session oluştur
     if (!isGuest) {
       await loginAsGuest();
     }
-    router.replace("/(tabs)");
+
+    // Yönlendirme
+    if (pendingCheckout || isFromCheckout) {
+      setPendingCheckout(false);
+      router.replace("/checkout/address");
+    } else {
+      router.replace("/(tabs)");
+    }
   };
 
   // Ekran genişliğine orantılı başlık boyutu (min 22, max 30)
@@ -42,8 +56,8 @@ const LoginScreen = () => {
   const titleFontSize = Math.max(24, Math.min(34, winWidth * 0.07));
   const subtitleFontSize = titleFontSize * 0.55; // Alt başlık orantılı
 
-  // Checkout'tan gelme durumu
-  const isFromCheckout = from === "checkout";
+  // Checkout'tan gelme durumu (query param veya state)
+  const isFromCheckout = from === "checkout" || pendingCheckout;
 
   return (
     <View

@@ -117,6 +117,27 @@ export const orderCreationRoutes = new Elysia()
       const { orderItems, totalAmount } =
         OrderCalculationService.prepareOrderItems(cartItems);
 
+      // Validate minimum order amount (only for individual customers)
+      const amountValidation = OrderValidationService.validateMinimumOrderAmount(
+        totalAmount,
+        user.userType
+      );
+
+      if (!amountValidation.isValid) {
+        throw new Error(
+          JSON.stringify({
+            code: "MINIMUM_ORDER_AMOUNT_NOT_MET",
+            message: amountValidation.error,
+            details: {
+              currentAmount: totalAmount,
+              minimumAmount: 200,
+              currency: "PLN",
+              userType: user.userType,
+            },
+          })
+        );
+      }
+
       // Create order with Stripe
       const result = await OrderCreationService.createOrderWithStripe(
         user.id,

@@ -549,6 +549,7 @@
     "add_new_address": "Dodaj nowy adres",
     "add_new_payment": "Dodaj nową kartę",
     "stock_adjusted": "Ilości zaktualizowane na podstawie dostępności: {{products}}",
+    "minimum_order_warning": "Dodaj {{amount}} więcej, aby osiągnąć minimalną kwotę zamówienia.",
     "pieces": "szt."
   },
   "checkout": {
@@ -575,6 +576,8 @@
     "free": "Za darmo",
     "total": "Razem",
     "items": "szt.",
+    "minimum_order_title": "Minimalna Kwota Zamówienia",
+    "minimum_order_message": "Minimalna kwota zamówienia dla klientów indywidualnych wynosi 200 zł. Proszę dodać produkty o wartości {{amount}}.",
     "agree_terms": "Zgadzam się z warunkami użytkowania i polityką prywatności",
     "complete_order": "Złóż Zamówienie",
     "missing_info": "Brakujące Informacje",

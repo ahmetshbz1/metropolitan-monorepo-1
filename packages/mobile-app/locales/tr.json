@@ -542,10 +542,13 @@
     "add_new_address": "Yeni Adres Ekle",
     "add_new_payment": "Yeni Kart Ekle",
     "stock_adjusted": "Stok durumuna göre miktarlar güncellendi: {{products}}",
-    "pieces": "adet"
+    "pieces": "adet",
+    "minimum_order_warning": "Minimum sipariş tutarına ulaşmak için {{amount}} daha eklemelisiniz."
   },
   "checkout": {
     "title": "Sipariş Özeti",
+    "minimum_order_title": "Minimum Sipariş Tutarı",
+    "minimum_order_message": "Bireysel müşteriler için minimum sipariş tutarı 200 zł'dir. Lütfen {{amount}} tutarında daha ürün ekleyin.",
     "steps": {
       "address": "Adres",
       "payment": "Ödeme",

@@ -20,6 +20,7 @@ const AuthContext = createContext<AuthContextType>({
   phoneNumber: null,
   isAuthenticated: false,
   isAppleSignInAvailable: false,
+  pendingCheckout: false,
   sendOTP: async () => ({ success: false, message: "Not implemented" }),
   verifyOTP: async () => ({
     success: false,
@@ -41,6 +42,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   signInWithApple: async () => ({ success: false, error: "Not implemented" }),
   signInWithGoogle: async () => ({ success: false, error: "Not implemented" }),
+  setPendingCheckout: () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -64,6 +66,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       authHookValues.loading,
       authHookValues.isAuthenticated,
       authHookValues.isAppleSignInAvailable,
+      authHookValues.pendingCheckout,
       authHookValues.sendOTP,
       authHookValues.verifyOTP,
       authHookValues.completeProfile,
@@ -74,6 +77,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       authHookValues.refreshUserProfile,
       authHookValues.signInWithApple,
       authHookValues.signInWithGoogle,
+      authHookValues.setPendingCheckout,
     ]
   );
 

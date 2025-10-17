@@ -2,6 +2,7 @@
 //  metropolitan app
 //  Created by Ahmet on 16.06.2025.
 
+import { Ionicons } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 
@@ -9,6 +10,7 @@ import { BaseButton } from "@/components/base/BaseButton";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import Colors from "@/constants/Colors";
+import { useAuth } from "@/context/AuthContext";
 import { CartSummary as CartSummaryType } from "@/context/CartContext";
 import { formatPrice } from "@/core/utils";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -37,6 +39,12 @@ export function CartSummary({
   const colors = Colors[colorScheme ?? "light"];
   const { t } = useTranslation();
   const { paddingBottom } = useTabBarHeight();
+  const { user } = useAuth();
+
+  const MINIMUM_ORDER_AMOUNT = 200;
+  const isIndividual = user?.userType === "individual";
+  const isBelowMinimum = isIndividual && summary.totalAmount < MINIMUM_ORDER_AMOUNT;
+  const remainingAmount = MINIMUM_ORDER_AMOUNT - summary.totalAmount;
 
   return (
     <ThemedView
@@ -55,6 +63,28 @@ export function CartSummary({
         elevation: 12,
       }}
     >
+      {isBelowMinimum && (
+        <View
+          className="flex-row items-center mb-3 p-3 rounded-xl"
+          style={{ backgroundColor: colors.error + "15" }}
+        >
+          <Ionicons
+            name="information-circle"
+            size={20}
+            color={colors.error}
+            style={{ marginRight: 8 }}
+          />
+          <ThemedText
+            className="text-xs flex-1"
+            style={{ color: colors.error }}
+          >
+            {t("cart.minimum_order_warning", {
+              amount: formatPrice(remainingAmount, summary.currency),
+            })}
+          </ThemedText>
+        </View>
+      )}
+
       <View className="flex-row items-center justify-between mb-3">
         <ThemedText className="text-sm" style={{ color: "#666" }}>
           {t("cart.summary.total_label", { count: summary.totalItems })}
@@ -73,7 +103,7 @@ export function CartSummary({
         title={t("cart.checkout")}
         onPress={onCheckout}
         loading={isCheckingOut}
-        disabled={isCheckingOut}
+        disabled={isCheckingOut || isBelowMinimum}
         fullWidth
       />
     </ThemedView>

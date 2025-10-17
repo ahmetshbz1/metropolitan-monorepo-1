@@ -27,6 +27,7 @@ export const useAuthHook = () => {
   const { t } = useTranslation();
   const { showToast } = useToast();
   const [isAppleSignInAvailable, setIsAppleSignInAvailable] = useState(false);
+  const [pendingCheckout, setPendingCheckout] = useState(false);
 
   // Auth state management
   const {
@@ -155,7 +156,13 @@ export const useAuthHook = () => {
               setIsGuest(false); // Explicitly set not guest
               setGuestId(null); // Clear guest ID
 
-              router.replace("/(tabs)");
+              // Checkout için geldiyse checkout'a, değilse tabs'a git
+              if (pendingCheckout) {
+                setPendingCheckout(false);
+                router.replace("/checkout/address");
+              } else {
+                router.replace("/(tabs)");
+              }
             } else {
               // New user or incomplete profile, navigate to phone login
               // Removed console statement
@@ -243,7 +250,13 @@ export const useAuthHook = () => {
               setIsGuest(false); // Explicitly set not guest
               setGuestId(null); // Clear guest ID
 
-              router.replace("/(tabs)");
+              // Checkout için geldiyse checkout'a, değilse tabs'a git
+              if (pendingCheckout) {
+                setPendingCheckout(false);
+                router.replace("/checkout/address");
+              } else {
+                router.replace("/(tabs)");
+              }
             } else {
               // New user or incomplete profile, navigate to phone login
               // Removed console statement
@@ -293,6 +306,7 @@ export const useAuthHook = () => {
     loading,
     isAuthenticated: !!(user && (token || accessToken)),
     isAppleSignInAvailable,
+    pendingCheckout,
 
     // Actions
     sendOTP,
@@ -309,5 +323,6 @@ export const useAuthHook = () => {
     // State setters (for cart)
     setGuestId,
     setIsGuest,
+    setPendingCheckout,
   };
 };

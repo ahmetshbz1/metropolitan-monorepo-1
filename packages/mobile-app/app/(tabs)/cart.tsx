@@ -17,7 +17,7 @@ import { useToast } from "@/hooks/useToast";
 export default function CartScreen() {
   const { cartItems, summary, updateQuantity, removeItem, isLoading, flushPendingUpdates } =
     useCart();
-  const { user, isGuest } = useAuth();
+  const { user, isGuest, setPendingCheckout } = useAuth();
   const { t } = useTranslation();
   const router = useRouter();
   const { showToast } = useToast();
@@ -59,14 +59,17 @@ export default function CartScreen() {
 
   const handleCheckoutPress = async () => {
     try {
-      // Checkout'a geçmeden önce bekleyen güncellemeleri gönder
-      // throwError: true → Hata varsa toast göster
-      await flushPendingUpdates(true);
-
-      if (isGuest && !user) {
-        router.push("/(auth)?from=checkout");
+      // Misafir kullanıcılar önce giriş yapmalı
+      if (isGuest) {
+        // Flag set et: checkout için auth'a gidiyoruz
+        setPendingCheckout(true);
+        router.push("/(auth)");
         return;
       }
+
+      // Authenticated kullanıcılar için checkout'a geçmeden önce bekleyen güncellemeleri gönder
+      // throwError: true → Hata varsa toast göster
+      await flushPendingUpdates(true);
       router.push("/checkout/address");
     } catch (error: any) {
       // Flush sırasında hata olursa kullanıcıya göster

@@ -7,6 +7,7 @@ import { OTPScreenContent } from "@/components/auth/OTPScreenContent";
 import { BaseButton } from "@/components/base/BaseButton";
 import { ThemedView } from "@/components/ThemedView";
 import Colors from "@/constants/Colors";
+import { useAuth } from "@/context/AuthContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useOTP } from "@/hooks/useOTP";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -28,17 +29,22 @@ const OTPScreen = () => {
     type?: string;
   }>();
   const { t } = useTranslation();
+  const { pendingCheckout, setPendingCheckout } = useAuth();
   const colorScheme = useColorScheme() ?? "light";
   const themeColors = Colors[colorScheme];
   const insets = useSafeAreaInsets();
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
-  const handleSuccess = (isNewUser: boolean) => {
+  const handleSuccess = async (isNewUser: boolean) => {
     if (isNewUser) {
       router.replace({
         pathname: "/(auth)/user-info",
         params: { phone, type },
       });
+    } else if (pendingCheckout) {
+      // Mevcut kullanıcı ve checkout için geldiyse
+      setPendingCheckout(false);
+      router.replace("/checkout/address");
     } else {
       router.replace("/");
     }

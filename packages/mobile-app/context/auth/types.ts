@@ -73,6 +73,8 @@ export type AuthContextType = {
   isAppleSignInAvailable: boolean;
   setGuestId?: (id: string | null) => void;
   setIsGuest?: (value: boolean) => void;
+  pendingCheckout: boolean;
+  setPendingCheckout: (value: boolean) => void;
 };
 
 // Re-export shared CompleteProfilePayload for consistency
