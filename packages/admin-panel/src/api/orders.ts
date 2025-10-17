@@ -23,7 +23,11 @@ export interface Order {
   customerName: string;
   customerEmail: string;
   customerPhone: string | null;
+  shippingAddressTitle: string;
+  shippingStreet: string;
   shippingCity: string;
+  shippingPostalCode: string;
+  shippingCountry: string;
   userType: "individual" | "corporate";
   invoicePdfPath: string | null;
   invoiceGeneratedAt: string | null;

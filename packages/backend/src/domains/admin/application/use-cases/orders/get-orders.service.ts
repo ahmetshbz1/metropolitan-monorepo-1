@@ -34,7 +34,11 @@ export interface AdminOrder {
   customerName: string;
   customerEmail: string;
   customerPhone: string | null;
+  shippingAddressTitle: string;
+  shippingStreet: string;
   shippingCity: string;
+  shippingPostalCode: string;
+  shippingCountry: string;
   userType: "individual" | "corporate";
   invoicePdfPath: string | null;
   invoiceGeneratedAt: Date | null;
@@ -104,7 +108,11 @@ export class GetAdminOrdersService {
           customerName: sql<string>`concat_ws(' ', ${users.firstName}, ${users.lastName})`,
           customerEmail: users.email,
           customerPhone: users.phoneNumber,
+          shippingAddressTitle: addresses.addressTitle,
+          shippingStreet: addresses.street,
           shippingCity: addresses.city,
+          shippingPostalCode: addresses.postalCode,
+          shippingCountry: addresses.country,
           userType: users.userType,
           trackingNumber: orders.trackingNumber,
           shippingCompany: orders.shippingCompany,
@@ -209,7 +217,11 @@ export class GetAdminOrdersService {
         customerName: order.customerName,
         customerEmail: order.customerEmail,
         customerPhone: order.customerPhone,
+        shippingAddressTitle: order.shippingAddressTitle,
+        shippingStreet: order.shippingStreet,
         shippingCity: order.shippingCity,
+        shippingPostalCode: order.shippingPostalCode,
+        shippingCountry: order.shippingCountry,
         userType: order.userType === "corporate" ? "corporate" : "individual",
         invoicePdfPath: order.invoicePdfPath,
         invoiceGeneratedAt: order.invoiceGeneratedAt,

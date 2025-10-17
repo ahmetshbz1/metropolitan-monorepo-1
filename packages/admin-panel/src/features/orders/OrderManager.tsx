@@ -950,9 +950,33 @@ export const OrderManager = () => {
                         <span className="font-medium">{selectedOrder.customerPhone}</span>
                       </div>
                     )}
+                  </div>
+                </div>
+
+                <Divider />
+
+                <div>
+                  <h4 className="mb-3 text-sm font-semibold">Teslimat Adresi</h4>
+                  <div className="space-y-2 text-sm">
+                    <div>
+                      <span className="text-slate-500 dark:text-slate-400">Adres Başlığı:</span>{" "}
+                      <span className="font-medium">{selectedOrder.shippingAddressTitle}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 dark:text-slate-400">Sokak:</span>{" "}
+                      <span className="font-medium">{selectedOrder.shippingStreet}</span>
+                    </div>
                     <div>
                       <span className="text-slate-500 dark:text-slate-400">Şehir:</span>{" "}
                       <span className="font-medium">{selectedOrder.shippingCity}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 dark:text-slate-400">Posta Kodu:</span>{" "}
+                      <span className="font-medium">{selectedOrder.shippingPostalCode}</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 dark:text-slate-400">Ülke:</span>{" "}
+                      <span className="font-medium">{selectedOrder.shippingCountry}</span>
                     </div>
                   </div>
                 </div>
