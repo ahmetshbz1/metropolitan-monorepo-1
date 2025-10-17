@@ -2,7 +2,7 @@
   "expo": {
     "name": "metropolitan",
     "slug": "metropolitan",
-    "version": "1.0.11",
+    "version": "1.0.12",
     "hooks": {
       "postInstall": "cd ../shared && (bun run build || npm run build || yarn build) || true"
     },
@@ -24,7 +24,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.metropolitan.food",
-      "buildNumber": "56",
+      "buildNumber": "57",
       "deploymentTarget": "18.0",
       "config": {
         "googleSignIn": {
@@ -34,11 +34,7 @@
       "infoPlist": {
         "LSApplicationCategoryType": "public.app-category.food-and-drink",
         "CFBundleAllowMixedLocalizations": true,
-        "CFBundleLocalizations": [
-          "tr",
-          "en",
-          "pl"
-        ],
+        "CFBundleLocalizations": ["tr", "en", "pl"],
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleURLTypes": [
           {
@@ -54,9 +50,7 @@
         "com.apple.developer.in-app-payments": [
           "merchant.com.metropolitan.food"
         ],
-        "com.apple.developer.applesignin": [
-          "Default"
-        ],
+        "com.apple.developer.applesignin": ["Default"],
         "aps-environment": "production"
       },
       "usesAppleSignIn": true,
@@ -72,7 +66,7 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.metropolitan.food",
-      "versionCode": 9,
+      "versionCode": 10,
       "permissions": [
         "android.permission.RECORD_AUDIO",
         "com.google.android.c2dm.permission.RECEIVE"
