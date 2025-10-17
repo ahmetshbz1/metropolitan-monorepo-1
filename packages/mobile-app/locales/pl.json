@@ -1394,5 +1394,11 @@
     "phone": "Telefon",
     "verification": "Weryfikacja",
     "info": "Informacje"
+  },
+  "suggested_products": {
+    "title": "Sugerowane Produkty",
+    "subtitle": "Dodaj te produkty do koszyka, aby osiągnąć minimalną kwotę zamówienia",
+    "progress_title": "Minimalna Kwota Zamówienia",
+    "remaining": "pozostało"
   }
 }

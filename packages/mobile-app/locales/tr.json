@@ -1441,5 +1441,11 @@
     "phone": "Telefon",
     "verification": "Doğrulama",
     "info": "Bilgiler"
+  },
+  "suggested_products": {
+    "title": "Önerilen Ürünler",
+    "subtitle": "Minimum sipariş tutarına ulaşmak için bu ürünleri sepetinize ekleyebilirsiniz",
+    "progress_title": "Minimum Sipariş Tutarı",
+    "remaining": "kaldı"
   }
 }

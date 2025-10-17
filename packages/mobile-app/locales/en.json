@@ -1387,5 +1387,11 @@
     "phone": "Phone",
     "verification": "Verification",
     "info": "Information"
+  },
+  "suggested_products": {
+    "title": "Suggested Products",
+    "subtitle": "Add these products to your cart to reach the minimum order amount",
+    "progress_title": "Minimum Order Amount",
+    "remaining": "remaining"
   }
 }

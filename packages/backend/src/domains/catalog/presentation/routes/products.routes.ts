@@ -2,7 +2,7 @@
 //  metropolitan backend
 //  Created by Ahmet on 22.06.2025.
 
-import { and, eq, like, or } from "drizzle-orm";
+import { and, asc, eq, like, or } from "drizzle-orm";
 import { jwt } from "@elysiajs/jwt";
 import { t } from "elysia";
 
@@ -187,6 +187,80 @@ export const productRoutes = createApp()
       {
         query: t.Object({
           lang: t.Optional(t.String({ pattern: "^(tr|en|pl)$" })),
+        }),
+      }
+    )
+    // GET /api/products/suggestions - Get suggested products to complete minimum order
+    .get(
+      "/suggestions",
+      async ({ db, query, request, profile }) => {
+        const lang = query.lang || "en";
+        const userType = profile?.userType || "individual";
+        const limit = query.limit ? parseInt(query.limit) : 20;
+
+        // Az satan veya düşük stoklu ürünleri getir
+        const suggestedProducts = await db
+          .select({
+            id: products.id,
+            name: productTranslations.name,
+            description: productTranslations.description,
+            imageUrl: products.imageUrl,
+            price: products.price,
+            individualPrice: products.individualPrice,
+            corporatePrice: products.corporatePrice,
+            minQuantityIndividual: products.minQuantityIndividual,
+            minQuantityCorporate: products.minQuantityCorporate,
+            quantityPerBox: products.quantityPerBox,
+            currency: products.currency,
+            stock: products.stock,
+            categorySlug: categories.slug,
+            brand: products.brand,
+          })
+          .from(products)
+          .leftJoin(
+            productTranslations,
+            eq(products.id, productTranslations.productId)
+          )
+          .leftJoin(categories, eq(products.categoryId, categories.id))
+          .where(eq(productTranslations.languageCode, lang))
+          .orderBy(asc(products.stock)) // Düşük stoklu ürünler önce
+          .limit(limit);
+
+        const xfProto = request.headers.get('x-forwarded-proto');
+        const host = request.headers.get('host');
+        const baseUrl = xfProto && host
+          ? `${xfProto}://${host}`
+          : new URL(request.url).origin;
+
+        const formattedProducts = suggestedProducts.map((p) => {
+          const finalPrice = userType === "corporate"
+            ? (p.corporatePrice ? Number(p.corporatePrice) : Number(p.price) || 0)
+            : (p.individualPrice ? Number(p.individualPrice) : Number(p.price) || 0);
+
+          return {
+            id: p.id,
+            name: p.name,
+            description: p.description,
+            image: p.imageUrl ? `${baseUrl}${p.imageUrl}` : "",
+            price: finalPrice,
+            individualPrice: p.individualPrice ? Number(p.individualPrice) : undefined,
+            corporatePrice: p.corporatePrice ? Number(p.corporatePrice) : undefined,
+            minQuantityIndividual: p.minQuantityIndividual ?? 1,
+            minQuantityCorporate: p.minQuantityCorporate ?? 1,
+            quantityPerBox: p.quantityPerBox ?? undefined,
+            currency: p.currency,
+            stock: p.stock ?? 0,
+            category: p.categorySlug,
+            brand: p.brand || "Yayla",
+          };
+        });
+
+        return { success: true, data: formattedProducts };
+      },
+      {
+        query: t.Object({
+          lang: t.Optional(t.String({ pattern: "^(tr|en|pl)$" })),
+          limit: t.Optional(t.String()),
         }),
       }
     )

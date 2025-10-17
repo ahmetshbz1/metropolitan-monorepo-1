@@ -3,8 +3,9 @@
 //  Created by Ahmet on 16.06.2025.
 
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 
 import { BaseButton } from "@/components/base/BaseButton";
 import { ThemedText } from "@/components/ThemedText";
@@ -40,6 +41,7 @@ export function CartSummary({
   const { t } = useTranslation();
   const { paddingBottom } = useTabBarHeight();
   const { user } = useAuth();
+  const router = useRouter();
 
   const MINIMUM_ORDER_AMOUNT = 200;
   const isIndividual = user?.userType === "individual";
@@ -64,9 +66,10 @@ export function CartSummary({
       }}
     >
       {isBelowMinimum && (
-        <View
-          className="flex-row items-center mb-3 p-3 rounded-xl"
+        <TouchableOpacity
+          className="flex-row items-center mb-3 p-3 rounded-xl active:opacity-70"
           style={{ backgroundColor: colors.error + "15" }}
+          onPress={() => router.push("/suggested-products")}
         >
           <Ionicons
             name="information-circle"
@@ -82,7 +85,12 @@ export function CartSummary({
               amount: formatPrice(remainingAmount, summary.currency),
             })}
           </ThemedText>
-        </View>
+          <Ionicons
+            name="chevron-forward"
+            size={18}
+            color={colors.error}
+          />
+        </TouchableOpacity>
       )}
 
       <View className="flex-row items-center justify-between mb-3">
