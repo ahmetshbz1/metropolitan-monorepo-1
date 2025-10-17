@@ -45,6 +45,7 @@ export const orders = pgTable("orders", {
   notes: text("notes"),
   invoicePdfPath: text("invoice_pdf_path"), // Fatura PDF dosya yolu
   invoicePdfGeneratedAt: timestamp("invoice_pdf_generated_at"), // PDF oluşturma tarihi
+  fakturowniaInvoiceId: integer("fakturownia_invoice_id"), // Fakturownia API invoice ID
   cancelledAt: timestamp("cancelled_at"),
   cancelReason: text("cancel_reason"),
   createdAt: timestamp("created_at").notNull().defaultNow(),

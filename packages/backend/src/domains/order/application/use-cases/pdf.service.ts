@@ -9,6 +9,7 @@ import { fakturowniaService } from "../../../../shared/infrastructure/external/f
 
 import { FakturowniaAdapterService } from "./fakturownia-adapter.service";
 import { InvoiceCacheService } from "./invoice-cache.service";
+import { InvoiceFileService } from "./invoice-file.service";
 
 export class PDFService {
   /**
@@ -22,18 +23,32 @@ export class PDFService {
       // 1. Cache'den Fakturownia ID'sini kontrol et (eğer orderId varsa)
       let fakturowniaId: number | null = null;
       if (orderId) {
+        // Önce Redis cache'e bak
         fakturowniaId = await InvoiceCacheService.getCachedFakturowniaId(orderId);
+
+        // Redis'te yoksa database'den kontrol et
+        if (!fakturowniaId) {
+          fakturowniaId = await InvoiceFileService.getFakturowniaId(orderId);
+          if (fakturowniaId) {
+            console.log(`Database'den Fakturownia ID bulundu: ${fakturowniaId}`);
+            // Database'den bulduğumuz ID'yi Redis'e de cache'le
+            await InvoiceCacheService.cacheFakturowniaId(orderId, fakturowniaId);
+          }
+        } else {
+          console.log(`Redis cache'den Fakturownia ID bulundu: ${fakturowniaId}`);
+        }
+
+        // Fakturownia ID varsa (Redis veya database'den), PDF'i indir
         if (fakturowniaId) {
-          console.log(`Cache'den Fakturownia ID bulundu: ${fakturowniaId}`);
           try {
-            // Direkt PDF'i indir
             const pdfBuffer = await fakturowniaService.downloadInvoicePDF(fakturowniaId);
-            console.log(`Fakturownia PDF cache'den indirildi: ${fakturowniaId}`);
+            console.log(`Fakturownia PDF indirildi: ${fakturowniaId}`);
             return pdfBuffer;
           } catch (error) {
-            console.warn(`Cache'deki Fakturownia ID geçersiz, yeni fatura oluşturulacak: ${error}`);
-            // Cache'i temizle ve yeni fatura oluştur
+            console.warn(`Fakturownia ID geçersiz, yeni fatura oluşturulacak: ${error}`);
+            // Cache ve database'i temizle
             await InvoiceCacheService.clearInvoiceAndFakturowniaCache(orderId);
+            await InvoiceFileService.clearFakturowniaId(orderId);
           }
         }
       }
@@ -51,9 +66,12 @@ export class PDFService {
       const createdInvoice = await fakturowniaService.createInvoice(fakturowniaInvoice);
       console.log(`Fakturownia faturası oluşturuldu: ${createdInvoice.number} (ID: ${createdInvoice.id})`);
 
-      // 5. Fakturownia ID'sini cache'le
+      // 5. Fakturownia ID'sini hem Redis cache'e hem de database'e kaydet
       if (orderId) {
-        await InvoiceCacheService.cacheFakturowniaId(orderId, createdInvoice.id);
+        await Promise.all([
+          InvoiceCacheService.cacheFakturowniaId(orderId, createdInvoice.id),
+          InvoiceFileService.saveFakturowniaId(orderId, createdInvoice.id),
+        ]);
       }
 
       // 6. PDF'i Fakturownia'dan indir

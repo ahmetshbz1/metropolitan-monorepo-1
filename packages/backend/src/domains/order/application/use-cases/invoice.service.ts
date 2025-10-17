@@ -86,8 +86,11 @@ export class InvoiceService {
       await InvoiceFileService.deletePdf(orderId, orderInfo.userId);
     }
 
-    // Clear database paths
-    await InvoiceFileService.clearPdfPath(orderId);
+    // Clear database paths and Fakturownia ID
+    await Promise.all([
+      InvoiceFileService.clearPdfPath(orderId),
+      InvoiceFileService.clearFakturowniaId(orderId),
+    ]);
   }
 
   /**

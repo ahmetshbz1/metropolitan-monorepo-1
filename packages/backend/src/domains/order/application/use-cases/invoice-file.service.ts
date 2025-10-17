@@ -132,4 +132,50 @@ export class InvoiceFileService {
       })
       .where(eq(orders.id, orderId));
   }
+
+  /**
+   * Get Fakturownia invoice ID from database
+   */
+  static async getFakturowniaId(orderId: string): Promise<number | null> {
+    const [order] = await db
+      .select({
+        fakturowniaInvoiceId: orders.fakturowniaInvoiceId,
+      })
+      .from(orders)
+      .where(eq(orders.id, orderId))
+      .limit(1);
+
+    return order?.fakturowniaInvoiceId || null;
+  }
+
+  /**
+   * Save Fakturownia invoice ID to database
+   */
+  static async saveFakturowniaId(
+    orderId: string,
+    fakturowniaInvoiceId: number
+  ): Promise<void> {
+    await db
+      .update(orders)
+      .set({
+        fakturowniaInvoiceId: fakturowniaInvoiceId,
+      })
+      .where(eq(orders.id, orderId));
+
+    console.log(
+      `Fakturownia ID database'e kaydedildi: ${fakturowniaInvoiceId} (Order: ${orderId})`
+    );
+  }
+
+  /**
+   * Clear Fakturownia invoice ID from database
+   */
+  static async clearFakturowniaId(orderId: string): Promise<void> {
+    await db
+      .update(orders)
+      .set({
+        fakturowniaInvoiceId: null,
+      })
+      .where(eq(orders.id, orderId));
+  }
 }
