@@ -190,6 +190,13 @@
       "when": 1760221327008,
       "tag": "0026_remarkable_wild_child",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1760702817314,
+      "tag": "0027_milky_proudstar",
+      "breakpoints": true
     }
   ]
 }
