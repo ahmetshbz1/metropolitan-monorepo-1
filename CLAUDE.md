@@ -7,8 +7,17 @@ Error Handling: Hataları açıkça belirt, her zaman uygulanabilir çözüm ön
 
 Yasaklar
 
-Kesinlikle hiçbir zaman emoji kullanma kodlarda !!!
-Kesinlikle mock veri kullanma.
+**Emoji Yasağı (STRICT):**
+- Kodda emoji YASAK (değişken, fonksiyon, class, interface, type adları)
+- Yorum satırlarında emoji YASAK
+- Commit message'da emoji YASAK
+- Documentation'da emoji YASAK (README, CHANGELOG, API docs)
+- Log message'da emoji YASAK (console.log, logger)
+- Exception: SADECE user-facing UI text (kullanıcının göreceği metin)
+
+**Mock Veri Yasağı:**
+- Kesinlikle mock veri kullanma
+- Test'lerde real scenario, integration test tercih et
 
 **Tip Güvenliği:**
 - unknown + runtime schema validation (Zod/Valibot) kullan
