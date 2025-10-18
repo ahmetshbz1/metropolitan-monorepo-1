@@ -29,6 +29,15 @@ Branch Stratejisi:
 - `dev` → Geliştirme, test ve deneme
 - `main` → Production (CI/CD ile otomatik deployment)
 
+Çalışma Prensipleri:
+
+**Her zaman profesyonel, güvenli ve en garanti yöntemleri kullan:**
+- PR merge yerine direkt push yapma
+- Manuel işlem yerine otomatik süreçleri tercih et
+- Quick fix yerine doğru çözümü uygula
+- Test edilmemiş kod deploy etme
+- Backup almadan kritik değişiklik yapma
+
 Kodlama Kuralları
 
 Her dosya maksimum 400 satır, ideal olarak 300 satır kod içermeli.
