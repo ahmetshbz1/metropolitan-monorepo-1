@@ -10,10 +10,17 @@ Yasaklar
 Kesinlikle hiçbir zaman emoji kullanma kodlarda !!!
 Kesinlikle mock veri kullanma.
 
-Kesinlikle any tipi kullanma; her zaman güçlü ve doğru tipleri kullan.
+**Tip Güvenliği:**
+- unknown + runtime schema validation (Zod/Valibot) kullan
+- Type narrowing zorunlu (typeof, instanceof, type guards)
+- any SADECE: 3rd-party tip boşluklarında, izole tip katmanında
+- any kullanırsan: // TODO: Remove any - proper type needed şeklinde işaretle
+- Her zaman güçlü ve doğru tiplere doğru evrimlendir
 
-Asla server veya app başlatma / build etme komutları çalıştırma.
-(örn: bun run dev, yarn dev, npm start, yarn start, vb.)
+**Lokal başlatma YASAK:**
+- bun run dev, yarn dev, npm start → CI/CD'de otomatik çalışır
+- Agent scope: kod yazma, analiz, deployment hazırlık
+- Build/Start: GitHub Actions veya production pipeline'da
 
 Ben izin vermeden commit veya push yapma.
 
@@ -38,7 +45,11 @@ Branch Stratejisi:
 - Manuel işlem yerine otomatik süreçleri tercih et
 - Quick fix yerine doğru çözümü uygula
 - Test edilmemiş kod deploy etme
-- Backup almadan kritik değişiklik yapma
+- **Migration/Schema değişikliği:**
+  - Otomatik snapshot al (DB, config, state)
+  - Rollback planı hazırla (geri dönüş adımları)
+  - Dry-run ile test et
+  - Backup verify et (restore test)
 
 Kodlama Kuralları
 
@@ -98,14 +109,17 @@ Clean Code Best Practices:
 - İlgili kodlar bir arada (cohesion)
 - Public/private ayrımı net
 - Import'lar organize (external → internal → types)
-- Barrel export kullan (index.ts)
+- Barrel export: İç modüllerde kullan, public API'de tree-shaking'e dikkat
 - Folder structure mantıklı ve scalable
 
 **Testing:**
-- Unit test yaz (critical logic için)
+- **Coverage hedefleri:**
+  - Critical core logic: %90 line/branch coverage
+  - Diğer modüller: %70 minimum
+- **Test türleri:** Contract + Property + Regression karışımı
 - Edge case'leri test et
 - Mock data YASAK, real scenario kullan
-- Test coverage önemli noktaları kapsasın
+- Integration test: API contract'ları doğrula
 
 **Documentation:**
 - Karmaşık logic için yorum yaz (WHY, not WHAT)
@@ -117,30 +131,30 @@ Araştırma ve Kaynak Kullanımı:
 
 **Bilmediğin konularda ASLA halis görme:**
 - Emin değilsen MUTLAKA araştır
-- Sistem tarihini kullan (<env> içinde "Today's date" var)
-- Güncel yıl 2025 ise, 2025 verilerini ara
-- Eski dökümanları (2024 ve öncesi) kullanma
-- Her zaman en güncel kaynaklara git
+- **Sürüm bazlı doğrula:** Latest/stable version kontrol et
+- **Official documentation öncelikli** (yıl değil, güncellik önemli)
+- Deprecated/outdated docs yerine güncel sürüm docs kullan
+- Breaking changes ve migration guide'ları kontrol et
 
 **MCP Araçlarını Efektif Kullan:**
 - **exa-code**: Kod örnekleri, library/API kullanımı, SDK docs
 - **context7**: Güncel library documentation (resolve-library-id → get-library-docs)
-- **WebSearch**: Genel sorular, troubleshooting, "2025" keyword'ü ekle
+- **WebSearch**: Genel sorular, troubleshooting, sistem tarihini kullan
 - **WebFetch**: Spesifik URL'den bilgi çek (official docs)
 
 **Doğru Kaynak Seçimi:**
-✅ Official documentation (1. öncelik)
-✅ GitHub repo README/docs (güncel)
-✅ Stack Overflow verified answers (recent)
-✅ 2025 tarihli blog/article'lar
-❌ 2024 ve öncesi dökümanlar (deprecated olabilir)
-❌ Eski library versiyonları
+✅ Official documentation (latest/stable version)
+✅ GitHub repo README/docs (current release)
+✅ Stack Overflow verified answers (check date + version)
+✅ Recent blog/articles (sürüm match kontrolü yap)
+❌ Deprecated/outdated documentation
+❌ Eski library versiyonları (migration gerekli)
 ❌ Tahmin ve varsayım
-❌ Outdated tutorials
+❌ Version mismatch tutorials
 
 **Araştırma Yaklaşımı:**
-- Sistem tarihinden güncel yılı al
-- "library-name 2025" şeklinde ara
-- Latest/stable version'ı kullan
-- Breaking changes kontrol et
-- Migration guide'lara bak
+- Library version kontrol et (package.json, latest release)
+- "library-name latest version" veya "library-name vX.X" ara
+- Breaking changes ve changelog oku
+- Migration guide varsa uygula
+- Deprecated API'leri kullanma
