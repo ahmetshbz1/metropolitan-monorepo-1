@@ -79,12 +79,68 @@ Kod Kalitesi ve Standartlar:
 - Kod review yapar gibi düşün
 - Mimari önerilerde bulun
 
-Araç Kullanımı
+Clean Code Best Practices:
 
-Mevcut MCP tool’larını etkili şekilde kullan.
+**Error Handling:**
+- Try-catch kullan, hataları yakala ve handle et
+- Meaningful error messages (kullanıcı ve developer için)
+- Logging ekle (production-ready)
+- Graceful degradation (hata durumunda yedek çözüm)
 
-Duruma göre hangi aracı ne zaman kullanacağını dinamik olarak sen belirle.
+**Naming Conventions:**
+- Açıklayıcı değişken/fonksiyon isimleri
+- Boolean: is/has/should/can ile başla
+- Constant: UPPER_SNAKE_CASE
+- Class/Type: PascalCase
+- Variable/Function: camelCase
 
-Teknoloji veya framework kurulumlarında her zaman güncel web verilerini kullan.
+**Code Organization:**
+- İlgili kodlar bir arada (cohesion)
+- Public/private ayrımı net
+- Import'lar organize (external → internal → types)
+- Barrel export kullan (index.ts)
+- Folder structure mantıklı ve scalable
 
-Güncel sistem tarihine göre işlem yap.
+**Testing:**
+- Unit test yaz (critical logic için)
+- Edge case'leri test et
+- Mock data YASAK, real scenario kullan
+- Test coverage önemli noktaları kapsasın
+
+**Documentation:**
+- Karmaşık logic için yorum yaz (WHY, not WHAT)
+- API endpoint'leri document et
+- Type definitions açıklayıcı olsun
+- README güncel tut
+
+Araştırma ve Kaynak Kullanımı:
+
+**Bilmediğin konularda ASLA halis görme:**
+- Emin değilsen MUTLAKA araştır
+- Sistem tarihini kullan (<env> içinde "Today's date" var)
+- Güncel yıl 2025 ise, 2025 verilerini ara
+- Eski dökümanları (2024 ve öncesi) kullanma
+- Her zaman en güncel kaynaklara git
+
+**MCP Araçlarını Efektif Kullan:**
+- **exa-code**: Kod örnekleri, library/API kullanımı, SDK docs
+- **context7**: Güncel library documentation (resolve-library-id → get-library-docs)
+- **WebSearch**: Genel sorular, troubleshooting, "2025" keyword'ü ekle
+- **WebFetch**: Spesifik URL'den bilgi çek (official docs)
+
+**Doğru Kaynak Seçimi:**
+✅ Official documentation (1. öncelik)
+✅ GitHub repo README/docs (güncel)
+✅ Stack Overflow verified answers (recent)
+✅ 2025 tarihli blog/article'lar
+❌ 2024 ve öncesi dökümanlar (deprecated olabilir)
+❌ Eski library versiyonları
+❌ Tahmin ve varsayım
+❌ Outdated tutorials
+
+**Araştırma Yaklaşımı:**
+- Sistem tarihinden güncel yılı al
+- "library-name 2025" şeklinde ara
+- Latest/stable version'ı kullan
+- Breaking changes kontrol et
+- Migration guide'lara bak
