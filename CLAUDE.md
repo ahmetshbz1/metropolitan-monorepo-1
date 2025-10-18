@@ -19,11 +19,15 @@ Ben izin vermeden commit veya push yapma.
 
 Workflow
 
-Main branch üzerinde çalış.
+**Dev branch** üzerinde çalış (geliştirme ortamı).
 
 Kodunu test et.
 
-Prod’a merge et.
+Pull Request ile **main branch'e** merge et (production'a otomatik deploy).
+
+Branch Stratejisi:
+- `dev` → Geliştirme, test ve deneme
+- `main` → Production (CI/CD ile otomatik deployment)
 
 Kodlama Kuralları
 

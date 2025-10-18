@@ -1,0 +1,155 @@
+name: Deploy Production
+
+on:
+  push:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: ${{ github.repository_owner }}/metropolitan
+
+jobs:
+  build-and-push:
+    name: Build & Push Images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      matrix:
+        service:
+          - name: backend
+            dockerfile: ./packages/backend/Dockerfile.new
+            build-args: ""
+          - name: admin-panel
+            dockerfile: ./packages/admin-panel/Dockerfile
+            build-args: |
+              VITE_API_URL=https://api.metropolitanfg.pl
+              VITE_NODE_ENV=production
+          - name: web-app
+            dockerfile: ./packages/web-app/Dockerfile
+            build-args: |
+              NEXT_PUBLIC_API_URL=https://api.metropolitanfg.pl
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service.name }}
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix=prod-
+
+      - name: Build and push ${{ matrix.service.name }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ matrix.service.dockerfile }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: ${{ matrix.service.build-args }}
+
+  deploy:
+    name: Deploy to Production
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Pre-deployment backup
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'ENDSSH'
+            echo "Creating pre-deployment backup..."
+            mkdir -p /opt/backups
+            docker exec metropolitan_postgres pg_dump -U metropolitan_prod metropolitan_production > /opt/backups/pre-deploy-$(date +%Y%m%d-%H%M%S).sql
+            echo "Backup completed"
+          ENDSSH
+
+      - name: Deploy to server
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'ENDSSH'
+            set -e
+
+            echo "Navigating to project directory..."
+            cd /opt/metropolitan
+
+            echo "Pulling latest code..."
+            git fetch origin
+            git reset --hard origin/main
+
+            echo "Copying production environment..."
+            cp /opt/metropolitan.env .env
+
+            echo "Logging in to GHCR..."
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            echo "Pulling latest images..."
+            docker-compose pull backend admin-panel web-app
+
+            echo "Restarting services..."
+            docker-compose up -d backend admin-panel web-app
+
+            echo "Waiting for services to be healthy..."
+            sleep 10
+
+            echo "Deployment completed!"
+          ENDSSH
+
+      - name: Health check
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'ENDSSH'
+            echo "Running health checks..."
+
+            # Backend health check
+            max_attempts=30
+            attempt=0
+            until docker exec metropolitan_backend curl -f http://localhost:3000/health || [ $attempt -eq $max_attempts ]; do
+              attempt=$((attempt + 1))
+              echo "Waiting for backend to be healthy... Attempt $attempt/$max_attempts"
+              sleep 2
+            done
+
+            if [ $attempt -eq $max_attempts ]; then
+              echo "Backend health check failed!"
+              exit 1
+            fi
+
+            echo "All services are healthy!"
+          ENDSSH
+
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -f ~/.ssh/deploy_key
+
+      - name: Deployment notification
+        if: success()
+        run: |
+          echo "Deployment successful! Backend: https://api.metropolitanfg.pl/health"
