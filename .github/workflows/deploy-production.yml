@@ -1,4 +1,4 @@
-name: Deploy Production
+name: Deploy Production (Optimized)
 
 on:
   push:
@@ -9,28 +9,42 @@ env:
   IMAGE_PREFIX: ${{ github.repository_owner }}/metropolitan
 
 jobs:
-  build-and-push:
-    name: Build & Push Images
+  # Detect which services changed
+  detect-changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      admin-panel: ${{ steps.filter.outputs.admin-panel }}
+      web-app: ${{ steps.filter.outputs.web-app }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check for changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'packages/backend/**'
+              - 'packages/shared/**'
+            admin-panel:
+              - 'packages/admin-panel/**'
+              - 'packages/shared/**'
+            web-app:
+              - 'packages/web-app/**'
+              - 'packages/shared/**'
+
+  # Build Backend (only if changed)
+  build-backend:
+    name: Build Backend
+    needs: detect-changes
+    if: needs.detect-changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-
-    strategy:
-      matrix:
-        service:
-          - name: backend
-            dockerfile: ./packages/backend/Dockerfile
-            build-args: ""
-          - name: admin-panel
-            dockerfile: ./packages/admin-panel/Dockerfile
-            build-args: |
-              VITE_API_URL=https://api.metropolitanfg.pl
-              VITE_NODE_ENV=production
-          - name: web-app
-            dockerfile: ./packages/web-app/Dockerfile
-            build-args: |
-              NEXT_PUBLIC_API_URL=https://api.metropolitanfg.pl
 
     steps:
       - name: Checkout repository
@@ -39,7 +53,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to GitHub Container Registry
+      - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
@@ -50,26 +64,120 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-${{ matrix.service.name }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-backend
           tags: |
             type=raw,value=latest
             type=sha,prefix=prod-
 
-      - name: Build and push ${{ matrix.service.name }}
+      - name: Build and push Backend
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ${{ matrix.service.dockerfile }}
+          file: ./packages/backend/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          build-args: ${{ matrix.service.build-args }}
 
+  # Build Admin Panel (only if changed)
+  build-admin-panel:
+    name: Build Admin Panel
+    needs: detect-changes
+    if: needs.detect-changes.outputs.admin-panel == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-admin-panel
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix=prod-
+
+      - name: Build and push Admin Panel
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./packages/admin-panel/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            VITE_API_URL=https://api.metropolitanfg.pl
+            VITE_NODE_ENV=production
+
+  # Build Web App (only if changed)
+  build-web-app:
+    name: Build Web App
+    needs: detect-changes
+    if: needs.detect-changes.outputs.web-app == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}-web-app
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix=prod-
+
+      - name: Build and push Web App
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./packages/web-app/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            NEXT_PUBLIC_API_URL=https://api.metropolitanfg.pl
+
+  # Deploy to production
   deploy:
     name: Deploy to Production
-    needs: build-and-push
+    needs: [detect-changes, build-backend, build-admin-panel, build-web-app]
+    if: always() && !cancelled() && !contains(needs.*.result, 'failure')
     runs-on: ubuntu-latest
 
     steps:
@@ -92,32 +200,51 @@ jobs:
             echo "Backup completed"
           ENDSSH
 
-      - name: Deploy to server
+      - name: Deploy changed services
+        env:
+          BACKEND_CHANGED: ${{ needs.detect-changes.outputs.backend }}
+          ADMIN_CHANGED: ${{ needs.detect-changes.outputs.admin-panel }}
+          WEBAPP_CHANGED: ${{ needs.detect-changes.outputs.web-app }}
         run: |
           ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'ENDSSH'
             set -e
 
-            echo "Navigating to project directory..."
             cd /opt/metropolitan
-
-            echo "Pulling latest code..."
             git fetch origin
             git reset --hard origin/main
-
-            echo "Copying production environment..."
             cp /opt/metropolitan.env .env
 
             echo "Logging in to GHCR..."
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
-            echo "Pulling latest images..."
-            docker-compose pull backend admin-panel web-app
+            # Determine which services to update
+            SERVICES=""
 
-            echo "Restarting services..."
-            docker-compose up -d backend admin-panel web-app
+            if [ "$BACKEND_CHANGED" = "true" ]; then
+              echo "Backend changed, pulling latest image..."
+              docker-compose pull backend
+              SERVICES="$SERVICES backend"
+            fi
 
-            echo "Waiting for services to be healthy..."
-            sleep 10
+            if [ "$ADMIN_CHANGED" = "true" ]; then
+              echo "Admin panel changed, pulling latest image..."
+              docker-compose pull admin-panel
+              SERVICES="$SERVICES admin-panel"
+            fi
+
+            if [ "$WEBAPP_CHANGED" = "true" ]; then
+              echo "Web app changed, pulling latest image..."
+              docker-compose pull web-app
+              SERVICES="$SERVICES web-app"
+            fi
+
+            if [ -n "$SERVICES" ]; then
+              echo "Restarting services: $SERVICES"
+              docker-compose up -d $SERVICES
+              sleep 10
+            else
+              echo "No services changed, skipping restart"
+            fi
 
             echo "Deployment completed!"
           ENDSSH
@@ -127,29 +254,35 @@ jobs:
           ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'ENDSSH'
             echo "Running health checks..."
 
-            # Backend health check
             max_attempts=30
             attempt=0
             until docker exec metropolitan_backend curl -f http://localhost:3000/health || [ $attempt -eq $max_attempts ]; do
               attempt=$((attempt + 1))
-              echo "Waiting for backend to be healthy... Attempt $attempt/$max_attempts"
+              echo "Waiting for backend... Attempt $attempt/$max_attempts"
               sleep 2
             done
 
             if [ $attempt -eq $max_attempts ]; then
-              echo "Backend health check failed!"
+              echo "Health check failed!"
               exit 1
             fi
 
-            echo "All services are healthy!"
+            echo "All services healthy!"
           ENDSSH
 
       - name: Cleanup
         if: always()
-        run: |
-          rm -f ~/.ssh/deploy_key
+        run: rm -f ~/.ssh/deploy_key
 
-      - name: Deployment notification
+      - name: Deployment summary
         if: success()
+        env:
+          BACKEND_CHANGED: ${{ needs.detect-changes.outputs.backend }}
+          ADMIN_CHANGED: ${{ needs.detect-changes.outputs.admin-panel }}
+          WEBAPP_CHANGED: ${{ needs.detect-changes.outputs.web-app }}
         run: |
-          echo "Deployment successful! Backend: https://api.metropolitanfg.pl/health"
+          echo "Deployment successful!"
+          echo "Changed services:"
+          [ "$BACKEND_CHANGED" = "true" ] && echo "- Backend" || echo "- Backend (skipped)"
+          [ "$ADMIN_CHANGED" = "true" ] && echo "- Admin Panel" || echo "- Admin Panel (skipped)"
+          [ "$WEBAPP_CHANGED" = "true" ] && echo "- Web App" || echo "- Web App (skipped)"
