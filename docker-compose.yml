@@ -50,10 +50,8 @@ services:
 
   # Backend API Service
   backend:
-    build:
-      context: .
-      dockerfile: packages/backend/Dockerfile
-    image: metropolitan/backend:latest
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-ahmetshbz1}/metropolitan-backend:latest
+    pull_policy: always
     container_name: metropolitan_backend
     restart: unless-stopped
     depends_on:
@@ -123,19 +121,8 @@ services:
 
   # Web Application
   web-app:
-    build:
-      context: .
-      dockerfile: packages/web-app/Dockerfile
-      args:
-        NEXT_PUBLIC_API_URL: https://api.metropolitanfg.pl
-        NEXT_PUBLIC_FIREBASE_API_KEY: ${NEXT_PUBLIC_FIREBASE_API_KEY}
-        NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN}
-        NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${NEXT_PUBLIC_FIREBASE_PROJECT_ID}
-        NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}
-        NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID}
-        NEXT_PUBLIC_FIREBASE_APP_ID: ${NEXT_PUBLIC_FIREBASE_APP_ID}
-        NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID: ${NEXT_PUBLIC_GOOGLE_WEB_CLIENT_ID}
-    image: metropolitan/web-app:latest
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-ahmetshbz1}/metropolitan-web-app:latest
+    pull_policy: always
     container_name: metropolitan_web
     restart: unless-stopped
     environment:
@@ -162,14 +149,8 @@ services:
 
   # Admin Panel
   admin-panel:
-    build:
-      context: .
-      dockerfile: packages/admin-panel/Dockerfile
-      args:
-        VITE_API_URL: https://api.metropolitanfg.pl
-        VITE_ADMIN_API_KEY: ${ADMIN_API_KEY}
-        VITE_NODE_ENV: production
-    image: metropolitan/admin-panel:latest
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-ahmetshbz1}/metropolitan-admin-panel:latest
+    pull_policy: always
     container_name: metropolitan_admin
     restart: unless-stopped
     depends_on:

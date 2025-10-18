@@ -1,4 +1,25 @@
-# Metropolitan Deployment Guide
+# Metropolitan Deployment Guide (CI/CD)
+
+## 🎯 CI/CD Automated Deployment
+
+**Bu proje GitHub Actions ile otomatik deployment kullanır. Manuel build işlemleri artık KULLANILMAMAKTADIR.**
+
+### Branch Stratejisi
+- **dev** → Geliştirme ortamı (build only, auto deploy YOK)
+- **main** → Production (otomatik build + deploy)
+
+### Deployment Akışı
+1. `dev` branch'te geliştirme yap
+2. Test et, commit yap, push et
+3. GitHub Actions `dev` branch için image build eder (test amaçlı)
+4. Pull Request oluştur: `dev` → `main`
+5. PR merge edilince **otomatik production deployment** başlar:
+   - Docker image'ları build eder (GHCR'de)
+   - Sunucuya SSH ile bağlanır
+   - Pre-deployment backup alır
+   - Yeni image'ları pull eder
+   - Container'ları restart eder (volume'lar korunur)
+   - Health check yapar
 
 ## 🚀 Production Server
 
@@ -6,13 +27,15 @@
 - **Domain**: api.metropolitanfg.pl
 - **OS**: Ubuntu 22.04
 - **Location**: Hetzner Cloud
+- **Container Registry**: GitHub Container Registry (GHCR)
 
 ## 📁 Directory Structure
 
 ```
 /opt/
 ├── metropolitan/              # Git repository (main branch)
-└── metropolitan.env           # Production environment variables
+├── metropolitan.env           # Production environment variables
+└── backups/                   # Auto backups (pre-deployment)
 ```
 
 ## 🔧 Server Configuration
@@ -35,40 +58,85 @@ Host metropolitan-deploy
 - **Backend**: Bun + Elysia.js (port 3000)
 - **PostgreSQL**: Version 16 (port 5432)
 - **Redis**: Version 7 (port 6379)
+- **Web-App**: Next.js (port 3001)
+- **Admin-Panel**: Vite + React (port 3002)
 
-## 🚢 Deployment Process
+## 🚢 CI/CD Deployment Process
 
-### Quick Deploy (Backend + Admin Panel)
+### Otomatik Deployment (Önerilen Yöntem)
+
+Main branch'e her push otomatik deploy tetikler:
+
 ```bash
-ssh metropolitan-deploy "cd /opt/metropolitan && git fetch origin && git reset --hard origin/main && cp /opt/metropolitan.env .env && docker-compose down && docker-compose build --no-cache backend admin-panel && docker-compose up -d"
+# 1. Dev branch'te geliştir
+git checkout dev
+# ... değişiklikler yap ...
+git add .
+git commit -m "feat: yeni özellik ekle"
+git push origin dev
+
+# 2. GitHub'da Pull Request oluştur (dev → main)
+# 3. PR'ı merge et
+# 4. GitHub Actions otomatik deploy başlar!
 ```
 
-### Manual Deploy Steps
+**GitHub Actions Pipeline:**
+1. ✅ Tüm servisleri build et (backend, admin-panel, web-app)
+2. ✅ Docker image'ları GHCR'ye push et
+3. ✅ Sunucuya SSH bağlan
+4. ✅ Database backup al (otomatik)
+5. ✅ Latest image'ları pull et
+6. ✅ Container'ları restart et
+7. ✅ Health check yap
+8. ✅ Başarısız olursa hata logla
+
+### Manuel Deployment (Acil Durum)
+
+**YALNIZCA ACİL DURUMLARDA** kullan:
+
 ```bash
-# 1. SSH to server
+# SSH ile sunucuya bağlan
 ssh metropolitan-deploy
 
-# 2. Navigate to project
+# Deployment script'i çalıştır
 cd /opt/metropolitan
+bash deployment/deploy.sh
+```
 
-# 3. Pull latest changes from main branch
-git fetch origin
-git reset --hard origin/main
+## 🔐 GitHub Secrets Configuration
 
-# 4. Copy production env
-cp /opt/metropolitan.env .env
+Repository Settings → Secrets and variables → Actions → New repository secret:
 
-# 5. Rebuild backend and admin panel
-docker-compose down
-docker-compose build --no-cache backend admin-panel
-docker-compose up -d
+```bash
+SSH_HOST=91.99.232.146
+SSH_USER=root
+SSH_PRIVATE_KEY=<sunucu SSH private key>
+```
+
+**GITHUB_TOKEN** otomatik olarak mevcut (GHCR için).
+
+## 📦 Container Registry
+
+### GHCR Image'ları
+
+```bash
+ghcr.io/ahmetshbz1/metropolitan-backend:latest
+ghcr.io/ahmetshbz1/metropolitan-admin-panel:latest
+ghcr.io/ahmetshbz1/metropolitan-web-app:latest
+```
+
+### Sunucuda GHCR Login
+
+```bash
+# GitHub personal access token ile login
+echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
 ```
 
 ## 🔐 Environment Variables
 
-Production environment variables are stored in `/opt/metropolitan.env` on the server.
+Production environment variables `/opt/metropolitan.env` dosyasında saklanır.
 
-See `deployment/.env.production.example` for required variables.
+Gerekli değişkenler için `deployment/.env.production.example` dosyasına bakın.
 
 ### Stripe Configuration
 ```env
@@ -81,232 +149,167 @@ NODE_ENV=production → Returns live keys
 STRIPE_PUBLISHABLE_KEY_LIVE=pk_live_...
 ```
 
-## 🍎 Apple Review Mode
-
-During Apple Review, set the server to development mode:
-
-1. Edit `docker-compose.yml`:
-```yaml
-environment:
-  NODE_ENV: development  # Change from production
-```
-
-2. Commit and deploy:
-```bash
-git add docker-compose.yml
-git commit -m "temp: Enable development mode for Apple Review"
-git push origin main
-# Then deploy using Quick Deploy command above
-```
-
-3. After approval, revert to production:
-```yaml
-environment:
-  NODE_ENV: production  # Change back
-```
-
 ## 📊 Monitoring
 
 ### View Logs
 ```bash
-# All services
-ssh metropolitan-deploy "docker-compose logs -f"
+# Backend logs (real-time)
+ssh metropolitan-deploy "docker logs -f metropolitan_backend"
 
-# Backend only
-ssh metropolitan-deploy "docker-compose logs -f backend"
+# Admin panel logs
+ssh metropolitan-deploy "docker logs -f metropolitan_admin"
 
-# Last 100 lines
-ssh metropolitan-deploy "docker-compose logs --tail=100 backend"
+# Web-app logs
+ssh metropolitan-deploy "docker logs -f metropolitan_web"
+
+# Son 100 satır
+ssh metropolitan-deploy "docker logs --tail=100 metropolitan_backend"
 ```
 
 ### Check Status
 ```bash
-# Service status
+# Tüm container'ları kontrol et
 ssh metropolitan-deploy "docker-compose ps"
 
-# System resources
+# Sistem kaynakları
 ssh metropolitan-deploy "docker stats --no-stream"
+
+# Health check
+ssh metropolitan-deploy "curl -f https://api.metropolitanfg.pl/health"
 ```
 
 ### Restart Services
 ```bash
-# Restart backend only
+# Backend restart
 ssh metropolitan-deploy "docker-compose restart backend"
 
-# Restart all services
+# Tüm servisleri restart
 ssh metropolitan-deploy "docker-compose restart"
 ```
 
 ## 💡 Common Operations
 
-### Quick Rebuild After Code Changes
-```bash
-# Fast rebuild (only rebuild TypeScript inside running container)
-ssh metropolitan-deploy "cd /opt/metropolitan && git fetch origin && git reset --hard origin/main && docker exec metropolitan_backend bun run build && docker restart metropolitan_backend"
+### Local Development
 
-# Full rebuild (slower, rebuilds Docker image)
-ssh metropolitan-deploy "cd /opt/metropolitan && git fetch origin && git reset --hard origin/main && docker-compose build --no-cache backend && docker-compose up -d backend"
+```bash
+# Local'de development build (sunucuya değil)
+docker-compose -f docker-compose.dev.yml up -d
+
+# Local build ile test
+docker-compose -f docker-compose.dev.yml build backend
+docker-compose -f docker-compose.dev.yml up backend
 ```
 
-### Important Notes
-- **Always use `cd /opt/metropolitan`** before docker-compose commands
-- **Container names**: Use `metropolitan_backend`, `metropolitan_postgres`, etc. (NOT service names like `backend`, `postgres`)
-- **Service names**: Use `backend`, `postgres`, etc. in `docker-compose` commands
-- **Environment file**: Copy `/opt/metropolitan.env` to `.env` when needed
-- **Rebuild vs Restart**:
-  - `docker exec ... bun run build && docker restart`: Fast, only recompiles code
-  - `docker-compose build --no-cache`: Slow, rebuilds entire Docker image
+### Check Deployment Status
 
-### Check Container Status
 ```bash
-# List all containers
-ssh metropolitan-deploy "cd /opt/metropolitan && docker-compose ps"
+# GitHub Actions workflow'larını kontrol et
+# Repository → Actions → Latest workflow run
 
-# Check specific container logs
-ssh metropolitan-deploy "docker logs --tail 50 metropolitan_backend"
-ssh metropolitan-deploy "docker logs --tail 50 metropolitan_admin"
-ssh metropolitan-deploy "docker logs --tail 50 metropolitan_postgres"
+# Sunucuda container status
+ssh metropolitan-deploy "docker-compose ps"
 
-# Follow logs in real-time
-ssh metropolitan-deploy "docker logs -f metropolitan_backend"
-
-# Filter logs for specific keywords
-ssh metropolitan-deploy "docker logs --tail 100 metropolitan_backend 2>&1 | grep -i error"
-ssh metropolitan-deploy "docker logs --tail 100 metropolitan_backend 2>&1 | grep -i 'stock rollback'"
+# Health endpoint
+curl https://api.metropolitanfg.pl/health
 ```
 
-### Access Services
+### Rollback (Image Geri Alma)
+
 ```bash
-# Backend shell
-ssh metropolitan-deploy "docker exec -it metropolitan_backend sh"
+# Son çalışan image'a geri dön
+ssh metropolitan-deploy "cd /opt/metropolitan && docker-compose pull && docker-compose up -d"
 
-# PostgreSQL shell
-ssh metropolitan-deploy "docker exec -it metropolitan_postgres psql -U postgres -d metropolitan"
-
-# Redis CLI
-ssh metropolitan-deploy "docker exec -it metropolitan_redis redis-cli"
-
-# Check Redis stock data
-ssh metropolitan-deploy "docker exec -it metropolitan_redis redis-cli --scan --pattern 'product:*:stock'"
+# Spesifik commit SHA'ya dön (manual)
+ssh metropolitan-deploy "cd /opt/metropolitan && git checkout <COMMIT_SHA> && bash deployment/deploy.sh"
 ```
 
 ## 🐛 Troubleshooting
 
+### Deployment Failed
+
+```bash
+# 1. GitHub Actions logs kontrol et
+# Repository → Actions → Failed workflow → Logs
+
+# 2. Sunucu logları kontrol et
+ssh metropolitan-deploy "docker logs --tail=200 metropolitan_backend"
+
+# 3. Health check
+ssh metropolitan-deploy "curl -v http://localhost:3000/health"
+
+# 4. Container status
+ssh metropolitan-deploy "docker-compose ps"
+```
+
 ### Database Issues
 ```bash
-# Check PostgreSQL logs
-ssh metropolitan-deploy "docker-compose logs postgres"
+# PostgreSQL logs
+ssh metropolitan-deploy "docker logs metropolitan_postgres"
 
-# Access PostgreSQL
-ssh metropolitan-deploy "docker-compose exec postgres psql -U metropolitan"
+# Database bağlantı testi
+ssh metropolitan-deploy "docker exec metropolitan_postgres psql -U metropolitan_prod -d metropolitan_production -c 'SELECT 1;'"
 ```
 
-### Redis Issues
+### Image Pull Issues
 ```bash
-# Check Redis logs
-ssh metropolitan-deploy "docker-compose logs redis"
+# GHCR login kontrolü
+ssh metropolitan-deploy "docker login ghcr.io -u ahmetshbz1"
 
-# Access Redis CLI
-ssh metropolitan-deploy "docker-compose exec redis redis-cli"
-```
-
-### Port Conflicts
-```bash
-# Check what's using port 3000
-ssh metropolitan-deploy "lsof -i :3000"
-
-# Kill process on port
-ssh metropolitan-deploy "kill -9 $(lsof -t -i:3000)"
+# Manuel image pull
+ssh metropolitan-deploy "docker pull ghcr.io/ahmetshbz1/metropolitan-backend:latest"
 ```
 
 ## 🔄 Backup & Restore
 
-### Database Backup
-```bash
-# Create backup
-ssh metropolitan-deploy "docker-compose exec postgres pg_dump -U metropolitan metropolitan_db > /opt/backup-$(date +%Y%m%d).sql"
+### Otomatik Backup
 
-# Download backup
-scp metropolitan-deploy:/opt/backup-*.sql ./backups/
+Her deployment öncesi otomatik backup alınır:
+```bash
+/opt/backups/pre-deploy-YYYYMMDD-HHMMSS.sql
 ```
 
-### Database Restore
+### Manuel Backup
 ```bash
-# Upload backup
-scp ./backup.sql metropolitan-deploy:/opt/
+# Database backup al
+ssh metropolitan-deploy "docker exec metropolitan_postgres pg_dump -U metropolitan_prod metropolitan_production > /opt/backups/manual-backup-$(date +%Y%m%d).sql"
 
-# Restore database
-ssh metropolitan-deploy "docker-compose exec -T postgres psql -U metropolitan metropolitan_db < /opt/backup.sql"
+# Backup'ı local'e indir
+scp metropolitan-deploy:/opt/backups/manual-backup-*.sql ./backups/
 ```
 
-## 🌐 DNS & SSL
-
-### Domain Configuration
-- Domain registrar: (Your registrar)
-- DNS provider: (Your DNS provider)
-- A Record: `api.metropolitanfg.pl` → `91.99.232.146`
-
-### SSL Certificate
-- Provider: Let's Encrypt (Certbot)
-- Auto-renewal: Enabled via cron job
-- Check expiry: `ssh metropolitan-deploy "certbot certificates"`
-
-## 📝 Notes
-
-1. **Always test locally first** before deploying to production
-2. **Keep main branch stable** - only push tested changes
-3. **Monitor after deployment** - Check logs for errors
-4. **Backup before major changes** - Database and .env file
-5. **Document any manual changes** made on the server
-
-## 🆘 Emergency Contacts
-
-- Server Provider: Hetzner Cloud
-- Domain Provider: (Your provider)
-- SSL Issues: Check Certbot logs
-- Database Issues: Check PostgreSQL logs
-
-## 🌐 Web Application Deployment
-
-See `deployment/WEB_DEPLOYMENT_GUIDE.md` for detailed web-app deployment instructions.
-
-### Quick Web Deployment
-
+### Restore
 ```bash
-# Deploy only web-app
-ssh metropolitan-deploy "cd /opt/metropolitan && git fetch origin && git reset --hard origin/main && docker-compose build --no-cache web-app && docker-compose up -d web-app"
+# Backup'ı sunucuya yükle
+scp ./backup.sql metropolitan-deploy:/tmp/
+
+# Restore et
+ssh metropolitan-deploy "docker exec -i metropolitan_postgres psql -U metropolitan_prod metropolitan_production < /tmp/backup.sql"
 ```
 
-## 📌 Quick Commands
+## 📝 Important Notes
+
+1. ✅ **CI/CD kullan** - Manuel build artık KULLANILMIYOR
+2. ✅ **Dev branch'te çalış** - Main branch production deployment tetikler
+3. ✅ **Volume'lar korunur** - Deployment sırasında veriler kaybolmaz
+4. ✅ **Otomatik backup** - Her deployment öncesi backup alınır
+5. ✅ **Health check** - Deployment başarısız olursa otomatik tespit edilir
+6. ⚠️ **Main branch'e dikkatli push** - Her push production'a deploy eder!
+
+## 🌐 Quick Commands Cheat Sheet
 
 ```bash
-# Deploy all services (backend + admin-panel + web-app)
-ssh metropolitan-deploy "cd /opt/metropolitan && git fetch origin && git reset --hard origin/main && cp /opt/metropolitan.env .env && docker-compose down && docker-compose build --no-cache && docker-compose up -d"
-
-# Deploy only backend
-ssh metropolitan-deploy "cd /opt/metropolitan && git fetch origin && git reset --hard origin/main && docker-compose build --no-cache backend && docker-compose up -d backend"
-
-# Deploy only admin panel
-ssh metropolitan-deploy "cd /opt/metropolitan && git fetch origin && git reset --hard origin/main && docker-compose build --no-cache admin-panel && docker-compose up -d admin-panel"
+# Deployment durumu
+ssh metropolitan-deploy "docker-compose ps"
 
 # Backend logs
-ssh metropolitan-deploy "docker-compose logs -f backend"
+ssh metropolitan-deploy "docker logs -f metropolitan_backend"
 
-# Admin panel logs
-ssh metropolitan-deploy "docker-compose logs -f admin-panel"
+# Health check
+curl https://api.metropolitanfg.pl/health
 
-# Web-app logs
-ssh metropolitan-deploy "docker-compose logs -f web-app"
+# Tüm servisleri restart
+ssh metropolitan-deploy "docker-compose restart"
 
-# Restart backend
-ssh metropolitan-deploy "docker-compose restart backend"
-
-# Restart admin panel
-ssh metropolitan-deploy "docker-compose restart admin-panel"
-
-# Restart web-app
-ssh metropolitan-deploy "docker-compose restart web-app"
-
-# Status
-ssh metropolitan-deploy "docker-compose ps"
+# Database backup
+ssh metropolitan-deploy "docker exec metropolitan_postgres pg_dump -U metropolitan_prod metropolitan_production > /opt/backups/backup-$(date +%Y%m%d).sql"
 ```

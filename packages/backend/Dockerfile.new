@@ -1,0 +1,79 @@
+# Multi-stage build for backend optimization
+
+# Stage 1: Dependencies
+FROM oven/bun:1-alpine AS deps
+WORKDIR /app
+
+# Install system dependencies
+RUN apk add --no-cache python3 make g++ postgresql-client
+
+# Copy package files
+COPY package.json bun.lock ./
+COPY packages/shared/package.json ./packages/shared/
+COPY packages/backend/package.json ./packages/backend/
+
+# Install all dependencies
+RUN bun install --frozen-lockfile
+
+# Stage 2: Builder
+FROM oven/bun:1-alpine AS builder
+WORKDIR /app
+
+# Copy dependencies from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/packages/shared/node_modules ./packages/shared/node_modules
+COPY --from=deps /app/packages/backend/node_modules ./packages/backend/node_modules
+
+# Copy source code
+COPY packages/shared ./packages/shared
+COPY packages/backend ./packages/backend
+COPY package.json bun.lock ./
+
+# Build shared package if needed
+WORKDIR /app/packages/shared
+RUN if [ -f "tsconfig.json" ]; then bun run build 2>/dev/null || true; fi
+
+# Build backend
+WORKDIR /app/packages/backend
+RUN if [ -f "tsconfig.json" ]; then bun run build 2>/dev/null || true; fi
+
+# Stage 3: Production
+FROM oven/bun:1-alpine AS runner
+WORKDIR /app
+
+# Install only runtime dependencies
+RUN apk add --no-cache curl postgresql-client zip
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S backend -u 1001
+
+# Copy production dependencies
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/packages/shared ./packages/shared
+COPY --from=builder /app/packages/backend ./packages/backend
+
+# Create uploads directory
+RUN mkdir -p /app/uploads/product-images /app/uploads/profile-photos && \
+    chown -R backend:nodejs /app/uploads && \
+    chmod -R 755 /app/uploads
+
+# Create logs directory
+RUN mkdir -p /app/logs && \
+    chown -R backend:nodejs /app/logs
+
+# Switch to backend directory
+WORKDIR /app/packages/backend
+
+# Change ownership
+RUN chown -R backend:nodejs /app
+
+USER backend
+
+EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:3000/health || exit 1
+
+# Run TypeScript directly with Bun
+CMD ["bun", "index.ts"]
